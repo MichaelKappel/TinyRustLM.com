@@ -1033,6 +1033,58 @@ bytes; distinguish child coverage suppression from collector output configuratio
 The next smallest experiment is executing one bounded generated configuration
 on an admitted Apache/LiteSpeed target and measuring real response semantics.
 
+## C34: execute generated host configuration and distinguish core server behavior
+
+Question: does C33's exact generated directory configuration satisfy its HTTP
+claims on an actual server? MiniModel checkpoint `01063a0` and
+`../MiniModel.org/artifacts/reports/static-seed-apache-review-20260919.json`
+bind the changed source, test inputs, failed attempts, final results and limits.
+The existing OSM-Ubuntu distribution supplied Apache 2.4.58; no software or
+image download was required. A separate loopback instance used bounded fixtures,
+config, PID and logs inside canonical MiniModel artifacts. Existing server
+configuration was untouched. The source scan remains incomplete on the same two
+previously policy-blocked installer links; no alternate removal was attempted.
+
+First the harness reached ECONNREFUSED before Windows/WSL localhost forwarding
+became available. A bounded listener wait corrected setup. Next, requests returned
+500 because Apache read the repository's parent htaccess. Explicit root
+AllowOverride None/AllowOverrideList None and grants only for owned fixture
+directories isolated the server. A diagnostic rerun preserved that failure before
+the correction. These were harness failures, not model or seed-byte failures.
+
+Once the harness worked, all six GET/HEAD member checks passed. Method checks
+found TRACE advertised in Allow and then directly observed TRACE returning 200.
+Apache core handles TRACE before per-directory rewrite rules. The generator now
+reports server/vhost TraceEnable Off as a separate unverified prerequisite; it
+cannot put that directive in htaccess or claim the public host already has it.
+Primary Apache documentation was checked on September 19. This is a contract
+mismatch, not evidence of an Apache vulnerability.
+
+The next assertion incorrectly expected directory Allow headers on core's early
+TRACE rejection. Other error responses appended an empty Allow field. Final
+checks preserve exact 405 rejection and compare the nonempty allowed-method list
+on other methods. All successful member identity fields still require exactly
+one value, and all six bodies require exact length and hash. Compression is
+enabled in a control route but suppressed for members; malformed directives fail
+with 500 and ignored overrides fail identity admission.
+
+Final result: 78 checks passed, zero failed/skipped. Generator coverage is 91.03
+percent lines, 97.22 percent branches and 83.33 percent functions; the shared
+companion-fixture reader is fully covered. CLI children are tested but not
+instrumented. The owned server's PID/config and exit were verified before
+cleanup: 20 entries/47439 logical file bytes; the coverage operation removed
+6 entries/1442889 logical bytes. No physical recovery measurement, historical
+deletion or real model payload removal occurred.
+
+Decision: keep the correction and real HTTP check, and require actual hosting
+admission before publication. Reusable lesson: parsing/generated-text tests
+cannot establish web-server behavior; server-level controls and directory rules
+have different execution boundaries. Local Apache/Alias fixtures do not prove
+LiteSpeed, remote colon paths, TLS, browser CORS, qualification or public seeding.
+The least next hosting measurement is read-only verification of the actual
+server's directive/override capabilities and rejection behavior; no qualified
+model or release authority can be inferred from it.
+
 ## Continue the review
 
 Before deleting an experiment that is not covered above, record its purpose,

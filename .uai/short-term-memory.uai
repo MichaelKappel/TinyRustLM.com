@@ -1,10 +1,10 @@
 profile: tinyrustlm.short-term-memory.current.v1
-updated_utc: 2026-09-19T20:22:10Z
+updated_utc: 2026-09-19T20:42:55Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
 now:
-  task: C33 adds tested MiniModel static-seed configuration preparation after the C32 native fix; actual host execution and publication remain open. Ternary/Bonsai research remains deferred.
+  task: C34 executes MiniModel static-seed configuration on installed Apache and corrects the missing server TRACE prerequisite; public hosting and qualification remain open. Ternary/Bonsai research remains deferred.
   maturity: Early alpha, never a working release; no code debt, obsolete code or legacy support before the owner's official acceptance of a fully working release.
   broader_goal: Ecosystem cleanup and usable release remain incomplete.
   manifest: docs/report-intake/2026-09-19/working-product-research/MANIFEST.md
@@ -21,6 +21,7 @@ current_source_state:
   publication: C31 local refactor binds canonical inputs, verifies memory payloads, routes package tests through owned scratch and keeps secret-scan evidence in canonical artifacts. See publication-canonical-input-review.json for tests and limitations; transport admission still blocks live publication.
   seed_transport: C32 native server emits/exposes the descriptor-derived piece-set ID required by the browser. Actual Edge reads six synthetic member routes and rejects a foreign origin; 23 Rust, 18 companion and 48 JavaScript checks pass. See native-seed-browser-contract-review.json; no real default or live seed follows.
   static_seed_preparation: MiniModel b512402 compiles exact current descriptor bytes to six URLs, expected headers and hash-bound htaccess text. All 69 affected checks pass; no upload, local model copy, signing or catalog renewal. See MiniModel deploy/static-seed.md and its static-seed-preparation-review-20260919.json.
+  static_seed_execution: MiniModel 01063a0 passes 78 affected checks including real Apache 2.4.58 GET/HEAD transfers and rejection controls with synthetic bytes. TRACE bypassed directory rules; plan now requires server/vhost TraceEnable Off. Separate WSL loopback instance and owned output removed; no TLS/browser/LiteSpeed/publication claim. See static-seed-apache-review-20260919.json and C34.
 
 known_blockers:
   - Source-authority scan remains incomplete on the two C28 installer links; rerun in this intake confirmed source_authority_scan_incomplete after canonical Git trust configuration.
@@ -30,7 +31,7 @@ known_blockers:
 
 next_decisions:
   - Test exact eligible source usefulness before conversion; diagnose semantics/arithmetic separately; measure actual browser viability.
-  - Execute the prepared static seed configuration on an admitted Apache/LiteSpeed host and verify actual paths, directives, CORS and complete bytes. Apache is absent from PATH and the local Docker engine is unavailable; no service was started. MiniModel seeding is authorized, but no qualified payload or deployment gate pass exists.
+  - Establish actual LiteSpeed hosting capabilities, server TRACE rejection, remote paths, TLS/browser CORS and qualified member readbacks. C34 proves local Apache HTTP only, using an Alias and invalid-model fixtures. MiniModel seeding is authorized; no qualified payload or deployment gate pass exists.
   - Keep restore/default under the beginner path and technical acquisition controls under Advanced; do not claim ready without the complete model.
   - Preserve frozen experiments and current six-member/Q8 contracts until evidence supports a coherent replacement.
 
@@ -40,7 +41,7 @@ history_routes:
   old_intake: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-08-28.md
   history_rule: Earlier C21-C30 source hashes, test counts, failure results, retirement inventories and coverage limits live in the progress/lesson records and Git history; they are not fresh tests or current completion claims.
   storage_receipts: .uai/source-authority-relocation-2026-08-30.uai and .uai/storage-consolidation-2026-09-12.uai are historical, not proof of today's complete scan.
-  minimodel_source_checkpoint: b512402cd79f1a8af251d1264645c9b7a8a5f55c; static seed preparation source checkpoint, no public deployment claim.
+  minimodel_source_checkpoint: 01063a02e591de7ecf4469ac45efed0b660a514b; real local Apache fixture check and server prerequisite, no public deployment claim.
 
 memory_policy: Separate authorized MemoryEndpoints agent coordination and consenting Connect-user memory; synchronized public-safe current copies are allowed, with no silent uploads or live claims.
 counters: 0/20 qualified; 0/50 browser; 0/25 live memory; 0/40 outside lanes; 0/20 catalog.

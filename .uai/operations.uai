@@ -1,5 +1,5 @@
 profile: tinyrustlm.operations.current.v1
-updated_utc: 2026-09-19T20:22:10Z
+updated_utc: 2026-09-19T20:42:55Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
@@ -70,4 +70,5 @@ current_limit:
   source_scan: Two installer links remain policy-blocked and cause incomplete scanning.
   c31: Canonical-input publication refactor has local regression and Edge smoke evidence; remote capability admission remains blocked and no deployment occurred. See publication-canonical-input-review.json.
   c32: Native seed response/CORS identity corrected and tested in real Edge with synthetic bytes. Read-only MiniModel metadata supports HEAD/ranges/CORS but remains empty and authority-incomplete. See native-seed-browser-contract-review.json; model routes and safe publication remain unproven.
-  c33: MiniModel b512402 adds tested static seed configuration preparation; actual Apache/LiteSpeed execution and publication remain unverified. See MiniModel deploy/static-seed.md and static-seed-preparation-review-20260919.json. No local server was installed or started.
+  c33: Historical MiniModel b512402 generator checkpoint passed configuration tests without host execution. C34 supplies the later local Apache evidence. See static-seed-preparation-review-20260919.json.
+  c34: MiniModel 01063a0 executed exact configuration on a separate installed Apache instance; all 78 checks pass. Server/vhost TraceEnable Off is required because core TRACE bypasses directory rules. Owned PID/config exit and output removal proved; public LiteSpeed, TLS/browser access and qualified seed remain unverified. See static-seed-apache-review-20260919.json.

@@ -5,6 +5,32 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C34: execute the static seed configuration on Apache, September 19
+
+MiniModel checkpoint `01063a0` adds a real installed-Apache HTTP integration
+check. Apache 2.4.58 was available in the existing OSM-Ubuntu WSL distribution;
+an independent loopback instance used only owned canonical test output. No
+software/image installation, existing-site configuration edit or remote mutation
+was needed. The instance was stopped by its exact PID/config identity and its
+output removed after verified exit.
+
+Execution found a concrete gap in C33: core TRACE returned 200 despite the
+directory method rule. The plan now declares `TraceEnable Off` as an unverified
+server/vhost prerequisite, separate from `.htaccess`. All 78 affected checks
+pass, including six complete GET/HEAD bodies and exact identity headers, active
+compression controls, rejected paths/queries/methods, and override failure.
+Generator coverage is 91.03 percent lines and 97.22 percent branches. Earlier
+harness startup/isolation and error-header assertion failures are retained in
+MiniModel's `artifacts/reports/static-seed-apache-review-20260919.json` and lesson
+C34. Temporary output cleanup is verified; physical recovery is unmeasured.
+
+This is local HTTP with deliberately invalid model fixture bytes. The Alias
+mapping establishes URL spelling, not the remote filesystem's colon support.
+TLS, real-browser CORS on this server, LiteSpeed, qualified model availability,
+public hosting and publication remain unproven. The source scan still stops at
+the two policy-blocked installer links; no deletion retry occurred. No historical
+or model payload was removed. Ternary/Bonsai research remains deferred.
+
 ## C33: MiniModel static seed preparation, September 19
 
 MiniModel checkpoint `b512402` adds a bounded generator for the existing
