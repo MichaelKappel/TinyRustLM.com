@@ -1,0 +1,305 @@
+{
+  "schema": "tinyrustlm.native_seed_browser_contract_review.v1",
+  "reviewedUtc": "2026-09-19T20:07:11Z",
+  "sourceParent": "d7041a17a145bbc0a9bb25ff1b52026177310f11",
+  "branch": "codex/model-acquisition-v2",
+  "status": "local-native-browser-contract-tested-no-live-seed",
+  "ownerDirection": "Continue implementation; defer ternary/Bonsai/Hadamard research.",
+  "question": "Does the actual native seed meet browser response identity and CORS requirements, and which existing hosting capabilities are observable?",
+  "findings": [
+    "Browser validateResponse requires X-TinyRustLM-Piece-Set-Id; native stream_member previously omitted the header and CORS exposure, while mocks supplied it.",
+    "Server now derives sha256-prefixed piece-set identity from canonical path-free seed descriptor UTF-8 compact JSON plus final LF after member and graph verification.",
+    "CLI and server share the descriptor DTO; existing companion canonical wire bytes remain unchanged. No new binary composition layout or compatibility path.",
+    "Six whole-member HTTP transfer units remain distinct from the separate fixed-4-MiB Merkle transport.",
+    "Actual browser test uses real loopback page origins and native member routes; no seed interception or disabled browser security."
+  ],
+  "inputs": [
+    {
+      "path": "rust/crates/tinyrustlm-p2p/Cargo.toml",
+      "byteCount": 832,
+      "sha256": "ad689f42b8acea956510fa4362041b39a5448162b0ac07e73e23a2e106a813ed"
+    },
+    {
+      "path": "rust/crates/tinyrustlm-p2p/src/direct_composition_seed.rs",
+      "byteCount": 1499,
+      "sha256": "f68f75b5132148732357c2053864462ab448c1e31f22e3f231f39f40288741bd"
+    },
+    {
+      "path": "rust/crates/tinyrustlm-p2p/src/direct_composition_http.rs",
+      "byteCount": 26365,
+      "sha256": "663c4150cfdda17fdc04faec86795d76d1f978e0e6a2bd6fb1e8d8ef939bf04a"
+    },
+    {
+      "path": "rust/crates/tinyrustlm-p2p/src/bin/tinyrustlm_p2p_seed.rs",
+      "byteCount": 19114,
+      "sha256": "545cc5f36745fa4e377295f07fcdf981b51029bd915392ea9f25172930435429"
+    },
+    {
+      "path": "rust/crates/tinyrustlm-p2p/src/lib.rs",
+      "byteCount": 8093,
+      "sha256": "0af803bfdfa1b42899977364103168b71e96fcc1fdb3433231117e000dd8a492"
+    },
+    {
+      "path": "rust/crates/tinyrustlm-p2p/tests/direct_composition_http_test.rs",
+      "byteCount": 19747,
+      "sha256": "ed6bd45fd0e3233f9f8c497e1b8a72c0164055ec7e6918bf502a24037d215706"
+    },
+    {
+      "path": "rust/crates/tinyrustlm-p2p/tests/tinyrustlm_p2p_seed_test.rs",
+      "byteCount": 20693,
+      "sha256": "1dc4741c4dfa750b8a55f45c45fc56c96cb6f66b9f6c174ce85164f5fa74d4cc"
+    },
+    {
+      "path": "tinyrustlm/tests/helpers/native-seed-browser-probe.js",
+      "byteCount": 6136,
+      "sha256": "4ca1ded0b0c7805661f9014521000619ca3e0db6101a9f4a5159004e15dd4f2f"
+    },
+    {
+      "path": "tinyrustlm/app/p2p-composition-install.js",
+      "byteCount": 50486,
+      "sha256": "55a53359bb7af64062eb8b7505251af6eab487bc94a8105a92698830ea6ae8e4"
+    },
+    {
+      "path": "tinyrustlm/tests/p2p-composition-install.test.js",
+      "byteCount": 45141,
+      "sha256": "356570a67bd3ea6354de021aac73a9ddd499019c3453f45329969503c37443da"
+    },
+    {
+      "path": "tinyrustlm/tests/p2p-outside-proof-evidence.test.js",
+      "byteCount": 9256,
+      "sha256": "f38f5ba7a6be54d72632f324db7a363e56e85dbdd8222a620981e398894c7e6b"
+    },
+    {
+      "path": "dotnet/src/TinyRustLM.Companion/CompanionDirectCompositionSeedDescriptorMaterializer.cs",
+      "byteCount": 47238,
+      "sha256": "79cac076ef5ede431e79613e1e8f7b3c3e5dc738ee3e7c570ddffeef5773af51"
+    },
+    {
+      "path": "dotnet/tests/TinyRustLM.Companion.Tests/CompanionDirectCompositionSeedDescriptorMaterializerTests.cs",
+      "byteCount": 15292,
+      "sha256": "fe41e6fd91d42bff7fd8663ab686ed4adc0f201b88d38b2fefaccfad202f15f0"
+    }
+  ],
+  "runtime": {
+    "cargo": "1.96.0 (30a34c682 2026-05-25)",
+    "node": "24.14.0",
+    "browser": "Microsoft Edge 153.0.4234.48",
+    "browserChannel": "msedge",
+    "managedTarget": "net8.0"
+  },
+  "tests": [
+    {
+      "command": "dotnet test dotnet/tests/TinyRustLM.Package.Tests/TinyRustLM.Package.Tests.csproj --no-restore --filter FullyQualifiedName~UaixMemoryConsolidationTests --verbosity minimal",
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0,
+      "details": "Current guidance, pointer checksums and bounded memory remain consistent."
+    },
+    {
+      "command": "cargo test --offline --locked -p tinyrustlm-p2p --features browser-integration-tests -- --nocapture",
+      "passed": 23,
+      "failed": 0,
+      "ignored": 0,
+      "details": "Includes six actual Edge native member fetches and rejected foreign origin; synthetic loopback transport only."
+    },
+    {
+      "command": "dotnet test dotnet/tests/TinyRustLM.Companion.Tests/TinyRustLM.Companion.Tests.csproj --no-restore --filter FullyQualifiedName~CompanionDirectCompositionSeedDescriptorMaterializerTests --verbosity minimal",
+      "passed": 18,
+      "failed": 0,
+      "skipped": 0,
+      "details": "Existing exact canonical descriptor bytes and digest; no source model execution."
+    },
+    {
+      "command": "node --test tinyrustlm/tests/p2p-composition-install.test.js tinyrustlm/tests/p2p-outside-proof-evidence.test.js",
+      "passed": 48,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "command": "cargo clippy --offline --locked -p tinyrustlm-p2p --all-targets --features browser-integration-tests -- -D warnings",
+      "exitCode": 0
+    },
+    {
+      "command": "rustfmt --check --edition 2021 (changed Rust module, CLI and test paths)",
+      "exitCode": 0
+    }
+  ],
+  "coverage": {
+    "rustLinePercent": null,
+    "rustBranchPercent": null,
+    "reason": "cargo-llvm-cov was not installed in the existing C:/Users/AI/.cargo/bin toolchain; no coverage tool installed.",
+    "closestEvidence": "Actual server/CLI assertions bind all six identity headers to independently hashed descriptor bytes; real browser checks CORS visibility, content hashes and foreign-origin denial; malformed descriptors/graphs, route/origin and corruption cases remain covered."
+  },
+  "failedDevelopmentAttempts": [
+    "Initial DTO extraction omitted SeedMember import; compilation failed E0425 before execution. Corrected import.",
+    "First browser probe constructed an incorrect member URL; corrected to the actual composition/member route.",
+    "Corrected URL still failed. Browser diagnostics reported loopback address-space permission denial from intercepted page. Replaced the page fixture with actual local HTTP listeners; browser security remained enabled.",
+    "Earlier test-session terminal outputs could not be recovered after context continuation; final reported runs were executed again and their terminal results observed."
+  ],
+  "hostingReadback": {
+    "retrievedUtc": "2026-09-19T20:05:07.3029576Z",
+    "dns": [
+      "66.29.148.128"
+    ],
+    "client": "development-machine .NET HTTPS; default certificate validation",
+    "requests": [
+      {
+        "method": "GET",
+        "path": "/catalog/compositions.v1.json",
+        "requestRange": null,
+        "status": 200,
+        "url": "https://minimodel.org/catalog/compositions.v1.json",
+        "bodyBytes": 422,
+        "sha256": "700b510d068934627bb0a308da36d7672c1a4e296c7d984ea33199b903692a42",
+        "headers": {
+          "access-control-allow-origin": "*",
+          "access-control-allow-methods": "GET, OPTIONS",
+          "access-control-allow-headers": "Content-Type",
+          "vary": "Origin",
+          "Accept-Ranges": "bytes",
+          "Date": "Sat, 19 Sep 2026 20:05:01 GMT",
+          "Server": "LiteSpeed",
+          "Content-Length": "422",
+          "Content-Type": "application/json",
+          "Last-Modified": "Mon, 31 Aug 2026 06:17:54 GMT"
+        },
+        "json": {
+          "schema": "minimodel.slm2_catalog.v1",
+          "catalog_id": "minimodel.org/prelaunch",
+          "generated_at_utc": "2026-08-28T00:00:00Z",
+          "project_server_serves_model_bytes": false,
+          "project_server_proxies_model_bytes": false,
+          "project_server_runs_inference": false,
+          "qualification_policy": "exact-current-evidence-required",
+          "browser_admission_schema": "tinyrustlm.browser-composition-admission/1",
+          "entries": []
+        }
+      },
+      {
+        "method": "GET",
+        "path": "/catalog/peer-announcements.v1.json",
+        "requestRange": null,
+        "status": 200,
+        "url": "https://minimodel.org/catalog/peer-announcements.v1.json",
+        "bodyBytes": 263,
+        "sha256": "10bea93b9613f9bbc7ffff0d03d22dbdeeb28abd276dcf6609dd929fdd2643a4",
+        "headers": {
+          "access-control-allow-origin": "*",
+          "access-control-allow-methods": "GET, OPTIONS",
+          "access-control-allow-headers": "Content-Type",
+          "vary": "Origin",
+          "Accept-Ranges": "bytes",
+          "Date": "Sat, 19 Sep 2026 20:05:02 GMT",
+          "Server": "LiteSpeed",
+          "Content-Length": "263",
+          "Content-Type": "application/json",
+          "Last-Modified": "Fri, 28 Aug 2026 21:39:26 GMT"
+        },
+        "json": {
+          "schema": "minimodel.slm2_peer_announcements.v1",
+          "feed_id": "minimodel.org/prelaunch-peers",
+          "generated_at_utc": "2026-08-28T00:00:00Z",
+          "project_server_serves_model_bytes": false,
+          "project_server_proxies_model_bytes": false,
+          "announcements": []
+        }
+      },
+      {
+        "method": "HEAD",
+        "path": "/catalog/compositions.v1.json",
+        "requestRange": null,
+        "status": 200,
+        "url": "https://minimodel.org/catalog/compositions.v1.json",
+        "bodyBytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "headers": {
+          "access-control-allow-origin": "*",
+          "access-control-allow-methods": "GET, OPTIONS",
+          "access-control-allow-headers": "Content-Type",
+          "vary": "Origin",
+          "Accept-Ranges": "bytes",
+          "Date": "Sat, 19 Sep 2026 20:05:02 GMT",
+          "Server": "LiteSpeed",
+          "Content-Length": "422",
+          "Content-Type": "application/json",
+          "Last-Modified": "Mon, 31 Aug 2026 06:17:54 GMT"
+        }
+      },
+      {
+        "method": "GET",
+        "path": "/catalog/compositions.v1.json",
+        "requestRange": "bytes=0-0",
+        "status": 206,
+        "url": "https://minimodel.org/catalog/compositions.v1.json",
+        "bodyBytes": 1,
+        "sha256": "021fb596db81e6d02bf3d2586ee3981fe519f275c0ac9ca76bbcf2ebb4097d96",
+        "headers": {
+          "access-control-allow-origin": "*",
+          "access-control-allow-methods": "GET, OPTIONS",
+          "access-control-allow-headers": "Content-Type",
+          "vary": "Origin",
+          "Date": "Sat, 19 Sep 2026 20:05:02 GMT",
+          "Server": "LiteSpeed",
+          "Content-Length": "1",
+          "content-range": "bytes 0-0/422",
+          "Content-Type": "application/json",
+          "Last-Modified": "Mon, 31 Aug 2026 06:17:54 GMT"
+        }
+      },
+      {
+        "method": "OPTIONS",
+        "path": "/catalog/compositions.v1.json",
+        "requestRange": null,
+        "status": 200,
+        "url": "https://minimodel.org/catalog/compositions.v1.json",
+        "bodyBytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "headers": {
+          "access-control-allow-origin": "*",
+          "access-control-allow-methods": "GET, OPTIONS",
+          "access-control-allow-headers": "Content-Type",
+          "vary": "Origin",
+          "Date": "Sat, 19 Sep 2026 20:05:02 GMT",
+          "Server": "LiteSpeed",
+          "Content-Length": "0"
+        }
+      }
+    ]
+  },
+  "hostingLimits": [
+    "Metadata routes only; no model or seed-byte route probed.",
+    "Development-machine public HTTPS client, not independent outside-network observation.",
+    "Normal certificate validation used; TLS version not measured.",
+    "LiteSpeed header and DNS do not establish hosting control, process support, FTPS promotion atomicity or new-header configuration ability.",
+    "No credentials read and no remote mutation, DNS or IIS change."
+  ],
+  "sourceAuthority": {
+    "status": "source_authority_scan_incomplete",
+    "blockers": [
+      "artifacts/verification/qwen3-environment-install/tinyrustlm-operation-C3ZUt9/install-temp/TmP6xn2evdh-b",
+      "artifacts/verification/qwen3-environment-install/tinyrustlm-operation-C3ZUt9/install-temp/TmPeq63_hr7-b"
+    ],
+    "disposition": "Previously policy-blocked removals were not retried or bypassed; focused canonical verification is not a source/release gate pass."
+  },
+  "retention": {
+    "temporaryParent": "artifacts/tests/seed-protocol",
+    "ownership": "canonical-operation-scratch.js creates and verifies unique marker-bound operation directories",
+    "temporaryOutput": "Owned synthetic fixtures/browser profiles removed by harness after each operation; parent verified empty.",
+    "historicalOrModelPayloadsRemoved": 0,
+    "physicalBytesRecovered": null,
+    "intake": "Content and Improvement were placeholder-only."
+  },
+  "decision": "Retain the native correction; future signed announcements and static member responses must bind this descriptor-derived piece-set identity. Prepare exact immutable static seed routes and prove host capabilities before publication.",
+  "unproven": [
+    "qualified real default",
+    "real numerical parity",
+    "useful installed browser inference",
+    "live initial seed",
+    "outside-network acquisition",
+    "safe remote promotion",
+    "complete ecosystem cleanup",
+    "owner acceptance"
+  ],
+  "lesson": "Mock responses can supply metadata absent from the real producer. Test native transfer through actual browser Fetch/CORS, and distinguish fixture-origin permission failures from production identity defects.",
+  "nextAction": "Prepare static-host response/route configuration and verification using the existing current protocol; model publication still waits for qualified bytes and complete release gates."
+}

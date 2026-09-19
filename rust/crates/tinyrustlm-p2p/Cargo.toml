@@ -21,5 +21,9 @@ tinyrustlm-evidence = { path = "../tinyrustlm-evidence" }
 tinyrustlm-slm2 = { path = "../tinyrustlm-slm2" }
 url.workspace = true
 
+[features]
+# Explicit real-browser gate: installed Edge, Node and canonical Playwright dependencies.
+browser-integration-tests = []
+
 [lints]
 workspace = true

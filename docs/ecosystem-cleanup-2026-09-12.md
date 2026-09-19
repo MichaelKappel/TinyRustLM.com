@@ -5,6 +5,38 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C32: native seed and browser identity agreement, September 19
+
+Fixed a real producer/consumer mismatch: the browser requires the piece-set
+identity header, while the native Rust server omitted it and its CORS exposure.
+The server now hashes the canonical path-free six-member seed descriptor after
+verifying member hashes and graph closure. The CLI and server share its Rust
+representation; companion wire bytes remain unchanged. No alternate reader or
+format was introduced. The whole-member transfer identity is documented in
+`docs/server-seeded-startup-2026-09-12.md`.
+
+All 23 Rust tests pass with the explicit browser feature, including actual Edge
+fetches from all six native routes and foreign-origin rejection. All 18 companion
+descriptor tests and 48 affected JavaScript installer/proof checks pass, with
+zero skips. Rustfmt and strict Clippy pass. Rust coverage tooling is unavailable;
+no numerical coverage percentage is claimed. The browser probe uses tiny
+synthetic members and proves transport agreement only, not installed-model
+quality or public seeding.
+
+Read-only MiniModel HTTPS probes found reachable metadata, HEAD, a one-byte 206
+range response and CORS on LiteSpeed. The live catalog/feed have August 28
+metadata, zero entries/announcements, missing current authority fields and the
+superseded no-server-bytes policy. This development-machine observation does not
+prove model routes, process hosting, publication consistency or outside-network
+acquisition. No credentials, DNS, IIS or remote files were changed.
+
+The unchanged source-authority scan still fails on the two policy-blocked C28
+links. Full release gates, a qualified default and live initial seed remain
+open. Operation-owned fixtures and browser profiles were removed; no historical
+or model payload was removed and no physical storage recovery was measured.
+Exact inputs, failed probes, results and limits are retained in lesson C32 and
+`artifacts/ecosystem-cleanup-20260912/native-seed-browser-contract-review.json`.
+
 ## C31: canonical publication inputs, September 19
 
 The local publication refactor now binds the exact canonical file closure and

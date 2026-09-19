@@ -7,9 +7,14 @@ use std::fmt;
 use std::path::{Path, PathBuf};
 
 mod direct_composition_http;
+mod direct_composition_seed;
 mod direct_http;
 mod manifest;
 mod storage;
+
+pub use direct_composition_seed::{
+    DirectCompositionSeedDescriptor, DirectCompositionSeedMember, DIRECT_COMPOSITION_SEED_SCHEMA,
+};
 
 /// The sole current public P2P manifest schema.
 pub const P2P_MANIFEST_SCHEMA: &str = "tinyrustlm.vnext.p2p_manifest.v1";

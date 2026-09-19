@@ -931,6 +931,60 @@ transport mocks establish their observed mechanics only. The next smallest
 release experiment is bounded read-only hosting capability discovery; it must
 precede a concrete remote publication design and any live mutation.
 
+## C32: native seed/browser identity mismatch and hosting discovery
+
+Question: can the real native seed satisfy the browser's exact response contract,
+and which existing MiniModel hosting capabilities are actually observable?
+Inputs: source parent d7041a17a145bbc0a9bb25ff1b52026177310f11, the native
+direct-composition server/CLI, browser installer, companion descriptor producer,
+synthetic six-member Rust fixture and read-only public metadata routes. Exact
+source and response identities are retained in
+`artifacts/ecosystem-cleanup-20260912/native-seed-browser-contract-review.json`.
+
+Inspection found that production browser validation demanded
+X-TinyRustLM-Piece-Set-Id, but the native server neither emitted nor exposed it.
+Mock servers supplied it, concealing the integration failure. The corrected
+server derives the whole-member piece-set ID from canonical seed descriptor
+bytes after member verification. The CLI and server share the wire structure;
+the companion's existing canonical bytes and digest remain the same. This does
+not define or change the separate 4-MiB Merkle protocol or qualify model bytes.
+
+The first compilation failed because moving the DTO omitted the SeedMember
+import; the import was corrected. The new browser probe initially used an
+incorrect route, then still failed after route correction. Browser diagnostics
+identified denial of loopback address-space access from the intercepted page.
+A real loopback page server resolved that harness problem without suppressing
+browser security. All six native seed responses then supplied the browser-visible
+identities and correct bytes; a second real page origin was rejected. The final
+Rust suite passed 23 tests, including that Edge 153.0.4234.48 probe; companion
+descriptor tests passed 18 and browser installer/outside-proof tests passed 48.
+All had zero skips. Strict Clippy and Rustfmt passed. cargo-llvm-cov was not
+installed, so line/branch coverage is unmeasured; these behavioral checks are
+the closest automated evidence. No whole-app or real-model claim follows.
+
+At 2026-09-19T20:05:07Z, a development-machine .NET HTTPS client using normal
+certificate validation observed 66.29.148.128 and LiteSpeed. Catalog/feed GETs
+returned 422/263 bytes with empty lists and August 28 authority-incomplete
+metadata. Catalog HEAD returned length 422; Range bytes=0-0 returned one byte,
+206 and bytes 0-0/422; OPTIONS returned 200. Metadata allowed wildcard CORS.
+These facts support further static-host preparation, not an assertion that seed
+routes, model bytes, new configuration, long-running processes or safe remote
+promotion work. This was not an independent outside-network observer. There were
+no live mutations, credential reads or DNS/IIS changes.
+
+Decision: keep the native correction and require the same descriptor-derived ID
+in future signed seed announcements/static responses. Next, prepare and verify
+the exact immutable static member routes against actual host capabilities; model
+publication still requires qualification and complete release gates. The source
+scan continues to report the two blocked installer links. None was retried,
+renamed or deleted. New operation-owned test/profile output was removed; compact
+results and Git source history remain.
+
+Reusable lesson: mocked network responses can silently supply headers absent
+from the real producer. Verify the actual native server through browser Fetch
+with CORS enabled, and distinguish fixture-origin permission failures from
+server identity failures before changing production behavior.
+
 ## Continue the review
 
 Before deleting an experiment that is not covered above, record its purpose,

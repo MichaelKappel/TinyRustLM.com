@@ -7,7 +7,9 @@ use std::path::PathBuf;
 use std::sync::{Arc, Mutex, MutexGuard, TryLockError};
 use std::thread::{self, JoinHandle};
 
-use tinyrustlm_composition2::{Acg2Graph, Acg2Policy, MemberRole};
+use tinyrustlm_composition2::{
+    Acg2Graph, Acg2Policy, MemberRole, ACG2_FORMAT_PROFILE_ID, ACG2_FORMAT_PROFILE_SHA256,
+};
 use url::{Host, Url};
 
 use crate::direct_http::{
@@ -16,7 +18,10 @@ use crate::direct_http::{
     write_response_head, ACCEPT_POLL, STREAM_BUFFER_BYTES,
 };
 use crate::storage::open_regular_file;
-use crate::{CancellationToken, DirectHttpLimits, P2pError};
+use crate::{
+    CancellationToken, DirectCompositionSeedDescriptor, DirectCompositionSeedMember,
+    DirectHttpLimits, P2pError, DIRECT_COMPOSITION_SEED_SCHEMA,
+};
 
 /// Fixed path prefix for the browser-facing six-member composition protocol.
 pub const DIRECT_COMPOSITION_HTTP_ROUTE_PREFIX: &str = "/tinyrustlm/direct-composition/v1";
@@ -246,6 +251,7 @@ impl DirectCompositionHttpServer {
 
 struct ServedComposition {
     composition_id: String,
+    piece_set_id: String,
     allowed_origin: DirectCompositionBrowserOrigin,
     members: [ServedCompositionMember; 6],
 }
@@ -321,8 +327,28 @@ impl ServedComposition {
             .try_into()
             .map_err(|_| P2pError::new("p2p-composition-http-descriptor"))?;
         verify_graph_closure(&descriptor.composition_id, &mut members)?;
+        let metadata = DirectCompositionSeedDescriptor {
+            schema: DIRECT_COMPOSITION_SEED_SCHEMA.to_string(),
+            protocol: DIRECT_COMPOSITION_HTTP_PROTOCOL_PROFILE.to_string(),
+            composition_profile: ACG2_FORMAT_PROFILE_ID.to_string(),
+            composition_profile_sha256: ACG2_FORMAT_PROFILE_SHA256.to_string(),
+            composition_id: descriptor.composition_id.clone(),
+            members: members
+                .iter()
+                .map(|member| DirectCompositionSeedMember {
+                    name: member.file_name.clone(),
+                    bytes: member.artifact_bytes,
+                    sha256: member.artifact_id[7..].to_string(),
+                })
+                .collect(),
+        };
+        let mut canonical = serde_json::to_vec(&metadata)
+            .map_err(|_| P2pError::new("p2p-composition-http-descriptor"))?;
+        canonical.push(b'\n');
+        let piece_set_id = format!("sha256:{}", hex_lower(&Sha256::digest(&canonical)));
         Ok(Self {
             composition_id: descriptor.composition_id,
+            piece_set_id,
             allowed_origin,
             members,
         })
@@ -605,7 +631,7 @@ fn stream_member(
     headers.extend([
         (
             "Access-Control-Expose-Headers",
-            "Content-Length, Content-Type, X-TinyRustLM-Composition-Id, X-TinyRustLM-Member-Name, X-TinyRustLM-Member-Id"
+            "Content-Length, Content-Type, X-TinyRustLM-Composition-Id, X-TinyRustLM-Piece-Set-Id, X-TinyRustLM-Member-Name, X-TinyRustLM-Member-Id"
                 .to_string(),
         ),
         (
@@ -617,6 +643,7 @@ fn stream_member(
             "X-TinyRustLM-Composition-Id",
             composition.composition_id.clone(),
         ),
+        ("X-TinyRustLM-Piece-Set-Id", composition.piece_set_id.clone()),
         ("X-TinyRustLM-Member-Name", member.file_name.clone()),
         ("X-TinyRustLM-Member-Id", member.artifact_id.clone()),
     ]);

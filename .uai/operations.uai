@@ -1,5 +1,5 @@
 profile: tinyrustlm.operations.current.v1
-updated_utc: 2026-09-19T17:18:30Z
+updated_utc: 2026-09-19T20:05:07Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
@@ -69,3 +69,4 @@ current_limit:
   maturity: Early alpha, never a working release; debt/obsolete/legacy prohibition is a requirement, not a cleanup-success claim.
   source_scan: Two installer links remain policy-blocked and cause incomplete scanning.
   c31: Canonical-input publication refactor has local regression and Edge smoke evidence; remote capability admission remains blocked and no deployment occurred. See publication-canonical-input-review.json.
+  c32: Native seed response/CORS identity corrected and tested in real Edge with synthetic bytes. Read-only MiniModel metadata supports HEAD/ranges/CORS but remains empty and authority-incomplete. See native-seed-browser-contract-review.json; model routes and safe publication remain unproven.

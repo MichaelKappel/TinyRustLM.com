@@ -315,6 +315,18 @@ fn serves_all_six_fixed_routes_with_exact_credential_free_cors() {
             response.headers.get("x-tinyrustlm-member-id"),
             Some(&expected_ids[index])
         );
+        let piece_set_id = response
+            .headers
+            .get("x-tinyrustlm-piece-set-id")
+            .expect("whole-member piece set header required by the browser");
+        assert!(piece_set_id.starts_with("sha256:"));
+        assert_eq!(piece_set_id.len(), 71);
+        assert!(response
+            .headers
+            .get("access-control-expose-headers")
+            .expect("exposed identity headers")
+            .split(", ")
+            .any(|name| name == "X-TinyRustLM-Piece-Set-Id"));
         assert_eq!(
             response
                 .headers

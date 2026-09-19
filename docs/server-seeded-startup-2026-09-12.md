@@ -1,5 +1,56 @@
 # Server-seeded startup
 
+## September 19 native seed contract correction
+
+The browser requires `X-TinyRustLM-Piece-Set-Id` on every member response. The
+Rust seed previously omitted both that header and its CORS exposure, although
+mock servers supplied it. The corrected native server derives the identity from
+the six verified members and emits and exposes it on every successful response.
+
+For `tinyrustlm.direct-composition-http.v1`, the piece-set ID is `sha256:` plus
+the lowercase SHA-256 of the canonical `tinyrustlm.direct-composition-seed/1`
+descriptor bytes: compact UTF-8 JSON in declared field order, fixed member order,
+and one final LF. These are the descriptor bytes already accepted by the Rust
+CLI and emitted by the companion; no paths enter that representation. A signed
+announcement's `piece_set_sha256` must name this same identity. This profile
+transfers six whole members. Its ID is separate from the fixed-4-MiB Merkle
+transport's manifest/root; it is not a qualification or availability receipt.
+
+The descriptor representation has one Rust owner shared by the CLI and server.
+The server computes its ID after hashing open member handles and validating
+ACG2 closure; it never accepts an arbitrary advertised ID as a substitute.
+Normal member routes remain
+`/tinyrustlm/direct-composition/v1/compositions/{compositionId}/members/{memberName}`.
+A static host implementing those routes must provide the same identity, length,
+media-type and CORS contract. No such seed configuration has been published.
+
+The explicit real-browser regression runs with installed Edge, Node and the
+canonical Playwright dependency and free loopback ports 4173/4174, using operation-owned canonical artifact
+`TEMP`, `TMP` and `TMPDIR`:
+
+```text
+cargo test --offline --locked -p tinyrustlm-p2p --features browser-integration-tests
+```
+
+It starts the actual Rust CLI with tiny synthetic members, reads all six routes
+from a real loopback HTTP page, checks browser-visible identities and byte hashes,
+and rejects a foreign origin. It does not intercept seed responses or disable
+browser security. This is transport evidence, not real model installation,
+inference, or outside-network proof. Rust coverage tooling was unavailable;
+the exact checks and coverage limit are recorded in lesson C32.
+
+Read-only HTTPS probes at 2026-09-19T20:05:07Z found MiniModel.org resolving to
+66.29.148.128 and responding with a LiteSpeed header. Its live catalog and peer
+feed still contain zero entries/announcements and August 28 metadata with the
+superseded no-server-bytes policy and missing current authority fields. The
+catalog supports HEAD and a one-byte 206 range response, and both metadata routes
+expose wildcard CORS. Those observations cover metadata only. They do not prove
+model serving, process support, safe publication, or an independent external
+network. Exact public-response hashes and headers are in
+`artifacts/ecosystem-cleanup-20260912/native-seed-browser-contract-review.json`.
+
+## Original startup implementation and September 12 observations
+
 The owner requested automatic small-model startup through MiniModel.org on
 2026-09-12. This explicitly supersedes older rules forbidding all project
 model hosting. TinyRustLM.com still runs inference locally and does not serve

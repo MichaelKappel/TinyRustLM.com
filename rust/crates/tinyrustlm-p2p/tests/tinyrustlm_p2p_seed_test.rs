@@ -258,12 +258,17 @@ fn seed_command(
 
 /// Runs one expected-terminal CLI command with a bounded subprocess deadline.
 fn bounded_output(mut command: Command) -> Output {
+    bounded_output_with_deadline(&mut command, Duration::from_secs(5))
+}
+
+/// Bounds terminal native and explicit browser probes while retaining captured diagnostics.
+fn bounded_output_with_deadline(command: &mut Command, timeout: Duration) -> Output {
     let mut child = command
         .stdout(Stdio::piped())
         .stderr(Stdio::piped())
         .spawn()
         .expect("terminal seed subprocess start");
-    let deadline = Instant::now() + Duration::from_secs(5);
+    let deadline = Instant::now() + timeout;
     loop {
         if child.try_wait().expect("terminal seed poll").is_some() {
             return child.wait_with_output().expect("terminal seed output");
@@ -271,7 +276,7 @@ fn bounded_output(mut command: Command) -> Output {
         if Instant::now() >= deadline {
             let _ = child.kill();
             let _ = child.wait();
-            panic!("seed subprocess did not reach a terminal failure");
+            panic!("test subprocess did not finish before its deadline");
         }
         thread::sleep(Duration::from_millis(10));
     }
@@ -372,6 +377,12 @@ fn serves_all_six_members_with_exact_demo_origin_and_public_readiness() {
     let readiness = process.readiness_line();
     let peer = parse_readiness(&readiness, &fixture, root.path(), DEMO_ORIGIN);
     assert!(peer.ip().is_loopback());
+    let expected_piece_set_id = format!(
+        "sha256:{}",
+        hex_lower(&Sha256::digest(
+            fs::read(&fixture.descriptor_path).expect("descriptor bytes")
+        ))
+    );
 
     for (index, file_name) in DIRECT_COMPOSITION_MEMBER_NAMES.iter().enumerate() {
         let route = direct_composition_member_route(&fixture.descriptor.composition_id, file_name)
@@ -384,8 +395,62 @@ fn serves_all_six_members_with_exact_demo_origin_and_public_readiness() {
         );
         assert!(!head.contains("Access-Control-Allow-Credentials"));
         assert!(!head.contains("Location:"));
+        assert!(
+            head.lines()
+                .any(|line| line == format!("X-TinyRustLM-Piece-Set-Id: {expected_piece_set_id}")),
+            "{file_name}: exact descriptor digest is the whole-member piece set"
+        );
+        assert!(
+            head.lines()
+                .any(|line| line.starts_with("Access-Control-Expose-Headers: ")
+                    && line
+                        .split_once(": ")
+                        .expect("header value")
+                        .1
+                        .split(", ")
+                        .any(|name| name == "X-TinyRustLM-Piece-Set-Id")),
+            "{file_name}: browser must be allowed to read the identity"
+        );
         assert_eq!(body, fixture.member_bytes[index], "{file_name}");
     }
+    process.stop();
+}
+
+/// Exercises actual browser CORS against the native server; no intercepted seed responses.
+#[cfg(all(windows, feature = "browser-integration-tests"))]
+#[test]
+fn browser_reads_all_six_native_seed_identities() {
+    let root = TestRoot::create("browser-cors");
+    let fixture = fixture(root.path());
+    let mut process = RunningSeed::spawn(seed_command(
+        &fixture,
+        SocketAddr::from(([127, 0, 0, 1], 0)),
+        Some(DEMO_ORIGIN),
+    ));
+    let readiness = process.readiness_line();
+    let peer = parse_readiness(&readiness, &fixture, root.path(), DEMO_ORIGIN);
+    let repository = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .ancestors()
+        .nth(3)
+        .expect("canonical repository");
+    let mut command = Command::new("node");
+    command
+        .arg(repository.join("tinyrustlm/tests/helpers/native-seed-browser-probe.js"))
+        .arg(format!("http://{peer}"))
+        .arg(&fixture.descriptor_path)
+        .env("NODE_V8_COVERAGE", "")
+        .current_dir(repository);
+    let output = bounded_output_with_deadline(&mut command, Duration::from_secs(45));
+    assert!(
+        output.status.success(),
+        "browser probe failed: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let evidence: Value = serde_json::from_slice(&output.stdout).expect("browser probe evidence");
+    assert_eq!(evidence["verifiedMembers"], 6);
+    assert_eq!(evidence["rejectedForeignOrigin"], true);
+    assert!(evidence["browserVersion"].is_string());
+    println!("native seed browser probe: {evidence}");
     process.stop();
 }
 

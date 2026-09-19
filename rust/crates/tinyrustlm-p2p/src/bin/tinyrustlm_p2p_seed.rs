@@ -1,7 +1,7 @@
 #![forbid(unsafe_code)]
 #![doc = "Strict operator CLI for one exact direct-composition HTTP seed."]
 
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 use sha2::{Digest, Sha256};
 use std::collections::HashSet;
 use std::env;
@@ -17,12 +17,13 @@ use tinyrustlm_composition2::{
 };
 use tinyrustlm_p2p::{
     CancellationToken, DirectCompositionBrowserOrigin, DirectCompositionDescriptor,
-    DirectCompositionHttpServer, DirectCompositionMemberDescriptor, DirectHttpLimits, P2pError,
-    DIRECT_COMPOSITION_HTTP_PROTOCOL_PROFILE, DIRECT_COMPOSITION_MEMBER_NAMES,
+    DirectCompositionHttpServer, DirectCompositionMemberDescriptor,
+    DirectCompositionSeedDescriptor as SeedDescriptor, DirectCompositionSeedMember as SeedMember,
+    DirectHttpLimits, P2pError, DIRECT_COMPOSITION_HTTP_PROTOCOL_PROFILE,
+    DIRECT_COMPOSITION_MEMBER_NAMES, DIRECT_COMPOSITION_SEED_SCHEMA as SEED_DESCRIPTOR_SCHEMA,
     MAXIMUM_DIRECT_ARTIFACT_BYTES, MAXIMUM_DIRECT_COMPOSITION_BYTES,
 };
 
-const SEED_DESCRIPTOR_SCHEMA: &str = "tinyrustlm.direct-composition-seed/1";
 const MAXIMUM_SEED_DESCRIPTOR_BYTES: usize = 8 * 1024;
 const STREAM_BUFFER_BYTES: usize = 64 * 1024;
 const EXIT_ARGUMENTS: u8 = 2;
@@ -44,25 +45,6 @@ const GRAPH_MEMBER_ROLES: [MemberRole; 5] = [
     MemberRole::Sampling,
     MemberRole::Prompt,
 ];
-
-#[derive(Deserialize, Serialize)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
-struct SeedDescriptor {
-    schema: String,
-    protocol: String,
-    composition_profile: String,
-    composition_profile_sha256: String,
-    composition_id: String,
-    members: Vec<SeedMember>,
-}
-
-#[derive(Deserialize, Serialize)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
-struct SeedMember {
-    name: String,
-    bytes: u64,
-    sha256: String,
-}
 
 struct CliArguments {
     descriptor_path: PathBuf,

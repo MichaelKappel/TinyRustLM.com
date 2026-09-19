@@ -1,5 +1,5 @@
 profile: tinyrustlm.startup-packet.current.v1
-updated_utc: 2026-09-19T17:18:30Z
+updated_utc: 2026-09-19T20:05:07Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
@@ -33,3 +33,4 @@ current_intake:
   maturity: Early alpha, never a working release; no debt, obsolete code or legacy support until a fully working release is officially accepted by the owner.
   routing: .uai/index.uai separates current guidance from dated historical receipts; earlier August resume prose is not current source state.
   blockers: Two policy-blocked installer links still prevent source scan completion; real v3 registration, qualified default, live seed and remote publication capabilities remain open. C31 canonical-input refactor has local tests only.
+  seed_progress: C32 native identity/CORS mismatch fixed; actual Edge transfers six synthetic members. Public metadata readbacks remain empty and authority-incomplete; static model serving and release gates remain open. See native-seed-browser-contract-review.json.
