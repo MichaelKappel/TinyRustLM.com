@@ -5,6 +5,44 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C36: bound candidate metadata while receiving it, September 19
+
+Replaced both discovery tools' duplicated whole-response JSON/text readers with
+one streaming metadata reader. The previous size check ran after allocation and
+JSON parsing; it also measured reserialized JSON rather than the received bytes.
+The new reader caps original decoded bytes before parsing: 16 MiB for API JSON,
+1 MiB for configuration/template and ordinary text, and the existing 256 KiB
+limit for the Qwen-specific license file. A fixed bounded buffer avoids an
+unbounded list of tiny chunks. Valid UTF-8, including a BOM, is preserved for
+text hashing; malformed UTF-8 and JSON fail explicitly.
+
+Each request has a 30-second default deadline spanning headers and the complete
+body. The programmatic `requestTimeoutMs` option accepts integers from 1 through
+120000 milliseconds. Timeout/HTTP/oversize/encoding errors retain metadata
+failure codes rather than becoming license judgments. Cancellation does not
+wait indefinitely for a broken stream. Search responses exceeding the requested
+row limit fail before model-specific requests. There are no automatic retries.
+
+All 26 affected checks pass, including actual Node HTTP fetch against an owned
+loopback server: stalled headers, stalled bodies with observed socket closure,
+gzip expansion beyond the bound, and truncated bodies. Other checks cover
+boundary bytes, tiny chunks, Unicode splits, late fetch completion, hanging
+cancellation, misleading lengths, oversized JSON whitespace, both discovery
+owners, prior exclusions and acquisition/digest/resume behavior. New reader
+coverage is 100 percent lines/functions and 98.28 percent branches; the two
+existing discovery files have 86.59/87.78 percent line coverage. Owned test and
+coverage output across two runs was removed: 12 remaining files, 6479093 logical bytes; physical
+recovery was not measured. See
+`artifacts/ecosystem-cleanup-20260912/huggingface-metadata-review.json`.
+
+These are request bounds, not a whole-discovery latency promise or a model
+qualification result. The source gate was rerun and still fails on the same two
+policy-blocked installer links; no deletion retry occurred. No external candidate
+search, model download, closed experiment replay or publication occurred. The
+next acquisition review must enforce canonical output ownership and distinguish
+metadata eligibility from real source quality and execution admission. Ternary
+research remains deferred.
+
 ## C35: preserve source rejection decisions during candidate acquisition, September 19
 
 Checked the 37 historical candidate assessments against their recorded SHA-256

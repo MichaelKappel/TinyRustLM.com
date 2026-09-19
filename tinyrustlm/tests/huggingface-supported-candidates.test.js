@@ -15,16 +15,7 @@ function fixtureFetch(routes) {
     const key = String(url);
     assert.ok(Object.hasOwn(routes, key), `unexpected URL: ${key}`);
     const value = routes[key];
-    return {
-      ok: value.status === undefined || (value.status >= 200 && value.status < 300),
-      status: value.status || 200,
-      async json() {
-        return value.json;
-      },
-      async text() {
-        return value.text;
-      }
-    };
+    return new Response(value.text ?? JSON.stringify(value.json), { status: value.status || 200 });
   };
 }
 

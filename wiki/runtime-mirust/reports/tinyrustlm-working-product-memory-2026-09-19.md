@@ -40,6 +40,8 @@ Campaign counters remain **0/20** qualified models, **0/50** clean browser round
 
 For each candidate, retain a compact matrix: exact source and weight identities; architecture and unsupported operators; license/provenance status; download estimate; weight/KV/scratch estimate; reference screen failures; conversion cost; real browser measurements; and decision with uncertainty. Stop cycling through byte-identical repositories.
 
+**C36 source-tool correction:** both discovery owners now share streamed metadata bounds and a 30-second header-plus-body deadline, enforce the requested search-row limit, and preserve distinct metadata failure codes. All 26 affected checks pass, including native loopback HTTP faults. See `artifacts/ecosystem-cleanup-20260912/huggingface-metadata-review.json`; C35's pending response-buffering defect is resolved locally. Canonical acquisition-output ownership and material gates still need closure. No live candidate search or real model result follows.
+
 Compare three routes by evidence:
 - Qualify an already useful compact checkpoint and adapt the sole runtime where justified.
 - Run a bounded new-derivative training experiment after inference, data and independent review readiness.

@@ -4,14 +4,13 @@ const crypto = require("node:crypto");
 const fs = require("node:fs");
 const path = require("node:path");
 const { sourceCandidateRejection } = require("./source-candidate-exclusions.js");
+const { createMetadataReader, MetadataReadError } = require("./huggingface-metadata.js");
 
 const inventorySchema = "tinyrustlm.huggingface_supported_candidate_inventory.v2";
 const defaultBaseUrl = "https://huggingface.co";
 const defaultLicenseUrl = "https://www.apache.org/licenses/LICENSE-2.0.txt";
 const maximumSearchLimit = 500;
 const maximumCandidateLimit = 100;
-const maximumJsonBytes = 16 * 1024 * 1024;
-const maximumTextBytes = 1024 * 1024;
 const profiles = Object.freeze({
   "qwen3-0.6b-bpe": Object.freeze({
     defaultSearch: "Qwen3-0.6B",
@@ -136,25 +135,6 @@ function buildResolveUrl(baseUrl, modelId, revision, filename) {
     "resolve filename is not allowlisted");
   const safeId = requireModelId(modelId).split("/").map(encodeURIComponent).join("/");
   return `${normalizeBaseUrl(baseUrl)}/${safeId}/resolve/${requireRevision(revision)}/${filename}`;
-}
-
-// Reads bounded JSON from a successful primary-source response.
-async function fetchJson(fetchImpl, url, label) {
-  const response = await fetchImpl(url, { method: "GET", redirect: "follow" });
-  invariant(response && response.ok, `${label} returned HTTP ${response ? response.status : "unknown"}`);
-  const value = await response.json();
-  invariant(Buffer.byteLength(JSON.stringify(value), "utf8") <= maximumJsonBytes, `${label} is oversized`);
-  return value;
-}
-
-// Reads bounded UTF-8 text from a successful evidence response.
-async function fetchText(fetchImpl, url, label) {
-  const response = await fetchImpl(url, { method: "GET", redirect: "follow" });
-  invariant(response && response.ok, `${label} returned HTTP ${response ? response.status : "unknown"}`);
-  const value = await response.text();
-  invariant(typeof value === "string" && Buffer.byteLength(value, "utf8") <= maximumTextBytes,
-    `${label} is oversized`);
-  return value;
 }
 
 // Extracts the one explicit license tag from model search metadata.
@@ -301,8 +281,7 @@ function weightIdentity(weights) {
 // Fetches and validates the canonical Apache 2.0 license evidence once per run.
 async function apacheLicenseEvidence(settings) {
   if (!settings.licenseEvidencePromise) {
-    settings.licenseEvidencePromise = fetchText(
-      settings.fetchImpl,
+    settings.licenseEvidencePromise = settings.metadata.text(
       settings.licenseUrl,
       "Apache 2.0 license authority"
     ).then((text) => {
@@ -328,8 +307,7 @@ async function inspectCandidate(model, settings) {
   const priorRejection = sourceCandidateRejection(modelId, revision);
   if (priorRejection) return { rejection: priorRejection };
   try {
-    const info = await fetchJson(
-      settings.fetchImpl,
+    const info = await settings.metadata.json(
       buildRevisionInfoUrl(settings.baseUrl, modelId, revision),
       `${modelId} revision metadata`
     );
@@ -342,8 +320,7 @@ async function inspectCandidate(model, settings) {
     const files = validateSiblings(info, settings.profile);
     const weightRejection = sourceCandidateRejection(modelId, revision, files.weights);
     if (weightRejection) return { rejection: weightRejection };
-    const configText = await fetchText(
-      settings.fetchImpl,
+    const configText = await settings.metadata.text(
       buildResolveUrl(settings.baseUrl, modelId, revision, "config.json"),
       `${modelId} config`
     );
@@ -354,8 +331,7 @@ async function inspectCandidate(model, settings) {
       throw new Error("config JSON is invalid");
     }
     validateConfig(config, settings.profile);
-    const tokenizerConfigText = await fetchText(
-      settings.fetchImpl,
+    const tokenizerConfigText = await settings.metadata.text(
       buildResolveUrl(settings.baseUrl, modelId, revision, "tokenizer_config.json"),
       `${modelId} tokenizer config`
     );
@@ -390,6 +366,7 @@ async function inspectCandidate(model, settings) {
       })
     };
   } catch (error) {
+    if (error instanceof MetadataReadError) return { rejection: error.code };
     const message = String(error && error.message || error);
     if (message === "shape mismatch") return { rejection: "shape_mismatch" };
     if (message.includes("license") || message.includes("Apache")) {
@@ -403,7 +380,7 @@ async function inspectCandidate(model, settings) {
   }
 }
 
-// Discovers one deterministic profile roster without downloading model weights.
+// Discovers one profile roster; requestTimeoutMs bounds each metadata request, never model execution.
 async function discoverCandidates(options = {}) {
   const fetchImpl = options.fetchImpl || globalThis.fetch;
   invariant(typeof fetchImpl === "function", "fetch implementation is required");
@@ -416,9 +393,11 @@ async function discoverCandidates(options = {}) {
   const candidateLimit = Number(options.candidateLimit || 40);
   invariant(Number.isSafeInteger(candidateLimit) && candidateLimit >= 1 && candidateLimit <= maximumCandidateLimit,
     "candidate limit is invalid");
-  const results = await fetchJson(fetchImpl, buildSearchUrl(baseUrl, search, searchLimit), "model search");
+  const metadata = createMetadataReader(fetchImpl, options.requestTimeoutMs);
+  const results = await metadata.json(buildSearchUrl(baseUrl, search, searchLimit), "model search");
   invariant(Array.isArray(results), "model search response must be an array");
-  const settings = { baseUrl, fetchImpl, licenseUrl, licenseEvidencePromise: null, profile };
+  invariant(results.length <= searchLimit, "model search exceeds requested result limit");
+  const settings = { baseUrl, metadata, licenseUrl, licenseEvidencePromise: null, profile };
   const candidates = [];
   const rejections = [];
   const identities = new Set();

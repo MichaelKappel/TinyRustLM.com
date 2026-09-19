@@ -1,0 +1,169 @@
+{
+  "schema": "tinyrustlm.huggingface-metadata-review.v1",
+  "observedAtUtc": "2026-09-19T21:10:34.904Z",
+  "sourceParent": "759ca4c1be46aa6a381b0dbb57dd3b30b7d49010",
+  "status": "bounded-metadata-reader-tested-no-live-discovery",
+  "environment": {
+    "node": "v24.14.0",
+    "platform": "win32",
+    "architecture": "x64"
+  },
+  "inputs": [
+    {
+      "path": "tinyrustlm/tools/huggingface-metadata.js",
+      "bytes": 4158,
+      "sha256": "f6e26c0255a7eec38d35c116d4e1983fab42f33955e04074cb413f45ea97a341"
+    },
+    {
+      "path": "tinyrustlm/tools/huggingface-supported-candidates.js",
+      "bytes": 21280,
+      "sha256": "119d7eb8c686be337ada406cbd362187b52fefafb6a308071de03a0cfbc0d8f8"
+    },
+    {
+      "path": "tinyrustlm/tools/huggingface-qwen-candidates.js",
+      "bytes": 14766,
+      "sha256": "84c31bab9768321beeb8fbbcd15c686dac40b3c7052244617d4405c00ca3f6c1"
+    },
+    {
+      "path": "tinyrustlm/tools/huggingface-candidate-acquire.js",
+      "bytes": 22787,
+      "sha256": "34f5d74f20602042f0c692d2a93132371fa500f0b9704316f4157f6aad4536b8"
+    },
+    {
+      "path": "tinyrustlm/tools/source-candidate-exclusions.js",
+      "bytes": 1885,
+      "sha256": "43a71f9760a2d1038f9b3b017c61a445577a68bcd285098ab915ba5b0df4b836"
+    },
+    {
+      "path": "contracts/vnext/source-candidate-exclusions.v1.json",
+      "bytes": 17290,
+      "sha256": "abb84b63d8fd59eaa335b7e2c7517cdf50c49f9a6f45117f9a22d5f47b9f7133"
+    },
+    {
+      "path": "tinyrustlm/tests/huggingface-metadata_test.js",
+      "bytes": 11127,
+      "sha256": "ffc249e2cae5e8f3b51d969cfa6eca3b5db1bc192b21f525b58e129a7b373696"
+    },
+    {
+      "path": "tinyrustlm/tests/huggingface-supported-candidates.test.js",
+      "bytes": 6548,
+      "sha256": "041206bc62909e7795f6f9cd44ac55c8d02132f980da7f9cb1a6e361eb252023"
+    },
+    {
+      "path": "tinyrustlm/tests/huggingface-qwen-candidates.test.js",
+      "bytes": 5221,
+      "sha256": "6dfac5eefa0514669dec6f7578e85792fe8c30818a7fd0caaa4d1449d6cc0cc4"
+    },
+    {
+      "path": "tinyrustlm/tests/source-candidate-exclusions_test.js",
+      "bytes": 7320,
+      "sha256": "b61953e2473d6c303b3b62fe0aaa00c96fe7dc36cda0ae7ba1e9d27e4692f1d9"
+    },
+    {
+      "path": "tinyrustlm/tests/huggingface-candidate-acquire.test.js",
+      "bytes": 11119,
+      "sha256": "c62ec1bd2bc08c7980a367e24f16733f101c99239c376e14cd4cf246cb2d8848"
+    }
+  ],
+  "change": {
+    "before": "Both discovery owners buffered JSON/text completely before size checks and had no request deadlines; JSON reserialization discarded whitespace before measurement.",
+    "after": "One shared reader bounds decoded streamed bytes before parsing, preserves valid UTF-8 text including BOM, and aborts on a per-request header-plus-body deadline. Metadata errors remain distinct from candidate license/quality judgments.",
+    "bounds": {
+      "jsonBytes": 16777216,
+      "textBytes": 1048576,
+      "qwenLicenseBytes": 262144,
+      "defaultRequestTimeoutMs": 30000,
+      "maximumRequestTimeoutMs": 120000,
+      "searchRows": "No more than requested searchLimit, itself capped at 500"
+    },
+    "storage": "One fixed bounded byte buffer per sequential request; no chunk-object accumulation; browser/model payloads unchanged."
+  },
+  "tests": {
+    "passed": 26,
+    "failed": 0,
+    "skipped": 0,
+    "files": [
+      "tinyrustlm/tests/huggingface-metadata_test.js",
+      "tinyrustlm/tests/huggingface-supported-candidates.test.js",
+      "tinyrustlm/tests/huggingface-qwen-candidates.test.js",
+      "tinyrustlm/tests/source-candidate-exclusions_test.js",
+      "tinyrustlm/tests/huggingface-candidate-acquire.test.js"
+    ],
+    "coverage": [
+      {
+        "path": "tinyrustlm/tools/huggingface-metadata.js",
+        "lines": 100,
+        "branches": 98.28,
+        "functions": 100
+      },
+      {
+        "path": "tinyrustlm/tools/huggingface-qwen-candidates.js",
+        "lines": 86.59,
+        "branches": 64.71,
+        "functions": 84
+      },
+      {
+        "path": "tinyrustlm/tools/huggingface-supported-candidates.js",
+        "lines": 87.78,
+        "branches": 64.29,
+        "functions": 87.5
+      }
+    ],
+    "nativeHttp": [
+      "Actual Node fetch on an owned ephemeral 127.0.0.1 server",
+      "Stalled headers and stalled body time out; server observes both connection closures",
+      "gzip-decoded 1025 bytes rejected against 1024-byte cap",
+      "Truncated Content-Length fails as metadata_request_failed",
+      "Server and all owned connections closed in finally"
+    ],
+    "regression": [
+      "Byte-exact UTF-8 including split emoji and BOM",
+      "Exact and exceeded bounds; oversized JSON whitespace measured before parse",
+      "Misleading/missing/malformed Content-Length",
+      "Invalid UTF-8, JSON, byte chunks, HTTP status and network/body errors",
+      "Timeout validation and both discovery option paths",
+      "Noncooperative fetch settles at deadline; late response cancelled",
+      "Stalled body cancellation does not extend deadline",
+      "Both discovery owners reject overlong search result arrays and preserve license-fetch error codes without retries",
+      "Prior exclusions plus existing synthetic acquisition/digest/resumption behavior"
+    ],
+    "sequence": "Initial focused 23 checks passed; coverage suite 26 passed; after removing an unused test import final exact-input suite 26 passed. No failures or skips."
+  },
+  "memoryVerification": {
+    "testFilter": "FullyQualifiedName~UaixMemoryConsolidationTests",
+    "passed": 6,
+    "failed": 0,
+    "skipped": 0
+  },
+  "cleanup": {
+    "ownedOutputRemoved": true,
+    "coverageRuns": [
+      {
+        "files": 6,
+        "logicalBytes": 3239881
+      },
+      {
+        "files": 6,
+        "logicalBytes": 3239212
+      }
+    ],
+    "totalRemainingFilesRemoved": 12,
+    "totalLogicalBytesRemoved": 6479093,
+    "physicalStorageRecoveryMeasured": false,
+    "historicalOrModelDeletion": false
+  },
+  "sourceGate": {
+    "status": "source_authority_scan_incomplete",
+    "blockedPaths": [
+      "artifacts/verification/qwen3-environment-install/tinyrustlm-operation-C3ZUt9/install-temp/TmP6xn2evdh-b",
+      "artifacts/verification/qwen3-environment-install/tinyrustlm-operation-C3ZUt9/install-temp/TmPeq63_hr7-b"
+    ],
+    "deletionRetried": false
+  },
+  "remaining": [
+    "Per-request deadlines do not promise total discovery latency",
+    "Canonical acquisition-output ownership remains to be reviewed/enforced before material downloads",
+    "Metadata eligibility does not establish licensing clearance, provenance, source quality or execution admission",
+    "No external candidate discovery, model acquisition, closed experiment replay, qualification, browser inference or deployment occurred"
+  ]
+}

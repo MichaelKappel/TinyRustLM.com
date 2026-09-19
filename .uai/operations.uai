@@ -1,5 +1,5 @@
 profile: tinyrustlm.operations.current.v1
-updated_utc: 2026-09-19T20:58:07Z
+updated_utc: 2026-09-19T21:10:34Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
@@ -66,7 +66,8 @@ reviewed_storage_and_experiments:
   close_run: Preserve failed attempts and stages never started; a corrected implementation needs a new experiment. Transfer resumption is not scientific replay.
 
 current_limit:
-  c35: Both candidate discovery owners and inventory acquisition enforce one current negative-only exclusion contract from 37 hashed historical assessments plus the owner's Qwen3 rejection. Fourteen checks pass; no live discovery, model run, independent regrade or positive admission. Metadata streaming/deadline defects remain open; see source-candidate-exclusions-review.json.
+  c36: Shared metadata reader replaces both unbounded response paths with streamed byte limits, per-request deadlines and typed evidence failures. Twenty-six checks pass, including native HTTP fault execution; no live discovery or model result. See huggingface-metadata-review.json. Continue canonical output ownership and unchanged material/public gates.
+  c35: Both discovery owners and inventory acquisition enforce exact exclusions from 37 hashed assessments plus the owner's Qwen3 rejection. Fourteen historical checks passed; no live discovery, model run or positive admission. Its metadata reader finding was resolved by C36; see source-candidate-exclusions-review.json.
   maturity: Early alpha, never a working release; debt/obsolete/legacy prohibition is a requirement, not a cleanup-success claim.
   source_scan: Two installer links remain policy-blocked and cause incomplete scanning.
   c31: Canonical-input publication refactor has local regression and Edge smoke evidence; remote capability admission remains blocked and no deployment occurred. See publication-canonical-input-review.json.

@@ -54,19 +54,19 @@ test("exclusions are exact negative evidence, not a family ban or positive admis
 function metadataFetch(modelId, revision, weightSha256, calls) {
   return async (url) => {
     calls.push(url);
-    if (calls.length === 1) return { ok: true, json: async () => [{
+    if (calls.length === 1) return Response.json([{
       id: modelId, sha: revision, pipeline_tag: "text-generation", tags: ["safetensors", "text-generation", "license:apache-2.0"],
       config: { model_type: "qwen2", architectures: ["Qwen2ForCausalLM"] },
-    }] };
+    }]);
     assert.equal(calls.length, 2, "Excluded weights must not trigger config/license or model download");
-    return { ok: true, json: async () => ({ id: modelId, sha: revision,
+    return Response.json({ id: modelId, sha: revision,
       pipeline_tag: "text-generation", cardData: { license: "apache-2.0" }, siblings: [
         { rfilename: "config.json", size: 100, blobId: "c".repeat(40) },
         { rfilename: "tokenizer.json", size: 100, blobId: "d".repeat(40) },
         { rfilename: "tokenizer_config.json", size: 100, blobId: "e".repeat(40) },
         { rfilename: "LICENSE", size: 100, blobId: "f".repeat(40) },
         { rfilename: "model.safetensors", lfs: { size: 3_000_000_000, sha256: weightSha256 } },
-      ] }) };
+      ] });
   };
 }
 

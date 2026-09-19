@@ -4,12 +4,12 @@ const crypto = require("node:crypto");
 const fs = require("node:fs");
 const path = require("node:path");
 const { sourceCandidateRejection } = require("./source-candidate-exclusions.js");
+const { createMetadataReader, MetadataReadError } = require("./huggingface-metadata.js");
 
 const inventorySchema = "tinyrustlm.huggingface_candidate_inventory.v1";
 const defaultBaseUrl = "https://huggingface.co";
 const maximumSearchLimit = 500;
 const maximumCandidateLimit = 100;
-const maximumJsonBytes = 16 * 1024 * 1024;
 const maximumLicenseBytes = 256 * 1024;
 const minimumWeightBytes = 2_500_000_000;
 const maximumWeightBytes = 4_500_000_000;
@@ -78,25 +78,6 @@ function buildResolveUrl(baseUrl, modelId, revision, filename) {
   invariant(["config.json", "LICENSE"].includes(filename), "resolve filename is not allowlisted");
   const safeId = requireModelId(modelId).split("/").map(encodeURIComponent).join("/");
   return `${normalizeBaseUrl(baseUrl)}/${safeId}/resolve/${requireRevision(revision)}/${filename}`;
-}
-
-// Reads bounded JSON from a successful primary-source HTTP response.
-async function fetchJson(fetchImpl, url, label) {
-  const response = await fetchImpl(url, { method: "GET", redirect: "follow" });
-  invariant(response && response.ok, `${label} returned HTTP ${response ? response.status : "unknown"}`);
-  const value = await response.json();
-  invariant(Buffer.byteLength(JSON.stringify(value), "utf8") <= maximumJsonBytes, `${label} is oversized`);
-  return value;
-}
-
-// Reads bounded UTF-8 text used for pinned source license/config evidence.
-async function fetchText(fetchImpl, url, label, maximumBytes) {
-  const response = await fetchImpl(url, { method: "GET", redirect: "follow" });
-  invariant(response && response.ok, `${label} returned HTTP ${response ? response.status : "unknown"}`);
-  const text = await response.text();
-  invariant(typeof text === "string" && Buffer.byteLength(text, "utf8") <= maximumBytes,
-    `${label} is oversized`);
-  return text;
 }
 
 // Extracts one explicit, approved model license tag from search metadata.
@@ -201,8 +182,7 @@ async function inspectCandidate(model, settings) {
   const priorRejection = sourceCandidateRejection(modelId, revision);
   if (priorRejection) return { rejection: priorRejection };
   try {
-    const info = await fetchJson(
-      settings.fetchImpl,
+    const info = await settings.metadata.json(
       buildRevisionInfoUrl(settings.baseUrl, modelId, revision),
       `${modelId} revision metadata`
     );
@@ -211,8 +191,7 @@ async function inspectCandidate(model, settings) {
     const files = validateSiblings(info);
     const weightRejection = sourceCandidateRejection(modelId, revision, files.weights);
     if (weightRejection) return { rejection: weightRejection };
-    const configText = await fetchText(
-      settings.fetchImpl,
+    const configText = await settings.metadata.text(
       buildResolveUrl(settings.baseUrl, modelId, revision, "config.json"),
       `${modelId} config`,
       1024 * 1024
@@ -224,8 +203,7 @@ async function inspectCandidate(model, settings) {
       throw new Error("config JSON is invalid");
     }
     validateConfig(config);
-    const licenseText = await fetchText(
-      settings.fetchImpl,
+    const licenseText = await settings.metadata.text(
       buildResolveUrl(settings.baseUrl, modelId, revision, "LICENSE"),
       `${modelId} license`,
       maximumLicenseBytes
@@ -248,6 +226,7 @@ async function inspectCandidate(model, settings) {
       })
     };
   } catch (error) {
+    if (error instanceof MetadataReadError) return { rejection: error.code };
     const message = String(error && error.message || error);
     if (message === "shape mismatch") return { rejection: "shape_mismatch" };
     if (message.includes("license")) return { rejection: "license_evidence_invalid" };
@@ -258,7 +237,7 @@ async function inspectCandidate(model, settings) {
   }
 }
 
-// Discovers a deterministic, evidence-bound roster without downloading model bytes.
+// Discovers a roster; requestTimeoutMs bounds each metadata request, never model execution.
 async function discoverCandidates(options = {}) {
   const fetchImpl = options.fetchImpl || globalThis.fetch;
   invariant(typeof fetchImpl === "function", "fetch implementation is required");
@@ -269,15 +248,17 @@ async function discoverCandidates(options = {}) {
   const candidateLimit = Number(options.candidateLimit || 40);
   invariant(Number.isSafeInteger(candidateLimit) && candidateLimit >= 1 && candidateLimit <= maximumCandidateLimit,
     "candidate limit is invalid");
-  const results = await fetchJson(fetchImpl, buildSearchUrl(baseUrl, search, searchLimit), "model search");
+  const metadata = createMetadataReader(fetchImpl, options.requestTimeoutMs);
+  const results = await metadata.json(buildSearchUrl(baseUrl, search, searchLimit), "model search");
   invariant(Array.isArray(results), "model search response must be an array");
+  invariant(results.length <= searchLimit, "model search exceeds requested result limit");
   const candidates = [];
   const rejections = [];
   const identities = new Set();
   for (const model of results) {
     if (candidates.length >= candidateLimit) break;
     const modelId = typeof model?.id === "string" ? model.id : "invalid-model-id";
-    const inspected = await inspectCandidate(model, { baseUrl, fetchImpl });
+    const inspected = await inspectCandidate(model, { baseUrl, metadata });
     if (inspected.rejection) {
       rejections.push(Object.freeze({ modelId, code: inspected.rejection }));
       continue;

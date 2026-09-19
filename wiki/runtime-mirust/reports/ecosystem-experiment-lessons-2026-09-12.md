@@ -1133,6 +1133,44 @@ unfinished. Real source execution still cannot pass the incomplete source gate
 caused by the two previously blocked installer links. No deletion retry, model
 download, live discovery, quality claim or publication occurred.
 
+## C36: response-size checks must precede parsing and include stalled bodies
+
+Question: did source discovery actually bound untrusted evidence responses?
+Inspection of both discovery owners found `response.json()`/`response.text()`
+before size checks and no request deadline. Reserializing parsed JSON also
+discarded whitespace before measuring size, so its limit did not describe the
+bytes consumed. This was a reader defect, not evidence against any model.
+
+The shared `huggingface-metadata.js` now bounds streamed decoded bytes before
+copying/parsing, uses one fixed buffer, and gives each request a 30-second
+default header-plus-body deadline. It preserves valid UTF-8 text bytes for
+hashing and rejects invalid encoding. A promised body length is only an early
+rejection aid; actual bytes still control admission, including decompression.
+Search row bounds prevent a server from silently expanding the requested scan.
+Both discovery owners preserve typed metadata failures instead of classifying
+license-fetch timeouts as license defects. No retry or cached failure repair was
+introduced.
+
+Result: 26 affected tests pass, including native Node HTTP loopback execution
+with stalled headers/body, observed abort closure, gzip expansion and truncated
+Content-Length, plus exact/over-limit responses, split Unicode, invalid evidence,
+late fetch completion and nonsettling cancellation. Existing source exclusions
+and synthetic acquisition/resumption checks remain green. Reader coverage is
+100 percent lines/functions and 98.28 percent branches; existing discovery
+files have 86.59 and 87.78 percent lines, not full branch coverage. Across two
+coverage runs, 12 remaining owned files were removed, totalling 6479093 logical bytes;
+physical recovery was not measured. Input hashes and scope are retained in
+`artifacts/ecosystem-cleanup-20260912/huggingface-metadata-review.json`.
+
+Decision/lesson: bound original decoded bytes and the entire asynchronous
+transfer, not a parsed reconstruction or just response headers. Loopback HTTP
+proves this transport behavior but not Hugging Face availability, a valid
+license/provenance chain, a useful source model, or browser inference. Requests
+are individually bounded; total roster time still depends on the admitted row
+count. The same incomplete source gate remains unresolved. Continue the
+canonical acquisition-output review; do not rerun a closed source experiment or
+treat a negative exclusion lookup as positive admission.
+
 ## Continue the review
 
 Before deleting an experiment that is not covered above, record its purpose,
