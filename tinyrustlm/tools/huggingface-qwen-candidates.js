@@ -3,6 +3,7 @@
 const crypto = require("node:crypto");
 const fs = require("node:fs");
 const path = require("node:path");
+const { sourceCandidateRejection } = require("./source-candidate-exclusions.js");
 
 const inventorySchema = "tinyrustlm.huggingface_candidate_inventory.v1";
 const defaultBaseUrl = "https://huggingface.co";
@@ -197,6 +198,8 @@ async function inspectCandidate(model, settings) {
   if (preflightCode) return { rejection: preflightCode };
   const modelId = requireModelId(model.id);
   const revision = requireRevision(model.sha);
+  const priorRejection = sourceCandidateRejection(modelId, revision);
+  if (priorRejection) return { rejection: priorRejection };
   try {
     const info = await fetchJson(
       settings.fetchImpl,
@@ -206,6 +209,8 @@ async function inspectCandidate(model, settings) {
     invariant(info.id === modelId && String(info.sha || "").toLowerCase() === revision,
       "revision metadata identity drift");
     const files = validateSiblings(info);
+    const weightRejection = sourceCandidateRejection(modelId, revision, files.weights);
+    if (weightRejection) return { rejection: weightRejection };
     const configText = await fetchText(
       settings.fetchImpl,
       buildResolveUrl(settings.baseUrl, modelId, revision, "config.json"),

@@ -1,5 +1,5 @@
 profile: tinyrustlm.long-term-memory.current.v1
-updated_utc: 2026-09-19T20:42:55Z
+updated_utc: 2026-09-19T20:58:07Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
@@ -9,12 +9,12 @@ pointers:
   - id: working-product
     path: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
     label: Current working-product guidance
-    summary: Open first for the corrected sixteen-report synthesis and next decisive experiments.
+    summary: Open first for the corrected sixteen-report synthesis, current candidate exclusions and next decisive experiments.
     authority: reviewed_guidance
     review_state: reviewed_for_routing_and_identity
     status: current
-    last_reviewed_utc: 2026-09-19T20:42:55Z
-    sha256: 874d7d5ef773f2a37f3c180c4e950338240c93fe23ab47a7edc4a8d98c7cd14d
+    last_reviewed_utc: 2026-09-19T20:58:07Z
+    sha256: f51b5660db0242d15b7efb23786e05594f2607606775994cb35aad21285d2c22
   - id: report-decisions
     path: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
     label: September report decisions
@@ -36,21 +36,21 @@ pointers:
   - id: experiment-lessons
     path: wiki/runtime-mirust/reports/ecosystem-experiment-lessons-2026-09-12.md
     label: Retained experiment lessons
-    summary: Open for C21-C34 observations, exact evidence, uncertainty and blocked retirement.
+    summary: Open for C21-C35 observations, exact evidence, uncertainty and blocked retirement.
     authority: reviewed_bounded_historical_evidence
     review_state: reviewed_for_routing_and_identity
     status: active_growing_review
-    last_reviewed_utc: 2026-09-19T20:42:55Z
-    sha256: 811123ad880894496c9f96acbd83976c76766e04f120251b548283cc0c216029
+    last_reviewed_utc: 2026-09-19T20:58:07Z
+    sha256: 10bc876d08192a95d076e58335501c0c54e65449ff79d8b1858da289fffa80bd
   - id: cleanup-progress
     path: docs/ecosystem-cleanup-2026-09-12.md
     label: Ecosystem cleanup progress
-    summary: Open for outstanding cleanup, C31 publication, C32 native/browser agreement, C34 actual Apache behavior and remaining hosting limits.
+    summary: Open for outstanding cleanup, C31 publication, C32 native/browser agreement, C34 Apache behavior, C35 source exclusions and remaining model/hosting limits.
     authority: owner_authorized_progress_record
     review_state: reviewed_for_routing_and_identity
     status: current
-    last_reviewed_utc: 2026-09-19T20:42:55Z
-    sha256: 9af5c04a4fc93746ce2b763cc4ae9c69fd93d18122a24cf18c0965500947df91
+    last_reviewed_utc: 2026-09-19T20:58:07Z
+    sha256: df62d0e3a58a097eb1c9fd16bf26fe6de25a47675feb91395584e85c71ac99de
   - id: source-lock
     path: contracts/vnext/qwen3-0.6b-base-source-lock.v2.json
     label: Current diagnostic source identity

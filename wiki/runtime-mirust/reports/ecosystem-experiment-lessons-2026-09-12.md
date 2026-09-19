@@ -1085,6 +1085,54 @@ The least next hosting measurement is read-only verification of the actual
 server's directive/override capabilities and rejection behavior; no qualified
 model or release authority can be inferred from it.
 
+## C35: candidate discovery must remember rejected source identities
+
+Question: would the proposed next candidate screen repeat already recorded
+failures? The current historical selection ledger references 37 assessment
+controls. Read-only comparison verified all 37 exact file hashes and their
+rejected decisions: 28 source screens and nine preflight rejections. In
+particular SmolLM2-1.7B at 31b70e2e869a7173562077fd711b654946d38674 and
+Qwen2.5-1.5B at 989aa7980e4cf806f80c7fef2b1adb7bc71aa306 already have rejected
+screens. Their recorded two-of-eight case counts are historical observations,
+not new measurements or independent review. The reports' suggestion to screen
+these names did not disclose those local decisions.
+
+Code inspection found neither discovery owner nor the generic inventory
+downloader consulting prior rejection identities. Introduced
+`contracts/vnext/source-candidate-exclusions.v1.json` as one current negative-only
+contract, retaining exact evidence paths/hashes without modifying historical
+assessments. It includes the 37 decisions plus the owner's unchanged Qwen3-0.6B
+rejection bound to source-lock v2. Runtime lookup does not execute old experiment
+code. Revision matches reject before further discovery requests; known file
+digests reject mirrors before config/license requests. The downloader checks
+independently before output creation and network use. Diagnostic acquisition
+through its separately bound contract is unchanged.
+
+Final result: 14 focused checks pass with zero skips, including all evidence
+identities, both discovery owners, revision and renamed-weight rejection,
+preflight/quality classification, no family-wide ban, invalid API inputs, and
+the existing synthetic transfer/digest/resumption checks. Lookup coverage is
+88.89 percent lines, 86.36 percent branches and 100 percent functions. The
+operation's remaining five coverage/marker files totalled 1663307 logical bytes
+and were ownership-checked and removed. No physical recovery was measured.
+Exact input identities and scope are in source-candidate-exclusions-review.json.
+
+Decision: preserve known decisions before considering another source. No-match
+means only that this policy has no matching rejection; it grants no positive
+admission. Hashes detect exact known files, including renamed files, but cannot
+establish tensor equivalence after reserialization/resharding. Nine preflight
+decisions have no acquired weight identity and therefore exclude only their
+exact repository revision. A genuinely changed candidate still needs full
+provenance and fresh authorized qualification. No closed model run was repeated.
+
+Reusable lesson: advisory shortlists must be reconciled with local results, and
+an old inventory must not bypass an updated rejection policy. The next bounded
+source-tool correction is replacing post-read metadata size checks with streamed
+bounds and deadlines; this was observed in both discovery owners and remains
+unfinished. Real source execution still cannot pass the incomplete source gate
+caused by the two previously blocked installer links. No deletion retry, model
+download, live discovery, quality claim or publication occurred.
+
 ## Continue the review
 
 Before deleting an experiment that is not covered above, record its purpose,

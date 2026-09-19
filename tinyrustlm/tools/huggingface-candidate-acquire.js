@@ -5,6 +5,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const { Readable } = require("node:stream");
 const { pipeline } = require("node:stream/promises");
+const { sourceCandidateRejection } = require("./source-candidate-exclusions.js");
 
 const inventorySchema = "tinyrustlm.huggingface_supported_candidate_inventory.v2";
 const receiptSchema = "tinyrustlm.huggingface_source_acquisition.v2";
@@ -60,6 +61,8 @@ function requireCandidate(value) {
   invariant(/^[A-Za-z0-9._-]{1,96}\/[A-Za-z0-9._-]{1,160}$/.test(modelId), "candidate modelId is invalid");
   const revision = String(value.revision || "").toLowerCase();
   invariant(/^[a-f0-9]{40,64}$/.test(revision), "candidate revision is not immutable");
+  const priorRejection = sourceCandidateRejection(modelId, revision);
+  invariant(!priorRejection, priorRejection);
   const sourceTemplate = String(value.sourceTemplate || "");
   invariant(/^[a-z0-9][a-z0-9.-]{2,95}$/.test(sourceTemplate), "candidate sourceTemplate is invalid");
   invariant(value.licenseId === "apache-2.0", "candidate license is not supported");
@@ -89,6 +92,8 @@ function requireCandidate(value) {
     "candidate weightFiles are invalid");
   const weightFiles = value.weightFiles.map((file) => requireSourceFile(file, "weight"));
   invariant(weightFiles.every((file) => file.sha256), "every weight requires SHA-256");
+  const weightRejection = sourceCandidateRejection(modelId, revision, weightFiles);
+  invariant(!weightRejection, weightRejection);
   const sourceWeightByteCount = Number(value.sourceWeightByteCount);
   invariant(Number.isSafeInteger(sourceWeightByteCount) && sourceWeightByteCount > 0 &&
     weightFiles.reduce((sum, file) => sum + file.byteCount, 0) === sourceWeightByteCount,

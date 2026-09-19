@@ -1,0 +1,116 @@
+{
+  "schema": "tinyrustlm.source-candidate-exclusions-review.v1",
+  "observedAtUtc": "2026-09-19T20:54:20.071Z",
+  "sourceParent": "0b2d5a9ec0270de9b79d7e079e555e800c0b50ce",
+  "status": "source-rejection-enforcement-tested-no-material-model-run",
+  "inputs": [
+    {
+      "path": "contracts/vnext/source-candidate-exclusions.v1.json",
+      "bytes": 17290,
+      "sha256": "abb84b63d8fd59eaa335b7e2c7517cdf50c49f9a6f45117f9a22d5f47b9f7133"
+    },
+    {
+      "path": "tinyrustlm/tools/source-candidate-exclusions.js",
+      "bytes": 1885,
+      "sha256": "43a71f9760a2d1038f9b3b017c61a445577a68bcd285098ab915ba5b0df4b836"
+    },
+    {
+      "path": "tinyrustlm/tools/huggingface-supported-candidates.js",
+      "bytes": 22013,
+      "sha256": "f37ff7c4a96e973a1500eeee8de3d7d3953006217f9b1657ed59ab55c93776cf"
+    },
+    {
+      "path": "tinyrustlm/tools/huggingface-qwen-candidates.js",
+      "bytes": 15484,
+      "sha256": "b7b38230e22a8155d1bdd534e83f3c68862f365d007177a19df63b17a8e465a9"
+    },
+    {
+      "path": "tinyrustlm/tools/huggingface-candidate-acquire.js",
+      "bytes": 22787,
+      "sha256": "34f5d74f20602042f0c692d2a93132371fa500f0b9704316f4157f6aad4536b8"
+    },
+    {
+      "path": "tinyrustlm/tests/source-candidate-exclusions_test.js",
+      "bytes": 7356,
+      "sha256": "3abca5ee7c303ba9042337f01264ccf18a18e3c6df666050ec2b181799f137c7"
+    },
+    {
+      "path": "tinyrustlm/tests/huggingface-supported-candidates.test.js",
+      "bytes": 6701,
+      "sha256": "1c1c2ad64cdabe48f6c23948b322cb21dea4d84b86ada54c9f3497db7f0eefe8"
+    },
+    {
+      "path": "tinyrustlm/tests/huggingface-qwen-candidates.test.js",
+      "bytes": 5410,
+      "sha256": "77a7235ec1e231cb63487d860af73d0f4099d473c2700c4385a3a8658a4ab6c7"
+    },
+    {
+      "path": "tinyrustlm/tests/huggingface-candidate-acquire.test.js",
+      "bytes": 11119,
+      "sha256": "c62ec1bd2bc08c7980a367e24f16733f101c99239c376e14cd4cf246cb2d8848"
+    }
+  ],
+  "observations": {
+    "historicalAssessmentHashesVerified": 37,
+    "sourceScreenRejections": 28,
+    "preflightRejections": 9,
+    "additionalOwnerRejection": "Qwen/Qwen3-0.6B@c1899de289a04d12100db370d81485cdf75e47ca",
+    "currentExcludedRevisions": 38,
+    "knownWeightFileDigests": 29,
+    "screenedSuggestionsAlreadyRejected": [
+      "HuggingFaceTB/SmolLM2-1.7B-Instruct@31b70e2e869a7173562077fd711b654946d38674",
+      "Qwen/Qwen2.5-1.5B-Instruct@989aa7980e4cf806f80c7fef2b1adb7bc71aa306"
+    ],
+    "boundary": "Read-only inspection of existing decisions and their hashes; no independent regrading or repeated screen."
+  },
+  "change": {
+    "before": "Both discovery owners and generic inventory acquisition validated shape/metadata without consulting existing rejection decisions.",
+    "after": "One current negative-only contract: exact revisions reject before further requests, known weight hashes reject mirrors, and inventory acquisition independently checks before any mkdir/fetch. Diagnostic contracts are separate."
+  },
+  "tests": {
+    "passed": 14,
+    "failed": 0,
+    "skipped": 0,
+    "files": [
+      "tinyrustlm/tests/source-candidate-exclusions_test.js",
+      "tinyrustlm/tests/huggingface-supported-candidates.test.js",
+      "tinyrustlm/tests/huggingface-qwen-candidates.test.js",
+      "tinyrustlm/tests/huggingface-candidate-acquire.test.js"
+    ],
+    "coverage": {
+      "scope": "source-candidate-exclusions.js",
+      "lines": 88.89,
+      "branches": 86.36,
+      "functions": 100
+    },
+    "evidence": [
+      "All 38 current entries match exact historical assessment or owner source-lock identities",
+      "Both discovery tools reject known revisions with one search request only",
+      "Mirrors of rejected weight hashes stop after pinned metadata, before config/license or model requests",
+      "Downloader rejects prior quality, prior preflight and renamed known weights without creating the proposed output path or invoking fetch",
+      "Different revisions and genuinely different digests are not family-blocked by this negative-only policy",
+      "Existing synthetic loopback acquisition tests retain verified digest, short-read resumption and corrupt-byte rejection"
+    ]
+  },
+  "cleanup": {
+    "ownedOutputRemoved": true,
+    "remainingFilesRemoved": 5,
+    "logicalBytesRemoved": 1663307,
+    "physicalStorageRecoveryMeasured": false,
+    "historicalOrModelPayloadDeletion": false
+  },
+  "remaining": [
+    "Source-authority scan still fails on the same two previously policy-blocked installer links; no deletion retry",
+    "No-match is not model, license, provenance or execution admission",
+    "Exact file hashing cannot identify tensor-equivalent reserialization or resharding",
+    "Preflight-only records have no known acquired weight hash; their exclusions match exact repository revision",
+    "Candidate discovery metadata readers still buffer before checking sizes and lack bounded request deadlines; resolve before live discovery",
+    "No live discovery, model download, real screen, qualification or publication was performed"
+  ],
+  "memoryVerification": {
+    "testFilter": "FullyQualifiedName~UaixMemoryConsolidationTests",
+    "passed": 6,
+    "failed": 0,
+    "skipped": 0
+  }
+}

@@ -5,6 +5,40 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C35: preserve source rejection decisions during candidate acquisition, September 19
+
+Checked the 37 historical candidate assessments against their recorded SHA-256
+identities. They comprise 28 source-screen rejections and nine preflight
+rejections. The report suggestions SmolLM2-1.7B-Instruct and
+Qwen2.5-1.5B-Instruct already have rejected exact-revision screens; current
+guidance now identifies that evidence instead of presenting them as new leads.
+This inspection did not rerun or independently regrade those screens.
+
+Both candidate-discovery tools and the inventory downloader omitted these prior
+decisions. Added one current negative-only exclusion contract and shared lookup:
+38 exact model/revision entries including the owner-rejected Qwen3-0.6B, with
+29 known weight-file hashes. Discovery rejects known revisions before further
+model requests, then checks weight hashes after pinned metadata. Acquisition
+checks independently before creating output or fetching, so an old inventory
+cannot bypass the decision. Renaming a repository or a file does not change its
+known rejected byte identity. Existing diagnostic contracts remain separate.
+
+All 14 affected checks pass, including canonical assessment/lock identities,
+both discovery paths, rejection before filesystem/network effects, and ordinary
+download/digest/resume behavior with synthetic loopback bytes. New lookup
+coverage is 88.89 percent lines, 86.36 percent branches and 100 percent functions.
+Owned coverage/test output was removed: five remaining files, 1663307 logical
+bytes. Physical storage recovery was not measured. Compact evidence is
+`artifacts/ecosystem-cleanup-20260912/source-candidate-exclusions-review.json`.
+
+No match is not license, provenance, quality or execution admission. Exact file
+hashes cannot detect tensor-equivalent reserialization or resharding. Existing
+candidate metadata readers also still need their post-read size checks replaced
+with bounded streaming/deadlines before another live discovery run. No network
+discovery, model download, material experiment, qualification or publication
+occurred here. The same two policy-blocked installer links still leave the
+source scan incomplete; no deletion was retried. Ternary research stays deferred.
+
 ## C34: execute the static seed configuration on Apache, September 19
 
 MiniModel checkpoint `01063a0` adds a real installed-Apache HTTP integration

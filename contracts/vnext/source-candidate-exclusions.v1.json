@@ -1,0 +1,388 @@
+{
+  "schema": "tinyrustlm.source_candidate_exclusions.v1",
+  "scope": "Product-candidate discovery/acquisition only; diagnostic source contracts remain separate.",
+  "nonmatch": "No recorded exclusion is not license, provenance, quality or execution admission.",
+  "weightLimit": "SHA-256 matches exact known weight files, including renamed files. It cannot establish tensor identity after resharding or reserialization.",
+  "entries": [
+    {
+      "modelId": "allenai/OLMo-2-0425-1B-Instruct",
+      "revision": "48d788eca847d4d7548f375ad03d3c9312f6139e",
+      "kind": "quality",
+      "weightSha256": "36d044c73655bb904f822915e6294ba3dae8e6e1af5e703e9d452f2d6a3a294f",
+      "evidence": {
+        "path": "tinyrustlm/training/olmo-2-0425-1b-instruct-source-screen-v1/assessment-control-v1.json",
+        "sha256": "a73e9d148ffed72998a6af21cd9bd7706382b5ccb5d6ffe2ff0797ab61f983fb"
+      }
+    },
+    {
+      "modelId": "amd/AMD-OLMo-1B-SFT",
+      "revision": "228e18a8172beabcce6a0e686ac084cede5820fc",
+      "kind": "preflight",
+      "weightSha256": null,
+      "evidence": {
+        "path": "tinyrustlm/training/amd-olmo-1b-sft-source-preflight-v1/assessment-control-v1.json",
+        "sha256": "6b1c38cb6ed647d449a449a374df8cb7a58374773498160c59946c08cb3f4ad1"
+      }
+    },
+    {
+      "modelId": "apple/OpenELM-1_1B-Instruct",
+      "revision": "effd796da2a77361d7360e45e54c7cc14bc5df2a",
+      "kind": "preflight",
+      "weightSha256": null,
+      "evidence": {
+        "path": "tinyrustlm/training/openelm-1.1b-instruct-source-preflight-v1/assessment-control-v1.json",
+        "sha256": "5abe938b4c288f7b1fe017208830ac7646add4019ef12be5bd2de6e3ee95be91"
+      }
+    },
+    {
+      "modelId": "croissantllm/CroissantLLMChat-v0.1",
+      "revision": "f05665c340c868ce48cebdf997cfafb7dbfef2b3",
+      "kind": "quality",
+      "weightSha256": "1021efb3804f48854c7fb036f4ba167290e3d1cbd45985cc527bb07b5e1969ee",
+      "evidence": {
+        "path": "tinyrustlm/training/croissantllmchat-v0.1-source-screen-v1/assessment-control-v1.json",
+        "sha256": "24a9c4f63e75f42e20522a3bdd341e9f8fa7c6d41b8b86dd834c8f2df58df40c"
+      }
+    },
+    {
+      "modelId": "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B",
+      "revision": "ad9f0ae0864d7fbcd1cd905e3c6c5b069cc8b562",
+      "kind": "quality",
+      "weightSha256": "58858233513d76b8703e72eed6ce16807b523328188e13329257fb9594462945",
+      "evidence": {
+        "path": "tinyrustlm/training/deepseek-r1-distill-qwen-1.5b-source-screen-v1/assessment-control-v1.json",
+        "sha256": "753460749ba9c45dde6ec5fe374a71eb0a9def6f3a1ecee393e649215e4e8cda"
+      }
+    },
+    {
+      "modelId": "google/gemma-3-270m-it",
+      "revision": "ac82b4e820549b854eebf28ce6dedaf9fdfa17b3",
+      "kind": "preflight",
+      "weightSha256": null,
+      "evidence": {
+        "path": "tinyrustlm/training/gemma-3-270m-it-source-preflight-v1/assessment-control-v1.json",
+        "sha256": "537674b919e8f80a16040583a15e93d3ceea442bfcc9a6103810919596e14e69"
+      }
+    },
+    {
+      "modelId": "h2oai/h2o-danube2-1.8b-chat",
+      "revision": "6d8114cb4160755a092babed10a7d383cc10b1db",
+      "kind": "quality",
+      "weightSha256": "6470e05a11d3ca8f04b91101d779717d5680940a5b94c68f6f05bddb1d913d90",
+      "evidence": {
+        "path": "tinyrustlm/training/h2o-danube2-1.8b-chat-source-screen-v1/assessment-control-v1.json",
+        "sha256": "d536932c19e2d04d49b3789fb1d4d85d14dc5c1e4ff92c02f1e62a2f9eaf6d5f"
+      }
+    },
+    {
+      "modelId": "h2oai/h2o-danube3-500m-chat",
+      "revision": "c202f976c26875541e738ea978c8158fa536da9a",
+      "kind": "quality",
+      "weightSha256": "be646aaf13c312e5d1c5a82451f61cd99133d82d914764db0a316a76e5a55e26",
+      "evidence": {
+        "path": "tinyrustlm/training/h2o-danube3-500m-chat-source-screen-v1/assessment-control-v1.json",
+        "sha256": "556875c927215a35a6c5b0ce6b20bfdaa194a22179927175ce428360bf144a03"
+      }
+    },
+    {
+      "modelId": "hiep-2/qwen3-0.6b-math-cpt-sft",
+      "revision": "a9c384e49708536920a8c05320df77b7054797bb",
+      "kind": "preflight",
+      "weightSha256": null,
+      "evidence": {
+        "path": "tinyrustlm/training/hiep-2-qwen3-0.6b-math-cpt-sft-source-preflight-v2/assessment-control-v2.json",
+        "sha256": "f469872bdec12ab3a583b18c7bcd27efe286724b78c4a60afc9d97f30d61c9e5"
+      }
+    },
+    {
+      "modelId": "HuggingFaceTB/SmolLM-1.7B-Instruct",
+      "revision": "69f49d9c36434d6a3f319dadc5bd3b812752b98b",
+      "kind": "quality",
+      "weightSha256": "7108f45b86e4b0c9b0c8f611264b381522e093b366ec0fdf83c0e07149b0c398",
+      "evidence": {
+        "path": "tinyrustlm/training/smollm-1.7b-instruct-source-screen-v1/assessment-control-v1.json",
+        "sha256": "2dc60dfe435fc30d72cf301042d633b009438ed131fac92b1978e73c3be972e9"
+      }
+    },
+    {
+      "modelId": "HuggingFaceTB/SmolLM2-1.7B-Instruct",
+      "revision": "31b70e2e869a7173562077fd711b654946d38674",
+      "kind": "quality",
+      "weightSha256": "f55217be716b6a997b97b9d8d7eb6fad02e00858f5010ec24f64603c3a98a0e8",
+      "evidence": {
+        "path": "tinyrustlm/training/smollm2-1.7b-instruct-source-screen-v1/assessment-control-v1.json",
+        "sha256": "db1bdf12ae9258708529b79ac8738db8070194cdb324625fa205eb83bef73768"
+      }
+    },
+    {
+      "modelId": "huihui-ai/Qwen2.5-1.5B-Instruct-abliterated-SFT",
+      "revision": "f3541be71386a444c6b64b15f297f021c8b575d1",
+      "kind": "preflight",
+      "weightSha256": null,
+      "evidence": {
+        "path": "tinyrustlm/training/huihui-ai-qwen2.5-1.5b-instruct-abliterated-sft-source-preflight-v2/assessment-control-v2.json",
+        "sha256": "1e29f0304108fa435c4613d77b7c3f1420e457efe12ec19562d7082b0e53a2c8"
+      }
+    },
+    {
+      "modelId": "ibm-granite/granite-3.1-1b-a400m-instruct",
+      "revision": "0da7a48b0276d500ce5922fd2b33944091fc6c09",
+      "kind": "quality",
+      "weightSha256": "ac02591061f1344027a7e7b11dbb4143f75f166c47dc09b742f5de3ab1dde1d1",
+      "evidence": {
+        "path": "tinyrustlm/training/granite-3.1-1b-a400m-instruct-source-screen-v1/assessment-control-v1.json",
+        "sha256": "1ebe649c9c264131f9c08b846a5c245f8cb28451ad81fb041e4b775517ef806f"
+      }
+    },
+    {
+      "modelId": "ibm-granite/granite-3.3-2b-instruct",
+      "revision": "652c333dc5066f2a1764854a1bcd0ce67163d74f",
+      "kind": "quality",
+      "weightSha256": "e0b104adf1bc7c171cacdbd8931821a08608c38c95ef638f105b73c0d6f376ff",
+      "evidence": {
+        "path": "tinyrustlm/training/granite-3.3-2b-instruct-source-screen-v1/assessment-control-v1.json",
+        "sha256": "93cef2ec65456bd9c27343989a15ede57632af3b4b04f26f212b578697c8784a"
+      }
+    },
+    {
+      "modelId": "ibm-granite/granite-4.0-1b",
+      "revision": "6a7381ba1f54d684ff508d991aeb7dc580157103",
+      "kind": "quality",
+      "weightSha256": "cc2def9a94efd3a18b21080b053fa64a3f0c329eef357233f0392940179058f4",
+      "evidence": {
+        "path": "tinyrustlm/training/granite-4.0-1b-source-screen-v1/assessment-control-v1.json",
+        "sha256": "8cdb6d202564706cffcb11e2b3eed58d335162f0147ef1589f15ff86cb9f00a5"
+      }
+    },
+    {
+      "modelId": "ibm-granite/granite-4.0-h-1b",
+      "revision": "d18cca4c121edb87d022116d281ce212c9136f57",
+      "kind": "quality",
+      "weightSha256": "2858260e27d3cee8ceb8eb5b46a54c29385e9eff8e4c6f170f8fc3d00e7c61be",
+      "evidence": {
+        "path": "tinyrustlm/training/granite-4.0-h-1b-source-screen-v1/assessment-control-v1.json",
+        "sha256": "c9907304a6dfd5d0c5a2728ad66ec2811614c371d322a613b3bd76511eb7a068"
+      }
+    },
+    {
+      "modelId": "LiquidAI/LFM2-350M",
+      "revision": "b3afba27815ee83a64b76162cef4d8a4780d6ca7",
+      "kind": "quality",
+      "weightSha256": "387638dc889ff1a1395c3c2ab9605211e4c7e16f2d375361dd4e423b909a254e",
+      "evidence": {
+        "path": "tinyrustlm/training/lfm2-350m-source-screen-v1/assessment-control-v1.json",
+        "sha256": "3d8a51eb87ea30db0374ac047f0485ad1ef36ce8a26b0a38ddae92bafb639966"
+      }
+    },
+    {
+      "modelId": "LiquidAI/LFM2.5-1.2B-Instruct",
+      "revision": "868df74dd56ff8a0c2ac5dbf281690c2dbebe4c9",
+      "kind": "quality",
+      "weightSha256": "1ba63d9adb03ae43581db0e136e4416febe0441aff7296397bd455fb6017f73a",
+      "evidence": {
+        "path": "tinyrustlm/training/lfm2.5-1.2b-instruct-source-screen-v1/assessment-control-v1.json",
+        "sha256": "2d74044a67a44159968b100f302bf71edc14a95943fe08dd9d9400ee13fad243"
+      }
+    },
+    {
+      "modelId": "LiquidAI/LFM2.5-1.2B-Thinking",
+      "revision": "95053d21d8e0b7ca99421a2127ae39c64f685ff3",
+      "kind": "quality",
+      "weightSha256": "112fba7db6c4544d9944002fcfe1c21e23e03d8fc0a0c7e2b6655de6c738583d",
+      "evidence": {
+        "path": "tinyrustlm/training/lfm2.5-1.2b-thinking-source-screen-v1/assessment-control-v1.json",
+        "sha256": "ab7b6dab09ceada422e92c6712f6037fe711266622337fedd3d4b01f7b671ba3"
+      }
+    },
+    {
+      "modelId": "LiquidAI/LFM2.5-350M",
+      "revision": "b9d6e4e2d75f440b12a2b4d731c808004ecbbd89",
+      "kind": "quality",
+      "weightSha256": "1c9c77a4471a7f590f85240f74ed1fc26df7fbde88c3006724e2f93ca993ea4e",
+      "evidence": {
+        "path": "tinyrustlm/training/lfm2.5-350m-source-screen-v1/assessment-control-v1.json",
+        "sha256": "06c03b2b22a825a2090c023c026fda3ae9a8c71a8bc4e1338f8c297c8b762791"
+      }
+    },
+    {
+      "modelId": "meta-llama/Llama-3.2-1B-Instruct",
+      "revision": "9213176726f574b556790deb65791e0c5aa438b6",
+      "kind": "preflight",
+      "weightSha256": null,
+      "evidence": {
+        "path": "tinyrustlm/training/llama-3.2-1b-instruct-source-preflight-v1/assessment-control-v1.json",
+        "sha256": "ea4317aa3e66ec4227543be798950e65657fc0d4cb40b2bd3cc6c9dd6ac9c2a4"
+      }
+    },
+    {
+      "modelId": "microsoft/bitnet-b1.58-2B-4T",
+      "revision": "04c3b9ad9361b824064a1f25ea60a8be9599b127",
+      "kind": "quality",
+      "weightSha256": "8143ae115ed6babe5e5ada8fb8c5b769d8f417802b2db042ad98b4f7ed73975b",
+      "evidence": {
+        "path": "tinyrustlm/training/bitnet-b1.58-2b4t-source-screen-v1/assessment-control-v1.json",
+        "sha256": "efb85b94e2d34e22ccc8749538cc5d49c4a5c882c5458c9df5708d2cb6845bbc"
+      }
+    },
+    {
+      "modelId": "openbmb/MiniCPM4-0.5B",
+      "revision": "5253c7fcc5e29e1cf3eacb59a58adf1ba4df8630",
+      "kind": "preflight",
+      "weightSha256": null,
+      "evidence": {
+        "path": "tinyrustlm/training/minicpm4-0.5b-source-preflight-v1/assessment-control-v1.json",
+        "sha256": "9d93f0abd0e7cdfdbbd50db78ec76291d2c0d4ad71c2263c78d4653f97b9a87e"
+      }
+    },
+    {
+      "modelId": "Qwen/Qwen2.5-0.5B-Instruct",
+      "revision": "7ae557604adf67be50417f59c2c2f167def9a775",
+      "kind": "quality",
+      "weightSha256": "fdf756fa7fcbe7404d5c60e26bff1a0c8b8aa1f72ced49e7dd0210fe288fb7fe",
+      "evidence": {
+        "path": "tinyrustlm/training/qwen2.5-0.5b-instruct-source-screen-v1/assessment-control-v1.json",
+        "sha256": "1118758dd47cab5b9f06c14dd25b3ec5a4892076d7aa6a87430c8cd7f1b73fa0"
+      }
+    },
+    {
+      "modelId": "Qwen/Qwen2.5-1.5B-Instruct",
+      "revision": "989aa7980e4cf806f80c7fef2b1adb7bc71aa306",
+      "kind": "quality",
+      "weightSha256": "dd924a11b4c220f385b51ffa522daea7c9f3d850e31b162bb5661df483c6d3ee",
+      "evidence": {
+        "path": "tinyrustlm/training/qwen2.5-1.5b-instruct-source-screen-v1/assessment-control-v1.json",
+        "sha256": "2238690b7306412b266a2d9a6e9bf9c0d185768b208f0e35eca83ede1fcd2c99"
+      }
+    },
+    {
+      "modelId": "Qwen/Qwen3-0.6B",
+      "revision": "c1899de289a04d12100db370d81485cdf75e47ca",
+      "kind": "owner-quality-rejection",
+      "weightSha256": "f47f71177f32bcd101b7573ec9171e6a57f4f4d31148d38e382306f42996874b",
+      "evidence": {
+        "path": "contracts/vnext/qwen3-0.6b-base-source-lock.v2.json",
+        "sha256": "50a8c29e36398a9a088e4d9a224dad186809d34b1e050299d3ce3de7a01b7d0e"
+      }
+    },
+    {
+      "modelId": "Qwen/Qwen3-1.7B",
+      "revision": "70d244cc86ccca08cf5af4e1e306ecf908b1ad5e",
+      "kind": "quality",
+      "weightSha256": "5f00d97c7d11ff89175fc2264b3eaeb8ad878efd4fe6b87475683b2542e7d737",
+      "evidence": {
+        "path": "tinyrustlm/training/qwen3-1.7b-source-screen-v1/assessment-control-v1.json",
+        "sha256": "f094bffc11b12178acfeed82ba1b751c72b6cca110e431e55f37115fe43cb784"
+      }
+    },
+    {
+      "modelId": "Qwen/Qwen3.5-0.8B",
+      "revision": "2fc06364715b967f1860aea9cf38778875588b17",
+      "kind": "quality",
+      "weightSha256": "7ccc63d7e45d3c6788bad55d75d0b8dec74c822ba44919d17817f0ec3c6c098f",
+      "evidence": {
+        "path": "tinyrustlm/training/qwen3.5-0.8b-source-screen-v1/assessment-control-v1.json",
+        "sha256": "8229f65abd93edc7903c282b733fab962b8979758ce1a3e33bfdde2d84a1934d"
+      }
+    },
+    {
+      "modelId": "Qwen/Qwen3.5-2B",
+      "revision": "15852e8c16360a2fea060d615a32b45270f8a8fc",
+      "kind": "quality",
+      "weightSha256": "8bb0cf0c93c39157f090fa9603b614df94b6b81f071047423518b1df34ce3ac5",
+      "evidence": {
+        "path": "tinyrustlm/training/qwen3.5-2b-source-screen-v1/assessment-control-v1.json",
+        "sha256": "8f2cf7b7eb3e96de9880cc54525e771d645fa198cc4a6dcb4a31c86e0f3bf0dd"
+      }
+    },
+    {
+      "modelId": "stabilityai/stablelm-2-zephyr-1_6b",
+      "revision": "2f275b1127d59fc31e4f7c7426d528768ada9ea4",
+      "kind": "quality",
+      "weightSha256": "233815ace7c2e3ecc94e9575aed9f1c5dc6935d126f6c13a7586ad28ae25ddc6",
+      "evidence": {
+        "path": "tinyrustlm/training/stablelm-2-zephyr-1.6b-source-screen-v1/assessment-control-v1.json",
+        "sha256": "9606310664a31b879e701a5dd252d7bb2f28989c31a5eccb8f89a0f468352c3d"
+      }
+    },
+    {
+      "modelId": "swiss-ai/Apertus-v1.1-1.5B-Instruct",
+      "revision": "9e9d01154446a645d30f04174cf1515a38058be7",
+      "kind": "quality",
+      "weightSha256": "963ab9667a5b8326b2bf794042686c46b7c78da31b4995b27ce6edbdba9731ba",
+      "evidence": {
+        "path": "tinyrustlm/training/apertus-v1.1-1.5b-instruct-source-screen-v1/assessment-control-v1.json",
+        "sha256": "2fedcd7cdc873d9726209c58f2e540233d7518257d73fc92d9a14e24cebf1a09"
+      }
+    },
+    {
+      "modelId": "tiiuae/Falcon-E-1B-Instruct",
+      "revision": "d20167318084c330b205e221eceed19354197bdc",
+      "kind": "quality",
+      "weightSha256": "6c52dd484e4af14175c5bcef67d0f07b4ff7d1ea87baa5ba01f3f289d15cf75a",
+      "evidence": {
+        "path": "tinyrustlm/training/falcon-e-1b-instruct-source-screen-v1/assessment-control-v1.json",
+        "sha256": "764cad2c40fecd45b21c09bd1a3d9a3cfbc8f9c5ebc6deac0766d7b2f8c400d7"
+      }
+    },
+    {
+      "modelId": "tiiuae/Falcon-H1-1.5B-Instruct",
+      "revision": "80ebc50d7799a440b96c93bb6686a3924a09b0cb",
+      "kind": "quality",
+      "weightSha256": "1fb788513f2c58e3abb91af8730afe19e247bce7a7f01a46e452a084e98b2abd",
+      "evidence": {
+        "path": "tinyrustlm/training/falcon-h1-1.5b-instruct-source-screen-v1/assessment-control-v1.json",
+        "sha256": "fb06e24eb73d0b4f4032ed80fe1cdd7a791b13017f378efb8427f84b3c6b82b1"
+      }
+    },
+    {
+      "modelId": "tiiuae/Falcon3-1B-Instruct",
+      "revision": "28ba2251970a01dd1edc7ba7dad2eb71216ccfdf",
+      "kind": "quality",
+      "weightSha256": "3f551b3271b550bfcf7c65282cdc8b3627c6ba8887e6dfa7492809f7b16cb087",
+      "evidence": {
+        "path": "tinyrustlm/training/falcon3-1b-instruct-source-screen-v1/assessment-control-v1.json",
+        "sha256": "0025dc64f3fa2db4fa6ae0fa214218a6d6dca576ad94d55d7974a6ad2a96d5a7"
+      }
+    },
+    {
+      "modelId": "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
+      "revision": "fe8a4ea1ffedaf415f4da2f062534de366a451e6",
+      "kind": "quality",
+      "weightSha256": "6e6001da2106d4757498752a021df6c2bdc332c650aae4bae6b0c004dcf14933",
+      "evidence": {
+        "path": "tinyrustlm/training/tinyllama-1.1b-chat-v1-source-screen-v1/assessment-control-v1.json",
+        "sha256": "8448301326d75cb46077fad74cdabcab2a88adf5ab69e275e5a8dbf03937014e"
+      }
+    },
+    {
+      "modelId": "utter-project/EuroLLM-1.7B-Instruct",
+      "revision": "fbfaca89e5213c640dbb048ed169ac24213da338",
+      "kind": "preflight",
+      "weightSha256": null,
+      "evidence": {
+        "path": "tinyrustlm/training/eurollm-1.7b-instruct-source-preflight-v2/assessment-control-v2.json",
+        "sha256": "c4423d9945f9dda5a990ce60b29ecf27b73e25e699c24e873d4e003fdba056e7"
+      }
+    },
+    {
+      "modelId": "ZainBhat/qwen3-0.6b-finetome-lora-merged",
+      "revision": "1c732107f6bb54ee76b5363547e24537dffea498",
+      "kind": "preflight",
+      "weightSha256": null,
+      "evidence": {
+        "path": "tinyrustlm/training/zainbhat-qwen3-0.6b-finetome-lora-merged-source-preflight-v2/assessment-control-v2.json",
+        "sha256": "f25c9a85afe79a477d17a51e53494567bcae25d9ccda7c48c964ced7b043d1b6"
+      }
+    },
+    {
+      "modelId": "Zyphra/Zamba2-1.2B-Instruct-v2",
+      "revision": "960222dd212c071e2b7e3734573ee5297b1c075d",
+      "kind": "quality",
+      "weightSha256": "5101cce10fcb81387d833463e7f1ada6af5084fdffbdd02938c548f2211fc6e6",
+      "evidence": {
+        "path": "tinyrustlm/training/zamba2-1.2b-instruct-v2-source-screen-v1/assessment-control-v1.json",
+        "sha256": "c64aa1f426ea8fdf116540bdb27b877ccb89f436c0d5895de9f1db52264d4e1d"
+      }
+    }
+  ]
+}
