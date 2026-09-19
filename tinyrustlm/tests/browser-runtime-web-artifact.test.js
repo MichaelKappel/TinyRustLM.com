@@ -9,6 +9,8 @@ const test = require("node:test");
 
 const loader = require("../app/browser-runtime-loader.js");
 const artifactTool = require("../tools/browser-runtime-web-artifact.js");
+const { createOwnedTemporaryDirectory, removeOwnedTemporaryDirectory } =
+  require("../tools/canonical-operation-scratch.js");
 
 const repositoryRoot = path.resolve(__dirname, "../..");
 const manifestRelativePath =
@@ -49,6 +51,7 @@ const forbiddenBuildEnvironment = Object.freeze([
 ]);
 
 let candidate;
+let candidateFailure;
 let tracked;
 
 /** Returns lowercase SHA-256 for an in-memory byte sequence. */
@@ -211,6 +214,8 @@ function buildEnvironment(custody, scratchDirectory, targetDirectory) {
   environment.CARGO = custody.cargoPath;
   environment.CARGO_HOME = process.env.CARGO_HOME ||
     path.dirname(path.dirname(custody.rustupPath));
+  // Bind virtual home remapping to the pinned toolchain owner, not the invoking account.
+  environment.USERPROFILE = path.dirname(environment.CARGO_HOME);
   environment.CARGO_INCREMENTAL = "0";
   environment.CARGO_NET_OFFLINE = "true";
   environment.CARGO_TARGET_DIR = targetDirectory;
@@ -257,17 +262,13 @@ function buildCandidate(custody, targetDirectory, scratchDirectory) {
 /** Compares two transient candidates without mutating or retaining public artifacts. */
 function createCandidateArtifact() {
   if (candidate) return candidate;
+  if (candidateFailure) throw candidateFailure;
   const environmentBefore = environmentSnapshot();
   const custody = discoverExactToolchain();
-  const scratchParent = path.resolve(repositoryRoot, "..", "..", ".codex-tmp");
-  fs.mkdirSync(scratchParent, { recursive: true });
-  requireDirectEDirectory(scratchParent, "browser runtime scratch parent");
-  const ownerId = crypto.randomBytes(16).toString("hex");
-  const ownedRoot = path.join(
-    scratchParent,
-    `browser-runtime-web-artifact-owned-${ownerId}`
-  );
-  fs.mkdirSync(ownedRoot, { recursive: false });
+  const owned = createOwnedTemporaryDirectory({
+    temporaryParent: path.join(repositoryRoot, "artifacts", "tests", "browser-runtime-build")
+  });
+  const ownedRoot = owned.rootPath;
   const targetA = path.join(ownedRoot, "build-a");
   const targetB = path.join(ownedRoot, "build-b");
   const scratchA = path.join(ownedRoot, "scratch-a");
@@ -276,11 +277,6 @@ function createCandidateArtifact() {
   let wasmA;
   let wasmB;
   try {
-    fs.writeFileSync(path.join(ownedRoot, "owner.json"), JSON.stringify({
-      schema: "tinyrustlm.browser-runtime-build-root-owner/1",
-      ownerId,
-      processId: process.pid
-    }), { encoding: "utf8", flag: "wx" });
     for (const scratch of [scratchA, scratchB]) {
       fs.mkdirSync(scratch, { recursive: false });
       requireDirectEDirectory(scratch, "browser runtime build scratch");
@@ -321,11 +317,21 @@ function createCandidateArtifact() {
       targetB,
       wasmBytes: wasmA
     });
+  } catch (error) {
+    candidateFailure = error;
   } finally {
     if (wasmB) wasmB.fill(0);
-    const relative = path.relative(scratchParent, ownedRoot);
-    assert.match(relative, /^browser-runtime-web-artifact-owned-[0-9a-f]{32}$/u);
-    fs.rmSync(ownedRoot, { recursive: true, force: false, maxRetries: 5, retryDelay: 100 });
+    try {
+      removeOwnedTemporaryDirectory(owned);
+    } catch (error) {
+      candidateFailure = candidateFailure
+        ? new AggregateError([candidateFailure, error], "Runtime build and cleanup failed") : error;
+    }
+    if (candidateFailure) {
+      candidate = null;
+      throw candidateFailure;
+    }
+    assert.equal(fs.existsSync(ownedRoot), false);
     assert.deepEqual(environmentSnapshot(), environmentBefore);
   }
   return candidate;
@@ -442,13 +448,7 @@ test("loader verifies fresh bytes without instantiating WASM in the top-window b
     async fetchFunction(url, options) {
       calls.push({ url, options });
       const bytes = responses.get(url);
-      return {
-        ok: Boolean(bytes),
-        headers: { get: () => String(bytes.length) },
-        async arrayBuffer() {
-          return Uint8Array.from(bytes).buffer;
-        }
-      };
+      return new Response(bytes, { headers: { "Content-Length": String(bytes.length) } });
     }
   });
   assert.equal(result.manifest.sha256, value.manifest.sha256);
@@ -472,13 +472,7 @@ test("loader wipes and rejects a fresh WASM identity mismatch", async () => {
     wasmUrl: "wasm",
     async fetchFunction(url) {
       const bytes = url === "manifest" ? value.manifestBytes : bad;
-      return {
-        ok: true,
-        headers: { get: () => String(bytes.length) },
-        async arrayBuffer() {
-          return Uint8Array.from(bytes).buffer;
-        }
-      };
+      return new Response(bytes, { headers: { "Content-Length": String(bytes.length) } });
     }
   }), (error) => error.code === "browser-runtime-wasm-identity");
 });

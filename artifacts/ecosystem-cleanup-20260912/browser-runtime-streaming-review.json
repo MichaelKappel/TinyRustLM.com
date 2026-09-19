@@ -1,0 +1,301 @@
+{
+  "schema": "tinyrustlm.browser-runtime-streaming-review.v1",
+  "observedAtUtc": "2026-09-19T22:44:44Z",
+  "sourceParent": "75b5c8356257b7700bc2d2f6a09fd1aae6990328",
+  "status": "streamed-runtime-bounds-and-owned-build-checks-pass-no-promotion",
+  "environment": {
+    "node": "v24.14.0",
+    "dotnetSdk": "10.0.401",
+    "edge": "153.0.4234.48",
+    "playwright": "1.61.1",
+    "platform": "win32",
+    "architecture": "x64",
+    "rust": "1.96.0",
+    "rustcCommit": "ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96",
+    "rustup": "C:\\Users\\AI\\.cargo\\bin\\rustup.exe",
+    "rustupHome": "C:\\Users\\AI\\.rustup",
+    "buildProfileRule": "Child USERPROFILE is bound to the parent of the pinned Cargo home; the invoking process environment remains unchanged."
+  },
+  "inputs": [
+    {
+      "path": "tinyrustlm/app/browser-runtime-loader.js",
+      "bytes": 10799,
+      "sha256": "b184df82beaca562391d7224eef5fb5036e5e262122ab4dee56a240df0484e00"
+    },
+    {
+      "path": "tinyrustlm/app/index.html",
+      "bytes": 48478,
+      "sha256": "bc4a3a9ec4b3b3476a71b4ed8aa61bc99a0d1914b8ee15a1e7174a85b9e342b3"
+    },
+    {
+      "path": "tinyrustlm/index.html",
+      "bytes": 48554,
+      "sha256": "3d816d2d8a83a29c50d2eeb27db1397db442660e74882e87a1597d4f6ae295de"
+    },
+    {
+      "path": "tinyrustlm/browser-runtime/tinyrustlm-browser-runtime.wasm",
+      "bytes": 576379,
+      "sha256": "05e9a497f4aab23a1bc0bc4aed3027a2e4914f5aa70c0e79ecbeb50b5fbe8467"
+    },
+    {
+      "path": "tinyrustlm/browser-runtime/tinyrustlm-browser-runtime.wasm.manifest.json",
+      "bytes": 1209,
+      "sha256": "e6109eddda947f53cb00cf07f08e7779b49216c44f6ed54383fc16bb26452eb7"
+    },
+    {
+      "path": "tinyrustlm/tests/browser-runtime-loader_test.js",
+      "bytes": 11004,
+      "sha256": "6ef83ea8f22ba443acea3d2f8d39f5cb391ad5d5146190491149db5c95019857"
+    },
+    {
+      "path": "tinyrustlm/tests/browser-runtime-web-artifact.test.js",
+      "bytes": 19458,
+      "sha256": "60e3dedada83ada4058a297355e169a2ff01c1381f587be525df92a4a7418092"
+    },
+    {
+      "path": "tinyrustlm/tools/browser-runtime-web-artifact.js",
+      "bytes": 8538,
+      "sha256": "27e77f3a94e6a197fb55506f232b7ca951273507256312fa6c551208c2a8aa21"
+    },
+    {
+      "path": "tinyrustlm/tools/canonical-operation-scratch.js",
+      "bytes": 6416,
+      "sha256": "c35f164205e68792510c9cfbb7287a9df58fa9ac28f9eec8471b3a2a746a98d6"
+    },
+    {
+      "path": "tinyrustlm/tests/canonical-operation-scratch_test.js",
+      "bytes": 5775,
+      "sha256": "84f0e1b69ee6cc9218ee231f2d3ada0d5b2f0fb80c9b59063053aa90278c5168"
+    },
+    {
+      "path": "tinyrustlm/tests/static-shell-parity.test.js",
+      "bytes": 5096,
+      "sha256": "bfe5be4318bf87c5784435f056b7e6cfd0196a426121bab87cab936ade59f16c"
+    },
+    {
+      "path": "tinyrustlm/tools/static-shell-parity.js",
+      "bytes": 5964,
+      "sha256": "100ae82d9151f592db9607a6803d316d45934b3f349b3533d9c6df9d1e28fdeb"
+    },
+    {
+      "path": "tinyrustlm/tests/site-release-test-fixture.js",
+      "bytes": 4746,
+      "sha256": "ec8c96f2b664a35d8f0babc4c5fbeaec93913358d35a9e5f8529fd98d3e315a9"
+    },
+    {
+      "path": "Cargo.lock",
+      "bytes": 25746,
+      "sha256": "6b5e6ab614c254adc0298b727a0578a0d3aa42bb768cc10659d719fefdeb31c0"
+    },
+    {
+      "path": "rust/crates/tinyrustlm-browser-runtime-wasm/Cargo.toml",
+      "bytes": 585,
+      "sha256": "52033fb595635b1dd54d2550009cf35597cb18b7cd71b8d54a14ad51d8f9ca3a"
+    },
+    {
+      "path": "rust/crates/tinyrustlm-browser-runtime-wasm/src/lib.rs",
+      "bytes": 7336,
+      "sha256": "48ca9852e17429d62fb9954b7150d6e2d2d0fd4b0249aba327a647e160aea472"
+    }
+  ],
+  "changes": [
+    "Runtime responses are streamed into bounded decoded-byte buffers; the whole response is never read with arrayBuffer.",
+    "Manifest remains at most 16384 bytes; WASM destination uses the exact normalized manifest byteCount, capped at 16777216.",
+    "Wire Content-Length is checked as an integer but is not substituted for decoded length when Content-Encoding is present.",
+    "Overflow, malformed/empty streams, and read failures cancel the reader without awaiting cancellation; every owned reader lock is released.",
+    "Canonical manifest, exact final WASM byte count, SHA-256 and WebAssembly validation remain required.",
+    "Runtime build checks allocate marked scratch in canonical artifacts instead of E:\\Source\\.codex-tmp.",
+    "Scratch cleanup permits hard-link aliases only when all names for each device/inode are present within that exact owned tree; external aliases and symlinks remain rejected.",
+    "Build failures are cached and preserved alongside any cleanup failure; isolated virtual profile mapping uses the pinned toolchain owner."
+  ],
+  "observations": [
+    {
+      "name": "initial-new-stream-tests",
+      "pass": 0,
+      "fail": 4,
+      "interpretation": "Previous implementation invoked the deliberately forbidden whole-body arrayBuffer path. Counts include the failed parent test."
+    },
+    {
+      "name": "first-focused-stream-suite",
+      "pass": 23,
+      "fail": 0,
+      "scope": "Includes real loopback HTTP and installed Edge with a minimal synthetic WASM module."
+    },
+    {
+      "name": "first-expanded-suite",
+      "pass": 31,
+      "fail": 4,
+      "interpretation": "Rustup was absent from the child PATH. No runtime build ran; the pinned installed toolchain was then verified and explicitly bound."
+    },
+    {
+      "name": "expanded-suite-after-toolchain-binding",
+      "pass": 31,
+      "fail": 4,
+      "interpretation": "Cleanup rejected internal Cargo hard links and masked the build's tracked-identity assertion. The helper, failure preservation and invoking-profile remap were subsequently corrected."
+    },
+    {
+      "name": "mismatched-build-inspection",
+      "bytes": 576307,
+      "sha256": "10334d8ba8afa304b591e207ad081ee2a9b86d21bb70481a9f0dafb3d292c74b",
+      "bothBuildsMatched": true,
+      "trackedMatch": false,
+      "internalHardLinkGroupsPerTree": 40,
+      "allNamesInternal": true,
+      "printedDifference": "cargo-home registry paths instead of the tracked build-home\\\\.cargo virtual paths",
+      "rawOutputRetained": false,
+      "reason": "Exact compact hashes and interpretation retained; operation-owned compiled output reviewed and retired."
+    },
+    {
+      "name": "cleanup-helper-focused",
+      "pass": 7,
+      "fail": 0
+    },
+    {
+      "name": "final-affected-suite",
+      "pass": 48,
+      "fail": 0,
+      "skipped": 0,
+      "command": "$env:PATH='C:\\Users\\AI\\.cargo\\bin;'+$env:PATH\n$env:RUSTUP_HOME='C:\\Users\\AI\\.rustup'\n@'\nconst fs=require('fs'),path=require('path'),{spawnSync}=require('child_process');\nconst {createOwnedTemporaryDirectory,removeOwnedTemporaryDirectory}=require('./tinyrustlm/tools/canonical-operation-scratch.js');\nconst owned=createOwnedTemporaryDirectory({temporaryParent:path.resolve('artifacts/tests/runtime-loader-coverage')});\ntry {\n const args=['--experimental-test-coverage','--test-coverage-include=tinyrustlm/app/browser-runtime-loader.js','--test-coverage-include=tinyrustlm/tools/canonical-operation-scratch.js','--test','tinyrustlm/tests/browser-runtime-loader_test.js','tinyrustlm/tests/browser-runtime-web-artifact.test.js','tinyrustlm/tests/static-shell-parity.test.js','tinyrustlm/tests/canonical-operation-scratch_test.js'];\n const run=spawnSync(process.execPath,args,{cwd:process.cwd(),env:{...process.env,TEMP:owned.rootPath,TMP:owned.rootPath,TMPDIR:owned.rootPath,NODE_V8_COVERAGE:path.join(owned.rootPath,'coverage'),TINYRUSTLM_PLAYWRIGHT_CHANNEL:'msedge'},windowsHide:true,encoding:'utf8',timeout:180000,maxBuffer:4*1024*1024});\n process.stdout.write(run.stdout||'');process.stderr.write(run.stderr||'');if(run.error)throw run.error;process.exitCode=run.status===0?0:1;\n} finally {\n let files=0,bytes=0;function count(p){for(const e of fs.readdirSync(p,{withFileTypes:true})){const n=path.join(p,e.name);if(e.isDirectory())count(n);else {files++;bytes+=fs.statSync(n).size;}}}count(owned.rootPath);removeOwnedTemporaryDirectory(owned);console.log(JSON.stringify({ownedRemoved:true,files,logicalBytes:bytes}));\n}\n'@ | node",
+      "coverage": [
+        {
+          "path": "tinyrustlm/app/browser-runtime-loader.js",
+          "linePercent": 93.77,
+          "branchPercent": 86.11,
+          "functionPercent": 95
+        },
+        {
+          "path": "tinyrustlm/tools/canonical-operation-scratch.js",
+          "linePercent": 96.88,
+          "branchPercent": 93.02,
+          "functionPercent": 100
+        }
+      ]
+    },
+    {
+      "name": "memory-consolidation",
+      "pass": 6,
+      "fail": 0,
+      "skipped": 0,
+      "command": "dotnet test dotnet/tests/TinyRustLM.Package.Tests/TinyRustLM.Package.Tests.csproj --no-restore --filter FullyQualifiedName~UaixMemoryConsolidationTests --verbosity minimal"
+    },
+    {
+      "name": "shell-parity",
+      "assets": 19,
+      "result": "passed; only the runtime-loader script hash changed in each shell"
+    },
+    {
+      "name": "diff-whitespace",
+      "command": "git diff --check",
+      "result": "passed"
+    }
+  ],
+  "runtimeArtifact": {
+    "twoFreshOfflineBuildsMatchTracked": true,
+    "publicFilesChanged": false,
+    "manifestBytes": 1209,
+    "manifestSha256": "e6109eddda947f53cb00cf07f08e7779b49216c44f6ed54383fc16bb26452eb7",
+    "wasmBytes": 576379,
+    "wasmSha256": "05e9a497f4aab23a1bc0bc4aed3027a2e4914f5aa70c0e79ecbeb50b5fbe8467",
+    "promoted": false
+  },
+  "transportEvidence": {
+    "nativeHttp": true,
+    "installedEdge": true,
+    "fixture": "Eight-byte valid empty WASM module and exact synthetic manifest served by an operation-owned local HTTP origin.",
+    "cases": [
+      "Valid gzip-compressed manifest and WASM, including compressed size larger than decoded module size",
+      "Gzip manifest expansion beyond 16 KiB",
+      "Chunked WASM response exceeding exact manifest length",
+      "Truncated WASM rejection",
+      "Unit checks for missing/misleading length, fragmented typed-array views, early overflow, hanging cancellation, cleanup exceptions, malformed streams, unavailable bodies, failed fetch, noncanonical manifest and same-length corruption"
+    ],
+    "limitations": [
+      "This does not measure real-model inference or qualification.",
+      "Browser networking buffers and process memory are outside the loader-owned byte bound.",
+      "Elapsed network waiting is not bounded by this change.",
+      "No physical mobile or external-network result is claimed."
+    ]
+  },
+  "cleanup": {
+    "reviewedBuildTrees": [
+      {
+        "root": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\browser-runtime-build\\tinyrustlm-operation-eI78oV",
+        "files": 727,
+        "logicalBytes": 184066376,
+        "inventorySha256": "a2b88c9f2ebdd34fea538d0972a161f3b585d030c7e334d9f2f05793fbe85c5e",
+        "absent": true
+      },
+      {
+        "root": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\browser-runtime-build\\tinyrustlm-operation-GUQciD",
+        "files": 727,
+        "logicalBytes": 183984465,
+        "inventorySha256": "3072a3956dc45a902b5d473b425ac63f0f63ccd49eb20f7f970936cfc1e227c6",
+        "absent": true
+      },
+      {
+        "root": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\browser-runtime-build\\tinyrustlm-operation-Iyk1Zg",
+        "files": 727,
+        "logicalBytes": 183984452,
+        "inventorySha256": "6ef1b67d81466c45852b8ca0d633c34fb5bed79684f0dc98ebb7fc246d4a96b6",
+        "absent": true
+      },
+      {
+        "root": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\browser-runtime-build\\tinyrustlm-operation-oVOno6",
+        "files": 727,
+        "logicalBytes": 184017236,
+        "inventorySha256": "08a0acff5e29841224952e3e992f84099bc7564584d825f5f403673092f187ba",
+        "absent": true
+      }
+    ],
+    "recoveryAuthority": "These four exact trees were created by this turn's terminal build tests. A fresh bounded inventory and marker review preceded removal with the corrected internal-hard-link guard. The helper rejection was not an automatic approval review rejection; no previously policy-blocked path was retried.",
+    "recoveryFiles": 2908,
+    "recoveryLogicalBytes": 736052529,
+    "harnessRuns": [
+      {
+        "name": "missing-toolchain",
+        "files": 4,
+        "logicalBytes": 3247091
+      },
+      {
+        "name": "masked-build-failure",
+        "files": 4,
+        "logicalBytes": 3252519
+      },
+      {
+        "name": "final",
+        "files": 5,
+        "logicalBytes": 3866024
+      }
+    ],
+    "harnessFiles": 13,
+    "harnessLogicalBytes": 10365634,
+    "ownedParents": [
+      "artifacts/tests/browser-runtime-build",
+      "artifacts/tests/runtime-loader-browser",
+      "artifacts/tests/runtime-loader-coverage"
+    ],
+    "allParentsEmpty": true,
+    "aggregatePerTestFixtureBytes": null,
+    "physicalBytesRecovered": null,
+    "accounting": "Logical file-name lengths include internal hard-link aliases. They are not physical storage recovery."
+  },
+  "sourceGate": {
+    "command": "node tinyrustlm/tools/verify-single-source-authority.js",
+    "exitCode": 1,
+    "result": "source_authority_scan_incomplete",
+    "unreadable": [
+      "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\verification\\qwen3-environment-install\\tinyrustlm-operation-C3ZUt9\\install-temp\\TmP6xn2evdh-b",
+      "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\verification\\qwen3-environment-install\\tinyrustlm-operation-C3ZUt9\\install-temp\\TmPeq63_hr7-b"
+    ],
+    "previouslyPolicyBlockedDeletionRetried": false
+  },
+  "boundaries": {
+    "realModelRun": false,
+    "qualifiedDefault": false,
+    "publicSeed": false,
+    "deployment": false,
+    "ternaryResearch": "deferred",
+    "goalComplete": false,
+    "counters": "0/20 qualified; 0/50 browser; 0/25 live memory; 0/40 outside lanes; 0/20 catalog."
+  }
+}

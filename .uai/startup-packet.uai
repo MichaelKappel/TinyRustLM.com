@@ -1,5 +1,5 @@
 profile: tinyrustlm.startup-packet.current.v1
-updated_utc: 2026-09-19T22:27:46Z
+updated_utc: 2026-09-19T22:44:44Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
@@ -10,6 +10,7 @@ startup_steps:
   - Preserve immutable failed operations and all campaign counters.
 
 current_truth:
+  runtime_bytes: C42 bounds decoded runtime downloads before allocation/copy and moves build checks into owned canonical artifacts. All 48 checks pass; two offline builds exactly reproduce the tracked WASM after binding virtual profile mapping. See browser-runtime-streaming-review.json. No promotion, real model or public result.
   admission_lifetime: C41 gives browser qualification/admission checks one 30-second deadline plus explicit cancellation. 218 JavaScript and eight installed-Edge fixture checks pass; see admission-lifetime-review.json. Real-model/public gates remain open.
   companion: Production source acquisition, exclusive operation ownership, contained conversion, terminal reconciliation, six-member transfer, and listener wiring are implemented; Available is not model qualification.
   blocker: No authorized real-source acquisition receipt through this coordinator or qualified real model is established by the implementation and fixture evidence.

@@ -199,33 +199,68 @@
     return bytesToHex(new Uint8Array(digest));
   }
 
+  // Read decoded bytes into one bounded buffer; declared wire size is not a decoded bound.
   async function fetchBytes(fetchFunction, url, maximumBytes, code) {
     let response;
+    let reader;
+    let bytes;
+    let complete = false;
     try {
       response = await fetchFunction(url, { cache: "no-store", credentials: "omit" });
+      if (!response || response.ok !== true || !response.body ||
+          typeof response.body.getReader !== "function") {
+        reject(code);
+      }
+      const headers = response.headers;
+      const contentLength = headers && typeof headers.get === "function"
+        ? headers.get("content-length") : null;
+      const contentEncoding = headers && typeof headers.get === "function"
+        ? headers.get("content-encoding") : null;
+      const encoded = Boolean(contentEncoding && contentEncoding.trim().toLowerCase() !== "identity");
+      if (contentLength !== null && contentLength !== "" &&
+          (!/^(?:0|[1-9][0-9]*)$/u.test(contentLength) ||
+            !Number.isSafeInteger(Number(contentLength)) ||
+            (!encoded && Number(contentLength) > maximumBytes))) {
+        reject(code);
+      }
+      reader = response.body.getReader();
+      bytes = new Uint8Array(maximumBytes);
+      let offset = 0;
+      while (true) {
+        const item = await reader.read();
+        if (!item || typeof item.done !== "boolean") reject(code);
+        if (item.done) break;
+        if (!(item.value instanceof Uint8Array) || item.value.byteLength < 1 ||
+            item.value.byteLength > maximumBytes - offset) {
+          reject(code);
+        }
+        bytes.set(item.value, offset);
+        offset += item.value.byteLength;
+      }
+      if (offset === 0) reject(code);
+      const result = offset === bytes.byteLength ? bytes : bytes.slice(0, offset);
+      complete = true;
+      return result;
     } catch (_) {
       reject(code);
+    } finally {
+      if (!complete) {
+        if (bytes) bytes.fill(0);
+        try {
+          const source = reader || (response && response.body);
+          if (source && typeof source.cancel === "function") {
+            // A failed stream must not keep fetching or make cleanup wait forever.
+            Promise.resolve(source.cancel()).catch(() => {});
+          }
+        } catch (_) { /* Cleanup preserves the original typed fetch failure. */ }
+      }
+      try {
+        if (reader && typeof reader.releaseLock === "function") reader.releaseLock();
+      } catch (_) { /* A cleanup failure cannot replace the transfer verdict. */ }
     }
-    if (!response || response.ok !== true ||
-        typeof response.arrayBuffer !== "function") {
-      reject(code);
-    }
-    const contentLength = response.headers && response.headers.get
-      ? response.headers.get("content-length")
-      : null;
-    if (contentLength !== null && contentLength !== "" &&
-        (!/^(?:0|[1-9][0-9]*)$/u.test(contentLength) ||
-          Number(contentLength) > maximumBytes)) {
-      reject(code);
-    }
-    const buffer = await response.arrayBuffer();
-    if (!(buffer instanceof ArrayBuffer) || buffer.byteLength < 1 ||
-        buffer.byteLength > maximumBytes) {
-      reject(code);
-    }
-    return new Uint8Array(buffer);
   }
 
+  // Bind streamed runtime bytes to the canonical manifest before returning them to the worker.
   async function load(options) {
     const source = requireExactObject(
       options,
@@ -243,22 +278,30 @@
       MAXIMUM_MANIFEST_BYTES,
       "browser-runtime-manifest-fetch"
     );
-    const manifest = parseManifestBytes(manifestBytes);
-    manifestBytes.fill(0);
+    let manifest;
+    try {
+      manifest = parseManifestBytes(manifestBytes);
+    } finally {
+      manifestBytes.fill(0);
+    }
     const wasm = await fetchBytes(
       source.fetchFunction,
       source.wasmUrl,
-      MAXIMUM_WASM_BYTES,
+      manifest.byteCount,
       "browser-runtime-wasm-fetch"
     );
-    if (wasm.byteLength !== manifest.byteCount ||
-        await sha256Hex(wasm) !== manifest.sha256 ||
-        !root.WebAssembly || typeof root.WebAssembly.validate !== "function" ||
-        !root.WebAssembly.validate(wasm)) {
+    try {
+      if (wasm.byteLength !== manifest.byteCount ||
+          await sha256Hex(wasm) !== manifest.sha256 ||
+          !root.WebAssembly || typeof root.WebAssembly.validate !== "function" ||
+          !root.WebAssembly.validate(wasm)) {
+        reject("browser-runtime-wasm-identity");
+      }
+      return Object.freeze({ manifest, wasmBytes: wasm.buffer });
+    } catch (error) {
       wasm.fill(0);
-      reject("browser-runtime-wasm-identity");
+      throw error;
     }
-    return Object.freeze({ manifest, wasmBytes: wasm.buffer });
   }
 
   return Object.freeze({

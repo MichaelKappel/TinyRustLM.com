@@ -94,6 +94,7 @@ function verifyOwnedTemporaryDirectory(owned) {
 function removeOwnedTemporaryDirectory(owned) {
   verifyOwnedTemporaryDirectory(owned);
   const pending = [{ directory: owned.rootPath, depth: 0 }];
+  const hardLinks = new Map();
   let count = 0;
   while (pending.length) {
     const { directory, depth } = pending.pop();
@@ -101,11 +102,22 @@ function removeOwnedTemporaryDirectory(owned) {
     for (const name of fs.readdirSync(directory)) {
       invariant(++count <= 8192, "Operation cleanup inventory exceeds its bound");
       const entry = path.join(directory, name);
-      const stat = fs.lstatSync(entry);
-      invariant(!stat.isSymbolicLink() && (stat.isDirectory() ||
-        (stat.isFile() && stat.nlink === 1)), "Operation cleanup found a linked or special entry");
+      const stat = fs.lstatSync(entry, { bigint: true });
+      invariant(!stat.isSymbolicLink() && (stat.isDirectory() || stat.isFile()),
+        "Operation cleanup found a linked or special entry");
+      if (stat.isFile() && stat.nlink > 1n) {
+        const identity = `${stat.dev}:${stat.ino}`;
+        const group = hardLinks.get(identity) || { count: 0n, links: stat.nlink };
+        invariant(group.links === stat.nlink, "Operation hard-link identity changed");
+        group.count += 1n;
+        hardLinks.set(identity, group);
+      }
       if (stat.isDirectory()) pending.push({ directory: entry, depth: depth + 1 });
     }
+  }
+  // Cargo aliases are safe only when every name belongs to this exact owned tree.
+  for (const group of hardLinks.values()) {
+    invariant(group.count === group.links, "Operation cleanup found an external hard link");
   }
   verifyOwnedTemporaryDirectory(owned);
   fs.rmSync(owned.rootPath, { recursive: true, force: false, maxRetries: 5, retryDelay: 100 });

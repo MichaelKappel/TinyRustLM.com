@@ -1368,6 +1368,54 @@ removed 29 remaining files (4119154 logical bytes); per-test totals and physical
 recovery are unknown. No blocked deletion, real model run, live seed or deployment
 occurred. The source-authority scan still fails on the same two installer links.
 
+## C42: enforce decoded bounds before allocation and preserve build failures
+
+Question: did the runtime loader's declared size limits prevent oversized body
+allocation? No: source inspection and four failing new checks showed that it
+called `Response.arrayBuffer()` before inspecting actual length. The corrected
+reader checks each decoded chunk before copying into one bounded destination,
+uses the manifest's exact WASM size, cancels failed streams and releases locks.
+Gzip wire length is not decoded length. Tests retain canonical JSON, SHA-256,
+truncation and invalid-module rejection instead of treating smaller files as
+automatically valid.
+
+Verification also exposed test-infrastructure defects. Rust was absent from the
+child PATH until the actual installed pinned toolchain was bound. Four later
+test failures reported scratch cleanup rejection; review found Cargo's internal
+hard links, not symlinks or an automatic approval rejection. Each of four build
+trees had 40 hard-link groups whose names all stayed within its own root. The
+cleaner now counts names by device/file identity and requires the full link count
+inside the owned tree before deleting anything. External aliases still reject.
+Exact reviewed failed-run trees were removed with that corrected check.
+
+Cleanup had masked the original assertion: fresh builds matched each other at
+576307 bytes/SHA-256
+`10334d8ba8afa304b591e207ad081ee2a9b86d21bb70481a9f0dafb3d292c74b`, but differed
+from the tracked module. Their printable differences exposed virtual Cargo-path
+remapping under a different invoking profile. Binding the child profile to the
+pinned toolchain owner reproduced the tracked 576379-byte artifact exactly, in
+two new canonical build roots. The test now caches a terminal candidate-build
+failure so later assertions cannot silently repeat the same failed build, and
+preserves both build and cleanup errors if both occur. No artifact was promoted.
+
+Result: 48 affected checks pass with no skips, including native HTTP and actual
+Edge using a minimal synthetic module. Loader line/branch/function coverage is
+93.77/86.11/95.00 percent; scratch helper is 96.88/93.02/100.00 percent. Evidence
+identity: `artifacts/ecosystem-cleanup-20260912/browser-runtime-streaming-review.json`.
+The four reviewed build trees contained 2908 file names/736052529 logical bytes;
+three harnesses removed 13 remaining files/10365634 logical bytes. Hard-link
+aliases are counted as logical names, not separately recovered physical bytes.
+Aggregate per-test output and physical recovery are unknown.
+
+Reusable lessons: enforce limits during streaming, account for decompression,
+keep reproducible compiler path mapping independent of the invoking account,
+and never let cleanup erase the primary failure. Internal compiler aliases need
+complete containment evidence; their presence is not permission to accept an
+external hard link. Local fixture and reproducible-build success establish no
+real-model quality, numerical parity, live seed or deployment. Network wait
+limits remain separate from these byte limits; prior policy-blocked deletions
+and the incomplete source scan are unchanged.
+
 ## Continue the review
 
 Before deleting an experiment that is not covered above, record its purpose,

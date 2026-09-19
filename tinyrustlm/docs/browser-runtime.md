@@ -8,7 +8,7 @@ round is claimed by this structural checkpoint.
 
 ## Deployment Identity
 
-The deployed runtime pair is:
+The public runtime artifact pair is:
 
 - `browser-runtime/tinyrustlm-browser-runtime.wasm`
 - `browser-runtime/tinyrustlm-browser-runtime.wasm.manifest.json`
@@ -17,6 +17,20 @@ The manifest binds the WASM byte count, SHA-256, source crate, build profile,
 worker protocol, memory ceiling, imports, and exact exports. App startup uses
 `app/browser-runtime-loader.js` to fetch both files, validate the manifest,
 hash the module, and reject identity drift before a worker is created.
+
+The loader reads response streams into bounded buffers. Decoded manifest bytes
+must fit 16 KiB; decoded WASM bytes must fit the exact manifest byte count, itself
+bounded to 16 MiB. It checks each chunk before copying and rejects overflow
+without requesting the rest of the body. It never uses an unbounded
+`Response.arrayBuffer()` read. Compressed HTTP lengths describe wire bytes, so
+the decoded stream is always checked independently. Malformed, empty or failed
+streams produce the existing typed fetch errors; failure cancels the reader
+without waiting on cleanup, and every reader lock is released. Canonical JSON,
+exact final length, SHA-256 and WASM validation still apply.
+
+These limits bound loader-owned body buffers, not browser networking buffers,
+total process memory, model weights or elapsed network waiting. Public deployment
+still requires independent readback of the exact released artifacts.
 
 The UI never calls WASM directly. `app/model-runtime-client.js` creates
 `app/model-runtime-worker.js`, and the worker alone instantiates the verified
@@ -105,12 +119,20 @@ events are protocol failures.
 
 ## Verification
 
+The streamed-loader tests include local gzip/chunked HTTP and installed-browser
+cases using a minimal synthetic WASM module. They establish transfer and identity
+handling, not useful model inference. The existing artifact test also builds the
+real runtime twice with the pinned toolchain and compares both outputs with the
+tracked bytes. Those build roots now use marked scratch under
+`artifacts/tests/browser-runtime-build`; they are removed when the test completes.
+No copied source tree or promoted runtime artifact is created.
+
 Focused checks:
 
 ```powershell
 npm --prefix tinyrustlm run test:model-runtime-worker
 npm --prefix tinyrustlm run test:model-runtime-worker-browser
-node --test tinyrustlm/tests/browser-runtime-web-artifact.test.js
+node --test tinyrustlm/tests/browser-runtime-loader_test.js tinyrustlm/tests/browser-runtime-web-artifact.test.js
 node --test tinyrustlm/tests/production-slm2-clean-cut.test.js
 ```
 

@@ -5,6 +5,51 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C42: bound runtime downloads and contain build verification, September 19
+
+The WASM loader previously checked body size only after `Response.arrayBuffer()`
+had allocated the entire response. It now streams into a bounded buffer, checks
+each decoded chunk before copying and cancels on overflow. The manifest limit
+remains 16 KiB; the WASM buffer uses the exact validated manifest byte count,
+bounded to 16 MiB. Compressed Content-Length is treated as wire size, while
+decoded size is checked independently. Canonical manifest, final length, hash
+and WASM validation remain unchanged. Static shell hashes were regenerated.
+
+Runtime-build tests no longer create scratch under `E:\Source\.codex-tmp`.
+They use marked canonical artifacts and retain the original failure if cleanup
+also fails. The first expanded run could not discover Rust through PATH. After
+binding the installed pinned toolchain, cleanup exposed Cargo's internal hard
+links and masked a reproducibility mismatch. Review found 40 internal link groups
+per owned build tree, with every linked name contained. The shared cleaner now
+admits only complete internal hard-link groups; outside links, symlinks and
+identity drift remain rejection cases.
+
+Fresh builds agreed with each other but initially embedded `cargo-home` rather
+than the tracked artifact's `build-home\\.cargo` virtual paths because the invoking
+account differed from the toolchain owner. Binding the isolated build environment's
+profile to that owner restored the exact tracked module: 576379 bytes,
+SHA-256 `05e9a497f4aab23a1bc0bc4aed3027a2e4914f5aa70c0e79ecbeb50b5fbe8467`.
+No Rust source, public WASM or manifest was replaced or promoted.
+
+All 48 affected checks pass, including two fresh offline runtime builds, real
+loopback gzip/chunked HTTP, installed Edge stream checks and cleanup negatives.
+Loader line/branch/function coverage is 93.77/86.11/95.00 percent; scratch helper
+coverage is 96.88/93.02/100.00 percent. The browser transport fixture is a minimal
+synthetic module, not useful inference or a model qualification result.
+
+Evidence: `artifacts/ecosystem-cleanup-20260912/browser-runtime-streaming-review.json`.
+Four failed-run build trees were reviewed and removed after the internal-link
+check was corrected: 2908 file names and 736052529 logical bytes, including hard
+link aliases. Three harness cleanups removed another 13 remaining files,
+10365634 logical bytes. Per-test fixture totals and physical storage recovery
+were not measured. All three owned scratch parents are empty. Existing unrelated
+output and prior policy-blocked paths were untouched.
+
+The source scan still fails on the same two installer links. Runtime network
+waiting is not bounded by this byte-size change; model admission, numerical,
+useful-browser, live seed and publication gates remain open. Ternary research
+stays deferred.
+
 ## C41: bound browser admission checks, September 19
 
 The browser checked qualification and admission documents before starting the

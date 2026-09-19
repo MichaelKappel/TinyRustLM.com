@@ -48,6 +48,8 @@ For each candidate, retain a compact matrix: exact source and weight identities;
 
 **C41 browser admission lifetime:** qualification and admission documents now share a 30-second deadline across fetch, body and hash stages, with explicit caller cancellation and resource cleanup. The chooser clears busy state and reports a useful timeout before model transfer. All 218 affected JavaScript checks and eight selected installed-Edge checks pass; mobile is viewport emulation, and metadata is synthetic. See `artifacts/ecosystem-cleanup-20260912/admission-lifetime-review.json`. This fixes waiting behavior without relaxing identity/quality gates or establishing a real default or public seed.
 
+**C42 runtime download bounds:** the WASM loader enforces decoded byte limits while streaming, before copying, and uses the manifest's exact module size. Forty-eight affected checks pass, including local gzip/chunked HTTP, installed Edge fixtures and two offline builds identical to the tracked WASM. Runtime test scratch is canonical; only hard-link groups entirely inside the owned root may be removed. Child profile mapping now binds to the pinned toolchain owner. See `artifacts/ecosystem-cleanup-20260912/browser-runtime-streaming-review.json`. No runtime artifact was promoted; network wait limits and real model/public gates remain separate.
+
 Compare three routes by evidence:
 - Qualify an already useful compact checkpoint and adapt the sole runtime where justified.
 - Run a bounded new-derivative training experiment after inference, data and independent review readiness.

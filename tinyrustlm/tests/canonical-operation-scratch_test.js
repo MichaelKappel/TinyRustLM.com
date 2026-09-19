@@ -68,6 +68,36 @@ test("linked and dangling ancestors and linked cleanup children are rejected", (
   removeOwnedTemporaryDirectory(owned);
 });
 
+test("cleanup accepts hard links wholly inside the owned tree", context => {
+  const parent = temporaryDirectory(context, "canonical-operation-internal-links-");
+  const owned = createOwnedTemporaryDirectory({ temporaryParent: parent });
+  const original = path.join(owned.rootPath, "original");
+  fs.writeFileSync(original, "synthetic compiled artifact");
+  fs.mkdirSync(path.join(owned.rootPath, "nested"));
+  fs.linkSync(original, path.join(owned.rootPath, "nested", "alias"));
+  removeOwnedTemporaryDirectory(owned);
+  assert.equal(fs.existsSync(owned.rootPath), false);
+});
+
+test("an external hard-link name rejects cleanup before removing anything", context => {
+  const parent = temporaryDirectory(context, "canonical-operation-external-links-");
+  const owned = createOwnedTemporaryDirectory({ temporaryParent: parent });
+  const original = path.join(owned.rootPath, "original");
+  const alias = path.join(owned.rootPath, "alias");
+  const external = path.join(parent, "external");
+  fs.writeFileSync(original, "retained evidence");
+  fs.linkSync(original, alias);
+  fs.linkSync(original, external);
+  assert.throws(() => removeOwnedTemporaryDirectory(owned), /external hard link/);
+  for (const file of [original, alias, external]) {
+    assert.equal(fs.readFileSync(file, "utf8"), "retained evidence");
+  }
+  fs.unlinkSync(alias);
+  fs.unlinkSync(original);
+  removeOwnedTemporaryDirectory(owned);
+  assert.equal(fs.readFileSync(external, "utf8"), "retained evidence");
+});
+
 test("excessive cleanup depth preserves the owned tree for review", (context) => {
   const parent = temporaryDirectory(context, "canonical-operation-depth-");
   const owned = createOwnedTemporaryDirectory({ temporaryParent: parent });
