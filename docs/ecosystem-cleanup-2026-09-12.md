@@ -551,6 +551,13 @@ lessons, evidence references and remaining review scope live in the canonical
   seed hosting and broader blocked cleanup remain unresolved. No historical
   deletion or measured storage recovery was produced.
 
+### Standalone working-product research assignments — September 19
+
+- Added [16 disconnected-agent research prompts](research-prompts/2026-09-19-sixteen-disconnected-working-product-research-prompts.md), each with its own context, observed failure history, owner constraints, detailed questions, and required decision artifacts. Each assignment requests a substantial report with primary sources, explicit uncertainty, proposed experiments, acceptance criteria, and reusable lessons.
+- Topics cover model selection, numerical and text semantics, quantization, qualification, data and training, browser execution, first-run usability, MiniModel seeding, peer transfer, model retirement, publication, experiment practice, ecosystem ownership, and the shortest usable-release path. The integration assignment can start independently.
+- Research recommendations are proposals, not local validation or permission to reclassify rejected models. The prompts explicitly preserve the owner's current server-seeding requirement over contradictory older prose and require useful experiment knowledge to survive payload retirement.
+- All 16 sections were checked for complete standalone context and required output instructions. This documentation checkpoint claims no new model execution, qualification, seed, deployment, deletion, or storage recovery. The separate deployment-input refactor remains unfinished and is excluded from this documentation checkpoint.
+
 ### Canonical numerical reference environment
 
 - Rebuilt one pinned reference environment under this repository's artifacts
