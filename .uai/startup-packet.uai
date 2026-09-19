@@ -1,19 +1,23 @@
 profile: tinyrustlm.startup-packet.current.v1
-updated_utc: 2026-08-28T00:00:00Z
-canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md
-report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-08-28.md
+updated_utc: 2026-09-19T15:37:57Z
+canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
+report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
 startup_steps:
   - Read workspace.uai, .uai/totem.uai, .uai/taboo.uai, canonical memory, decision index, .uai/short-term-memory.uai, .uai/operations.uai, and .uai/test-plan.uai.
   - Verify authoritative root and branch, inspect status without reverting unknown work, fetch remote, and confirm protected tree boundaries.
-  - Treat reports as advisory and follow reviewed wiki/ledger routes rather than raw prose.
+  - Treat reports as advisory and follow reviewed wiki/ledger routes rather than raw prose. Use workspace.uai current_companion_truth for current source state; preserve earlier checkpoint claims as historical.
   - Preserve immutable failed operations and all campaign counters.
 
 current_truth:
-  companion: loopback-capability/4 + acquire.v2 + operation.v3 + operation-projection.v2 source contracts are tested.
-  blocker: operation-not-available because no production executor/source-network owner exists.
-  browser: Browser client is not loaded by product UI.
-  next_gate: Production source owner, bounded pinned-source streaming, contained converter, terminal six-member inspection.
+  companion: Production source acquisition, exclusive operation ownership, contained conversion, terminal reconciliation, six-member transfer, and listener wiring are implemented; Available is not model qualification.
+  blocker: No authorized real-source acquisition receipt through this coordinator or qualified real model is established by the implementation and fixture evidence.
+  browser: Current worktree product UI loads the capability client and composition installer; source wiring is not real-model browser or deployment proof.
+  next_gate: Use the reviewed five-experiment plan; establish eligible source usefulness, fresh current v3 material registration and real native/WASM/browser evidence. Discover hosting capabilities independently; no replay of closed operations.
+  current_state_details: workspace.uai
+  companion_source: dotnet/src/TinyRustLM.Companion/CompanionProductionOperationRuntime.cs
+  browser_source: tinyrustlm/app/index.html
+  evidence_boundary: docs/companion/README.md
 
 memory_truth:
   direct_agent: MemoryEndpoints long-term memory, meetings, handoffs, and coordination across ecosystem agents.
@@ -22,3 +26,10 @@ memory_truth:
   evidence: No live operation claim without an exact receipt.
 
 hard_boundary: One prelaunch clean-slate product; no legacy, compatibility, migration, fallback, repair, hidden retry, best-of-N, debt, secret leakage, or counter inflation.
+
+current_intake:
+  date: 2026-09-19
+  reports: 16 reviewed; useful guidance applied to domain UAI, exact raw evidence and report-level decisions retained.
+  maturity: Early alpha, never a working release; no debt, obsolete code or legacy support until a fully working release is officially accepted by the owner.
+  routing: .uai/index.uai separates current guidance from dated historical receipts; earlier August resume prose is not current source state.
+  blockers: Two policy-blocked installer links still prevent source scan completion; real v3 registration, qualified default, live seed and C31 publication completion remain open.

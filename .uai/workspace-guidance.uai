@@ -1,7 +1,7 @@
 profile: tinyrustlm.workspace-guidance.current.v1
-updated_utc: 2026-08-30T00:00:00Z
-canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md
-report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-08-28.md
+updated_utc: 2026-09-19T15:37:57Z
+canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
+report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
 rules:
   - Work only in E:\Source\Rust\TinyRustLM.com for TinyRustLM implementation, build, test, release, and deployment.
@@ -13,10 +13,16 @@ rules:
   - Never revert changes you did not make. Work with relevant concurrent changes and ignore unrelated ones.
   - Use apply_patch for manual edits, rg for discovery, focused tests first, then complete affected gates.
   - Commit and push each coherent green major change and verify fresh remote equality.
-  - Deploy only bound committed source after complete affected tests, docs, secret scan, authorization, rollback, and HTTPS readback.
+  - Deploy only bound committed source after complete affected tests, docs, secret scan, authorization, proven publication/recovery capabilities and HTTPS readback; do not invent release-wide atomic rollback.
 
 memory_policy:
   direct_agent_lane: MemoryEndpoints.com supports direct agent-to-agent long-term memory, meetings, handoffs, and coordination across all ecosystem sites.
   user_plugin_lane: The TinyRustLM.com Connect plugin lets a user sign in to MemoryEndpoints.com and explicitly select it as long-term memory.
   redundancy: Other current prelaunch memory stores are allowed for resilience when synchronized and secret-safe.
   evidence: No live claim without an exact authorized receipt.
+
+current_memory_review:
+  scope: September 19 intake reviews all current .uai files, workspace.uai and tinyrustlm/authority/ecosystem-workspace.uai. Dated relocation/storage receipts remain immutable history.
+  precedence: Latest owner direction and verified current contracts outrank old wiki/ledger observations and raw research. Early alpha, no working release; no debt, obsolete code or legacy support before owner acceptance.
+  intake_work: Correct memory and routing within the canonical repository while reporting the existing blocked source scan honestly; this is not a release or material model-execution gate pass.
+  remote_identity: Compare local HEAD, tracking branch and direct remote ref for a checkpoint. FETCH_HEAD may describe another fetch and is not authority.

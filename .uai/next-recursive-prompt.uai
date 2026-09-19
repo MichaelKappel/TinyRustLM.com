@@ -1,37 +1,38 @@
 profile: tinyrustlm.next-goal.current.v1
-updated_utc: 2026-09-12T22:15:46.200Z
-canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md
-report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-08-28.md
+updated_utc: 2026-09-19T15:37:57Z
+canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
+report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
-goal: Continue the owner-requested cleanup and code-quality review across every project in E:\Source\Rust, including current-only SLM2, a real small working default through MiniModel.org and initial server seeds. Use docs/ecosystem-cleanup-2026-09-12.md for current scope and checkpoints; this goal is not complete at an audit or synthetic demonstration.
+goal: Deliver the owner-requested current-only ecosystem cleanup and a genuinely useful TinyRustLM release. The wider goal remains incomplete; a research or memory update is not a working product.
 
 start:
-  - Read workspace.uai, .uai/totem.uai, .uai/taboo.uai, the canonical memory, the report decision index, and the current Companion memory.
-  - Verify root, branch, clean/known worktree state, remote equality, protected trees, frozen source/profile identities, and current test baseline.
-  - Preserve every immutable historical operation, especially /10; create wholly new preregistered identities for real execution.
+  - Read startup, workspace, totem/taboo, current canonical synthesis and decision index; historical receipts are not current instructions.
+  - Inspect active intake buckets, canonical Git identity/status and affected current contracts; preserve unrelated work.
+  - Keep early-alpha/no-working-release status and owner official acceptance explicit. No debt, obsolete code or legacy support until acceptance.
 
-immediate_work:
-  - Use workspace.uai current_companion_truth for implemented production acquisition, operation ownership, conversion, terminal inspection, transfer, listener and browser client wiring. Do not rebuild these from obsolete August handoff prose.
-  - Continue remaining obsolete-code, model-artifact and experiment review. Preserve useful findings and compact identities before retirement; verify actual removals and keep blocked deletions explicit.
-  - Establish an eligible exact source and fresh numerical bindings. The pinned Qwen3 source is rejected product ancestry; artifacts/ecosystem-cleanup-20260912/public-source-metadata-review.json records the reviewed public candidates and why neither is admitted yet.
-  - The pinned training route still needs reviewed curriculum, independent holdout inputs and fresh exact program/environment bindings. Do not invent independent reviewers or reuse closed failed operations.
-  - Prepare authorized MiniModel.org initial seeds from D:\LLMs\TinyRustLM after qualification; resolve the outstanding hosting placement decision before dependent changes. Default to eligible cache or a small qualified MiniModel download, keeping technical choices in Advanced.
+ranked_next_work:
+  - E1 model/evaluation role: resolve a few genuinely distinct exact source identities and provenance, then run the smallest admitted reference screen for usefulness, correction/conflict/resource handling.
+  - E2 runtime/numerical role: resolve material source-authority gates and create fresh current registration; compare pinned reference, reconstructed Q8, scalar and real WASM with teacher-forced IDs and bounded first-divergence traces.
+  - E3 browser role: measure actual qualified-candidate cold/warm load, phase peak memory, first token, generation, cancellation and multi-turn state on declared supported devices.
+  - E4 release/acquisition role: discover actual hosting capabilities read-only while model work proceeds; prepare authorized immutable MiniModel seed transfer and external integrity/resume proof after qualification.
+  - E5 product/owner role: verify clean first visit -> useful conversation -> offline return -> safe update/cancel; require official owner acceptance for a fully working release.
 
-ordered_gates:
-  - Contract and hostile vectors.
-  - Wholly new output-free registration and one-shot source operation.
-  - Six-member semantic inspection.
-  - Pinned source to scalar-native first divergence.
-  - Optimized-native and real-browser-WASM parity.
-  - Sealed source/quantized/browser behavioral qualification.
-  - Exact peer import or explicit local conversion in product UI.
-  - Fresh-profile multi-turn chat, exactly-once render, cancellation, privacy, and profile deletion.
-  - Direct MemoryEndpoints agent coordination receipts and separate TinyRustLM.com Connect plugin login/continuity/cleanup receipts.
-  - Package/site release, publication logs, synchronized documentation, deployment, rollback, and HTTPS readback.
+parallel_dependencies:
+  - Candidate metadata review, public development rubrics, semantic contract inspection, first-run state design and hosting discovery can proceed independently; this does not authorize extra agents.
+  - Source/runtime/material tests retain their existing gates. No real v3 registration or trace follows from C30 fixture tests.
+  - The pinned training lane needs independent reviews/holdout custody, correct inference/masking and fresh bindings before a bounded pilot; 200000-record scale work waits for pilot value.
+  - Both MemoryEndpoints lanes and campaign milestones retain separate evidence requirements; do not use their long-term totals as a substitute for the first-release dependency graph.
 
-hard_rules:
-  - Source has one canonical repository per project; TinyRustLM model payloads belong only under D:\LLMs\TinyRustLM. Do not create backup checkouts, source copies or scattered scratch; use Git for history and retain only verified replacements.
-  - No legacy, compatibility, migration, alias, fallback, repair, hidden retry, best-of-N, debt, test weakening, fabricated evidence, or counter inflation.
-  - Keep model/raw evidence/credentials outside Git and private prompts out of public records.
-  - Duplicate prelaunch memory only when every maintained copy stays current, secret-safe, provenance-labeled, and noncontradictory.
-  - Commit and push each coherent green major change; deploy each affected site whenever its complete gate passes.
+continue_cleanup:
+  progress: docs/ecosystem-cleanup-2026-09-12.md
+  lessons: wiki/runtime-mirust/reports/ecosystem-experiment-lessons-2026-09-12.md
+  publication: Finish and test existing C31 canonical-input refactor before claiming any deployment result; no copied source snapshots.
+  blocked: Two installer links and earlier reviewed deletion cohorts remain policy-blocked. Never retry through another API, rename, truncation or parent deletion.
+
+stop_doing:
+  - Renaming rejected weights; training around unknown inference defects; unbounded model/quantizer searches; public cases relabeled as holdout.
+  - Treating GGUF/SLM3/OPFS/GPU/object storage proposals as mandatory changes or accepting invented report measurements.
+  - Scattered source/model copies, obsolete executable paths, hidden answer repair, replay of closed experiments, false independent reviewers or lowered gates.
+
+report_daily: State implemented change, actual tests/results, public deployment evidence, blockers, next decision and abandoned approaches with retained lessons separately.
+release_rule: Commit/push each coherent verified change from canonical source; deploy only after the relevant complete capability, authorization and external-readback gates.

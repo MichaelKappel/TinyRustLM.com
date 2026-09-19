@@ -251,10 +251,10 @@ test("routes one checksum-bound durable memory through canonical UAI memory", ()
     /source-framework\s+and\s+scalar-native\s+numerical\s+parity/u);
   const canonicalRoute =
     "wiki/runtime-mirust/reports/" +
-    "tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md";
+    "tinyrustlm-working-product-memory-2026-09-19.md";
   const decisionRoute =
     "wiki/runtime-mirust/reports/" +
-    "tinyrustlm-report-intake-decision-index-2026-08-28.md";
+    "tinyrustlm-report-intake-decision-index-2026-09-19.md";
   for (const relativePath of [
     "workspace.uai",
     ".uai/index.uai",

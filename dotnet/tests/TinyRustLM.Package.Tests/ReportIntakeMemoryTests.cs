@@ -6,16 +6,14 @@ namespace TinyRustLM.Package.Tests;
 public sealed class ReportIntakeMemoryTests
 {
     private const string CanonicalMemoryRoute =
-        "wiki/runtime-mirust/reports/tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md";
+        "wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md";
 
     private const string DecisionIndexRoute =
-        "wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-08-28.md";
+        "wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md";
 
     private static readonly string[] CurrentBatchManifests =
     {
-        "docs/report-intake/2026-08-26/post-v10-native-browser-release/MANIFEST.md",
-        "docs/report-intake/2026-08-27/omi-computational-architectures-research/MANIFEST.md",
-        "docs/report-intake/2026-08-27/ontological-machine-intelligence-research/MANIFEST.md"
+        "docs/report-intake/2026-09-19/working-product-research/MANIFEST.md"
     };
 
     [Fact]
@@ -82,7 +80,7 @@ public sealed class ReportIntakeMemoryTests
             .Select(route => Path.Combine(root, route.Replace('/', Path.DirectorySeparatorChar)))
             .SelectMany(ParseManifest)
             .ToArray();
-        Assert.Equal(47, reports.Length);
+        Assert.Equal(16, reports.Length);
 
         foreach (var report in reports)
         {

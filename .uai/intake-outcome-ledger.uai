@@ -1,10 +1,264 @@
-profile: tinyrustlm.intake-outcome-ledger.v71
-updated_utc: 2026-08-28T09:28:49Z
+profile: tinyrustlm.intake-outcome-ledger.v72
+updated_utc: 2026-09-19T15:37:57Z
 
-current_canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md
-current_report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-08-28.md
+current_canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
+current_report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 current_memory_policy: MemoryEndpoints.com has two separate authorized uses: direct ecosystem agent long-term memory/meetings/coordination, and the TinyRustLM.com Connect user plugin. Synchronized secret-safe prelaunch memory copies elsewhere are permitted; authorization is not live-operation evidence.
 
+checkpoint_2026_09_19_working_product_research:
+  status: guidance_applied_and_byte_exact_custody_verified
+  authority: Explicit owner request to distribute useful returned research throughout current UAI and reconcile obsolete memory.
+  report_count: 16
+  manifest: docs/report-intake/2026-09-19/working-product-research/MANIFEST.md
+  decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
+  synthesis: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
+  proof_of_use: Current architecture, coding, test, operations, ownership, startup, workspace, continuation and report-routing UAI contain corrected report-derived guidance.
+  history_boundary: Dated relocation/storage UAI and all preceding ledger entries remain immutable evidence; prior current-state claims apply only at their checkpoint.
+  maturity: Early alpha, never a working release; no code debt, obsolete code or legacy support before official owner acceptance of a fully working release.
+  verification_boundary: Guidance and report custody only. No model, trace, quality, seed, deployment, external memory operation, blocked deletion or campaign progress.
+  source_scan: Rerun reports source_authority_scan_incomplete on the two previously policy-blocked C28 installer links; no retry of removal.
+
+report_2026_09_19_R01:
+  assignment: 1
+  source: agent-file-handoff/Improvement/Browser-Local Small Model Selection.md
+  source_bytes: 61615
+  source_sha256: 649cd5f7b6da0e0c1cf8c770d90801f18caf9b39ca4354c0cca5743305bad382
+  durable_path: docs/report-intake/2026-09-19/working-product-research/Browser-Local Small Model Selection.md
+  durable_bytes: 61615
+  durable_sha256: 649cd5f7b6da0e0c1cf8c770d90801f18caf9b39ca4354c0cca5743305bad382
+  review_state: reviewed_advisory_with_corrections
+  disposition: apply_now_to_memory; test_or_defer_implementation_proposals
+  applied: Apply reference-first screening and exact provenance admission; test candidate leads.
+  correction_or_deferral: Do not adopt GGUF/Candle as mandatory or report candidate rankings/revisions as verified; identical rejected weights stay rejected.
+  proof_of_use: .uai/architecture.uai; .uai/test-plan.uai; wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md; wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
+  source_site_copy: removed_by_verified_move_to_durable_report_intake
+
+report_2026_09_19_R02:
+  assignment: 2
+  source: agent-file-handoff/Improvement/Transformer Numerical Divergence Audit.md
+  source_bytes: 60471
+  source_sha256: 505a8eccf40eeccff6c01eef0acb40384d9d87018a9da74a9312c67677092efb
+  durable_path: docs/report-intake/2026-09-19/working-product-research/Transformer Numerical Divergence Audit.md
+  durable_bytes: 60471
+  durable_sha256: 505a8eccf40eeccff6c01eef0acb40384d9d87018a9da74a9312c67677092efb
+  review_state: reviewed_advisory_with_corrections
+  disposition: apply_now_to_memory; test_or_defer_implementation_proposals
+  applied: Apply five-arm, teacher-forced first-divergence diagnosis and stage-specific failure reporting.
+  correction_or_deferral: Correct Qwen geometry to 28/1024/3072/16/8/head128. Preserve Q8 arithmetic and registered tolerances; source-load failure did not execute converted arms.
+  proof_of_use: .uai/test-plan.uai; .uai/coding-standards.uai; wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md; wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
+  source_site_copy: removed_by_verified_move_to_durable_report_intake
+
+report_2026_09_19_R03:
+  assignment: 3
+  source: agent-file-handoff/Improvement/SLM Conversational Runtime Diagnostics.md
+  source_bytes: 56259
+  source_sha256: e28f18f8dcbe34a31f7541aa6c963e353083cb6cb8410e569bd425d283615bf0
+  durable_path: docs/report-intake/2026-09-19/working-product-research/SLM Conversational Runtime Diagnostics.md
+  durable_bytes: 56259
+  durable_sha256: e28f18f8dcbe34a31f7541aa6c963e353083cb6cb8410e569bd425d283615bf0
+  review_state: reviewed_advisory_with_corrections
+  disposition: apply_now_to_memory; test_or_defer_implementation_proposals
+  applied: Apply exact tokenization/serialization, incremental decoding, turn revision and cancellation guidance.
+  correction_or_deferral: Reject blaming the current format without evidence, blank-line thinking bypass, mandatory Min-P and invalid grapheme/token assumptions. Public examples are development inputs.
+  proof_of_use: .uai/architecture.uai; .uai/test-plan.uai; wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md; wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
+  source_site_copy: removed_by_verified_move_to_durable_report_intake
+
+report_2026_09_19_R04:
+  assignment: 4
+  source: agent-file-handoff/Improvement/Browser SLM Quantization Analysis.md
+  source_bytes: 67309
+  source_sha256: 2d511749101c8537854aa9b3b15f8ec62ac6e8fe6b5288df86b256d4c9b12aea
+  durable_path: docs/report-intake/2026-09-19/working-product-research/Browser SLM Quantization Analysis.md
+  durable_bytes: 67309
+  durable_sha256: 2d511749101c8537854aa9b3b15f8ec62ac6e8fe6b5288df86b256d4c9b12aea
+  review_state: reviewed_advisory_with_corrections
+  disposition: apply_now_to_memory; test_or_defer_implementation_proposals
+  applied: Apply controlled source/reconstructed/native/browser ablations and phase memory accounting.
+  correction_or_deferral: Defer lower-bit/format replacements; reject asserted catastrophic Q8 loss, universal limits and ordinary SIMD alignment-trap claims.
+  proof_of_use: .uai/architecture.uai; .uai/test-plan.uai; wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md; wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
+  source_site_copy: removed_by_verified_move_to_durable_report_intake
+
+report_2026_09_19_R05:
+  assignment: 5
+  source: agent-file-handoff/Improvement/Local LLM Evaluation System.md
+  source_bytes: 65041
+  source_sha256: 70a38fecedadbdacd04f2fa339565405e6025a5ce73c2527eb26f0a8be3cbc34
+  durable_path: docs/report-intake/2026-09-19/working-product-research/Local LLM Evaluation System.md
+  durable_bytes: 65041
+  durable_sha256: 70a38fecedadbdacd04f2fa339565405e6025a5ce73c2527eb26f0a8be3cbc34
+  review_state: reviewed_advisory_with_corrections
+  disposition: apply_now_to_memory; test_or_defer_implementation_proposals
+  applied: Apply behavioral invariants, usefulness rubrics, separate splits, calibrated judges and sample uncertainty.
+  correction_or_deferral: Reject hidden-reasoning evaluation, invented parser/local exploit claims, mandatory companion/distributed inference, holdout patching and automatic scale training after failure.
+  proof_of_use: .uai/test-plan.uai; wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md; wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
+  source_site_copy: removed_by_verified_move_to_durable_report_intake
+
+report_2026_09_19_R06:
+  assignment: 6
+  source: agent-file-handoff/Improvement/SLM Training Data Architecture Plan.md
+  source_bytes: 56694
+  source_sha256: 094e168fb3815aa5234fe99211c5d81570f09dc67bc1db42441efd069a8009c1
+  durable_path: docs/report-intake/2026-09-19/working-product-research/SLM Training Data Architecture Plan.md
+  durable_bytes: 56694
+  durable_sha256: 094e168fb3815aa5234fe99211c5d81570f09dc67bc1db42441efd069a8009c1
+  review_state: reviewed_advisory_with_corrections
+  disposition: apply_now_to_memory; test_or_defer_implementation_proposals
+  applied: Apply scenario variation, provenance, independent review and contamination checks.
+  correction_or_deferral: Keep frozen 1,024 allocation and 280 holdout custody; defer reallocation, preference negatives/objectives and unmeasured accuracy thresholds. No hidden teacher reasoning.
+  proof_of_use: .uai/test-plan.uai; .uai/operations.uai; wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md; wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
+  source_site_copy: removed_by_verified_move_to_durable_report_intake
+
+report_2026_09_19_R07:
+  assignment: 7
+  source: agent-file-handoff/Improvement/SLM Training Intervention Strategy.md
+  source_bytes: 88004
+  source_sha256: a928ffdaf9031c7aa265069461f5572d684e076a07105963a1d6b33063c9f8f1
+  durable_path: docs/report-intake/2026-09-19/working-product-research/SLM Training Intervention Strategy.md
+  durable_bytes: 88004
+  durable_sha256: a928ffdaf9031c7aa265069461f5572d684e076a07105963a1d6b33063c9f8f1
+  review_state: reviewed_advisory_with_corrections
+  disposition: apply_now_to_memory; test_or_defer_implementation_proposals
+  applied: Apply inference/masking/data readiness, bounded ablations, non-regression and current-only retention.
+  correction_or_deferral: LoRA/SimPO/KL changes are proposals; preserve frozen recipe and rejected ancestry rule. Lower recorded training loss is not validation or proof of capability.
+  proof_of_use: .uai/test-plan.uai; .uai/operations.uai; wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md; wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
+  source_site_copy: removed_by_verified_move_to_durable_report_intake
+
+report_2026_09_19_R08:
+  assignment: 8
+  source: agent-file-handoff/Improvement/WASM SLM Browser Optimization.md
+  source_bytes: 55510
+  source_sha256: 1fd90805b04d5f04dd710c64b306c414bb14988bf5b9070ed7ed1b895185e51a
+  durable_path: docs/report-intake/2026-09-19/working-product-research/WASM SLM Browser Optimization.md
+  durable_bytes: 55510
+  durable_sha256: 1fd90805b04d5f04dd710c64b306c414bb14988bf5b9070ed7ed1b895185e51a
+  review_state: reviewed_advisory_with_corrections
+  disposition: apply_now_to_memory; test_or_defer_implementation_proposals
+  applied: Apply worker bounds, phase timings, cancellation, buffer ownership and actual device measurements.
+  correction_or_deferral: Reject OPFS mmap/strict zero-copy claims, universal browser/Memory64 limits, mistaken Q4 interpretation of the Q8 diagnostic, and mandatory SIMD/GPU or persisted KV.
+  proof_of_use: .uai/architecture.uai; .uai/test-plan.uai; wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md; wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
+  source_site_copy: removed_by_verified_move_to_durable_report_intake
+
+report_2026_09_19_R09:
+  assignment: 9
+  source: agent-file-handoff/Improvement/Local AI First-Run UX.md
+  source_bytes: 46272
+  source_sha256: 1fef96fc3d0a1214b304376e67d858dcfe98d59469436615f8b89b6f2f2f7fc0
+  durable_path: docs/report-intake/2026-09-19/working-product-research/Local AI First-Run UX.md
+  durable_bytes: 46272
+  durable_sha256: 1fef96fc3d0a1214b304376e67d858dcfe98d59469436615f8b89b6f2f2f7fc0
+  review_state: reviewed_advisory_with_corrections
+  disposition: apply_now_to_memory; test_or_defer_implementation_proposals
+  applied: Apply restore/default path, Advanced-only controls and honest readiness states while preserving appearance.
+  correction_or_deferral: Correct automatic GPU fallback, permanent/one-time download promises, exact free-space/metering inference and compulsory 3x disk budget. No synthetic ready state.
+  proof_of_use: .uai/architecture.uai; .uai/operations.uai; wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md; wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
+  source_site_copy: removed_by_verified_move_to_durable_report_intake
+
+report_2026_09_19_R10:
+  assignment: 10
+  source: agent-file-handoff/Improvement/TinyRustLM Seed Deployment Architecture.md
+  source_bytes: 44030
+  source_sha256: e7901501e38f0610c0c0bae102acfe369828b28c831405ac4f80af30db33deca
+  durable_path: docs/report-intake/2026-09-19/working-product-research/TinyRustLM Seed Deployment Architecture.md
+  durable_bytes: 44030
+  durable_sha256: e7901501e38f0610c0c0bae102acfe369828b28c831405ac4f80af30db33deca
+  review_state: reviewed_advisory_with_corrections
+  disposition: apply_now_to_memory; test_or_defer_implementation_proposals
+  applied: Apply authorized MiniModel initial seeding, capability discovery, HTTPS ranges and independent external proof.
+  correction_or_deferral: Reject assumed Cicero/local IIS topology, invented ACG2 JSON and automatic R2 provisioning/DNS changes; object storage is a conditional alternative.
+  proof_of_use: .uai/operations.uai; .uai/talisman.uai; wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md; wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
+  source_site_copy: removed_by_verified_move_to_durable_report_intake
+
+report_2026_09_19_R11:
+  assignment: 11
+  source: agent-file-handoff/Improvement/Reliable P2P Model Acquisition Protocol.md
+  source_bytes: 43517
+  source_sha256: fb53dba80e2518b560317871a43595983b63f7da6767b057a1a65f5878b47cd7
+  durable_path: docs/report-intake/2026-09-19/working-product-research/Reliable P2P Model Acquisition Protocol.md
+  durable_bytes: 43517
+  durable_sha256: fb53dba80e2518b560317871a43595983b63f7da6767b057a1a65f5878b47cd7
+  review_state: reviewed_advisory_with_corrections
+  disposition: apply_now_to_memory; test_or_defer_implementation_proposals
+  applied: Apply bounded transfer/resume/integrity, endpoint/content separation and opt-in seeding.
+  correction_or_deferral: HTTPS-first transport is a proposal within authorized seeding; no silent P2P redefinition, BEP52 mandate, assumed browser-version rule or DTLS-SRTP data-channel claim.
+  proof_of_use: .uai/architecture.uai; .uai/test-plan.uai; wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md; wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
+  source_site_copy: removed_by_verified_move_to_durable_report_intake
+
+report_2026_09_19_R12:
+  assignment: 12
+  source: agent-file-handoff/Improvement/Local Model Storage Lifecycle.md
+  source_bytes: 53509
+  source_sha256: 6783b90fc1637236ff243747533c60c43a61a6a3781526d7beda484bb338930b
+  durable_path: docs/report-intake/2026-09-19/working-product-research/Local Model Storage Lifecycle.md
+  durable_bytes: 53509
+  durable_sha256: 6783b90fc1637236ff243747533c60c43a61a6a3781526d7beda484bb338930b
+  review_state: reviewed_advisory_with_corrections
+  disposition: apply_now_to_memory; test_or_defer_implementation_proposals
+  applied: Apply bounded candidate overlap, six-member commit, owned cleanup and logical/physical byte distinction.
+  correction_or_deferral: Reject invented Bao/JSON format, pointer-before-member-renames, readwrite-unsafe as coordination and deleting every unlisted file. Blocked removals remain blocked.
+  proof_of_use: .uai/operations.uai; .uai/coding-standards.uai; wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md; wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
+  source_site_copy: removed_by_verified_move_to_durable_report_intake
+
+report_2026_09_19_R13:
+  assignment: 13
+  source: agent-file-handoff/Improvement/Atomic Constrained Hosting Releases.md
+  source_bytes: 50339
+  source_sha256: e47421955491d589d9217bf58fff122aabe2647b8edcb1393d6f29d3d8c946a4
+  durable_path: docs/report-intake/2026-09-19/working-product-research/Atomic Constrained Hosting Releases.md
+  durable_bytes: 50339
+  durable_sha256: e47421955491d589d9217bf58fff122aabe2647b8edcb1393d6f29d3d8c946a4
+  review_state: reviewed_advisory_with_corrections
+  disposition: apply_now_to_memory; test_or_defer_implementation_proposals
+  applied: Apply immutable assets, verified graph, capability-dependent final pointer and external readback.
+  correction_or_deferral: Reject two-write atomicity, FTP lock readback as exclusion, first-visit SW certainty and clear FTPS data channel. C31 remains unfinished.
+  proof_of_use: .uai/operations.uai; .uai/test-plan.uai; wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md; wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
+  source_site_copy: removed_by_verified_move_to_durable_report_intake
+
+report_2026_09_19_R14:
+  assignment: 14
+  source: agent-file-handoff/Improvement/Reproducible SLM Experiment Methodology.md
+  source_bytes: 43140
+  source_sha256: 8bf537dd023d7a828d6be08f5dc7c67be33f83a741b277815b5ca3df2392b7a7
+  durable_path: docs/report-intake/2026-09-19/working-product-research/Reproducible SLM Experiment Methodology.md
+  durable_bytes: 43140
+  durable_sha256: 8bf537dd023d7a828d6be08f5dc7c67be33f83a741b277815b5ca3df2392b7a7
+  review_state: reviewed_advisory_with_corrections
+  disposition: apply_now_to_memory; test_or_defer_implementation_proposals
+  applied: Apply bounded preflight, explicit stages, causal hypotheses and reusable lessons with immutable failures.
+  correction_or_deferral: Correct synthetic example results and NODE_V8_COVERAGE failure location; no wholesale trace deletion or universal meaning of verification pass.
+  proof_of_use: .uai/coding-standards.uai; .uai/operations.uai; wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md; wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
+  source_site_copy: removed_by_verified_move_to_durable_report_intake
+
+report_2026_09_19_R15:
+  assignment: 15
+  source: agent-file-handoff/Improvement/Ecosystem Simplification Research Plan.md
+  source_bytes: 66914
+  source_sha256: c0f4d0ceda7dca8bddd11f4acc32b408b1b6f32bd4839d4e7cb33af6296d2ba5
+  durable_path: docs/report-intake/2026-09-19/working-product-research/Ecosystem Simplification Research Plan.md
+  durable_bytes: 66914
+  durable_sha256: c0f4d0ceda7dca8bddd11f4acc32b408b1b6f32bd4839d4e7cb33af6296d2ba5
+  review_state: reviewed_advisory_with_corrections
+  disposition: apply_now_to_memory; test_or_defer_implementation_proposals
+  applied: Apply locally grounded owners, one contract per boundary, claim vocabulary and drift checks.
+  correction_or_deferral: Reject repository-name ownership guesses, retirement of current portals, invented NativeMessaging and compulsory WebGPU/OPFS replacement.
+  proof_of_use: .uai/talisman.uai; .uai/architecture.uai; wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md; wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
+  source_site_copy: removed_by_verified_move_to_durable_report_intake
+
+report_2026_09_19_R16:
+  assignment: 16
+  source: agent-file-handoff/Improvement/TinyRustLM Usable Release Path.md
+  source_bytes: 50096
+  source_sha256: d0416ce26e37fa2839bcc7155afe2ea52df0b3ccf2c5df831494baa1ce6cbf8e
+  durable_path: docs/report-intake/2026-09-19/working-product-research/TinyRustLM Usable Release Path.md
+  durable_bytes: 50096
+  durable_sha256: d0416ce26e37fa2839bcc7155afe2ea52df0b3ccf2c5df831494baa1ce6cbf8e
+  review_state: reviewed_advisory_with_corrections
+  disposition: apply_now_to_memory; test_or_defer_implementation_proposals
+  applied: Apply five decisive experiments, independent work streams, scoped first-release evidence and daily progress reporting.
+  correction_or_deferral: Reject mandatory GGUF and wholesale current-format deletion, perpetual training cancellation, fake mmap and fabricated timelines; preserve owner acceptance.
+  proof_of_use: .uai/next-recursive-prompt.uai; .uai/short-term-memory.uai; wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md; wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
+  source_site_copy: removed_by_verified_move_to_durable_report_intake
+
+# Historical ledger entries below preserve their original observations and bytes.
 checkpoint_2026_08_28_companion_source_operation_contract:
   status: remote_exact_green_checkpoint
   source_control: Implementation commit 5a9c097e66a83ceb6ee71ebe36462981e311baf6, tree e3ebbec3c910b60e54280eff4d4643196b28b87f, is pushed and fresh-fetch exact across local HEAD, tracking, FETCH_HEAD, and the direct remote branch ref.

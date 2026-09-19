@@ -1,5 +1,5 @@
 profile: rust-site-family.workspace.current.v1
-updated_utc: 2026-09-04T00:00:00Z
+updated_utc: 2026-09-19T15:37:57Z
 workspace_root: E:\Source\Rust
 scope: Current source routing for the TinyRustLM.com ecosystem.
 sensitivity: internal
@@ -28,8 +28,8 @@ proof_boundary:
 
 product_truth:
   model_selection: TinyRustLM uses one compact P2P-first model chooser; technical source, peer, receipt, conversion, and Hugging Face controls belong under Advanced.
-  acquisition: Selecting a qualified model performs its admitted route, verifies exact bytes, installs to browser storage, activates it, and offers explicit local conversion only when the qualified peer route is unavailable or fails.
-  live_catalog: MiniModel.org currently has zero independently qualified model entries and zero externally proven peer lanes. Synthetic interview fixtures are test-only and never count as live model, P2P, browser, deployment, or campaign evidence.
+  acquisition: Restore a usable eligible installation or automatically obtain a small qualified default through MiniModel.org, verify all six members, install and activate. MiniModel initial server seeding is authorized; source/HF/import/conversion/peer/IP controls belong under Advanced.
+  live_catalog: MiniModel.org currently has zero independently qualified model entries and zero externally proven peer lanes. This is the recorded checkpoint, not a fresh public audit. Synthetic fixtures never establish live model, seed, browser, deployment or campaign evidence.
   failed_attempt: Qwen3 composition attempt /10 is immutable terminal failure and its candidate bytes must never be retried, repaired, adopted, or promoted.
 
 memory_endpoints:
@@ -37,3 +37,11 @@ memory_endpoints:
   connect_plugin: The separate MemoryEndpoints plugin is the strongly recommended portable-memory path for a consenting TinyRustLM.com Connect user.
   local_memory: Local memory files remain supported for device-local and offline continuity.
   evidence_rule: Authorization or configuration alone is not a live round; credentials, prompts, model bytes, and private payloads must remain secret and provenance-labeled.
+
+current_memory:
+  canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
+  report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
+  maturity: Early alpha; TinyRustLM has never had a working release. No debt, obsolete code or legacy support before a fully working release is officially accepted by the owner.
+  review: Sixteen September 19 reports applied as corrected guidance; proposals and example measurements are not local evidence.
+  runtime_owner: Current Rust/WASM runtime belongs to TinyRustLM.com; current developer portals remain current. Historical Runtime/SLMComposer brands do not assign implementation ownership.
+  blockers: Real default qualification, numerical trace, live seed and C31 publication completion remain open; the two policy-blocked installer links still prevent a complete source scan.

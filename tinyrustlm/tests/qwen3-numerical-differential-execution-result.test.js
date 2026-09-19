@@ -292,10 +292,10 @@ test("routes checksum-bound terminal memory through one canonical UAI deep link"
   }
   const canonicalRoute =
     "wiki/runtime-mirust/reports/" +
-    "tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md";
+    "tinyrustlm-working-product-memory-2026-09-19.md";
   const decisionRoute =
     "wiki/runtime-mirust/reports/" +
-    "tinyrustlm-report-intake-decision-index-2026-08-28.md";
+    "tinyrustlm-report-intake-decision-index-2026-09-19.md";
   for (const relativePath of [
     "workspace.uai",
     ".uai/index.uai",

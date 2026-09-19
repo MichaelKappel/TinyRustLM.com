@@ -1,124 +1,44 @@
 profile: tinyrustlm.short-term-memory.current.v1
-updated_utc: 2026-09-13T02:44:54Z
-canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md
-report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-08-28.md
+updated_utc: 2026-09-19T15:37:57Z
+canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
+report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
 now:
-  task: Active owner-authorized ecosystem cleanup across all seven canonical Rust repositories; concrete fixes, meaningful checks, regular commits and pushes. The full goal remains incomplete.
-  preservation: Raw reports, manifests, syntheses, TDD deltas, ledger dispositions, wiki evidence, and immutable operation history remain intact.
-  policy: MemoryEndpoints has two distinct authorized uses: direct agent coordination across sites and the separate TinyRustLM.com Connect user long-term-memory plugin.
-  redundancy: Keep one canonical source and model location, use Git for history, and keep bounded evidence compact. Record useful experimental lessons before retiring obsolete files.
+  task: September 19 research intake applied to current UAI and durable wiki routing; all 16 reports have explicit decisions and proof of use.
+  maturity: Early alpha, never a working release; no code debt, obsolete code or legacy support before the owner's official acceptance of a fully working release.
+  broader_goal: Ecosystem cleanup and usable release remain incomplete.
+  manifest: docs/report-intake/2026-09-19/working-product-research/MANIFEST.md
+  intake_verification: artifacts/ecosystem-cleanup-20260912/working-product-memory-intake-review.json
+  scope: Local guidance/custody/validation only; no model run, qualification, public seed, deployment or live MemoryEndpoints operation.
 
-ecosystem_cleanup:
-  progress: docs/ecosystem-cleanup-2026-09-12.md
-  lessons: wiki/runtime-mirust/reports/ecosystem-experiment-lessons-2026-09-12.md
-  checkpoints: Catalog/P2P 4e1ee34; admission/cache/installer 3302239; worker URL and streamed offsets d684db0; bounded companion reader and historical quantization lessons b2ca293; current-only chooser integration fec548b. All pushed. MiniModel.MiRust prepared documentation and canonical publication metadata are pushed through b437611; no publication.
-  verification: Acquisition browser checks passed 53 with three desktop-only skips on mobile; 12 further desktop/mobile shell checks and 46 race/cache checks passed. After removing 67 unused constants, 96 affected unit checks passed. Thirty-seven release/server/shell/fixture checks passed with the staged validator in memory. No real-model qualification or public seed is claimed.
-  native_seed_integration: Committed/pushed as 6617ca1. Replaced copied repository/rewritten converter/temporary host-source construction with the canonical DirectSeedWireFixtureTool and two synthetic data variants in the existing conversion fixture. Six JS integration/helper checks and 44 affected native checks passed; build had zero warnings/errors. Fixture-helper line coverage 100 percent; C# coverage was not collected at that checkpoint. Owned temporary state removed. No real model or public seed claim.
-  native_journal_review: Ten companion test files now use bounded owned canonical scratch. The full suite exposed a partially written history-record race; journal reads and writes now share reentrant in-process and exclusive process locking, with strict record checks unchanged. All 216 native tests passed normally and instrumented. Journal line coverage 85.68 percent, all 33 changed instrumented lines covered; scratch helper 83.95 percent. Compact proof artifacts/ecosystem-cleanup-20260912/native-journal-coverage.json; raw scratch removed.
-  remaining: Publication-tool integration, test scratch policies in other native projects, historical experiment and artifact retirement, real-model qualification, initial MiniModel seed hosting, and affected release metadata remain open.
-  checkpoint_retention: The pinned CPU trainer retains the newest payload and immutable predecessor progress receipts; successor-bound plans permit verified continuation after partial retirement. Final training receipt v2 references the existing final adapter with no candidate copy. Proof artifacts/ecosystem-cleanup-20260912/checkpoint-retention-review.json; lesson T8. All 113 focused checks passed, zero skips, 90.07 percent changed executable-line coverage; no branch coverage or ML execution. Fresh trainer/environment/authorization bindings are required. No historical model deletion or quality claim.
-  retired_training_producers: Generic sequence/top-k training, its cache builder and old adapter-source exporter are reviewed for retirement with three tests, 18 recipes and two controls. Git 33483be retains all 26 source/control files. Physical deletion was blocked by automatic approval review; all remain. Lessons T9-T11 and retired-training-producers-review.json preserve methods and uncertainty. The owner script passed WhatIf, 37 read-only guards and five Pester tests; command coverage 60.42 percent is below target because the destructive branch was not executed. CI correctly fails on surviving files. Combined WhatIf covers 521 files, 1845899368 logical bytes, with no removal/storage claim. Existing top-k model/cache payloads still need separate review.
-  blocked_deletions: Automatic review rejected Runtime historical docs, LMComposer historical stage files, MiniModel.MiRust's 27-file historical stage and two obsolete TinyRust announcement files. Exact-hash PowerShell cleanups await owner execution. All pending bytes are still reported present; the old announcement test remains incompatible with the retired API.
+current_source_state:
+  authority: workspace.uai current_companion_truth
+  implemented: Production Companion source acquisition, exclusive operation ownership, conversion, terminal reconciliation, six-member transfer/listener and browser client wiring.
+  unproven: Authorized real acquisition through this coordinator, real numerical parity, useful default-model browser inference and public initial seed.
+  rejected_source: Unchanged Qwen3-0.6B@c1899de289a04d12100db370d81485cdf75e47ca is diagnostic-only; identical repackaging stays rejected.
+  current_numerical_contract: C30 implements v3-only registration with corrected locks/helper bindings. Historical 58 checks passed; no material v3 registration or real trace.
+  environment: Canonical numerical environment admitted with synthetic framework checks; real source load and later comparison stages remain unproven.
+  publication: C31 removes copied-source publication staging in favor of canonical bound inputs; current refactor is unfinished/uncommitted and has no deployment result.
 
-minimodel_publication_input_cleanup:
-  checkpoint: MiniModel.org ef924db7b721ed3fea371fb3f29416261d8f31b8
-  change: Removed copied-site snapshots, their Win32 directory identity/cleanup and BlobReader test hook. Publication uses bounded canonical Git/current bytes held and authenticated in memory; upload and rollback consume that bound input.
-  evidence: MiniModel.org/artifacts/reports/publication-input-review-20260912.json
-  lessons: wiki/runtime-mirust/reports/ecosystem-experiment-lessons-2026-09-12.md C23
-  verification: All 53 Node and 24 nested Pester checks pass, zero skipped/cancelled. Current catalog Git/input admission and historical 422-byte versus current 593-byte rejection were exercised. Actual file publisher tests retain predecessor backups and refuse substituted bytes. Whole-module command coverage 238/545; no branch or actual FTPS claim.
-  remaining: Fresh release identity and stale bound deployment manifest, intentionally unbound transport, real model qualification and seed hosting. The following checkpoint addresses the Node launcher and metadata generator. Owned test output was removed; no publication, model deletion or measured storage recovery.
+known_blockers:
+  - Source-authority scan remains incomplete on the two C28 installer links; rerun in this intake confirmed source_authority_scan_incomplete after canonical Git trust configuration.
+  - Automatic approval review previously blocked C28 installer-output and other exact reviewed removals. They remain present; no alternate deletion route is authorized.
+  - Catalog empty/expired and external FTPS hosting are earlier observations, not a fresh live audit. No qualified default or proven live seed.
+  - Training pilot needs genuine independent reviewers and holdout authors; no accepted derivative or 200000-record scale authorization follows from reports.
 
-minimodel_publication_command_cleanup:
-  checkpoint: MiniModel.org 672991ba646cde761ba6a361fc20b5a24aaabbe0
-  evidence: MiniModel.org/artifacts/reports/publication-command-review-20260912.json
-  lessons: wiki/runtime-mirust/reports/ecosystem-experiment-lessons-2026-09-12.md C24
-  change: Metadata is stdout-only with an exact current public closure and independent Git blob hashes. All 22 canonical public files match existing Git bytes under LF attributes. Every Node child uses reviewed read-leased identities, stripped NODE_* settings, bounded pipes and a deadline.
-  verification: Corrected complete suite 64 Node and 27 nested Pester passes, zero skips/cancellations. Actual full 22-file JS/PowerShell materialization and both publisher Node boundaries were exercised. Three actual timeout terminations pass after a native-stderr/exit race was fixed; no new bootstrap or generator coverage percentage is claimed.
-  remaining_at_checkpoint: The actual publisher stopped at stale-manifest rejection before public admission. Fresh release identity, unbound transport, model qualification and hosting remain open. No publication, real seed, production receipt, model deletion or measured storage recovery.
+next_decisions:
+  - Test exact eligible source usefulness before conversion; diagnose semantics/arithmetic separately; measure actual browser viability.
+  - Discover existing host capabilities before choosing seed placement; MiniModel initial seeding is already authorized.
+  - Keep restore/default under the beginner path and technical acquisition controls under Advanced; do not claim ready without the complete model.
+  - Preserve frozen experiments and current six-member/Q8 contracts until evidence supports a coherent replacement.
 
-minimodel_publication_binding_cleanup:
-  checkpoint: MiniModel.org 4f6e8cfd5698081ce7fe25b956494ea62988d08f
-  public_source: df51ec03a52f4862471dd79a9d989405db5f251f
-  evidence: MiniModel.org/artifacts/reports/publication-binding-review-20260912.json
-  lessons: wiki/runtime-mirust/reports/ecosystem-experiment-lessons-2026-09-12.md C25
-  change: Separate exact predecessor/candidate discovery bindings; current 22-file package and planned UTC publication date; JS and PowerShell materialization agree while preserving historical entries. Public status pointers and guides reflect authorized initial seeds and canonical TinyRustLM companion ownership.
-  verification: Corrected full suite 67 Node and 27 nested Pester passes, zero skips/cancellations. Historical rejection fixtures read exact Git objects. Whole custody-module command coverage 241/562; no new generator/bootstrap/branch coverage percentage. Unchanged source gate passes for registered governed roots only.
-  remaining: Actual publisher rejects current catalog expiry before public admission or credentials. No catalog renewal, qualified model, live seed or publication is claimed. Transport remains unbound. Later UTC publication requires reviewed metadata regeneration. Broader cleanup and previously blocked deletions remain outstanding. Owned output is removed; no measured storage recovery.
+history_routes:
+  cleanup_progress: docs/ecosystem-cleanup-2026-09-12.md
+  experiment_lessons: wiki/runtime-mirust/reports/ecosystem-experiment-lessons-2026-09-12.md
+  old_intake: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-08-28.md
+  history_rule: Earlier C21-C30 source hashes, test counts, failure results, retirement inventories and coverage limits live in the progress/lesson records and Git history; they are not fresh tests or current completion claims.
+  storage_receipts: .uai/source-authority-relocation-2026-08-30.uai and .uai/storage-consolidation-2026-09-12.uai are historical, not proof of today's complete scan.
+  minimodel_source_checkpoint: b33b1a783e20db23b77971be061388b7e4163285; source checkpoint, no public deployment claim.
 
-minimodel_browser_catalog_cleanup:
-  checkpoint: MiniModel.org b33b1a783e20db23b77971be061388b7e4163285
-  public_source: d30114cac9326be104d0c441151caf0224425e3d
-  evidence: MiniModel.org/artifacts/reports/browser-catalog-review-20260912.json
-  lessons: wiki/runtime-mirust/reports/ecosystem-experiment-lessons-2026-09-12.md C26
-  change: Catalog failure clears previous actions and misleading loading state; controls recover only after current verified data. Superseded requests cannot overwrite newer results. The browser tool uses owned canonical output and an exact local preview instead of scattered profiles/screenshots, manual CDP and broad process matching.
-  verification: Corrected full suite 74 Node and 27 nested Pester passes; eight real Edge observations. Explicit historical-clock fixtures prove empty/reload/recovery UI only. Current-clock cases reject actual expired source. CSS is unchanged and the two viewports have no horizontal overflow. Node line/branch coverage is 90.76/80.82 percent for catalog.js and 92.88/88.89 for the browser helper, excluding browser-evaluated code. Owned browser and parent coverage output are removed.
-  lessons_retained: Isolate fixture clocks in fresh browsers; verify one operation's exact output rather than a shared directory; contain the coverage collector before test startup. The first full run exposed the shared-parent assertion race and was corrected without weakening cleanup ownership.
-  remaining: Catalog remains empty and expired, transport unbound, and no qualified starter or live server seed is proved. Current 22-file publication metadata is prepared and pushed, not deployed. Broader cleanup and blocked deletions remain open; no measured storage recovery.
-
-numerical_environment_diagnostic_cleanup:
-  evidence: artifacts/ecosystem-cleanup-20260912/numerical-environment-review.json
-  lessons: wiki/runtime-mirust/reports/ecosystem-experiment-lessons-2026-09-12.md C27
-  change: Source-owner validation preserves bounded typed environment errors while redacting arbitrary messages. Historical implementation assertions read frozen Git bytes in memory; numerical fixtures use owned canonical artifacts and verified setup-failure cleanup.
-  observation: The current D model-root training environment fails the existing runtime-lock configuration check and has different major package versions. This does not establish the exact cause of the historical generic numerical v2 failure. No weights or model framework were loaded.
-  verification: Eight Python tests pass; stdlib trace covers 43/43 executable lines in verify_environment, with no branch or whole-owner metric. Focused Node suite passes 22 with one unavailable pinned-framework test skipped. Ruff and unchanged registered-root source-authority gate pass. Owned fixture output is absent.
-  remaining: Historical contracts stay unchanged and closed. The current numerical owners still bind the historical source-lock/operation; a current licensed source, exact canonical reference environment and fresh reviewed bindings are required. Product-quality rejection is unchanged. No real numerical parity, default model, live seed, publication, historical/model deletion or measured storage recovery.
-
-canonical_numerical_reference:
-  evidence: artifacts/ecosystem-cleanup-20260912/canonical-numerical-reference-review.json
-  lessons: wiki/runtime-mirust/reports/ecosystem-experiment-lessons-2026-09-12.md C28
-  runtime: artifacts/external/qwen3-numerical-oracle/environment/Scripts/python.exe
-  environment_lock: contracts/vnext/qwen3-numerical-oracle-environment-lock.v2.json
-  differential_profile: contracts/vnext/qwen3-numerical-differential-profile.v2.json
-  change: Rebuilt one exact canonical runtime from 31 verified wheel identities. Current source/reconstructed producers and verifier bind the new environment/profile; source validation uses the corrected licensed source lock. The new profile explicitly requires fresh execution orchestration and does not adopt closed v2 authority.
-  verification: Actual source-owner environment admission passes; 28 distributions and 17677 files validate. All 25 focused Node, eight Python and five cleanup Pester checks pass with zero skips. Ruff passes. Cleanup command coverage is 86/132, below target because destructive removal and receipt writing were not executed.
-  pending_cleanup: Automatic review rejected the failed bootstrap removal and the two exact virtualenv capability-probe link removals. The unchanged source-authority scan is incomplete on those links. The installer root contains 431 regular files, 93 directories, two links and 296933889 logical bytes; no parent deletion or alternate API was used to retry a rejection.
-  owner_cleanup: tinyrustlm/tools/remove-reviewed-numerical-installer-output.ps1; actual WhatIf preflight verifies the complete exact inventory. Run only by the owner after reviewing the pending cleanup; the retained canonical runtime is excluded.
-  remaining: Remove the blocked temporary output and rerun the unchanged source gate; finish fresh numerical owner/registration bindings and real model qualification. No real checkpoint load, numerical parity, working default, live seed, deployment or measured storage recovery is claimed.
-
-numerical_execution_boundaries:
-  evidence: artifacts/ecosystem-cleanup-20260912/numerical-execution-boundary-review.json
-  lessons: wiki/runtime-mirust/reports/ecosystem-experiment-lessons-2026-09-12.md C29
-  change: Canonical request/output/model locations, minimal child and termination environments, isolated Python startup, explicit empty NODE_V8_COVERAGE and unchanged source-authority preflight. Both affected fixture families use owned canonical artifacts and inline probes.
-  verification: All 56 affected checks pass with zero skips. Actual Node and pinned Python probes pass; framework tests are synthetic. V8 ranges reached 53/54 selected source lines in the three new boundary functions; no whole-owner or branch percentage. Owned test/coverage output removed.
-  experiment: The first instrumented suite had three launch failures because Node automatically copied ambient coverage into the frozen child environment. An explicit empty own property fixes both mutation and output inheritance; the failure and exact installed Node implementation are recorded.
-  remaining: Source scan is still incomplete on the two policy-blocked C28 links. The C30 current contract below replaces closed v2 metadata coupling and binds dependencies; real registration and material gates remain open. No real checkpoint, qualification, default, seed, deployment or measured storage recovery.
-
-current_numerical_registration_contract:
-  evidence: artifacts/ecosystem-cleanup-20260912/numerical-current-registration-review.json
-  lessons: wiki/runtime-mirust/reports/ecosystem-experiment-lessons-2026-09-12.md C30
-  change: Active request, registration and owner contract accept only v3. Current locks, corrected source license and all fourteen artifact roles are required; operation IDs bind parent/date, final registration commits own one file and standard gates permit no skips. The current profile binds the prepared owner and helpers; its rejected model remains diagnostic-only.
-  verification: All 58 affected checks pass without skips. V8 reaches 317/317 selected source lines in four changed validators; no whole-owner or branch coverage. Exact registered cases, tolerances, process limits and five historical artifacts are unchanged. Owned test/coverage output removed.
-  remaining: No actual v3 registration exists. The two policy-blocked installer links remain and cleanup receipt is absent. Full source/release gates, fresh model-load/numerical evidence, eligible model qualification, default and live seeding remain open. No replay, historical/model deletion, deployment or measured storage recovery.
-
-portal_retirement_tool_cleanup:
-  checkpoint: TinyRustLM.MiRust.com d17f77a
-  change: Removed fixture CLI/authority roots and copied-site transports. Tests use actual canonical PowerShell functions with transport state in memory and bounded non-source output under canonical artifacts. Node startup injection stays disabled for the entire transaction.
-  evidence: TinyRustLM.MiRust.com/artifacts/ecosystem-cleanup-20260912/source-retirement-tool-review.json
-  lessons: wiki/runtime-mirust/reports/ecosystem-experiment-lessons-2026-09-12.md C22
-  verification: Five focused Node and 23 nested Pester checks pass; broader portal suite 58 pass, two existing stage/mirror absence failures, zero skips. Changed state/transaction/environment command coverage 92.93 percent; whole-script 60.05 percent. No actual FTPS, remote deletion, production receipt or publication. Owned scratch removed and initial manifest untouched.
-
-public_source_screening:
-  reviewed_utc: 2026-09-12T22:15:46.200Z
-  evidence: artifacts/ecosystem-cleanup-20260912/public-source-metadata-review.json
-  result: Eleven exact-revision public metadata files match publisher lengths and Git blob IDs. PrimeIntellect Qwen3 has the same published weight identity as rejected Qwen ancestry; the reviewed instruction-finetuned candidate has distinct weights but incomplete license/provenance records. No weights acquired, model executed, candidate qualified or hosting changed.
-  lessons: wiki/runtime-mirust/reports/ecosystem-experiment-lessons-2026-09-12.md C21
-  handoff_correction: Active architecture, operations, receiver and next-work notes now route to implemented source ownership/browser wiring and actual model/hosting blockers; the receiver no longer contradicts approved D:\LLMs\TinyRustLM storage. Historical intake checkpoint records remain unchanged.
-
-historical_source_checkpoint:
-  head_entering_work: da8bfacc138e4ab12291a9e90f77d6e5d62471b4
-  implementation: 5a9c097e66a83ceb6ee71ebe36462981e311baf6
-
-source_truth:
-  current_state_details: workspace.uai
-  companion: Production source owner, bounded acquisition, conversion, terminal inspection, transfer, and listener wiring exist; current worktree product UI loads the capability client and composition installer.
-  source_reference: dotnet/src/TinyRustLM.Companion/CompanionProductionOperationRuntime.cs
-  browser_reference: tinyrustlm/app/index.html
-  evidence_boundary: docs/companion/README.md
-  nonclaims: Implementation and fixture evidence establish no qualified real model, authorized real-source acquisition through this coordinator, numerical parity, real-model browser chat, live P2P, deployment, publication, or live memory result.
-
-next:
-  - For subsequent model work, use workspace.uai current_companion_truth and its source/record paths instead of obsolete owner-missing checkpoint prose.
-  - Establish an eligible exact source and fresh numerical bindings before pursuing real qualification and seeding; preserve closed failures and all counters.
-
-counters: 0/20, 0/50, 0/25, 0/40, 0/20.
+memory_policy: Separate authorized MemoryEndpoints agent coordination and consenting Connect-user memory; synchronized public-safe current copies are allowed, with no silent uploads or live claims.
+counters: 0/20 qualified; 0/50 browser; 0/25 live memory; 0/40 outside lanes; 0/20 catalog.

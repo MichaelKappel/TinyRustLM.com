@@ -1,14 +1,20 @@
 ---
-title: Runtime.MiRust.com LLM Wiki Index
-source_site: Runtime.MiRust.com
+title: TinyRustLM LLM Wiki Index
+source_site: TinyRustLM.com
 public_route: /runtime-mirust/
 status: planned_pending_publication
-reviewed_utc: 2026-07-01T02:30:00Z
+reviewed_utc: 2026-09-19T15:37:57Z
 ---
 
-# Runtime.MiRust.com
+# TinyRustLM
 
-This local LLM Wiki namespace routes durable memory for the Runtime.MiRust.com Rust mini-browser and browser-based AI harness project.
+This local LLM Wiki namespace routes current and historical TinyRustLM memory.
+
+## Current working-product guidance
+
+Start with [September 19 working-product memory](reports/tinyrustlm-working-product-memory-2026-09-19.md) and [the sixteen report decisions](reports/tinyrustlm-report-intake-decision-index-2026-09-19.md). TinyRustLM is early alpha and has never had a working release. Current owner rules prohibit debt, obsolete code and legacy support until a fully working release is officially accepted. The historical `runtime-mirust` namespace is retained for durable links; it is not a competing current product or documentation authority.
+
+Older records below are dated research or evidence. Their model claims, architecture proposals, retired acquisition paths and no-server-byte wording do not override current UAI guidance. MiniModel initial server seeding is authorized; restore an eligible installation or obtain a small qualified default, keeping technical controls under Advanced. No qualified default or live initial seed is established by this memory review.
 
 ## Required Records
 
@@ -174,6 +180,15 @@ This local LLM Wiki namespace routes durable memory for the Runtime.MiRust.com R
 
 ## Boundary
 
-This namespace is a source memory plan for TinyRustLM. Current implementation claims must still be verified through `workspace.uai`, `.uai/test-plan.uai`, source files, and local test output before being repeated publicly.
+This namespace is a source memory plan for TinyRustLM. Current implementation
+claims must still be verified against [the current TinyRustLM architecture](../../tinyrustlm/docs/architecture.md),
+[the companion boundary](../../docs/companion/README.md), source files, and
+current test output before being repeated publicly.
 
-Latest route: SLMComposer Progressive Source UI Memory records the Chat/Advanced Tools app split and explicit first-load source options: user local files, Hugging Face metadata discovery, and future MiniModel P2P metadata/manifests, all converging on local `.slm` verification; it also records that live SLMComposer.com is stale until explicit-FTPS deploy credentials/profile are available. SLMComposer Public Local Launch Memory records the live-site boundary: SLMComposer.com is the usable browser surface, Runtime.MiRust.com remains the project/docs identity, public-host boot waits for local `.slm` import, and `public-local-only` smoke proves no `/models/` or Hugging Face request before user action. MiniModel source-option memory now routes user-owned local files/lists, user-triggered Hugging Face metadata discovery, and future consent-based P2P transfer into the same local `.slm` verification boundary. Safetensors Candidate Review Memory records the `review-safetensors-candidate` pre-extraction route for real checkpoint review, budget fit, q8-first browser admission preference, BPE tokenizer evidence, checksum-bound local artifact rows, review-bound extraction/conversion/browser enforcement, and source_review sidecar carry-forward; Browser Converted Trained reports record selector-side source/review/validation/runtime/eval/admission proof before model bytes; Crossover, Mutation, Prune, and DARE Operator Memory record deterministic operator paths; Parent-Pool Evolution Schedule Memory records checksum-bound sign-merge plus soup replay planning; load `.uai/short-term-memory.uai`, `.uai/long-term-memory.uai`, the SLMComposer launch and progressive UI reports, all Browser Converted Trained reports, operator reports, Model Breeding reference pages, MiniModel source-option pages, Browser Selector/Combined Selector/Module Plan reports, and the UAIX dogfood note for the current memory map.
+Current routing note: the earlier request-file, generated-script, and
+Hugging-Face-first beginner flow referenced by dated memories in this index is
+superseded. The current product contract restores an eligible installed composition or obtains a small qualified default through MiniModel.org and its authorized initial server seeds. Hugging Face discovery, custom peer/catalog
+fields, receipts, and conversion diagnostics are Advanced controls. A text,
+JSON, or PowerShell download is not model acquisition. Dated reports remain
+unchanged as historical design and failure evidence; they do not authorize a
+current executable route or prove a live model, peer, package, or deployment.

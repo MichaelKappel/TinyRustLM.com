@@ -1,0 +1,169 @@
+---
+title: TinyRustLM working-product memory
+source_site: TinyRustLM.com
+reviewed_utc: 2026-09-19
+status: current_reviewed_guidance_not_product_qualification
+report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
+---
+
+# TinyRustLM working-product memory
+
+TinyRustLM is **early alpha and has never had a working release**. A fully working release must be explicitly and officially accepted by the project owner. Tests, a version number, a deployment, report consensus, or an agent's assessment cannot substitute for that acceptance. Until then, no code debt, technical debt, obsolete code, or legacy support is acceptable. This is an owner requirement, not a claim that cleanup has already finished.
+
+This node is the current synthesis of the sixteen September 19 returned reports and the supplied engineering checkpoint. It supersedes older *current guidance*, including the August 28 resume node, without rewriting historical receipts. Read `.uai/totem.uai` and `.uai/taboo.uai` for owner authority, `workspace.uai` for source bindings, and the [September decision index](tinyrustlm-report-intake-decision-index-2026-09-19.md) for every report's disposition. The index links byte-exact raw reports and identifies corrections. Their examples, pseudocode, tables, purported experiments, and citations are advisory input; no report demonstrates execution on this project.
+
+Authority order is current owner instructions, inspected current contracts and bounded implementation evidence, this reviewed guidance, then historical notes and raw research. A contract change needs a coherent replacement of producers, consumers, tests, and guidance. A research report calling SLM2 “legacy” does not make the current format obsolete.
+
+## Current evidence and its limits
+
+**Owner-supplied product facts:** preserve the existing visual appearance; automatically restore a usable installed model or obtain a small qualified default through MiniModel.org; keep Hugging Face, local import, conversion, custom peers and IP settings under Advanced. Prompts and inference stay local. MiniModel.org is authorized to supply initial server seeds. Download hosting is separate from inference hosting.
+
+**Recorded source state:** the Companion production source owner, bounded acquisition, conversion, terminal reconciliation, six-member inspection/transfer and listener wiring exist. The browser client is loaded by the worktree UI. These replace older “operation-not-available” and “browser client is not loaded” statements as descriptions of current source. The August observations remain historical. Source wiring does not establish an authorized real acquisition through this coordinator or a useful browser answer.
+
+**Recorded model state:** the unchanged Qwen/Qwen3-0.6B revision `c1899de289a04d12100db370d81485cdf75e47ca` is rejected for product quality. It may diagnose the runtime or be an explicitly reviewed ancestor of a genuinely new derivative. Repackaging, aliases, downloading identical weights elsewhere, changing a template, or re-quantizing cannot make that unchanged checkpoint eligible. This rejection does not cover every Qwen model. A reviewed alternate source had identical weight identity; another had distinct weights but incomplete provenance.
+
+**Recorded numerical state:** composition /12 passed structural inspection; `model.slm2` is 598,308,416 bytes. No real numerical agreement follows. Historical numerical v2 stopped at source-framework load with `source-trace-environment-drift`; later comparison arms never ran. Environment admission, synthetic framework checks, C29 child-process checks and C30 current v3 registration validators passed in their named experiments. There is still no material v3 registration or successful real checkpoint trace. Preserve closed /10 and v2 outcomes.
+
+**Recorded training state:** the 1,024 accepted-record pilot, later 200,000-record corpus, and 280-slot holdout remain planned. Genuine independent review and holdout custody are incomplete. Lower recorded training loss did not establish improved answers. The retained name, conflicting-deadline and unavailable-resource failures are observations, not an isolated diagnosis of checkpoint, template, quantizer, data or arithmetic.
+
+**Recorded delivery state:** there is no qualified default or proven live initial seed. Earlier MiniModel catalog observations were empty/expired; they are not a fresh public audit. Earlier topology suggested an external FTPS-oriented host, not a matching local IIS site. C31's canonical-input publication refactor remains unfinished and uncommitted; do not call it tested or deployed. Raw report claims of an existing Cicero IIS host are unsupported.
+
+The source-authority verifier, rerun during this intake with canonical Git trust configured, still reports `source_authority_scan_incomplete` on two previously blocked installer links. No deletion was retried. Cleanup, production execution and release gates must report this unresolved condition honestly. The user's requested correction of current memory is safe independent work; it does not make that gate pass.
+
+Campaign counters remain **0/20** qualified models, **0/50** clean browser rounds, **0/25** live memory rounds, **0/40** outside-proven lanes and **0/20** catalog announcements. Retain each claim's gate. Do not substitute completion of every long-term campaign for a dependency analysis of the first release, or discard a required gate to claim progress.
+
+## Model selection and quality
+
+**Adopted guidance, R01/R05/R16:** screen genuinely different, provenance-complete checkpoints in their trusted source implementations before spending on conversion or training. The research suggestions SmolLM2-360M-Instruct, SmolLM2-1.7B-Instruct and Qwen2.5-1.5B-Instruct are leads, not a verified current shortlist or qualified defaults. Report revisions are incomplete and one incorrectly assigns the rejected Qwen revision to a SmolLM model. Resolve full immutable revisions, byte identities, tokenizer/template requirements, licenses and redistribution obligations before download or execution admission. Do not copy their candidate scores as measurements or licensing clearance.
+
+For each candidate, retain a compact matrix: exact source and weight identities; architecture and unsupported operators; license/provenance status; download estimate; weight/KV/scratch estimate; reference screen failures; conversion cost; real browser measurements; and decision with uncertainty. Stop cycling through byte-identical repositories.
+
+Compare three routes by evidence:
+- Qualify an already useful compact checkpoint and adapt the sole runtime where justified.
+- Run a bounded new-derivative training experiment after inference, data and independent review readiness.
+- Narrow the initial task promise through an explicit product decision while retaining mandatory behavioral invariants.
+
+A polished fixture demonstration is useful for UI testing but is not a qualifying fourth route. No candidate winner, mandatory GGUF/Candle replacement, or indefinitely cancelled training program is adopted from these reports.
+
+**Proposed development screen:** ordinary useful help, rewriting, source-grounded summaries/extraction, JSON, a latest-turn correction, conflicting evidence, a missing prerequisite and a necessary clarification. Public examples below are development data and must never enter a secret holdout:
+- “Call me Alex.” Later: “Correction: my name is Maya. Write my sign-off.” Pass: Maya; fail: Alex or an invented identity.
+- Two equally authoritative notes say Tuesday and Thursday; neither supersedes the other. Pass: identify the conflict and ask the relevant clarifying question; fail: choose arbitrarily.
+- “There is no outlet, battery or generator. Can I run this electric heater here?” Pass: respect the absent power source and offer feasible alternatives; fail: invent electricity.
+- Extract a phone number from a passage containing none. Pass: explicit absence or the requested null representation; fail: fabricate.
+- Rewrite a short supplied paragraph in two sentences. Pass: useful rewrite preserving its facts and constraints; fail: irrelevant refusal or invented claims.
+
+Score usefulness, factual support, constraint adherence, correction/state handling and format separately. Use parsers for exact JSON/extraction constraints and calibrated human review for meaning. A model judge is assistance, not an independent human or ground truth. Blind candidate identity where feasible, reverse pair order, calibrate against human disagreements, and retain raw outputs. Do not execute model-produced code or treat a quoted instruction as tool authority.
+
+Development, regression, candidate-selection and final holdout sets have separate custody. Exposed holdout cases become development material and need fresh independently authored replacements. Never patch prompts three times against the holdout and then resume treating it as untouched. Report-proposed 85% accuracy, subsecond latency, kappa cutoffs and weighted scores are unmeasured suggestions; existing gates are not loosened.
+
+For independent representative Bernoulli cases, zero failures in 280 gives the one-sided 95% upper bound `1 - 0.05^(1/280) = about 1.064%`. This is a calculation, not a measured product rate. Correlated or deliberately stratified prompts do not automatically estimate a population rate; report category denominators and sampling assumptions. Zero observed failures never proves zero risk.
+
+## Semantic and numerical diagnosis
+
+**Adopted guidance, R02/R03/R04:** hold exact weights and input text fixed while locating semantic or numerical disagreement. Use five explicitly identified arms: original source framework; source-framework execution of independently reconstructed quantized weights; strict scalar Rust; any separately implemented optimized native arm; actual browser WASM. Current native/WASM sharing scalar code is not independent validation.
+
+Compare the original source to reconstructed quantized execution to measure compression effects. Compare reconstructed execution to scalar to locate conversion/runtime defects. Then compare scalar to optimization and WASM under their declared arithmetic contracts. Do not label any quantized/full-precision difference a bug. Teacher-force identical token IDs first; free-running paths can diverge after a small logit difference and need separate quality evaluation.
+
+Capture token IDs and serialized bytes, embedding, RMS normalization, Q/K/V projections, Q/K normalization where applicable, RoPE/positions, mask, attention scores/softmax/output, residual, MLP branches, final norm and logits. Begin with bounded summaries, layer/token coordinates, shapes, dtype, nonfinite counts, maximum absolute error and selected exact slices; enlarge only around the first failing boundary. Keep tensor orientation, tied physical/logical inventory and KV prefill/decode layout explicit. An independent reconstruction must not import the converter's implementation as its oracle.
+
+Correct Qwen3 diagnostic dimensions are **28 layers, hidden size 1024, intermediate size 3072, 16 query heads, 8 KV heads, explicit head dimension 128, vocabulary capacity 151936**, with Q/K normalization and tied embeddings handled by the exact implementation. The pinned config declares maximum positions 40960; this does not establish a supported product context. R02's 24/896/14/2 dimensions describe a different geometry. [Pinned Qwen configuration](https://huggingface.co/Qwen/Qwen3-0.6B/raw/c1899de289a04d12100db370d81485cdf75e47ca/config.json), immutable revision above, retrieved September 19, 2026.
+
+The current row-wise symmetric Q8 contract uses codes -127 through 127, finite F32 scales, scale 1 for zero rows, binary32 row maximum divided by 127, half-away-from-zero rounding and clipping; norms and admitted biases stay F32. Scalar dequantization/multiply/left-to-right sum has no FMA contract. Do not silently introduce Q4_K_M, SLM3, GGUF, BLAKE3/Bao, group scales or a new reduction order. Such alternatives need an ablation and coherent contract replacement if selected.
+
+Use one/two tokens, repeated tokens, uneven lengths, near-empty prompts, multi-turn corrections and context boundaries. Compare prefill with incremental decode and cache reuse with recomputation. Exact IDs, shapes, indices, identities and forbidden nonfinite values have exact requirements; floating-point tolerances depend on operation and arithmetic. Report absolute/relative errors with a low-magnitude floor, cosine only with defined zero-vector handling, top-token rank and margin. A universal epsilon or identical sampled prose is inadequate. Existing registered tolerances stay fixed for their experiment.
+
+**Semantic implementation guidance:** preserve input text according to the pinned tokenizer contract; forbid extra trimming, case folding, line-ending conversion or Unicode normalization. Do not ban normalization that the source tokenizer itself requires. Generate expected token IDs from the immutable reference, not assumptions that emoji/graphemes must occupy one token or malformed raw bytes are accepted by a text API. Distinguish literal backslash-n from an actual newline in test inputs. Stream decoding buffers incomplete UTF-8 bytes and defines final invalid-sequence handling consistently with the reference.
+
+Serialize roles and generation prefix once. Bind BOS/EOS/EOT, multiple stops, thinking controls and sampling to the exact candidate. R03's blank-line substitute for non-thinking controls is not an accepted template. User/quoted/retrieved data must not become structural role tokens; escaping alone cannot guarantee instruction-injection resistance. Do not display hidden reasoning, collect teacher private reasoning or repair answers after generation to pass evaluation.
+
+Use conversation revision plus generation identity. Cancellation invalidates future events from the cancelled generation; regeneration/editing invalidates the affected KV suffix. Deduplicate events by identity, not repeated text. Reserve output capacity before choosing history; keep complete turn boundaries, current corrections and policy. Truncation, summaries and retrieval must not silently discard the fact the user just corrected. Summaries are deferred until tested for omissions, stale corrections and invented state.
+
+## Browser, acquisition and storage
+
+**Adopted guidance, R08/R09/R10/R11/R12:** keep the main UI responsive and use bounded workers, queues and storage ownership. Measure discovery, download, verification, persistence, parse/load, compile/instantiate, prefill, first token, decode and warm restore separately. Record device, OS, browser version, runtime build, composition, input/output lengths, peak memory phase, cancellation delay and failure category. A page open, Node run, fixture or native speed is not real browser evidence.
+
+Memory accounting must include simultaneously live buffers: weights, scales, KV, activations/scratch, JS transfer/clone buffers, compilation and runtime overhead. Do not sum mutually exclusive maxima as steady-state memory or equate file size with peak RAM. For the pinned diagnostic geometry, F32 KV storage per token is `2 * 28 * 8 * 128 * 4 = 229376 bytes`: at 2048 tokens, **448 MiB**, before weights and scratch. This derived estimate assumes a dense full-context F32 cache, not a measurement of the current implementation. A 64 MiB cache claim without dimensions/dtype is not portable. Download time's ideal lower bound is `8 * bytes / link_bits_per_second`; protocol, verification and persistence add time.
+
+OPFS synchronous reads fill an application-provided buffer; OPFS plus COOP/COEP does not provide automatic file mapping into WASM linear memory. Transferable buffers reduce a particular copy; they do not prove a copy-free pipeline. Sync access handles have worker and locking requirements, and storage durability/quota behaviour needs browser-specific tests. [WHATWG File System Standard](https://fs.spec.whatwg.org/#api-filesystemsyncaccesshandle-read), living standard displayed updated March 15, 2026, retrieved September 19, 2026.
+
+Ordinary WASM memory loads/stores permit unaligned accesses; their alignment annotation is an optimization hint. R04/R14's blanket alignment-trap claim is rejected. Atomic instructions need their own contract review. No universal 2 GB browser limit, 16 GB Memory64 guarantee, fixed device RAM threshold or universally safe maximum preallocation is adopted. [WebAssembly execution specification](https://webassembly.github.io/spec/core/exec/instructions.html#memory-instructions), September 11, 2026 edition, retrieved September 19, 2026.
+
+Profile before choosing SIMD, threads or GPU. None becomes mandatory merely because different reports assert contradictory defaults. Measure low/mid/high device tiers chosen with the owner; invented 1-second/10-TPS thresholds remain proposals. Cancellation must be reachable while the worker is busy: yield at bounded compute boundaries or use an explicitly admitted interrupt mechanism. Microtask-only loops may not service queued cancel messages. Persist conversation state only under the product's consent rules; defer serializing KV until exact cache identity and restoration correctness justify it.
+
+**First-run state:** discover -> choose compatible qualified default -> download -> verify -> commit installation -> load -> ready -> generate. Cache restoration verifies the complete eligible installation, not only presence of model.slm2. Paused/interrupted acquisition is not active installation. If no qualified default exists, show an honest unavailable state and a useful retry/status action, not a synthetic answer or mandatory IP field. Keep size and cancellation visible. Network hints cannot establish that every connection is unmetered; storage estimates are not guaranteed free bytes. Avoid “only once,” “permanent storage,” exact seconds or automatic GPU fallback copy unless implementation supports it.
+
+Suggested concise labels are “Downloading model,” “Checking download,” “Preparing assistant,” “Ready,” “Download paused,” “Not enough storage,” “This model cannot run on this device,” and “No working default is available yet.” Include the actual model size and available action. Never equate Advanced import completion with readiness or qualification. Test first visit, interrupted return, online/offline return, changed device and two simultaneous tabs with people unfamiliar with model terminology.
+
+**Transport:** initially test browser HTTPS seed acquisition using existing content identity, then add peer routes only when justified. This is a proposal for the shortest seed-capable path, not a claim that a new transport has shipped or a silent redefinition of P2P. The owner already authorizes MiniModel initial seeds. Bind catalog trust/qualification separately from endpoint availability; bound requests, chunks, ranges, timeouts, retries and queued bytes. Validate Content-Range, total length, truncated/extra bytes and immutable identity on resume. A whole-member hash is still needed when transport chunks lack independent authenticated hashes. Report BEP52/Bao layouts are not current wire contracts.
+
+WebRTC data channels use SCTP over DTLS over UDP, with ICE for traversal; they are not DTLS-SRTP model transfer. HTTPS, WebRTC, WebTransport and Companion networking have different capability and deployment needs. [RFC 8831](https://www.rfc-editor.org/rfc/rfc8831.html#section-5), January 2021, retrieved September 19, 2026. Test seed-only availability, restricted networks, home NAT, mobile, IPv4/IPv6, interruption, wrong ranges, corrupt peers and cancellation. Real outside-network claims require real infrastructure. Downloading never authorizes indefinite seeding, background upload, unconsented metered traffic or sharing private prompts.
+
+**Storage:** developer source stays under E:\Source\Rust\TinyRustLM.com; developer model payloads stay under D:\LLMs\TinyRustLM; X:\LLMS stays untouched. End-user browser storage is a separate boundary. A remote serving copy is a necessary deployment artifact with a declared lifecycle, not a local backup.
+
+Maintain one active composition and at most the bounded candidate/partial state required by the current operation. Validate all six candidate members before changing the durable active reference; readers must see one complete identity. Do not publish composition.acg2 and then rename the other members one by one, as R12 proposes. That protocol admits mixed states. Define commit durability for each actual backend and fault-test every persistent transition. Coordinate writers and active readers; readwrite-unsafe is not a solution to locking correctness.
+
+After a validated replacement becomes active and readers release the old payload, retire superseded bytes; do not keep hidden rollback models. Required temporary overlap and peak disk space must be explicit. Candidate failure leaves the active installation intact. Remove only manifest-owned exact paths after containment, reparse/ownership and concurrent-use checks; “not in the active manifest” alone does not authorize deletion of arbitrary files. Preserve compact identities, results and lessons. Distinguish logical bytes removed from measured physical recovery, and keep policy-blocked removals visible.
+
+## Data and experiments
+
+**Adopted guidance, R06/R07/R14:** preserve the frozen pilot distribution until an explicitly revised experiment changes it. Families are ordinary conversation 184, ambiguity 82, constraints 102, conflict 62, latest-turn 62, quoted memory 72, multi-turn 82, lawful adult inquiry 72, summaries 61, rewriting 51, JSON 51, extraction 41, code 61, factual answers 41. Total 1,024. At least 98.5% should give positive substantive help; at most 1.5% narrow boundaries. This is the planned lane, not completed data.
+
+Vary semantic factors, not only names or wording: correction position, explicit supersession versus unresolved conflict, authority/source age, unavailable resource versus optional preference, distracting turns, output schema and justified clarification. Public report examples are development candidates needing review, not accepted pilot records. Bind source permissions, teacher identity/settings, raw output, accepted text, transformations, record revision, reviewer decisions and split identity. Do not infer content rights from a scanner.
+
+Two distinct primary reviewers and independent adjudication of disagreement remain necessary for this lane; holdout authors need independent custody. Multiple personas from one agent do not satisfy independence. Edited drafts do not create valid preference pairs. R06's compulsory 2-for-1 negatives, corpus reallocation and ORPO/DPO, and R07's rank-16 LoRA/SimPO recipe are proposals, not approved replacements. No teacher private reasoning may be requested or retained.
+
+Before training, verify reference inference and serialization, assistant-only loss masks, padding and sequence boundaries, normalization of accumulated loss, optimizer/schedule/precision, and the direction/temperature/weight of preservation KL. A KL penalty can preserve defects as well as capability; vary it only under a new controlled plan. Do not revive retired top-k code for compatibility. Pilot gains require held-out target behavior plus broad non-regression and post-merge/conversion/quantization/browser checks before scale. No paid GPU service is implicitly authorized.
+
+Use an experiment record with question, competing hypotheses, exact input/source/tool/environment identities, controlled change, method, stage observations, result, uncertainty, decision, reusable lesson and evidence identity. Record stages never started as such; environment failure is not a model quality failure. Node 24 coverage inheritance affected child launch, not proven WASM numerical behavior. Explicit empty NODE_V8_COVERAGE suppressed that inheritance in the named work; this does not prove real-model inference.
+
+Preregister material model experiments with their existing contract. Routine reversible development checks need proportionate records. Repeating unchanged network chunks is transfer recovery; reopening a closed scientific operation is different. After an actual fix, create a new experiment identity and preserve the failed predecessor. Retain bounded exact slices/raw conversations needed to justify a conclusion; don't discard all traces immediately because a report says logs are expensive. Preserve needed evidence while retiring unnecessary payload copies.
+
+## Hosting, ownership and release
+
+**Adopted guidance, R10/R13/R15:** discover actual DNS, origin/TLS, static HTTPS/range/CORS support, FTPS behaviour, process/port support, bandwidth limits and publication authority through bounded read-only inspection. Do not edit unrelated IIS sites or infer host topology from repository location. Static/FTPS hosting may serve immutable HTTPS model bytes without an always-running peer service. Object storage or a small promotion endpoint is a conditional alternative if existing capabilities fail; R2 provisioning, cost assumptions, DNS changes and a claimed infinite capacity are not adopted.
+
+Use stable six-member names within immutable identity-addressed URL directories where the actual protocol permits. Immutable URLs do not require inventing unpublished composition.acg2 JSON fields or renaming canonical members. Hash and validate the entire client asset/model graph, write a chosen small activation pointer last only where its semantics are proven, and read back from an independent external client. Index.html and service-worker.js are two writes, not one atomic release commit.
+
+A service worker lifecycle can help maintain a coherent app shell, but it does not prove first-visit control or a remote transaction. A file named publish.lock with write/readback does not establish cross-host exclusive publication. FTPS rename does not itself provide compare-and-swap or multi-file rollback. Require actual capabilities for those claims. [Service Worker specification](https://w3c.github.io/ServiceWorker/), living draft retrieved September 19, 2026; [RFC 959](https://www.rfc-editor.org/rfc/rfc959.html), October 1985, retrieved the same day.
+
+Keep TLS protection for both control and data transfers; reject R13's suggested clear data-channel workaround. [RFC 4217](https://www.rfc-editor.org/rfc/rfc4217.html#section-9), October 2005, retrieved September 19, 2026. This intake does not certify an FTPS production transaction or fix C31. Finish and test the actual implementation separately, preserving canonical-input hashing and avoiding copied source snapshots.
+
+Actual responsibility anchors: TinyRustLM.com owns the app and current runtime/contracts; TinyRustLM.MiRust.com is its current developer portal; MiniModel.org owns catalog/discovery plus authorized initial seeding; MiniModel.MiRust.com owns its protocol/developer documentation; MiRust.com owns ecosystem guidance. Runtime.MiRust.com is a retired separate public authority, not automatically the engine repository. LMComposer.com is a discovered canonical repository whose remaining implementation role needs local inspection; do not equate it with historical SLMComposer.com branding.
+
+At each producer/consumer boundary record the owning implementation, exact schema/profile, identity, resource limits, validation order, cancellation, error category and success evidence. Use owning libraries or generated bindings where justified; don't create documentation mirrors or duplicate runtime implementations. Keep published, available, acquired, verified, installed, loaded, numerically agreed and qualified distinct.
+
+MemoryEndpoints.com is authorized and strongly recommended with two distinct lanes: direct ecosystem agent coordination and the consenting TinyRustLM.com Connect user's selected long-term memory. Configuration is not a live receipt. This report-intake task does not authorize sending messages or uploading user data. Keep local/offline memory, separate credentials and provenance, and synchronize maintained public-safe memory copies.
+
+## Next decisive work
+
+These are proposed experiments/backlog items, not executions or a new frozen acceptance contract.
+
+| Priority / role | Exact inputs and procedure | Observable decision | Dependency and stopping rule |
+| --- | --- | --- | --- |
+| E1, model/evaluation lead | Resolve a small set of genuinely distinct licensed source identities; freeze a public development screen and run each in its trusted reference. | Raw useful/failed answers, constraints and setup cost. | Candidate admission first; reject failing source before expensive conversion; never reopen unchanged rejected Qwen for product selection. |
+| E2, numerical/runtime engineer | Authorized fresh registration, pinned diagnostic/reference input IDs, reconstructed Q8, scalar, then WASM teacher forcing. | First differing semantic or arithmetic boundary with bounded trace. | Resolve source-authority/material gates; failed source load leaves other arms not started; do not train around unknown divergence. |
+| E3, browser engineer | Exact numerically admitted candidate on declared device/browser, cold/warm load, fixed prefill/decode, cancellation and repeated turns. | Phase timing, peak memory, useful output and recovery. | Quality is separate; if browser cost fails, measure a bounded kernel/context/model alternative rather than assume OPFS mapping fixes it. |
+| E4, acquisition/release engineer | Read-only host capability discovery, then authorized immutable seed staging and external range/CORS/integrity/resume tests. | Actual transfer and coherent installation; no seed default promotion from reachability. | Discovery can run alongside E1/E2; real default publication waits for qualification and release gates. |
+| E5, product/evaluation owner | Clean supported browser, exact release/default identities, first visit -> download -> useful conversation -> return offline -> update/cancel. | User completes beginner flow, maintains corrected facts and recovers safely. | All relevant preceding evidence; owner officially accepts only a fully working release. |
+
+Day one should settle exact candidate eligibility and the smallest reference screen, audit serialization boundaries, and discover hosting capabilities in parallel *as work streams*, without inventing agents or reviewers. A one-week evidence target is at least one informative source-quality decision, a real trace or precisely classified blocked stage, measured browser resource data if numerically ready, and a verified hosting capability decision. Staffing/hardware are unknown; these are targets, not promised delivery dates.
+
+Defer speculative architectures, lower-bit changes without an ablation, large training, broad peer scheduling, KV persistence and additional documentation mirrors. Continue necessary integrity, cancellation, privacy and current-only cleanup. Stop renaming rejected weights, accepting file creation as structural validity, equating loss with conversation, using report example measurements as local results, serializing unrelated research into prerequisites, and creating historical model piles.
+
+The next recommendation-changing fact is whether a genuinely distinct compact source model can give useful answers on the discriminating reference screen within a plausible browser memory budget. The least expensive way to learn it is exact source admission and a small bounded reference run. Meanwhile, the existing diagnostic path can locate runtime defects without pretending the rejected diagnostic checkpoint is a product candidate.
+
+## Memory maintenance boundary
+
+Named historical evidence routes remain available without becoming current policy:
+
+- `wiki/runtime-mirust/reports/tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md`
+- `wiki/runtime-mirust/reports/tinyrustlm-qwen3-model-load-correction-memory-2026-08-26.md`
+- `wiki/runtime-mirust/reports/tinyrustlm-qwen3-source-terminal-process-identity-correction-memory-2026-08-26.md`
+- `wiki/runtime-mirust/reports/tinyrustlm-qwen3-source-terminal-verification-v1-memory-2026-08-26.md`
+- `wiki/runtime-mirust/reports/tinyrustlm-qwen3-numerical-execution-terminal-memory-2026-08-26.md`
+- `wiki/runtime-mirust/reports/tinyrustlm-qwen3-numerical-differential-memory-2026-08-26.md`
+- `wiki/runtime-mirust/reports/tinyrustlm-qwen3-composition-v12-structural-pass-memory-2026-08-26.md`
+
+All current repository UAI memory is reviewed by this intake; topic rules belong in architecture, coding, test, operations and continuation files. The two dated UAI relocation/storage receipts remain byte-identical historical evidence. The old ledger body also remains historical; its new current header routes here. Historical records can contain superseded instructions and observations; use them to understand a named past outcome, never as current authority.
+
+This intake changes guidance, routing and its validators. It does not change model formats, train or qualify a model, deploy a seed, publish a site, run live MemoryEndpoints actions, remove blocked historical payloads, or complete the wider ecosystem cleanup. Raw advisory files are retained with their exact identities in the configured report-intake archive after proof of use.

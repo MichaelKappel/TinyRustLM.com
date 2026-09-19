@@ -4,16 +4,14 @@ param(
     [string]$ManifestRoot = 'docs/report-intake',
     [Alias('CurrentBatches')]
     [string[]]$CurrentManifestRoutes = @(
-        'docs/report-intake/2026-08-26/post-v10-native-browser-release/MANIFEST.md',
-        'docs/report-intake/2026-08-27/omi-computational-architectures-research/MANIFEST.md',
-        'docs/report-intake/2026-08-27/ontological-machine-intelligence-research/MANIFEST.md'
+        'docs/report-intake/2026-09-19/working-product-research/MANIFEST.md'
     )
 )
 
 $ErrorActionPreference = 'Stop'
 
-$canonicalMemoryRoute = 'wiki/runtime-mirust/reports/tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md'
-$decisionIndexRoute = 'wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-08-28.md'
+$canonicalMemoryRoute = 'wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md'
+$decisionIndexRoute = 'wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md'
 $failures = New-Object System.Collections.Generic.List[string]
 
 function Add-Failure {
@@ -329,8 +327,8 @@ foreach ($manifestRoute in $CurrentManifestRoutes) {
         [void]$currentRows.Add($row)
     }
 }
-if ($currentRows.Count -ne 47) {
-    Add-Failure "Current reviewed report inventory must contain 47 reports; found $($currentRows.Count)."
+if ($currentRows.Count -ne 16) {
+    Add-Failure "Current reviewed report inventory must contain 16 reports; found $($currentRows.Count)."
 }
 
 if (-not (Test-Contains -Text $ledgerText -Value $canonicalMemoryRoute)) {
@@ -379,9 +377,10 @@ foreach ($requiredText in @(
 $uaiFiles = @(
     Get-ChildItem -LiteralPath (Join-Path $rootPath '.uai') -Filter '*.uai' -File
     Get-Item -LiteralPath (Join-Path $rootPath 'workspace.uai')
+    Get-Item -LiteralPath (Join-Path $rootPath 'tinyrustlm/authority/ecosystem-workspace.uai')
 )
-if ($uaiFiles.Count -ne 22) {
-    Add-Failure "Expected 22 current UAI files; found $($uaiFiles.Count)."
+if ($uaiFiles.Count -ne 24) {
+    Add-Failure "Expected 24 UAI files including two historical receipts; found $($uaiFiles.Count)."
 }
 
 [int64]$uaiBytes = 0
@@ -394,6 +393,10 @@ foreach ($file in $uaiFiles) {
     }
 
     $text = Get-Content -LiteralPath $file.FullName -Raw
+    # Dated receipts preserve past identities, not current routing authority.
+    if ($route -in @('.uai/source-authority-relocation-2026-08-30.uai', '.uai/storage-consolidation-2026-09-12.uai')) {
+        continue
+    }
     foreach ($requiredRoute in @($canonicalMemoryRoute, $decisionIndexRoute)) {
         if (-not (Test-Contains -Text $text -Value $requiredRoute)) {
             Add-Failure "Current UAI file is missing a durable route: file=$route route=$requiredRoute"
@@ -436,8 +439,9 @@ $canonicalText = if (Test-Path -LiteralPath $canonicalPath -PathType Leaf) {
 foreach ($requiredText in @(
     $decisionIndexRoute,
     'MemoryEndpoints.com is authorized and strongly recommended with two distinct',
-    'operation-not-available',
-    'browser client is not loaded',
+    'early alpha and has never had a working release',
+    'browser client is loaded',
+    'no material v3 registration',
     '0/20',
     '0/50',
     '0/25',

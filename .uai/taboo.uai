@@ -1,8 +1,8 @@
 profile: tinyrustlm.taboo.current.v1
-updated_utc: 2026-09-19T15:00:11Z
+updated_utc: 2026-09-19T15:37:57Z
 role: prohibited directions
-canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md
-report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-08-28.md
+canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
+report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
 early_alpha_release_prohibitions:
   - The owner's 2026-09-19 directive confirms that TinyRustLM is still in early alpha and has never had a working release or an officially accepted fully working release.
@@ -80,3 +80,13 @@ evidence_prohibitions:
 # Reviewed TinyRustLM and retired-Runtime findings begin at E:\Source\Rust\TinyRustLM.com\wiki\runtime-mirust\reports\ecosystem-experiment-lessons-2026-09-12.md; this is a growing review, not blanket proof that every experiment has been assessed.
 # Training checkpoint replacement must preserve immutable metrics and hash-linked receipts, verify the newest payload before retirement, and keep only one current payload. Never recreate a duplicate final-candidate model directory or treat receipt-only history as loadable weights. Current trainer retention and its verification limits are recorded in lesson T8.
 # Do not execute or revive the retired generic sequence/top-k producer chain, old SmolLM2 adapter-source/ALR1 exporter, or their historical recipes. The 26 reviewed source/control files still await owner-run physical retirement after automatic approval review blocked deletion; lessons T9-T11 preserve their useful findings. Source history is in Git 33483be, and only the pinned current working-model lane can obtain fresh training authority.
+
+research_intake_prohibitions:
+  - Do not promote report recommendations, invented measurements, placeholder revisions, assumed topology, synthetic lesson examples or asserted independent review into project facts.
+  - Do not call the current six-member SLM2/Q8 contract obsolete merely because a report recommends GGUF, SLM3, Q4, Bao, a new template engine or another backend. Justify and replace the sole current contract coherently.
+  - Do not revive unchanged rejected Qwen weights through a new name, repository, template or quantization. Diagnostic parity is not product qualification.
+  - Do not introduce hidden reasoning collection, holdout contamination, answer repair, unmeasured thresholds as passed gates or fabricated reviewer identities.
+  - Do not infer automatic OPFS-to-WASM mapping, universal browser limits, FTP cross-host exclusion, service-worker release atomicity or a local IIS host without actual evidence.
+  - Do not bypass a policy-rejected deletion or report obsolete payloads absent when removal is blocked.
+  - Do not confuse bounded retransmission/resumption of unchanged verified transfer bytes with replay of a closed model experiment. This distinction permits no legacy compatibility or hidden scientific retry.
+  - Do not treat historical UAI receipts or old ledger observations as current startup instructions; do not rewrite their past results.

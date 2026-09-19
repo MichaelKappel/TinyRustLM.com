@@ -14,9 +14,9 @@ const canonicalEcosystemWorkspacePath = path.join(
   canonicalEcosystemRoot, "workspace.uai");
 const canonicalEcosystemWorkspaceTemplatePath = path.join(
   repositoryRoot, "tinyrustlm", "authority", "ecosystem-workspace.uai");
-const canonicalEcosystemWorkspacePolicyBytes = 4180;
+const canonicalEcosystemWorkspacePolicyBytes = 5172;
 const canonicalEcosystemWorkspacePolicySha256 =
-  "9e6c5eff460818a802587e4052d05473ea704d3633e68783d44680feef247f3e";
+  "64ad6e1472630a3f92665a13ca2843624f11997e811c1ab55dc2800aa474b492";
 const localWorkspaceRoot = "E:\\Source";
 const requiredBranch = "codex/model-acquisition-v2";
 const requiredOrigin = "https://github.com/MichaelKappel/TinyRustLM.com.git";

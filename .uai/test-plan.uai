@@ -1,7 +1,7 @@
 profile: tinyrustlm.test-plan.current.v1
-updated_utc: 2026-09-13T02:44:54Z
-canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md
-report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-08-28.md
+updated_utc: 2026-09-19T15:37:57Z
+canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
+report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
 gate_0_memory_and_intake:
   - Verify every manifest-owned report length/SHA-256, ledger entry, synthesis/TDD route, placeholder-only active intake, decision-index coverage, UAI size ceiling, no stale current policy, and no secrets.
@@ -32,7 +32,7 @@ gate_5_quality:
   - Untouched source screen, sealed paraphrases, multi-turn semantic invariants, raw outputs, fixed seeds, contamination controls, paired quantization/browser noninferiority, blinded human adjudication, and honest rejection.
 
 gate_6_product_browser:
-  - Exact qualified P2P import or explicit local conversion; no instruction download.
+  - Restore eligible installed composition or automatically acquire the qualified MiniModel default through its admitted route; Advanced retains explicit local conversion. No instruction-file substitute or synthetic default.
   - Exactly-once rendering, real cancellation, worker replacement, responsive/accessibility/privacy assertions, process closure, owned profile deletion, and no unexpected network traffic.
 
 gate_7_memory_endpoints:
@@ -50,6 +50,35 @@ gate_9_release:
 current_required_checks:
   - UaixMemoryConsolidationTests and rewritten report-intake verification.
   - MemoryEndpoints portable policy and sync tests.
-  - Full managed Release, standard Node partition, relevant Rust memory tests, formatting, diff hygiene, and secret scan.
+  - For this memory intake, run the affected memory/intake checks, pointer/hash/coverage-of-reports validation and diff/secret hygiene. Behavioral changes require their complete affected managed/Node/Rust/browser gates separately.
 
 counters: Stay 0/20, 0/50, 0/25, 0/40, 0/20 until exact live receipts pass the corresponding gate.
+
+reviewed_diagnostic_matrix:
+  reports: R01, R02, R03, R04, R08
+  source_before_conversion: Exact source revision/weight/license admission, reference useful-answer screen, then converted runtime; unchanged rejected ancestry stays diagnostic-only.
+  arms: original source; independently reconstructed quantized source; scalar Rust; optimized native where implemented; actual browser WASM.
+  isolation: Original-vs-reconstructed measures compression; reconstructed-vs-scalar isolates conversion/arithmetic; later arms test backend effects. Teacher-force exact IDs before sampled free running.
+  cases: one/two tokens; uneven lengths; repeated tokens; near-empty prompts; UTF-8/emoji/combining marks/whitespace/code/JSON; special-token data; multi-turn correction; edited/cancelled race; cache/context boundary.
+  capture: IDs/serialization, embeddings, normalization, Q/K/V and Q/K normalization, RoPE/mask/attention, residual/MLP/final normalization/logits; bounded summaries then exact first-divergence slices.
+  arithmetic: Per-operation absolute/relative bounds, low-value handling, NaN/Inf rejection, rank/top-margin changes; retain registered thresholds. Exact IDs/shapes/indices are not approximate.
+  quantization: Hold model/template/sampler/input fixed across full precision, reconstructed Q8 and runtime. Test zero/outlier/tiny/nonfinite rows, rounding ties, byte counts, signedness and tensor orientation.
+  browser: Measure real cold/warm phase peaks, TTFT/decode, main-thread responsiveness, cancel latency and multi-tab/reload/eviction behaviour; do not import report RAM/TPS limits as measured gates.
+
+reviewed_quality_and_data:
+  reports: R05, R06, R07
+  invariants: Latest explicit correction wins; unresolved equal-authority conflict stays unresolved; missing resources/evidence are not invented; answers remain useful and source-grounded.
+  scoring: Separate material failures, graded usefulness, format, latency/resources and feature-specific claims. Judge calibration/position reversal supplement deterministic parsers and real independent review.
+  splits: Development, regression, selection and untouched holdout have separate roles; report examples are public development cases. Exposed holdout items need independent replacements.
+  statistics: Report counts/denominators and representative-sampling assumptions. Zero failures in 280 independent representative cases gives about 1.064 percent one-sided 95 percent upper bound, not zero risk.
+  pilot: Keep the frozen 1024 accepted-record allocation and positive-help ratio; obtain two genuine reviewers, independent adjudication and holdout custody. No invented preference labels or hidden teacher reasoning.
+  training: Verify assistant-only masks, padding/packing, normalization, optimizer/schedule/precision and KL direction/temperature before bounded ablation. Require broad non-regression and post-conversion/browser checks before scale.
+  proposals: New allocations/objectives/ranks, kappa/accuracy thresholds and performance budgets require explicit experiment decisions; never weaken a frozen gate.
+
+reviewed_transfer_storage_release:
+  reports: R09, R10, R11, R12, R13, R15, R16
+  transfer: Seed-only availability, wrong/truncated/extra ranges, chunk identity, hostile peers, backpressure, cancellation and resumed hash verification.
+  storage: Fault injection at every persistent transition; no mixed composition, unverified activation, stale-reader deletion, unexpected-file cleanup or indefinite retired model.
+  release: First visit and existing tabs, cache/client graph consistency, interrupted publication, competing publishers and external readback; FTPS mocks are not remote transaction proof.
+  end_to_end: Clean supported browser -> qualified default -> useful multi-turn answer -> offline return -> safe cancel/update; owner official acceptance remains distinct from all tests.
+  memory: Verify all current pointers and every September report disposition/hash/proof route; preserve dated UAI and prior ledger body as history.

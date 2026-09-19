@@ -1,7 +1,7 @@
 profile: tinyrustlm.operations.current.v1
-updated_utc: 2026-09-12T22:15:46.200Z
-canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md
-report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-08-28.md
+updated_utc: 2026-09-19T15:37:57Z
+canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
+report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
 historical_checkpoint:
   implementation_commit: 5a9c097e66a83ceb6ee71ebe36462981e311baf6
@@ -26,8 +26,8 @@ active_operation:
 next_product_operation:
   - Establish an eligible exact source checkpoint. The unchanged pinned Qwen3 weights remain rejected product ancestry; renamed repositories or template edits do not establish a new derivative.
   - For the pinned training lane, obtain the required reviewed curriculum and independent holdout inputs plus fresh program/environment bindings; do not fabricate review or custody evidence.
-  - Use fresh numerical owner and operation registrations for an eligible source, then verify actual six-member composition, native/WASM agreement, untouched quality and useful browser chat. Do not replay closed failures.
-  - Prepare initial MiniModel.org server seeds using current qualified model bytes only from D:\LLMs\TinyRustLM. Hosting placement remains an unanswered owner decision; source implementation is not deployment evidence.
+  - Use the current v3 numerical owner and a fresh material registration for admitted diagnostic work; use an eligible source for product qualification, then verify actual six-member composition, native/WASM agreement, untouched quality and useful browser chat. Do not replay closed failures.
+  - Prepare initial MiniModel.org server seeds using current qualified model bytes only from D:\LLMs\TinyRustLM. Discover actual host capabilities read-only before selecting placement; ask the owner only for an irreducible decision such as a new paid host. Source implementation is not deployment evidence.
   - Keep cache restoration and small qualified MiniModel acquisition as the beginner path; place HF, local files, conversion and manual peer/IP controls in Advanced.
   - Continue remaining obsolete-code and experiment review, preserving findings before retirement and reporting blocked physical removals accurately.
 
@@ -39,8 +39,33 @@ memory_operations:
 
 release_operations:
   - Commit and push coherent green major changes.
-  - Fetch and prove local/tracking/FETCH_HEAD/direct-remote equality.
+  - Fetch and prove local HEAD, tracking and direct remote branch equality; FETCH_HEAD is incidental, not authority.
   - Deploy each affected site only after complete tests/docs/security/privacy/authorization/rollback gates.
   - Verify public HTTPS bytes, headers, service worker, publication log, version, release date, and rollback identity.
 
 counters: 0/20 qualified; 0/50 browser; 0/25 live memory; 0/40 outside lanes; 0/20 catalog.
+
+reviewed_first_run_and_seed:
+  reports: R09, R10, R11, R13
+  beginner: Restore a complete eligible installed model or acquire a small qualified MiniModel default; preserve appearance and keep expert controls under Advanced.
+  honest_states: Show actual download size, progress, pause/cancel, verification, installation and load. Never promise permanent storage, a one-time download or GPU fallback without implementation evidence.
+  hosting_discovery: Separate DNS, TLS origin, static/range/CORS/cache support, FTPS publication, process/port support, bandwidth and publisher authority. Do not assume local IIS or the reports' invented location.
+  seed_candidate: Test bounded HTTPS ranges within the authorized peer-capable acquisition design; source availability does not make an unqualified model a default.
+  external_proof: Independent external network must verify catalog trust, all six exact members, interruption/resume, activation and a useful actual browser answer.
+  publication: Immutable assets and verified client graph can reduce mixed-release risk; only demonstrated capabilities establish pointer atomicity, concurrent exclusion or recovery.
+  prohibit: No report-driven cloud purchase/DNS change, invented ACG2 JSON, two-write atomicity, FTP lock readback as exclusion or clear FTPS data channel.
+
+reviewed_storage_and_experiments:
+  reports: R06, R07, R12, R14
+  model_lifecycle: One active model plus bounded in-progress candidate state; verify all members before durable active-reference commit. Retire old payload after activation and reader release, with no hidden model backups.
+  cleanup: Exact owned paths, contained physical identity, reparse/concurrency checks and durable lessons first; do not delete arbitrary unlisted files or bypass blocked removal.
+  bytes: Report logical removal separately from measured physical recovery; failed or delayed reclamation is explicit.
+  training: Preserve frozen 1024 pilot/200000 scale plan, 280 holdout slots and independent review requirements. Recipe/reallocation/preference changes remain new proposals.
+  preflight: Verify actual child compiler/interpreter imports, locks, dtype/memory and relevant environment before costly work. Source load failure is environment/setup until evidence isolates another cause.
+  lesson_fields: question; exact inputs; method; stage/result; uncertainty; decision; reusable lesson; evidence identity.
+  close_run: Preserve failed attempts and stages never started; a corrected implementation needs a new experiment. Transfer resumption is not scientific replay.
+
+current_limit:
+  maturity: Early alpha, never a working release; debt/obsolete/legacy prohibition is a requirement, not a cleanup-success claim.
+  source_scan: Two installer links remain policy-blocked and cause incomplete scanning.
+  c31: Publication refactor is unfinished/uncommitted; no current tested or deployed result.

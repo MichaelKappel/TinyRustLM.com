@@ -1,8 +1,8 @@
 profile: tinyrustlm.totem.current.v1
-updated_utc: 2026-09-19T15:00:11Z
+updated_utc: 2026-09-19T15:37:57Z
 role: positive operating authority
-canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md
-report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-08-28.md
+canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
+report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
 release_maturity:
   stage: early alpha
@@ -40,3 +40,9 @@ delivery:
   - Commit and push every coherent green major change.
   - Deploy each affected site whenever its complete gate passes, then verify public HTTPS bytes and headers.
   - Keep campaign counters at 0/20, 0/50, 0/25, 0/40, and 0/20 until matching live evidence exists.
+
+reviewed_research_application:
+  - Use September 19 report decisions in the owning architecture, test and operations memory; retain raw reports byte-exact as advisory evidence.
+  - Establish useful exact-source behavior, then semantic/numerical agreement and actual browser viability; independently discover authorized MiniModel seed capabilities.
+  - Preserve one current six-member/Q8 contract until evidence justifies a coherent replacement; report assertions do not establish obsolescence.
+  - Keep current guidance concise and synchronized; route dated receipts as historical evidence and retain useful lessons before retiring payloads.

@@ -1,14 +1,20 @@
 ---
-title: Runtime.MiRust.com Source Memory Guide
-source_site: Runtime.MiRust.com
+title: TinyRustLM Source Memory Guide
+source_site: TinyRustLM.com
 public_route: /runtime-mirust/source-memory-guide/
 status: planned_pending_publication
-reviewed_utc: 2026-07-04T01:35:00Z
+reviewed_utc: 2026-09-19T15:37:57Z
 ---
 
-# Runtime.MiRust.com Source Memory Guide
+# TinyRustLM Source Memory Guide
 
 Use this guide to route future agents to the correct memory layer.
+
+## Current working-product guidance
+
+Start with [September 19 working-product memory](reports/tinyrustlm-working-product-memory-2026-09-19.md) and [the sixteen report decisions](reports/tinyrustlm-report-intake-decision-index-2026-09-19.md). TinyRustLM is early alpha and has never had a working release. Current owner rules prohibit debt, obsolete code and legacy support until a fully working release is officially accepted. The historical `runtime-mirust` namespace is retained for durable links; it is not a competing current product or documentation authority.
+
+Older records below are dated research or evidence. Their model claims, architecture proposals, retired acquisition paths and no-server-byte wording do not override current UAI guidance. MiniModel initial server seeding is authorized; restore an eligible installation or obtain a small qualified default, keeping technical controls under Advanced. No qualified default or live initial seed is established by this memory review.
 
 ## Active Project Memory
 
@@ -62,7 +68,16 @@ For TinyLM-16M BPE safetensors planning, load `reports/tinylm16-bpe-safetensors-
 
 For MiniModel source-option work, load `research/minimodel-p2p-tiny-model-exchange-roadmap-2026-07-01.md`, `research/minimodel-manifest-verifier-mvp-2026-07-01.md`, and `research/huggingface-api-source-options-2026-07-01.md` when local files/lists, Hugging Face discovery, P2P transfer, metadata-only catalogs, or no-server-model-byte boundaries are in scope.
 
-For Hugging Face conversion-request handoffs, load `reports/tinyrustlm-huggingface-conversion-request-memory-2026-07-02.md` when `Start Conversion`, `minimodel.huggingface_conversion_request.v0`, `convert-huggingface-request`, generated `.tinyrustlm-convert.ps1` scripts, conversion receipts, or local `.safetensors` to `.slm` request parsing are in scope. Also load `reports/tinyrustlm-self-locating-conversion-kit-memory-2026-07-02.md` when the generated conversion script's workspace/source-file resolution, `TINYRUSTLM_WORKSPACE`, `MINIMODEL_WORKSPACE`, `TINYRUSTLM_SOURCE_SAFETENSORS`, nearby path fallbacks, or placeholder-path regression tests are in scope. Load `reports/tinyrustlm-huggingface-local-download-opt-in-memory-2026-07-03.md` when Hugging Face sibling URL/hash/byte hints, `TINYRUSTLM_ALLOW_HF_DOWNLOAD`, or browser-metadata-only versus local-script-download boundaries are in scope. Load `reports/tinyrustlm-huggingface-source-contract-memory-2026-07-03.md` when Rust must enforce request-listed `.safetensors` file names, byte counts, SHA-256 values, source-contract preflight failure, or source-contract receipt fields before Hugging Face-to-`.slm` conversion. Load `reports/tinyrustlm-huggingface-supported-source-gate-memory-2026-07-03.md` when no-`.safetensors` Hugging Face rows, `Start Conversion` eligibility, or no-supported-source summary wording is in scope. Load `reports/tinyrustlm-huggingface-source-size-risk-memory-2026-07-03.md` when large or unknown-size Hugging Face `.safetensors` rows, `Review Conversion`, P2P-preferred review wording, or source-size summary counts are in scope. Load `reports/tinyrustlm-huggingface-sharded-source-directory-memory-2026-07-03.md` when Hugging Face metadata lists multiple `.safetensors` shards, Rust conversion should accept a reviewed shard directory, generated kits must record the full file list, or inspect/plan/preflight/receipt evidence needs `source_file_count` and per-tensor source paths. Load `reports/tinyrustlm-simple-local-catalog-prioritized-hf-memory-2026-07-03.md` when the beginner P2P panel local `models.v0.json` picker, wider Hugging Face metadata search, result action ranking, or converted-once local catalog reuse is in scope. Load `reports/tinyrustlm-self-locating-peer-import-kit-memory-2026-07-02.md` when `.minimodel-peer-import.ps1`, `MINIMODEL_WORKSPACE`, `$PSScriptRoot` peer request/manifest/output paths, or peer-import placeholder regression tests are in scope.
+Superseded routing: the dated July 2-3 Hugging Face conversion-request,
+self-locating script, beginner catalog, and peer-import-kit reports describe a
+retired handoff design. Keep them for historical audit only; do not load them
+as current product-acquisition authority. For current work, use
+[the TinyRustLM architecture](../../tinyrustlm/docs/architecture.md) and
+[the companion boundary](../../docs/companion/README.md). The basic route is a
+simple restore/default flow with verified six-member browser installation and authorized MiniModel initial seeds. Supported companion conversion remains under Advanced. Hugging Face discovery and manual
+request, peer, receipt, and conversion controls are Advanced. No instruction,
+JSON, or PowerShell download constitutes model acquisition, and none of these
+source-memory references proves a live model, peer, package, or deployment.
 
 For MiniModel late peer-source publication and the July 2 report intake synthesis, load `reports/tinyrustlm-minimodel-add-peer-source-intake-memory-2026-07-02.md` when `add-peer-source`, proof-ready versus P2P-ready catalog entries, generated conversion-script follow-up hints, `docs/report-intake/2026-07-02/`, Iroh-as-roadmap, or no-server-byte catalog availability claims are in scope.
 
@@ -296,4 +311,4 @@ Dropped files live only in `agent-file-handoff/Content/` and `agent-file-handoff
 
 ## Implementation Boundary
 
-The repository currently contains TinyRustLM, a zero-dependency Rust/WASM browser-local SLM runtime and UI. Future claims still require source inspection and current test evidence; report memory provides design pressure, not implementation proof.
+The repository contains the TinyRustLM Rust/WASM browser-local runtime and UI. Implementation claims require source inspection and current test evidence; report memory provides recommendations and experimental questions, not implementation proof.

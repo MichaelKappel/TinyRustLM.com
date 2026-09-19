@@ -223,19 +223,22 @@ test("keeps maintained product documentation free of superseded runtime terms", 
   assert.deepEqual(offenders, []);
 });
 
-test("routes hot memory through the canonical enterprise and decision indexes", () => {
+test("preserves historical enterprise evidence and routes hot memory through current guidance", () => {
   const bytes = directFile(enterpriseMemory.relativePath);
   assert.equal(bytes.length, enterpriseMemory.byteLength);
   assert.equal(
     crypto.createHash("sha256").update(bytes).digest("hex"),
     enterpriseMemory.sha256
   );
+  const currentRoute =
+    "wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md";
+  assert.ok(directFile(currentRoute).toString("utf8").includes(enterpriseMemory.relativePath));
   for (const owner of enterpriseMemory.owners) {
     const source = directFile(owner).toString("utf8");
-    assert.ok(source.includes(enterpriseMemory.relativePath), owner);
+    assert.ok(source.includes(currentRoute), owner);
     assert.ok(source.includes(
       "wiki/runtime-mirust/reports/" +
-      "tinyrustlm-report-intake-decision-index-2026-08-28.md"), owner);
+      "tinyrustlm-report-intake-decision-index-2026-09-19.md"), owner);
   }
 
   const manifestRoutes = Array.from(

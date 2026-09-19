@@ -1,31 +1,33 @@
 profile: tinyrustlm.file-handoff.current.v1
-updated_utc: 2026-08-28T00:00:00Z
-canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md
-report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-08-28.md
+updated_utc: 2026-09-19T15:37:57Z
+canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
+report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
+outcome_ledger: .uai/intake-outcome-ledger.uai
+
 outcome_ledger: .uai/intake-outcome-ledger.uai
 
 active_buckets:
   content: agent-file-handoff/Content
   improvement: agent-file-handoff/Improvement
-  rule: Authoritative active buckets remain placeholder-only after processing. External protected intake sources are read-only and not current authority.
+  authority: Live directory listings define pending intake; no intake-index file.
+  completion: Placeholder-only after byte-exact durable custody, applied guidance and report-level proof of use; record any blocker or explicit keep-active exception.
 
 intake_protocol:
-  - Inventory each source by logical path, bytes, SHA-256, date, assignment, and access limits.
-  - Preserve returned advisory material byte-exactly when possible; record historical normalization defects instead of hiding them.
-  - Distinguish public observation, sourced external fact, project-supplied fact, recommendation, assumption, disagreement, and local unknown.
-  - Produce one reviewed synthesis that corrects unsupported or conflicting report claims.
-  - Give every report one ledger disposition and one proof-of-use or research route.
-  - Convert adopted invariants into generic red-first tests or bounded backlog items.
-  - Add report paths once to the durable decision index; do not repeat raw report prose in hot memory.
-  - Verify destination hashes, manifests, ledger coverage, active-bucket cleanup, secret safety, and canonical wiki routing.
-  - Commit and push the coherent green intake checkpoint.
+  - Inventory every report by original name, bytes, SHA-256, assignment and access limits; inspect all active files.
+  - Separate owner facts, inspected local evidence, verified external facts, hypotheses and recommendations.
+  - Use important findings in the owning UAI guidance immediately; a summary or index alone does not complete intake.
+  - Correct contradictions before promotion. Reports cannot invent model qualification, schemas, hardware, topology, independent reviewers or local measurements.
+  - Record each disposition, reason, applied memory paths and smallest test/defer route in the ledger and decision index.
+  - Preserve full raw report bytes, including embedded images and mistakes, under the configured report-intake path with a manifest; after proof of use, remove the processed active copy.
+  - Verify all raw hashes/lengths, report coverage, links, pointer checksums, memory size, secret hygiene and placeholder-only buckets.
+  - Keep historical receipts immutable; current startup routing must lead to reviewed current state.
+  - Commit and push the coherent verified memory change. Memory checks do not establish product readiness.
 
 current_intake:
-  reports: 47 reports from 2026-08-26 and 2026-08-27 are byte-exact, manifested, reviewed, ledgered, and indexed.
-  raw_authority: docs/report-intake
-  decision_authority: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-08-28.md
-  evidence_boundary: Reports and syntheses do not prove private implementation, conversion, model quality, browser execution, P2P, MemoryEndpoints operation, deployment, publication, or campaign progress.
-
-memory_policy:
-  - Direct ecosystem agent meetings/coordination and the TinyRustLM.com Connect user plugin are separate MemoryEndpoints lanes.
-  - Important prelaunch memory may be duplicated only while all maintained copies stay current, secret-safe, provenance-labeled, and noncontradictory.
+  date: 2026-09-19
+  reports: 16
+  raw_authority: docs/report-intake/2026-09-19/working-product-research
+  manifest: docs/report-intake/2026-09-19/working-product-research/MANIFEST.md
+  disposition: Useful corrected guidance applied throughout current UAI; unmeasured experiments deferred with explicit routes; unsupported claims rejected.
+  prior_batch: The 47 reports of August 26/27 remain preserved historical evidence in their existing manifests and August 28 decision index.
+  boundary: No model execution, numerical parity, quality, live seed, deployment, external memory operation or campaign progress is claimed.

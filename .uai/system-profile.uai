@@ -1,13 +1,13 @@
 profile: tinyrustlm.system-profile.current.v1
-updated_utc: 2026-08-30T00:00:00Z
+updated_utc: 2026-09-19T15:37:57Z
 product: TinyRustLM.com
-stage: prelaunch dogfood
+stage: early alpha; no working release has ever been achieved
 authoritative_root: E:\Source\Rust\TinyRustLM.com
 branch: codex/model-acquisition-v2
-canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md
-report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-08-28.md
+canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
+report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 runtime: Rust native and real-browser WASM, local-first, six-member SLM2 composition
-acquisition: exact qualified direct P2P composition or explicit pinned-source local conversion through Companion
+acquisition: Automatically restore a usable eligible installation or obtain a small qualified MiniModel.org default with authorized initial server seeding; HF/import/conversion/peer/IP controls remain Advanced.
 portable_memory: MemoryEndpoints.com direct agent coordination plus the separate TinyRustLM.com Connect user plugin
 offline_memory: local current UAIX files and approved private stores
 truth_boundary: Configured source and tests are not model, browser, quality, P2P, live memory, deployment, or publication evidence.

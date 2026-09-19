@@ -1,0 +1,88 @@
+{
+  "schema": "tinyrustlm.working_product_memory_intake_review.v1",
+  "reviewed_utc": "2026-09-19T15:49:28Z",
+  "source_head_before_change": "428ca3a2527ed467c2b0e8e9b1e7eded61ede0f3",
+  "scope": "Current TinyRustLM UAI memory, canonical ecosystem routing mirror, report custody and affected memory validators.",
+  "reports": {
+    "count": 16,
+    "raw_root": "docs/report-intake/2026-09-19/working-product-research",
+    "manifest": "docs/report-intake/2026-09-19/working-product-research/MANIFEST.md",
+    "decision_index": "wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md",
+    "synthesis": "wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md",
+    "disposition": "Corrected useful guidance applied now; unsupported claims rejected; implementation proposals routed to bounded experiments.",
+    "source_copies": "Moved after proof of use; every destination length and SHA-256 matched; active buckets placeholder-only."
+  },
+  "memory": {
+    "repository_uai_files_reviewed": 24,
+    "current_files_updated": 22,
+    "historical_receipts_preserved": 2,
+    "additional_ecosystem_mirror": "E:/Source/Rust/workspace.uai",
+    "long_term_pointers": 17,
+    "history": "Original ledger suffix and both dated UAI receipts remain byte-exact; historical enterprise/source evidence remains unchanged.",
+    "authority": "Early alpha; never a working release; no debt, obsolete code or legacy support before official owner acceptance of a fully working release."
+  },
+  "verification": {
+    "managed_memory_tests": {
+      "passed": 9,
+      "failed": 0,
+      "skipped": 0
+    },
+    "node_memory_and_history_tests": {
+      "passed": 41,
+      "failed": 0,
+      "skipped": 0
+    },
+    "intake": {
+      "manifests": 24,
+      "checksum_bound_rows": 272,
+      "current_reports": 16,
+      "active_non_placeholder": 0,
+      "failures": 0
+    },
+    "ecosystem_memory_policy": {
+      "sites": 7,
+      "files": 21,
+      "failures": 0
+    },
+    "csharp_whitespace": "passed for both changed test files",
+    "source_authority_suite": {
+      "passed": 45,
+      "failed": 2,
+      "skipped": 0,
+      "reason": "Both remaining failures depend on the unchanged real scan blocked by the two C28 installer links; no guard was weakened."
+    },
+    "bounded_secret_scan": "No private-key, GitHub-token or AWS-access-key patterns found in the new raw archive; not a universal secret certification.",
+    "unrelated_wip": "38 pre-existing file identities outside this scope preserved at pre-stage comparison."
+  },
+  "failed_checks_and_corrections": [
+    "The first combined Node run reported 83 passes and 5 failures. Three memory/policy wording failures were corrected by preserving the canonical single-source policy block and canonical receiver branch/path wording; two real-scan failures remain.",
+    "The first staged whitespace check found one extra final blank line in the new decision index; it was removed and its long-term pointer hash refreshed."
+  ],
+  "existing_blockers": {
+    "source_authority": "source_authority_scan_incomplete",
+    "installer_output": "artifacts/verification/qwen3-environment-install/tinyrustlm-operation-C3ZUt9",
+    "links": [
+      "install-temp/TmP6xn2evdh-b",
+      "install-temp/TmPeq63_hr7-b"
+    ],
+    "deletion": "Previously rejected by automatic approval review; not retried or bypassed.",
+    "model_and_release": "No qualified default, material v3 numerical trace, live initial seed or officially accepted working release; C31 remains unfinished."
+  },
+  "nonclaims": [
+    "No model or training execution",
+    "No numerical or product qualification",
+    "No live seed or public deployment",
+    "No external MemoryEndpoints message or upload",
+    "No policy-blocked payload deletion or physical storage-recovery claim",
+    "No completed wider ecosystem cleanup"
+  ],
+  "lesson": {
+    "question": "How should returned research update current memory without importing unsupported facts or erasing failed experiments?",
+    "inputs": "Sixteen exact report files and the current UAI/contract/history routes.",
+    "method": "Review by topic, verify selected primary-source corrections, distribute guidance, separate proposals, preserve raw identities and old receipts, and update routing validators.",
+    "result": "Current guidance points to the September review; every report has a disposition and concrete memory use; historical evidence remains independently checked.",
+    "uncertainty": "Research cannot establish local inference, candidate licensing/quality, hardware limits or current hosting; blocked source scanning remains explicit.",
+    "decision": "Use source-first quality screening, separate semantic/numerical/browser evidence and capability-based seed/release planning before selecting major replacements.",
+    "reusable_lesson": "Update current routing and checks together; preserve historical facts and hashed authority blocks, and do not call examples or repeated advisory consensus implementation evidence."
+  }
+}

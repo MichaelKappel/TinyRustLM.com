@@ -1,7 +1,7 @@
 profile: tinyrustlm.memory-index.current.v1
-updated_utc: 2026-08-28T00:00:00Z
-canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md
-report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-08-28.md
+updated_utc: 2026-09-19T15:37:57Z
+canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
+report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
 startup:
   workspace: workspace.uai
@@ -33,3 +33,16 @@ memory_endpoints:
   direct_agent_lane: long-term memory, meetings, handoffs, and coordination for agents across all ecosystem sites
   user_plugin_lane: explicit MemoryEndpoints sign-in and selected long-term memory through TinyRustLM.com Connect
   redundancy: synchronized current prelaunch copies are allowed; drift and secrets are prohibited
+
+review_scope:
+  date: 2026-09-19
+  current_guidance_files: 20 in .uai plus workspace.uai and tinyrustlm/authority/ecosystem-workspace.uai, with two additional dated UAI receipts kept as history.
+  ecosystem_routing: tinyrustlm/authority/ecosystem-workspace.uai
+  raw_evidence_manifest: docs/report-intake/2026-09-19/working-product-research/MANIFEST.md
+  rule: Current owner facts and corrected topic guidance lead; historical records never override current authority.
+
+historical_uai:
+  relocation: .uai/source-authority-relocation-2026-08-30.uai
+  storage: .uai/storage-consolidation-2026-09-12.uai
+  treatment: Preserve these dated receipts byte-exact. Their scan/deletion completion statements apply only to the named historical observation.
+  ledger: Earlier entries in .uai/intake-outcome-ledger.uai remain historical; the current header and September entries route today's guidance.

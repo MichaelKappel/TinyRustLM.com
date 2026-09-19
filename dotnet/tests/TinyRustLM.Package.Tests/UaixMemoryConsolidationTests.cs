@@ -7,10 +7,10 @@ namespace TinyRustLM.Package.Tests;
 public sealed partial class UaixMemoryConsolidationTests
 {
     private const string CanonicalMemoryRoute =
-        "wiki/runtime-mirust/reports/tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md";
+        "wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md";
 
     private const string DecisionIndexRoute =
-        "wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-08-28.md";
+        "wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md";
 
     private const string SourceAuthorityRelocationRecord =
         ".uai/source-authority-relocation-2026-08-30.uai";
@@ -32,29 +32,34 @@ public sealed partial class UaixMemoryConsolidationTests
         ".uai/short-term-memory.uai",
         SourceAuthorityRelocationRecord,
         ".uai/startup-packet.uai",
+        ".uai/storage-consolidation-2026-09-12.uai",
         ".uai/system-profile.uai",
         ".uai/taboo.uai",
         ".uai/talisman.uai",
         ".uai/test-plan.uai",
         ".uai/totem.uai",
         ".uai/workspace-guidance.uai",
+        "tinyrustlm/authority/ecosystem-workspace.uai",
         "workspace.uai"
     };
 
     private static readonly string[] CurrentBatchManifests =
     {
-        "docs/report-intake/2026-08-26/post-v10-native-browser-release/MANIFEST.md",
-        "docs/report-intake/2026-08-27/omi-computational-architectures-research/MANIFEST.md",
-        "docs/report-intake/2026-08-27/ontological-machine-intelligence-research/MANIFEST.md"
+        "docs/report-intake/2026-09-19/working-product-research/MANIFEST.md"
     };
 
     [Fact]
     public void CurrentUaixMemoryIsBoundedAndDeepRoutesToReviewedKnowledge()
     {
         var root = RepositoryRoot();
+        // Inspect the declared memory boundary without traversing generated model environments.
         var paths = Directory
-            .EnumerateFiles(root, "*.uai", SearchOption.AllDirectories)
-            .Where(path => !IsGeneratedOrExternal(root, path))
+            .EnumerateFiles(Path.Combine(root, ".uai"), "*.uai", SearchOption.AllDirectories)
+            .Concat(new[]
+            {
+                Path.Combine(root, "workspace.uai"),
+                Path.Combine(root, "tinyrustlm", "authority", "ecosystem-workspace.uai")
+            })
             .Select(path => Normalize(Path.GetRelativePath(root, path)))
             .OrderBy(path => path, StringComparer.Ordinal)
             .ToArray();
@@ -89,6 +94,12 @@ public sealed partial class UaixMemoryConsolidationTests
                     "physical_active_tinyrustlm_source_duplicates_remaining: 0",
                     text,
                     StringComparison.Ordinal);
+                continue;
+            }
+
+            if (relative == ".uai/storage-consolidation-2026-09-12.uai")
+            {
+                Assert.Contains("profile: tinyrustlm.storage-consolidation.2026-09-12", text, StringComparison.Ordinal);
                 continue;
             }
 
@@ -132,7 +143,7 @@ public sealed partial class UaixMemoryConsolidationTests
             }
         }
 
-        Assert.Equal(47, reportCount);
+        Assert.Equal(16, reportCount);
         foreach (var required in new[]
         {
             "Adopted production invariants",
@@ -156,12 +167,62 @@ public sealed partial class UaixMemoryConsolidationTests
         var text = File.ReadAllText(path);
 
         Assert.Contains(DecisionIndexRoute, text, StringComparison.Ordinal);
-        Assert.Contains("operation-not-available", text, StringComparison.Ordinal);
-        Assert.Contains("browser client is not loaded", text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("early alpha and has never had a working release", text, StringComparison.Ordinal);
+        Assert.Contains("officially accepted by the project owner", text, StringComparison.Ordinal);
+        Assert.Contains("browser client is loaded", text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("no material v3 registration", text, StringComparison.Ordinal);
         Assert.Contains("MemoryEndpoints.com is authorized and strongly recommended", text, StringComparison.Ordinal);
         Assert.Contains("0/20", text, StringComparison.Ordinal);
         Assert.DoesNotContain("current uncommitted clean-cut work", text, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("a129fa3b50df4278234d863b138e3a8e9c65c9c3", text, StringComparison.Ordinal);
+    }
+
+    // Every durable pointer carries routing context and verifies the actual target bytes.
+    [Fact]
+    public void LongTermPointersHaveContextUniqueIdentityAndCurrentChecksums()
+    {
+        var root = RepositoryRoot();
+        var ledger = File.ReadAllText(Path.Combine(root, ".uai", "long-term-memory.uai"));
+        var records = Regex.Split(ledger, @"(?m)^  - id: ").Skip(1).ToArray();
+        Assert.Equal(17, records.Length);
+        var ids = new HashSet<string>(StringComparer.Ordinal);
+        var paths = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var record in records)
+        {
+            var lines = record.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+            Assert.True(ids.Add(lines[0].Trim()), lines[0]);
+            var fields = lines.Skip(1).Select(line => line.Trim().Split(": ", 2))
+                .ToDictionary(parts => parts[0], parts => parts[1], StringComparer.Ordinal);
+            foreach (var key in new[]
+            {
+                "path", "label", "summary", "authority", "review_state",
+                "status", "last_reviewed_utc", "sha256"
+            })
+            {
+                Assert.True(fields.TryGetValue(key, out var value) && !string.IsNullOrWhiteSpace(value), key);
+            }
+            var route = fields["path"];
+            Assert.True(paths.Add(route), route);
+            Assert.False(Path.IsPathRooted(route), route);
+            Assert.DoesNotContain("..", route.Split('/'));
+            var target = Path.GetFullPath(Path.Combine(root, route));
+            Assert.StartsWith(root.TrimEnd(Path.DirectorySeparatorChar) + Path.DirectorySeparatorChar, target);
+            Assert.True(File.Exists(target), route);
+            Assert.Matches(Sha256Regex(), fields["sha256"]);
+            var observed = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(target))).ToLowerInvariant();
+            Assert.Equal(fields["sha256"], observed);
+            Assert.True(DateTimeOffset.TryParse(fields["last_reviewed_utc"], out _));
+        }
+    }
+
+    // Historical receipts keep their original results even as active guidance changes.
+    [Theory]
+    [InlineData(".uai/source-authority-relocation-2026-08-30.uai", "bc9382124d4adc0a266cf7069c9a273410e9d08290f7b5b6ec46852418c6a1a5")]
+    [InlineData(".uai/storage-consolidation-2026-09-12.uai", "53f8bcba94ca59a9c2b5c8b695c899deca7d5311eb707c8ff95769252ef428dd")]
+    public void DatedUaiReceiptsRemainByteExact(string route, string expectedSha256)
+    {
+        var bytes = File.ReadAllBytes(Path.Combine(RepositoryRoot(), route));
+        Assert.Equal(expectedSha256, Convert.ToHexString(SHA256.HashData(bytes)).ToLowerInvariant());
     }
 
     private static IReadOnlyList<string> ParseReportNames(string manifestPath)
@@ -194,15 +255,6 @@ public sealed partial class UaixMemoryConsolidationTests
 
         Assert.NotEmpty(reports);
         return reports;
-    }
-
-    private static bool IsGeneratedOrExternal(string root, string path)
-    {
-        var relative = Normalize(Path.GetRelativePath(root, path));
-        return relative.StartsWith("target/", StringComparison.OrdinalIgnoreCase)
-            || relative.Contains("/bin/", StringComparison.OrdinalIgnoreCase)
-            || relative.Contains("/obj/", StringComparison.OrdinalIgnoreCase)
-            || relative.Contains("/node_modules/", StringComparison.OrdinalIgnoreCase);
     }
 
     private static string Normalize(string path) => path.Replace('\\', '/');

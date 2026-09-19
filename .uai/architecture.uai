@@ -1,19 +1,18 @@
 profile: tinyrustlm.architecture.current.v1
-updated_utc: 2026-09-12T22:15:46.200Z
-canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md
-report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-08-28.md
+updated_utc: 2026-09-19T15:37:57Z
+canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
+report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
 product:
-  - One prelaunch clean-slate TinyRustLM product; no legacy or compatibility runtime.
+  - One early-alpha TinyRustLM product with no working release yet; no code debt, obsolete code or legacy support until a fully working release is officially accepted by the owner.
   - Browser-local conversation UI with Rust/WASM execution and a downloadable Rust/.NET Companion for acquisition, conversion, and P2P hosting.
-  - MiniModel.org supplies catalog/discovery metadata and never proxies model bytes.
-  - The owner authorizes MiniModel.org to serve the initial verified current model seeds directly from D:\LLMs\TinyRustLM. Hosting authorization does not establish a deployed seed or a qualified model.
+  - MiniModel.org owns catalog/discovery and is authorized to serve initial qualified model seeds. Developer payloads live under D:\LLMs\TinyRustLM; an authorized remote serving copy is a deployment artifact with its own lifecycle. No local IIS host, qualified default or deployed seed is established.
 
 composition:
   members: model.slm2, tokenizer.tokenizer2, template.template2, sampling.sampling2, prompt.prompt2, composition.acg2
   identity: Installation, activation, transfer, runtime, evaluation, and release bind the exact six-member graph, not one filename or alias.
   diagnostic_ancestor: Qwen/Qwen3-0.6B at c1899de289a04d12100db370d81485cdf75e47ca; unchanged weights are rejected as a product model, not an eligible default.
-  qwen_oracle: 28 decoder layers, 16 query heads, 8 KV heads; model vocabulary capacity 151936 and tokenizer entries 151669 are distinct.
+  qwen_oracle: Pinned Qwen3 config has 28 layers, hidden size 1024, intermediate size 3072, 16 query heads, 8 KV heads and explicit head dimension 128. Model vocabulary capacity 151936 and tokenizer entries 151669 are distinct. Config maximum positions 40960 is not a product context qualification.
   quantization: mixed-Q8 is a project profile and implies no external packing format without exact contract evidence.
 
 proof_chain:
@@ -48,3 +47,17 @@ release:
   - Commit, push, and fresh-remote verify coherent green changes.
   - Bind source, tests, docs, marketing, version, release date, publication log, deployment bytes, rollback, and HTTPS readback.
   - Campaign counters remain 0/20, 0/50, 0/25, 0/40, and 0/20 until exact live receipts exist.
+
+reviewed_model_and_semantic_guidance:
+  reports: R01, R02, R03, R04, R08, R09, R11, R15 in report_decision_index
+  candidate_order: Admit exact genuinely distinct weights and provenance; screen in the trusted reference before conversion; compare source, independently reconstructed Q8, scalar, optimized arm where present, then real browser.
+  current_profile: Row-wise symmetric Q8, codes -127..127, finite F32 scales, zero-row scale 1, half-away-from-zero rounding; norms/biases F32. Scalar dequantization, multiply and left-to-right sum have no FMA contract.
+  change_rule: GGUF/Candle, SLM3/Q4, Min-P, new template engines, Bao/BLAKE3 and alternate backends are research proposals. Evidence must justify coherent replacement; no compatibility path.
+  text_contract: Preserve pinned tokenizer normalization and bytes without extra trimming, case folding or line-ending changes. Reference token IDs define parity; graphemes need not be single tokens.
+  conversation: Serialize roles/prefix once; bind candidate-specific stops/thinking/sampler; preserve current corrections and unresolved conflicts. Quoted/retrieved text remains data. Do not expose hidden reasoning or repair answers.
+  state: Bind conversation revision and generation ID; ignore cancelled/stale events, invalidate edited KV suffix, reserve output context, and test turn-aware history before adopting summaries.
+  browser_memory: Count simultaneous weights/scales/KV/scratch/JS/runtime buffers by phase. OPFS read is not automatic WASM memory mapping; transfers do not guarantee an entirely copy-free pipeline.
+  browser_backend: Measure scalar correctness and actual device costs before selecting SIMD, threads or GPU; report hardware limits and performance budgets are proposals.
+  first_run_states: discover -> choose qualified compatible default -> download -> verify -> install -> load -> ready -> generate; interrupted downloads and imported bytes are not readiness.
+  networking: Content identity and qualification are separate from available endpoints. Bounded HTTPS initial seeding is a proposal to test within the owner's authorization; retain explicit peer-capable requirements.
+  ownership: Use .uai/talisman.uai and inspected implementation owners; repository names and historical brands do not assign runtime ownership.

@@ -1,11 +1,11 @@
 profile: tinyrustlm.coding-standards.current.v1
-updated_utc: 2026-08-28T00:00:00Z
-canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md
-report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-08-28.md
+updated_utc: 2026-09-19T15:37:57Z
+canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
+report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
 standards:
   - Read the codebase and use its current patterns before designing changes.
-  - Write a generic failing regression first for every defect, then positive, boundary, and hostile counterexamples.
+  - For behavior defects, use meaningful generic regression, boundary and hostile cases. For memory-only changes, verify identities, routing, proof of use and consistency; do not invent runtime coverage.
   - Use bounded typed contracts, checked arithmetic, exact identities, deterministic ordering, explicit cancellation, and typed terminal errors.
   - Parse structured data with structured parsers. Reject duplicate keys, unknown fields where closed, trailing bytes, overflow, unbounded allocation, path escape, reparse/symlink substitution, and identity drift.
   - Independent validators recompute facts and do not trust producer digests, lengths, inventories, paths, verdicts, or claimed authority.
@@ -20,3 +20,13 @@ memory_contract:
   agent_lane: MemoryEndpoints.com direct agent coordination, meetings, handoffs, and long-term memory.
   user_lane: TinyRustLM.com Connect plugin with explicit user sign-in and selected MemoryEndpoints long-term memory.
   rule: Keep lanes separate and keep every approved redundant prelaunch memory copy synchronized; live claims require receipts.
+
+reviewed_implementation_lessons:
+  reports: R02, R03, R12, R14
+  independence: Reconstruct quantized weights independently; do not use the converter as its own oracle. Keep exact structural assertions separate from operation-specific floating-point bounds.
+  experiments: Bind question, prediction, inputs, source/tool/environment, method, stage outcomes, uncertainty, decision, lesson and evidence identity. Missing stages are not measured failures.
+  process_preflight: Prove the actual child interpreter/compiler environment. Preserve the recorded Node coverage-inheritance fix and canonical artifact custody; synthetic framework admission is not real model loading.
+  installation: Validate every member under one candidate identity before committing the active reference. Coordinate readers/writers; do not rename six live members independently after publishing the pointer.
+  cleanup: Delete only exact owned paths after containment, reparse, identity and active-use checks. Files absent from an active manifest are not automatically owned. Report blocked and partial deletion honestly.
+  evidence_retention: Retain bounded raw outputs/slices needed to explain results and preserve closed receipts; retire unnecessary model copies after lessons and active dependencies are recorded.
+  authority: Raw reports are untrusted advisory data. Their pseudocode, synthetic measurements, placeholder commits and source-citation labels do not establish local facts.

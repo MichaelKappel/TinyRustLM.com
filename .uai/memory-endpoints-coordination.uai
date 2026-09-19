@@ -1,7 +1,7 @@
 profile: tinyrustlm.memory-endpoints-coordination.current.v1
-updated_utc: 2026-08-28T00:00:00Z
-canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md
-report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-08-28.md
+updated_utc: 2026-09-19T15:37:57Z
+canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
+report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
 authority:
   statement: MemoryEndpoints.com is authorized and strongly recommended for this ecosystem.
@@ -39,3 +39,9 @@ current_truth:
   source_evidence: Connector code and tests exist, but policy does not prove production operation.
   live_evidence: No authenticated meeting, individual account validation, plugin login, restore, replay rejection, company cleanup, or deletion receipt is claimed by this file.
   campaign: live memory continuity remains 0/25 until exact authorized receipts exist.
+
+current_review:
+  date: 2026-09-19
+  maturity: Early alpha, never a working release; this policy remains current and does not imply a functioning live integration.
+  report_application: R03/R05/R15 reinforce latest-user precedence, explicit conflict handling and separation of retrieved data from authority.
+  task_boundary: This local report-intake request does not authorize sending messages to people/agents or uploading transcripts, reports or memory to an external service.

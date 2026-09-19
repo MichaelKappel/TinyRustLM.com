@@ -1,5 +1,5 @@
 profile: tinyrustlm.workspace.current.v1
-updated_utc: 2026-09-13T02:44:54Z
+updated_utc: 2026-09-19T15:37:57Z
 scope: authoritative current workspace and ecosystem routing
 sensitivity: internal; never publish this file
 
@@ -13,8 +13,8 @@ authoritative_worktree:
   model_root: D:\LLMs\TinyRustLM
   replacement_rule: Keep only the verified current replacement; delete superseded copies. Source history belongs in regular Git commits, not backup directories.
 
-canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md
-report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-08-28.md
+canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
+report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 companion_memory: wiki/runtime-mirust/reports/tinyrustlm-companion-source-operation-contract-memory-2026-08-28.md
 report_ledger: .uai/intake-outcome-ledger.uai
 source_authority_receipt: .uai/source-authority-relocation-2026-08-30.uai
@@ -24,14 +24,14 @@ read_order:
   - .uai/totem.uai
   - .uai/taboo.uai
   - .uai/source-authority-relocation-2026-08-30.uai
-  - wiki/runtime-mirust/reports/tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md
-  - wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-08-28.md
+  - wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
+  - wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
   - .uai/short-term-memory.uai
   - .uai/operations.uai
   - .uai/test-plan.uai
 
 product_authority:
-  stage: prelaunch dogfood
+  stage: early alpha; no working release has ever been achieved
   generation_rule: TinyRustLM is one product; SLM2 and related numeric labels are format identities, not product generations.
   clean_slate: No legacy readers, compatibility, migrations, aliases, dual contracts, hidden retry, repair, best-of-N, fallback, knowingly temporary architecture, or accepted debt.
   quality_rule: A rewrite is authorized when it yields the best current design; delete the superseded path after all callers, tests, and docs move together.
@@ -88,7 +88,7 @@ campaign_truth:
 
 source_control_and_release:
   - Commit and push after each coherent green major change.
-  - Fetch and verify local, tracking, FETCH_HEAD, and direct remote identity.
+  - Fetch and verify local HEAD, tracking and direct remote branch identity. FETCH_HEAD is not authority.
   - Deploy every affected site whenever all of its tests, docs, security, privacy, authorization, rollback, and readback gates pass.
   - Never deploy uncommitted source or let marketing, docs, version, release date, publication log, and behavior drift.
 
@@ -114,3 +114,15 @@ resume:
 # the cleanup script; all 44 inventoried SLM1 files were independently verified
 # absent after the 2026-09-12T15:48:26Z receipt. Legacy code removal remains open.
 # No working public default or live seed is claimed.
+
+working_product_review:
+  date: 2026-09-19
+  owner_status: Early alpha, no working release ever achieved; a fully working release requires official owner acceptance. No debt, obsolete code or legacy support before acceptance.
+  intake: Sixteen research reports reviewed and applied by topic; report_decision_index owns dispositions and corrections.
+  current_memory_scope: All current root .uai files, this workspace and the ecosystem routing UAI; dated relocation/storage receipts remain immutable history.
+  first_product_path: Exact eligible source usefulness -> semantic/numerical correctness -> measured real browser quality/resources -> qualified catalog/seed -> verified installation -> useful beginner conversation -> official acceptance.
+  independent_work: Candidate admission, development rubrics, first-run state design and read-only hosting discovery may proceed independently; existing material/release gates remain.
+  proposals_only: Format/backend replacement, training recipe/distribution changes, GPU/cloud provisioning and new transport layouts require evidence and coherent implementation decisions.
+  publication_wip: C31 canonical-input publication refactor remains unfinished; no tested deployment result follows.
+  memory_review_limit: No fresh public site audit, model execution, qualification, live MemoryEndpoints operation, blocked deletion or release acceptance is claimed.
+  historical_rules: Source relocation and storage-consolidation UAI describe their dated observations only; do not use them to claim today's source scan is complete.

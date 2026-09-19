@@ -1,37 +1,36 @@
 profile: tinyrustlm.report-synthesis.current.v1
-updated_utc: 2026-08-28T00:00:00Z
-canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md
-report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-08-28.md
+updated_utc: 2026-09-19T15:37:57Z
+canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
+report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
 current_batch:
-  reports: 47
-  dates: 2026-08-26 and 2026-08-27
-  custody: Byte-exact source-controlled reports, three manifests, reviewed syntheses, TDD deltas, wiki memory, and report-level ledger entries.
-  decision: Incorporate bounded production invariants with corrections; retain speculative architectures as baseline-gated research; reject product-scope expansion and alternate runtimes.
+  date: 2026-09-19
+  reports: 16
+  manifest: docs/report-intake/2026-09-19/working-product-research/MANIFEST.md
+  review: Every report has a disposition, corrections and concrete proof-of-use paths in report_decision_index and .uai/intake-outcome-ledger.uai.
+  authority: Owner requirements and inspected current contracts first; research is advisory, never local execution or acceptance evidence.
 
-adopted:
-  - One exact six-member SLM2 composition and one clean-slate runtime path.
-  - Independent contract validation and immutable evidence.
-  - Pinned-source to scalar-native to optimized-native to real-browser-WASM differential proof.
-  - Declarative tokenizer/template/prompt/sampling closure and explicit authority ordering.
-  - Worker-owned generation, exactly-once event identity, real cancellation, fresh-worker recovery, and clean-profile evidence.
-  - Exact qualified P2P composition or explicit local conversion, never instruction-file acquisition.
-  - Source-first quality screening, sealed metamorphic holdouts, contamination control, and human adjudication.
-  - Typed claims, provenance, explicit conflicts, bounded resources, synchronized docs/releases, and honest counters.
+applied_to_current_guidance:
+  model_quality: R01/R05/R16; exact provenance and distinct weights, reference-first screens, behavioral invariants, untouched holdout and five decisive experiments.
+  semantics_numerics: R02/R03/R04; tokenizer/template/state parity, five reference arms, teacher forcing, first-divergence traces, operation-specific tolerances and controlled quantization.
+  browser_first_run: R08/R09; phase memory/timing budgets, worker ownership/cancellation, verified cache/default restoration and honest readiness states; preserve appearance.
+  seed_transfer_storage: R10/R11/R12; authorized MiniModel initial seeds, capability discovery, bounded integrity/resume, all-member activation and retirement after verified replacement.
+  data_experiments: R06/R07/R14; preserve frozen pilot, genuine independent review, masking/ablation readiness, stage taxonomy and compact reusable lessons.
+  ownership_release: R13/R15; inspected owner per contract, immutable asset graph, actual promotion capabilities and external readback.
 
-corrected:
-  - Rust emitted /10 durability child parent + -members with performed; the managed verifier expected the wrong parent/flushed form. /10 remains terminal failure.
-  - Qwen3 authority is 28 layers, 16 query heads, and 8 KV heads.
-  - Model vocabulary capacity 151936 differs from tokenizer entries 151669.
-  - Scalar native is the converted-byte reference; pinned source framework is upstream semantic authority.
-  - Mixed-Q8 does not imply Q8_0, TurboQuant, 1-bit weights, or report-proposed packing.
-  - Browser zero-copy, fixed limits, performance, numerical bounds, and quality margins require local measurement.
+corrections:
+  - Qwen3 diagnostic geometry is 28 layers, hidden 1024, MLP 3072, 16 Q heads, 8 KV heads and explicit head dimension 128; do not use the different Qwen dimensions in R02.
+  - The 598308416-byte diagnostic is current row-wise Q8, not a Q4 estimate of a 1.1B model.
+  - OPFS reads fill buffers; they do not automatically memory-map files into WASM. Ordinary WASM loads/stores permit unaligned accesses.
+  - WebRTC data channels use SCTP over DTLS over UDP. No guessed Cicero/local IIS host, browser-version guarantee or paid cloud choice is established.
+  - Six-member activation cannot publish a manifest before independent member renames; a service worker and two pointer writes do not prove atomic publication.
+  - Source-framework load failure preceded converted-arm execution. Synthetic example results, candidate scores and placeholder revisions in reports are not measurements.
+  - Existing Companion and browser client wiring must not be described as missing because August historical prose says so.
 
-research_only: e-graphs; energy models; sequence memory; neural algorithmic reasoning; world models; probabilistic programs; topological/sheaf/HDC/Koopman/neural-field representations; specialists; TurboVec/TurboQuant; alternative KV compression.
-rejected: monolithic OMI kernel; alternate runtimes; self-modification; physical control; latent authority protocols; arbitrary model slicing; hidden fallback/repair/retry; report-derived production claims.
+proposal_only:
+  - GGUF/Candle, SLM3/Q4, Bao/BLAKE3, Min-P/template engine replacement, GPU/SIMD mandates, KV persistence, new training objectives/reallocation and object storage.
+  - Numerical/quality/latency/RAM thresholds, model shortlist identities, licensing clearance and hosting capacity not independently measured or admitted.
+  - Public report examples may support reviewed development cases; never label them secret holdout data.
 
-memory_policy:
-  agent_lane: Direct MemoryEndpoints long-term memory, meetings, handoffs, and coordination across ecosystem agents.
-  user_lane: TinyRustLM.com Connect plugin sign-in and selected MemoryEndpoints long-term memory.
-  resilience: Synchronized duplicate prelaunch memory is permitted; stale or secret-leaking copies are not.
-  evidence: Both lanes remain unproven live until exact authorized receipts exist.
+current_status: Early alpha, never a working release; no qualified default, real numerical trace, useful acquired-model browser proof or live initial seed. No debt, obsolete code or legacy support before official owner acceptance.
+historical_boundary: Earlier intake and closed experiments remain evidence only; see current decision index for history routing.

@@ -1,16 +1,23 @@
 profile: tinyrustlm.talisman.current.v1
-updated_utc: 2026-08-28T00:00:00Z
+updated_utc: 2026-09-19T15:37:57Z
 project: TinyRustLM.com
 role: local relationship and authority anchors
-canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md
-report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-08-28.md
+canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
+report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
 anchors:
   - TinyRustLM.com owns browser-local chat and its current clean-slate product contracts.
   - TinyRustLM.MiRust.com owns current developer and architecture documentation.
-  - MiniModel.org owns catalog/discovery metadata, never model-byte proxying.
+  - MiniModel.org owns catalog/discovery and authorized initial current-model seeding; server model downloads do not authorize remote inference or prompt upload.
   - MiniModel.MiRust.com owns MiniModel developer/protocol documentation.
   - MiRust.com owns ecosystem architecture, evidence, research, and governance documentation.
   - MemoryEndpoints.com supports direct ecosystem agent coordination and the separate TinyRustLM.com Connect user long-term-memory plugin.
   - Local UAIX files and approved private stores remain valid synchronized prelaunch resilience copies.
   - No talisman or memory file creates runtime enforcement, credentials, deployment authority, model quality, live service proof, or campaign progress.
+
+ownership_review:
+  reports: R10, R15
+  runtime: Current Rust runtime and browser integration live in TinyRustLM.com; do not relocate ownership to Runtime.MiRust.com because a report assumes its name defines its role.
+  retired_brand: Runtime.MiRust.com is retired as a separate public documentation authority; SLMComposer.com is not the canonical app identity.
+  composer: LMComposer.com is the actual discovered repository name. Its remaining implementation role requires inspection; do not equate it with every historical Composer brand.
+  contracts: Each boundary needs one inspected owner, exact current schema, identities, bounds, errors, cancellation and success evidence. No duplicate implementations or documentation mirrors.

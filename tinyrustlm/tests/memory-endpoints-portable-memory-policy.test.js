@@ -17,9 +17,9 @@ function readJson(relativePath) {
 }
 
 const canonicalMemoryRoute =
-  "wiki/runtime-mirust/reports/tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md";
+  "wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md";
 const decisionIndexRoute =
-  "wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-08-28.md";
+  "wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md";
 
 test("defines one current local-and-portable memory product policy", () => {
   const policy = readJson(
