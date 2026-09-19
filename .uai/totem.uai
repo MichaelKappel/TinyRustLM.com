@@ -1,8 +1,18 @@
 profile: tinyrustlm.totem.current.v1
-updated_utc: 2026-08-28T00:00:00Z
+updated_utc: 2026-09-19T15:00:11Z
 role: positive operating authority
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-08-28.md
+
+release_maturity:
+  stage: early alpha
+  working_release_achieved: false
+  officially_accepted_working_release: false
+  owner_directive_date: 2026-09-19
+  guidance:
+    - TinyRustLM is still in early alpha and has never had a working release.
+    - The first working release must be fully functional and explicitly, officially accepted by the project owner. Passing tests, a version number, a deployment, or an agent's assessment does not establish that acceptance.
+    - Until that acceptance, carry no code debt or technical debt, obsolete code, or legacy support whatsoever. Complete current implementations and remove superseded paths instead of preserving compatibility or deferring cleanup.
 
 clean_slate:
   - TinyRustLM is one prelaunch product. Build the best current architecture directly.

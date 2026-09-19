@@ -1,8 +1,17 @@
 profile: tinyrustlm.taboo.current.v1
-updated_utc: 2026-08-29T00:00:00Z
+updated_utc: 2026-09-19T15:00:11Z
 role: prohibited directions
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-08-28.md
+
+early_alpha_release_prohibitions:
+  - The owner's 2026-09-19 directive confirms that TinyRustLM is still in early alpha and has never had a working release or an officially accepted fully working release.
+  - Until the project owner explicitly and officially accepts a fully working release, do not introduce, retain, or accept any code debt, technical debt, obsolete code, or legacy support whatsoever. There are no temporary, convenience, prerelease, or just-in-case exceptions.
+  - Do not keep dead or superseded implementations, obsolete dependencies or configuration, deprecated readers, legacy formats, compatibility layers, aliases, shims, migrations, dual implementations, or fallback paths for obsolete behavior. Move every affected caller, test, document, and release surface to the current contract and remove the superseded executable path.
+  - Do not postpone required cleanup with TODOs, debt backlogs, knowingly temporary patches, or a promise to fix it after release. A change is not complete while it leaves that debt or obsolete support behind.
+  - Do not infer official acceptance from tests, benchmarks, version labels, deployment, publication, or an agent's declaration. Do not justify compatibility by claiming a previously working release that has never existed.
+  - Preserve useful experiment lessons and compact historical evidence, with source history in Git; none of that authorizes retaining obsolete executable code or superseded model payloads.
+  - Official acceptance is a required milestone, not automatic permission to introduce debt or legacy support afterward. Any later policy change requires an explicit owner instruction.
 
 memory_endpoints_two_use_context:
   - Direct use: ecosystem agents use MemoryEndpoints.com for agent-to-agent long-term memory, meetings, handoffs, and coordination across all sites.
