@@ -11,7 +11,6 @@ const { spawnSync } = require("node:child_process");
 const storage = require("../tools/huggingface-candidate-storage.js");
 const acquire = require("../tools/huggingface-candidate-acquire.js");
 const supported = require("../tools/huggingface-supported-candidates.js");
-const qwen = require("../tools/huggingface-qwen-candidates.js");
 const { createSourceAcquisitionFixture } = require("./helpers/source-acquisition-fixture.js");
 const { createOwnedTemporaryDirectory, removeOwnedTemporaryDirectory } = require("../tools/canonical-operation-scratch.js");
 
@@ -234,24 +233,22 @@ test("cached receipt must contain the exact files and current candidate identiti
   } finally { owned.remove(); }
 });
 
-test("both report writers use canonical artifacts and reject linked output", () => {
+test("the current report writer uses canonical artifacts and rejects linked output", () => {
   const owned = createOwnedTemporaryDirectory({ temporaryParent: path.resolve("artifacts/tests/candidate-storage") });
   const target = path.join(owned.rootPath, "inventory.json");
   const control = path.join(owned.rootPath, "control.json");
   try {
-    for (const owner of [supported, qwen]) {
-      for (const invalid of ["relative.json", "D:\\LLMs\\TinyRustLM\\inventory.json", path.resolve("outside-inventory.json")]) {
-        assert.throws(() => owner.writeReport(invalid, {}), /canonical|artifacts/);
-      }
-      assert.equal(owner.writeReport(target, { fixture: 1 }), target);
-      assert.deepEqual(JSON.parse(fs.readFileSync(target)), { fixture: 1 });
-      assert.equal(owner.writeReport(target, { fixture: 2 }), target);
-      assert.deepEqual(JSON.parse(fs.readFileSync(target)), { fixture: 2 });
-      fs.linkSync(target, control);
-      assert.throws(() => owner.writeReport(target, { fixture: 3 }), /linked or not ordinary/);
-      assert.deepEqual(JSON.parse(fs.readFileSync(control)), { fixture: 2 });
-      fs.unlinkSync(control);
+    for (const invalid of ["relative.json", "D:\\LLMs\\TinyRustLM\\inventory.json", path.resolve("outside-inventory.json")]) {
+      assert.throws(() => supported.writeReport(invalid, {}), /canonical|artifacts/);
     }
+    assert.equal(supported.writeReport(target, { fixture: 1 }), target);
+    assert.deepEqual(JSON.parse(fs.readFileSync(target)), { fixture: 1 });
+    assert.equal(supported.writeReport(target, { fixture: 2 }), target);
+    assert.deepEqual(JSON.parse(fs.readFileSync(target)), { fixture: 2 });
+    fs.linkSync(target, control);
+    assert.throws(() => supported.writeReport(target, { fixture: 3 }), /linked or not ordinary/);
+    assert.deepEqual(JSON.parse(fs.readFileSync(control)), { fixture: 2 });
+    fs.unlinkSync(control);
     assert.throws(() => supported.writeReport(target, { text: "x".repeat(16 * 1024 * 1024) }), /oversized/);
     assert.equal(fs.readdirSync(owned.rootPath).some((name) => name.endsWith(".tmp")), false);
   } finally {

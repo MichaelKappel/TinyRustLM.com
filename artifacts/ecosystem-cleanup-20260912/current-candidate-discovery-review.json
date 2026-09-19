@@ -1,0 +1,208 @@
+{
+  "schema": "tinyrustlm.current-candidate-discovery-review.v1",
+  "observedAtUtc": "2026-09-19T21:57:46.505Z",
+  "sourceParent": "ac36fee58373e7533924b5246cde24a59c319c88",
+  "status": "single-current-producer-tested-no-real-model",
+  "environment": {
+    "node": "v24.14.0",
+    "platform": "win32",
+    "architecture": "x64"
+  },
+  "inputs": [
+    {
+      "path": "tinyrustlm/tools/huggingface-candidate-storage.js",
+      "bytes": 7153,
+      "sha256": "69fde9ed17a2bdaaccdb6fc3b663a519905bc4b9bda07fd3504db7ea49c31a7e"
+    },
+    {
+      "path": "tinyrustlm/tools/huggingface-candidate-acquire.js",
+      "bytes": 28936,
+      "sha256": "bde2fea78d7b6abff04eeef994560f4244d3fdd110eb85454bdaaa92572ff899"
+    },
+    {
+      "path": "tinyrustlm/tools/huggingface-supported-candidates.js",
+      "bytes": 20757,
+      "sha256": "2c16d6e549efd47e4b6dd1d2374bab24cb6d68ceb27dce2e77c9b6aaae4f9f6b"
+    },
+    {
+      "path": "tinyrustlm/tools/canonical-operation-scratch.js",
+      "bytes": 5822,
+      "sha256": "746e1fafa344ef8d71a5a85864fc1eaf34085c65789f9beda820a247af7f399e"
+    },
+    {
+      "path": "tinyrustlm/tools/huggingface-metadata.js",
+      "bytes": 4158,
+      "sha256": "f6e26c0255a7eec38d35c116d4e1983fab42f33955e04074cb413f45ea97a341"
+    },
+    {
+      "path": "tinyrustlm/tools/source-candidate-exclusions.js",
+      "bytes": 1885,
+      "sha256": "43a71f9760a2d1038f9b3b017c61a445577a68bcd285098ab915ba5b0df4b836"
+    },
+    {
+      "path": "contracts/vnext/source-candidate-exclusions.v1.json",
+      "bytes": 17290,
+      "sha256": "abb84b63d8fd59eaa335b7e2c7517cdf50c49f9a6f45117f9a22d5f47b9f7133"
+    },
+    {
+      "path": "tinyrustlm/tests/helpers/source-acquisition-fixture.js",
+      "bytes": 2446,
+      "sha256": "0fa5f31690fa4dd5923e8eb012ea83040d904d32aa46ef6cd5231f5fba275335"
+    },
+    {
+      "path": "tinyrustlm/tests/huggingface-candidate-storage_test.js",
+      "bytes": 28249,
+      "sha256": "9ae772e98768cebd43a2cd7cdc48970791a8f3dabeb56905e13c94ee1790ed12"
+    },
+    {
+      "path": "tinyrustlm/tests/huggingface-candidate-acquire.test.js",
+      "bytes": 11123,
+      "sha256": "3c01d94f5dfdf4148486af0ed7d9b825721627d7bac2b6b8f318eb053c251461"
+    },
+    {
+      "path": "tinyrustlm/tests/canonical-operation-scratch_test.js",
+      "bytes": 4290,
+      "sha256": "8a884561b11804758d510c98c2a9e9a1195a99b852b3f7276db258e5b83788f2"
+    },
+    {
+      "path": "tinyrustlm/tests/huggingface-metadata_test.js",
+      "bytes": 10932,
+      "sha256": "a4471b6eb5af82a1207e1809a3403489bfa864ea6e6afd2992c3d9a4246519c6"
+    },
+    {
+      "path": "tinyrustlm/tests/huggingface-supported-candidates.test.js",
+      "bytes": 12347,
+      "sha256": "0536e0fcdb929349286dddeab587a72347d6f86ef52f4bc1c782d231791cb528"
+    },
+    {
+      "path": "tinyrustlm/tests/source-candidate-exclusions_test.js",
+      "bytes": 7125,
+      "sha256": "a90b086a48e2d09f8d73e335d5a6407c7268ed28fb7fcef3c88cec704f05eb54"
+    }
+  ],
+  "retired": [
+    {
+      "path": "tinyrustlm/tools/huggingface-qwen-candidates.js",
+      "bytes": 14187,
+      "sha256": "99149f5d223fd904b0866b77e2c262f8655d8f20f12e3a0b283095b41ca16f33",
+      "absent": true,
+      "history": "ac36fee58373e7533924b5246cde24a59c319c88"
+    },
+    {
+      "path": "tinyrustlm/tests/huggingface-qwen-candidates.test.js",
+      "bytes": 5221,
+      "sha256": "6dfac5eefa0514669dec6f7578e85792fe8c30818a7fd0caaa4d1449d6cc0cc4",
+      "absent": true,
+      "history": "ac36fee58373e7533924b5246cde24a59c319c88"
+    }
+  ],
+  "finding": "The removed Qwen-only tool emitted v1 inventories that the current downloader rejects. The current supported-profile producer already covers Qwen2.5.",
+  "changes": [
+    "Remove the incompatible producer and dedicated old-format test without compatibility wrapper or source copy",
+    "Move useful Qwen2.5 immutable/shape/packaging/license/duplicate cases onto the current owner",
+    "Check current producer output reaches the acquisition boundary; verify retired schema rejects before requests or directory creation",
+    "Reject present private/gated/disabled flags unless exactly false in both search and pinned revision metadata"
+  ],
+  "tests": {
+    "passed": 45,
+    "failed": 0,
+    "skipped": 0,
+    "files": [
+      "tinyrustlm/tests/huggingface-candidate-storage_test.js",
+      "tinyrustlm/tests/huggingface-candidate-acquire.test.js",
+      "tinyrustlm/tests/canonical-operation-scratch_test.js",
+      "tinyrustlm/tests/huggingface-metadata_test.js",
+      "tinyrustlm/tests/huggingface-supported-candidates.test.js",
+      "tinyrustlm/tests/source-candidate-exclusions_test.js"
+    ],
+    "coverage": [
+      {
+        "file": "huggingface-supported-candidates.js",
+        "lines": 92.72,
+        "branches": 69.63,
+        "functions": 90.91
+      },
+      {
+        "file": "huggingface-candidate-acquire.js",
+        "lines": 92.62,
+        "branches": 88.44,
+        "functions": 86.36
+      },
+      {
+        "file": "huggingface-candidate-storage.js",
+        "lines": 100,
+        "branches": 93.33,
+        "functions": 100
+      },
+      {
+        "file": "source-acquisition-fixture.js",
+        "lines": 100,
+        "branches": 100,
+        "functions": 100
+      }
+    ],
+    "coverageBoundary": "All added executable discovery lines are exercised; whole-file branch coverage remains below 75 percent.",
+    "cases": [
+      "Qwen3, SmolLM2 and Qwen2.5 current-profile metadata selection",
+      "Qwen2.5 exact shape and tied embeddings; duplicate weights, mutable revision, prequantized packaging and unsupported license filtering",
+      "Current v2 inventory reaches only the first injected config request without source payload; retired v1 rejects before output or request",
+      "String, boolean and null gated flags plus private/disabled changes in search and pinned metadata reject before further evidence requests",
+      "Existing metadata deadline/size controls, known source/weight exclusions, canonical output, cached receipt, transfer bounds and resumption"
+    ],
+    "initialFailure": {
+      "run": "Focused discovery: 3 passed, one failed",
+      "classification": "source-access-validation-defect",
+      "input": "Search metadata gated value auto",
+      "observation": "Candidate accepted instead of source_not_public",
+      "resolution": "Shared public-access flag check now used for search and pinned revision metadata"
+    },
+    "sequence": "Focused discovery regression failed as recorded; corrected focused 19 passed; full affected coverage 45 passed",
+    "testCountChange": "Prior 49 minus six retired-producer/duplicate checks plus two current-path checks = 45; useful negative cases moved to the current owner"
+  },
+  "referenceReview": {
+    "currentTreeLiveImportsRemaining": 0,
+    "retiredSchemaCurrentReferences": "One negative consumer test only",
+    "otherRepositories": [
+      "LMComposer.com",
+      "MiniModel.MiRust.com",
+      "MiniModel.org",
+      "MiRust.com",
+      "Runtime.MiRust.com",
+      "TinyRustLM.MiRust.com"
+    ],
+    "result": "No matching references in searched active source/documentation paths; generated artifacts, raw intake, dependency and build directories excluded"
+  },
+  "cleanup": {
+    "retiredSourceLogicalBytes": 19408,
+    "gitHistoryPreserved": true,
+    "modelFixtureParent": "D:\\LLMs\\TinyRustLM\\artifacts\\tests\\source-acquisition",
+    "modelFixtureParentEmpty": true,
+    "ownedSourceCoverageOutputRemoved": true,
+    "sourceCoverageFilesRemoved": 7,
+    "sourceCoverageLogicalBytesRemoved": 3730193,
+    "physicalStorageRecoveryMeasured": false,
+    "perTestFixtureDeletionBytesAggregated": false,
+    "historicalModelPayloadsModified": false
+  },
+  "sourceGate": {
+    "status": "source_authority_scan_incomplete",
+    "paths": [
+      "artifacts/verification/qwen3-environment-install/tinyrustlm-operation-C3ZUt9/install-temp/TmP6xn2evdh-b",
+      "artifacts/verification/qwen3-environment-install/tinyrustlm-operation-C3ZUt9/install-temp/TmPeq63_hr7-b"
+    ],
+    "blockedDeletionRetried": false
+  },
+  "remaining": [
+    "Missing access flags are metadata uncertainty, not verified authorization, provenance, redistribution rights or quality",
+    "Other historical execution owners and producer/consumer boundaries require individual review",
+    "Source scan still incomplete on two previously blocked links; no blocked deletion retried",
+    "No public candidate search, real model acquisition, closed experiment replay, model qualification or deployment occurred",
+    "Ternary/Bonsai/Hadamard research remains deferred"
+  ],
+  "memoryVerification": {
+    "testFilter": "FullyQualifiedName~UaixMemoryConsolidationTests",
+    "passed": 6,
+    "failed": 0,
+    "skipped": 0
+  }
+}

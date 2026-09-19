@@ -8,7 +8,6 @@ const test = require("node:test");
 const { sourceCandidateRejection } = require("../tools/source-candidate-exclusions.js");
 const acquire = require("../tools/huggingface-candidate-acquire.js");
 const supported = require("../tools/huggingface-supported-candidates.js");
-const qwen = require("../tools/huggingface-qwen-candidates.js");
 const root = path.resolve(__dirname, "../..");
 const policy = require("../../contracts/vnext/source-candidate-exclusions.v1.json");
 const rejected = policy.entries.find((entry) => entry.modelId === "Qwen/Qwen2.5-1.5B-Instruct");
@@ -70,25 +69,23 @@ function metadataFetch(modelId, revision, weightSha256, calls) {
   };
 }
 
-for (const [name, discovery] of [["supported", supported], ["qwen", qwen]]) {
-  test(`${name} discovery excludes recorded revision before model-specific requests`, async () => {
-    const calls = [];
-    const report = await discovery.discoverCandidates({ profileId: "qwen2.5-1.5b-bpe", candidateLimit: 1,
-      fetchImpl: metadataFetch(rejected.modelId, rejected.revision, rejected.weightSha256, calls) });
-    assert.equal(calls.length, 1);
-    assert.equal(report.candidates.length, 0);
-    assert.deepEqual(report.rejections, [{ modelId: rejected.modelId, code: "prior_source_quality_rejected" }]);
-  });
-  test(`${name} discovery refuses a renamed repository with the rejected weight digest`, async () => {
-    const calls = [];
-    const modelId = "Mirror/Qwen2.5-1.5B-Instruct";
-    const report = await discovery.discoverCandidates({ profileId: "qwen2.5-1.5b-bpe", candidateLimit: 1,
-      fetchImpl: metadataFetch(modelId, "a".repeat(40), rejected.weightSha256, calls) });
-    assert.equal(calls.length, 2);
-    assert.equal(report.candidates.length, 0);
-    assert.deepEqual(report.rejections, [{ modelId, code: "prior_weight_quality_rejected" }]);
-  });
-}
+test("discovery excludes recorded revision before model-specific requests", async () => {
+  const calls = [];
+  const report = await supported.discoverCandidates({ profileId: "qwen2.5-1.5b-bpe", candidateLimit: 1,
+    fetchImpl: metadataFetch(rejected.modelId, rejected.revision, rejected.weightSha256, calls) });
+  assert.equal(calls.length, 1);
+  assert.equal(report.candidates.length, 0);
+  assert.deepEqual(report.rejections, [{ modelId: rejected.modelId, code: "prior_source_quality_rejected" }]);
+});
+test("discovery refuses a renamed repository with the rejected weight digest", async () => {
+  const calls = [];
+  const modelId = "Mirror/Qwen2.5-1.5B-Instruct";
+  const report = await supported.discoverCandidates({ profileId: "qwen2.5-1.5b-bpe", candidateLimit: 1,
+    fetchImpl: metadataFetch(modelId, "a".repeat(40), rejected.weightSha256, calls) });
+  assert.equal(calls.length, 2);
+  assert.equal(report.candidates.length, 0);
+  assert.deepEqual(report.rejections, [{ modelId, code: "prior_weight_quality_rejected" }]);
+});
 
 /** Build a valid inventory row so acquisition reaches its own weight exclusion gate. */
 function mirrorCandidate() {

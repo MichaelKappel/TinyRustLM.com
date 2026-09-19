@@ -7,7 +7,6 @@ const { gzipSync } = require("node:zlib");
 const test = require("node:test");
 const { createMetadataReader } = require("../tools/huggingface-metadata.js");
 const supported = require("../tools/huggingface-supported-candidates.js");
-const qwen = require("../tools/huggingface-qwen-candidates.js");
 
 /** Expose chunk reads and cancellation without prefetching before the reader asks. */
 function streamed(chunks, headers = {}) {
@@ -166,7 +165,7 @@ test("native HTTP fetch enforces deadlines, decompressed limits and truncated-bo
   }
 });
 
-/** Supply enough valid pinned evidence to reach each owner's license request. */
+/** Supply enough valid pinned evidence to reach the current discovery owner's license request. */
 function candidateFetch(licenseResponse, calls) {
   const modelId = "Example/Qwen2.5-1.5B-Instruct";
   const revision = "a".repeat(40);
@@ -189,27 +188,25 @@ function candidateFetch(licenseResponse, calls) {
   };
 }
 
-for (const [name, discovery] of [["supported", supported], ["qwen", qwen]]) {
-  test(`${name} bounds server search rows and propagates its timeout before model requests`, async () => {
-    let fetched = 0;
-    await assert.rejects(discovery.discoverCandidates({ profileId: "qwen2.5-1.5b-bpe", searchLimit: 1,
-      fetchImpl: async () => { fetched++; return Response.json([{}, {}]); } }), /exceeds requested result limit/);
-    assert.equal(fetched, 1);
-    await assert.rejects(discovery.discoverCandidates({ profileId: "qwen2.5-1.5b-bpe", requestTimeoutMs: 25,
-      fetchImpl: async () => new Response(new ReadableStream({ pull() { return new Promise(() => {}); } })) }),
-    { code: "metadata_timeout" });
-  });
-  test(`${name} distinguishes license fetch failures from license judgments without retrying`, async () => {
-    for (const [makeResponse, code] of [
-      [() => new Response("x", { headers: { "Content-Length": 1024 * 1024 + 1 } }), "metadata_oversized"],
-      [() => new Response(new ReadableStream({ pull() { return new Promise(() => {}); } })), "metadata_timeout"]
-    ]) {
-      const calls = [];
-      const report = await discovery.discoverCandidates({ profileId: "qwen2.5-1.5b-bpe", requestTimeoutMs: 25,
-        fetchImpl: candidateFetch(makeResponse, calls) });
-      assert.equal(report.candidates.length, 0);
-      assert.deepEqual(report.rejections, [{ modelId: "Example/Qwen2.5-1.5B-Instruct", code }]);
-      assert.equal(calls.length, name === "supported" ? 5 : 4);
-    }
-  });
-}
+test("discovery bounds server search rows and propagates its timeout before model requests", async () => {
+  let fetched = 0;
+  await assert.rejects(supported.discoverCandidates({ profileId: "qwen2.5-1.5b-bpe", searchLimit: 1,
+    fetchImpl: async () => { fetched++; return Response.json([{}, {}]); } }), /exceeds requested result limit/);
+  assert.equal(fetched, 1);
+  await assert.rejects(supported.discoverCandidates({ profileId: "qwen2.5-1.5b-bpe", requestTimeoutMs: 25,
+    fetchImpl: async () => new Response(new ReadableStream({ pull() { return new Promise(() => {}); } })) }),
+  { code: "metadata_timeout" });
+});
+test("discovery distinguishes license fetch failures from license judgments without retrying", async () => {
+  for (const [makeResponse, code] of [
+    [() => new Response("x", { headers: { "Content-Length": 1024 * 1024 + 1 } }), "metadata_oversized"],
+    [() => new Response(new ReadableStream({ pull() { return new Promise(() => {}); } })), "metadata_timeout"]
+  ]) {
+    const calls = [];
+    const report = await supported.discoverCandidates({ profileId: "qwen2.5-1.5b-bpe", requestTimeoutMs: 25,
+      fetchImpl: candidateFetch(makeResponse, calls) });
+    assert.equal(report.candidates.length, 0);
+    assert.deepEqual(report.rejections, [{ modelId: "Example/Qwen2.5-1.5B-Instruct", code }]);
+    assert.equal(calls.length, 5);
+  }
+});

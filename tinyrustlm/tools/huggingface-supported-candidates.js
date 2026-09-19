@@ -167,13 +167,18 @@ function declaresConversationModel(model, profile) {
     .test(modelId);
 }
 
+// A present access flag must explicitly be false; string-valued gates are not public access.
+function sourceIsPublic(model) {
+  return ["private", "gated", "disabled"].every((key) => !Object.hasOwn(model, key) || model[key] === false);
+}
+
 // Returns a typed preflight rejection without issuing model-specific requests.
 function searchRejectionCode(model, profile) {
   const modelId = String(model && model.id || "");
   if (!/^[a-fA-F0-9]{40,64}$/.test(String(model && model.sha || ""))) {
     return "immutable_revision_required";
   }
-  if (model.private === true || model.gated === true || model.disabled === true) {
+  if (!sourceIsPublic(model)) {
     return "source_not_public";
   }
   if (hasUnsupportedPackaging(modelId)) {
@@ -312,6 +317,7 @@ async function inspectCandidate(model, settings) {
     );
     invariant(info.id === modelId && String(info.sha || "").toLowerCase() === revision,
       "revision metadata identity drift");
+    if (!sourceIsPublic(info)) return { rejection: "source_not_public" };
     invariant(String(info.pipeline_tag || model.pipeline_tag || "").toLowerCase() === "text-generation",
       "revision is not text generation");
     invariant(String(info.cardData && info.cardData.license || "").toLowerCase() === "apache-2.0",

@@ -1251,6 +1251,49 @@ recovery and aggregate fixture bytes were not measured. No historical payload,
 blocked deletion, real candidate, experiment result or deployment was changed.
 The source scan and real-model/publication gates remain open; research is deferred.
 
+## C39: a green obsolete producer can still emit unusable inventories
+
+Question: do both discovery tools feed the current acquisition contract? The
+Qwen-only producer emitted a retired v1 schema; the downloader accepted only the
+supported-profile v2 schema. Both tools had passing isolated tests. Reference
+inspection found only test callers for the old producer and no active references
+in the other six canonical repositories' searched source/documentation paths.
+
+Decision and method: remove the obsolete producer and dedicated test, preserving
+source history in Git. Move useful Qwen2.5 cases onto the existing current owner
+and test the producer/consumer boundary explicitly. The new case verifies that
+current metadata reaches only the first acquisition request, deliberately stops
+without returning source bytes, and that v1 rejects before filesystem/network
+effects. No compatibility path or closed experiment replay was introduced.
+
+A new access-flag regression failed first: the search row with `gated: "auto"`
+was accepted. The fixed owner now rejects present private/gated/disabled flags
+unless false, both in search and pinned revision metadata. Tests exercise string,
+boolean and null gates plus private/disabled changes; rejected revisions make no
+configuration, license or model request. Missing access metadata remains unknown
+and does not establish authorization or license/provenance admission.
+
+Result: 45 checks pass, no skips; focused corrected checks passed 19. Discovery
+line coverage is 92.72 percent and whole-file branch coverage 69.63 percent; the
+added executable lines are covered. Six retired-producer/duplicate checks were
+removed and two current-path checks added to the previous 49-check suite.
+Exact inputs, retired file identities and the initial failure are recorded in
+`artifacts/ecosystem-cleanup-20260912/current-candidate-discovery-review.json`.
+
+Reusable lesson: verify what consumes a producer's output before maintaining
+another parallel tool. Isolated schema tests can both pass across an incompatible
+boundary. Public-access flags need their actual values checked, and search-time
+metadata must not substitute for revision-time checks. None of those metadata
+checks proves useful answers, provenance, current availability or a qualified
+browser default.
+
+Retirement: two ordinary tracked files, 19408 logical bytes, removed from the
+canonical tree; no copied archive. Seven remaining coverage files, 3730193 logical
+bytes, removed; owned model fixtures removed and parent verified empty. Physical
+recovery and aggregate fixture bytes were not measured. The source scan still
+has its two blocked links; no blocked removal, live query, model run or publication
+occurred. Other historical execution owners still require individual inspection.
+
 ## Continue the review
 
 Before deleting an experiment that is not covered above, record its purpose,

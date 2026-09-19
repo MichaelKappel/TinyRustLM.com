@@ -1,5 +1,5 @@
 profile: tinyrustlm.startup-packet.current.v1
-updated_utc: 2026-09-19T21:44:51Z
+updated_utc: 2026-09-19T21:55:22Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
@@ -14,7 +14,7 @@ current_truth:
   blocker: No authorized real-source acquisition receipt through this coordinator or qualified real model is established by the implementation and fixture evidence.
   browser: Current worktree product UI loads the capability client and composition installer; source wiring is not real-model browser or deployment proof.
   next_gate: Use the reviewed five-experiment plan; establish eligible source usefulness, fresh current v3 material registration and real native/WASM/browser evidence. Discover hosting capabilities independently; no replay of closed operations.
-  candidate_gate: C35-C38 retain exact exclusions, bounded metadata, canonical output, complete receipts and exclusive ownership. C38 enforces decoded-byte/pre-read bounds, exact ranges and body deadlines; 49 affected checks pass. Independent admission and real model gates remain; no-match is not admission.
+  candidate_gate: C39 retires the incompatible Qwen-only v1 producer; supported-profile discovery is the sole current v2 owner, with corrected access flags. Forty-five affected checks pass, retaining C35-C38 exclusions, bounds and owned receipts. Independent admission and real model gates remain; no-match is not admission.
   current_state_details: workspace.uai
   companion_source: dotnet/src/TinyRustLM.Companion/CompanionProductionOperationRuntime.cs
   browser_source: tinyrustlm/app/index.html

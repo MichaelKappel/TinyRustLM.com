@@ -5,6 +5,50 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C39: retire the incompatible discovery producer, September 19
+
+Removed `huggingface-qwen-candidates.js` and its dedicated old-format test. It
+emitted `huggingface_candidate_inventory.v1`, whereas the current downloader
+accepts only `huggingface_supported_candidate_inventory.v2`. Its only live
+references were tests; the other six canonical repositories had no active
+references in the searched source/documentation paths. The current discovery
+owner already supports Qwen2.5 alongside Qwen3 and SmolLM2. No compatibility
+reader, forwarding CLI or extra source copy was added.
+
+Moved useful Qwen2.5 shape, immutable revision, packaging, license-filter and
+duplicate-weight checks onto the current producer. An integration check now
+passes its inventory to the acquisition boundary; the former schema rejects
+before any request or candidate-directory creation. Shared metadata, exclusion
+and output tests exercise the sole owner instead of a retired parallel tool.
+
+The review exposed a second concrete defect: discovery accepted a string-valued
+gate and did not recheck access flags on pinned revision metadata. A regression
+first failed because `gated: "auto"` produced an accepted candidate. Search and
+revision metadata now reject present private/gated/disabled flags unless exactly
+false. Missing flags remain metadata uncertainty, not a claim of authorized
+acquisition, provenance, redistribution rights or model quality.
+
+All 45 affected checks pass. This replaces 49 prior checks by removing six
+old-producer/duplicate checks and adding two current-path checks, without dropping
+their useful negative cases. The sole discovery file has 92.72 percent line
+coverage; whole-file branch coverage is 69.63 percent, and every added executable
+line is exercised. Metadata failures, exclusions, byte limits, ownership and
+resumption remain covered. The initial regression failure is retained in
+`artifacts/ecosystem-cleanup-20260912/current-candidate-discovery-review.json`.
+
+The two removed files totalled 19408 logical bytes; Git retains their history.
+Seven remaining owned coverage files, 3730193 logical bytes, were removed. Owned
+model fixtures were removed and the fixture parent is empty. Physical recovery
+and aggregate fixture bytes were not measured. No real model, public discovery
+query, closed experiment or deployment ran. The source scan still fails on the
+same two blocked installer links; real model and hosting gates remain open.
+
+Current discovery entry point: `tinyrustlm/tools/huggingface-supported-candidates.js`
+with an absolute canonical artifact JSON output and one declared profile ID
+(`qwen3-0.6b-bpe`, `smollm2-360m-instruct-bpe` or `qwen2.5-1.5b-bpe`). Metadata
+eligibility does not qualify a candidate. Continue the review of historical
+execution owners and producer/consumer closure while material gates stay open.
+
 ## C38: enforce acquisition limits before writes and allocations, September 19
 
 Large downloads previously checked for excess bytes after writing the complete
