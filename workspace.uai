@@ -1,5 +1,5 @@
 profile: tinyrustlm.workspace.current.v1
-updated_utc: 2026-09-19T15:37:57Z
+updated_utc: 2026-09-19T17:18:30Z
 scope: authoritative current workspace and ecosystem routing
 sensitivity: internal; never publish this file
 
@@ -123,6 +123,6 @@ working_product_review:
   first_product_path: Exact eligible source usefulness -> semantic/numerical correctness -> measured real browser quality/resources -> qualified catalog/seed -> verified installation -> useful beginner conversation -> official acceptance.
   independent_work: Candidate admission, development rubrics, first-run state design and read-only hosting discovery may proceed independently; existing material/release gates remain.
   proposals_only: Format/backend replacement, training recipe/distribution changes, GPU/cloud provisioning and new transport layouts require evidence and coherent implementation decisions.
-  publication_wip: C31 canonical-input publication refactor remains unfinished; no tested deployment result follows.
+  publication_wip: C31 canonical-input publication refactor is locally tested; source copies are removed from its active path, but remote capability admission remains blocked and no live deployment result follows.
   memory_review_limit: No fresh public site audit, model execution, qualification, live MemoryEndpoints operation, blocked deletion or release acceptance is claimed.
   historical_rules: Source relocation and storage-consolidation UAI describe their dated observations only; do not use them to claim today's source scan is complete.

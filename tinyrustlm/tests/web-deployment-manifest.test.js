@@ -6,12 +6,15 @@ const path = require("node:path");
 const test = require("node:test");
 
 const {
+  bindDeploymentInput,
+  verifyDeploymentInput,
   retiredPublicPaths,
   validateHostPolicy,
   validateRetirementClosure,
   validateWebDeploymentManifest
 } = require("../tools/web-deployment-manifest.js");
-const { materializeSourceReleaseState, temporaryDirectory } = require("./site-release-test-fixture.js");
+const { materializeSourceReleaseState, materializeSourceReleaseAt, temporaryDirectory } =
+  require("./site-release-test-fixture.js");
 
 const siteRoot = path.resolve(__dirname, "..");
 const deploymentManifestPath = path.join(
@@ -30,6 +33,41 @@ function materializedRelease(context) {
     "tinyrustlm-generated-release-"
   ).outputRoot;
 }
+
+test("deployment input binds real canonical files without a source snapshot", (context) => {
+  const generatedRoot = materializedRelease(context);
+  const before = fs.readdirSync(generatedRoot).sort();
+  const { input, validation } = bindDeploymentInput({ siteRoot, generatedRoot });
+  assert.equal(input.schema, "tinyrustlm.web_deployment_input.v1");
+  assert.equal(input.fileCount, validation.files.length);
+  assert.equal(input.totalByteCount, validation.totalByteCount);
+  assert.equal(input.files.some((file) => Object.hasOwn(file, "filePath")), false);
+  assert.equal(JSON.stringify(input).includes(JSON.stringify(path.dirname(siteRoot)).slice(1, -1)), false);
+  assert.deepEqual(verifyDeploymentInput({ siteRoot, generatedRoot,
+    expectedInputId: input.inputId }).input, input);
+  assert.deepEqual(fs.readdirSync(generatedRoot).sort(), before);
+  assert.throws(() => bindDeploymentInput({ siteRoot, generatedRoot, snapshotRoot: generatedRoot }),
+    /options are invalid/);
+  assert.throws(() => bindDeploymentInput({ siteRoot: path.dirname(siteRoot), generatedRoot }),
+    /canonical site root/);
+  assert.throws(() => verifyDeploymentInput({ siteRoot, generatedRoot, expectedInputId: "bad" }),
+    /identity is invalid/);
+  assert.throws(() => verifyDeploymentInput({ siteRoot, generatedRoot,
+    expectedInputId: "0".repeat(64) }), /changed after binding/);
+});
+
+test("deployment input rejects a separately valid changed publication identity", (context) => {
+  const initialRoot = materializedRelease(context);
+  const { input } = bindDeploymentInput({ siteRoot, generatedRoot: initialRoot });
+  const changedRoot = temporaryDirectory(context, "tinyrustlm-changed-publication-");
+  materializeSourceReleaseAt({ outputRoot: changedRoot, sourceRevision: "b".repeat(40),
+    publishedAt: "2026-08-31T23:16:30.000Z" });
+  const changed = bindDeploymentInput({ siteRoot, generatedRoot: changedRoot }).input;
+  assert.notEqual(changed.publicationId, input.publicationId);
+  assert.notEqual(changed.inputId, input.inputId);
+  assert.throws(() => verifyDeploymentInput({ siteRoot, generatedRoot: changedRoot,
+    expectedInputId: input.inputId }), /changed after binding/);
+});
 
 test("web deployment manifest is the exact no-model publication closure", (context) => {
   const result = validateWebDeploymentManifest({

@@ -46,6 +46,12 @@ The larger pending deployment-custody implementation still needs review, includi
 its copied publication snapshots and out-of-worktree assumptions. These local
 smoke changes do not certify that implementation or complete release gates.
 
+September 19 follow-up: C31 replaces copied-source staging with canonical input
+hashes and verified memory payloads, and confines secret-scan evidence to canonical
+artifacts. Its separate regression and installed-Edge smoke results are recorded
+in `artifacts/ecosystem-cleanup-20260912/publication-canonical-input-review.json`.
+Remote publication capabilities remain unproven; no live release is claimed.
+
 An earlier parent test timed out before its 120-second child deadline. Two child
 artifacts (310,515 logical bytes) appeared after parent cleanup began. The child
 now inherits cancellation, does not inherit Node test-worker context, and the

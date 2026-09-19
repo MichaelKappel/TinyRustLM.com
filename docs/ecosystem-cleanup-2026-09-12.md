@@ -5,6 +5,43 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C31: canonical publication inputs, September 19
+
+The local publication refactor now binds the exact canonical file closure and
+reads bounded, hash-verified payloads into memory for staging. Retired source-copy
+snapshot APIs and commands are gone. Generated release/predecessor metadata and
+secret-scan evidence stay in canonical artifacts with verified ownership and
+cleanup. The deployment test command now invokes the launcher that owns its
+PowerShell scratch directory.
+
+All 52 affected Node checks pass, including the PowerShell primitive suite and
+12 local page observations in installed Edge. The two changed JavaScript tools
+have 84.10 percent combined line coverage; PowerShell coverage was not measured.
+The secret scan covers the manifest and 30 declared public files. Tests cover
+wrong identity/length/hash, interrupted transfer and authenticated readback,
+single-zero-byte payloads, corrupted stage replacement, canonical output paths,
+predecessor cleanup, and the guarded final-marker route.
+
+All six affected managed memory-consistency checks pass. An actual
+`npm run test:deployment` invocation stopped at its preserved pretest with
+`source_authority_scan_incomplete` on the two recorded installer links; it did
+not run the suite. The 52-check result above is the explicit focused invocation,
+not a successful complete source/release gate.
+
+This is local implementation evidence. The production transport gate still
+rejects publication before credential loading or remote mutation: cross-host
+exclusion, release-wide recovery and final-marker-last-mutation guarantees remain
+unproven. Source scanning still has its recorded policy-blocked installer links.
+No deployment, model run, qualified default, initial seed, historical/model
+deletion or measured storage recovery occurred. Existing unrelated work remains
+separate. The owner deferred ternary/Bonsai research and requested continued
+implementation.
+
+Exact inputs, results, failures, coverage limits and next decisions are in
+`artifacts/ecosystem-cleanup-20260912/publication-canonical-input-review.json`
+and lesson C31. Future publication needs actual hosting evidence and complete
+release gates; the local suite does not authorize claiming a usable release.
+
 ## Discovery and preservation
 
 A recursive directory inspection on 2026-09-12 found seven Git repositories,

@@ -12,6 +12,11 @@ const {
 } = require("./immutable-publication-files.js");
 const { scanPublicArtifacts } = require("./public-evidence-secret-scan.js");
 const { validateWebDeploymentManifest } = require("./web-deployment-manifest.js");
+const {
+  createOwnedTemporaryDirectory,
+  removeOwnedTemporaryDirectory,
+  requireCanonicalArtifactPath
+} = require("./canonical-operation-scratch.js");
 
 function invariant(condition, message) {
   if (!condition) throw new Error(message);
@@ -33,11 +38,6 @@ function blockedMaterialError() {
   return error;
 }
 
-function isWithin(rootPath, candidatePath) {
-  const relative = path.relative(rootPath, candidatePath);
-  return relative === "" || (!relative.startsWith("..") && !path.isAbsolute(relative));
-}
-
 async function scanWebRelease(options) {
   invariant(options && typeof options === "object", "Web release scan options are required");
   const sourceRevision = String(options.sourceRevision || "");
@@ -50,23 +50,17 @@ async function scanWebRelease(options) {
   const evidenceRoot = path.resolve(evidenceOutput);
   if (fs.existsSync(reportOutputPath)) throw alreadyExistsError();
   invariant(!fs.existsSync(evidenceRoot), "Web release evidence root must be new");
+  requireCanonicalArtifactPath(reportOutputPath);
+  requireCanonicalArtifactPath(evidenceRoot);
   const validation = validateWebDeploymentManifest({
     siteRoot: options.siteRoot,
     manifestPath: options.manifestPath,
     generatedRoot: options.generatedRoot
   });
-  const repositoryRoot = path.resolve(validation.siteRoot, "..");
-  invariant(
-    !isWithin(repositoryRoot, reportOutputPath) &&
-      !isWithin(repositoryRoot, evidenceRoot),
-    "Web release evidence must remain outside the source worktree"
-  );
   const reportDirectory = ensureSafeDirectory(path.dirname(reportOutputPath));
   createOwnedDirectory(evidenceRoot);
-  const stagingDirectory = fs.mkdtempSync(
-    path.join(reportDirectory, ".tinyrustlm-web-secret-scan-")
-  );
-  const stagingReportPath = path.join(stagingDirectory, "scan-report.json");
+  const staging = createOwnedTemporaryDirectory({ temporaryParent: reportDirectory });
+  const stagingReportPath = path.join(staging.rootPath, "scan-report.json");
   const artifacts = [
     Object.freeze({
       label: "control/web-deployment-manifest.v2.json",
@@ -114,15 +108,7 @@ async function scanWebRelease(options) {
     throw safeError;
   } finally {
     try {
-      const stagingRelative = path.relative(reportDirectory, stagingDirectory);
-      invariant(
-        stagingRelative &&
-          !stagingRelative.includes(path.sep) &&
-          stagingRelative.startsWith(".tinyrustlm-web-secret-scan-"),
-        "Web release secret scan staging directory is unsafe"
-      );
-      fs.rmSync(stagingReportPath, { force: true });
-      fs.rmdirSync(stagingDirectory);
+      removeOwnedTemporaryDirectory(staging);
     } catch {
       const cleanupError = new Error("Web release secret scan staging cleanup failed");
       cleanupError.code = "WEB_RELEASE_SECRET_SCAN_CLEANUP_FAILED";

@@ -1,10 +1,10 @@
 profile: tinyrustlm.short-term-memory.current.v1
-updated_utc: 2026-09-19T15:37:57Z
+updated_utc: 2026-09-19T17:18:30Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
 now:
-  task: September 19 research intake applied to current UAI and durable wiki routing; all 16 reports have explicit decisions and proof of use.
+  task: Resumed C31 publication implementation after the owner deferred ternary/Bonsai research; September report intake remains complete.
   maturity: Early alpha, never a working release; no code debt, obsolete code or legacy support before the owner's official acceptance of a fully working release.
   broader_goal: Ecosystem cleanup and usable release remain incomplete.
   manifest: docs/report-intake/2026-09-19/working-product-research/MANIFEST.md
@@ -18,7 +18,7 @@ current_source_state:
   rejected_source: Unchanged Qwen3-0.6B@c1899de289a04d12100db370d81485cdf75e47ca is diagnostic-only; identical repackaging stays rejected.
   current_numerical_contract: C30 implements v3-only registration with corrected locks/helper bindings. Historical 58 checks passed; no material v3 registration or real trace.
   environment: Canonical numerical environment admitted with synthetic framework checks; real source load and later comparison stages remain unproven.
-  publication: C31 removes copied-source publication staging in favor of canonical bound inputs; current refactor is unfinished/uncommitted and has no deployment result.
+  publication: C31 local refactor binds canonical inputs, verifies memory payloads, routes package tests through owned scratch and keeps secret-scan evidence in canonical artifacts. See publication-canonical-input-review.json for tests and limitations; transport admission still blocks live publication.
 
 known_blockers:
   - Source-authority scan remains incomplete on the two C28 installer links; rerun in this intake confirmed source_authority_scan_incomplete after canonical Git trust configuration.

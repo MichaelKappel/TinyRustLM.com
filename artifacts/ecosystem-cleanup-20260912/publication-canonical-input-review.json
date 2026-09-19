@@ -1,0 +1,234 @@
+{
+  "schema": "tinyrustlm.canonical_publication_refactor_review.v1",
+  "reviewedUtc": "2026-09-19T17:18:30Z",
+  "sourceParent": "1114003d35e52f4fdb9a2f1b76a4f3bd53ecd8db",
+  "branch": "codex/model-acquisition-v2",
+  "status": "local-refactor-tested-remote-publication-blocked",
+  "ownerDirection": "Defer ternary/Bonsai/Hadamard research and continue implementation.",
+  "scope": "Finish existing C31 canonical-input publication refactor and its directly affected scanner and test entry point.",
+  "changes": [
+    "Remove source-copy snapshot exports/CLI commands; bind exact canonical publication identities.",
+    "Read bounded hash-verified source/generated payloads into memory before staging; reject drift before transfer.",
+    "Preserve fail-closed source custody and unproven remote capability gate; route marker commits explicitly after regular-artifact verification.",
+    "Use the owned-scratch Node launcher for deployment package tests and preserve the source-authority pretest.",
+    "Keep secret-scan reports, receipts and temporary staging within canonical artifacts; verify ownership before cleanup.",
+    "Distinguish single-zero-byte payloads from null/empty arrays using explicit null and length checks."
+  ],
+  "runtime": {
+    "node": "24.14.0",
+    "powershell": "5.1.20348.5386",
+    "browser": "Microsoft Edge 153.0.4234.48",
+    "browserChannel": "msedge"
+  },
+  "artifacts": [
+    {
+      "path": "tinyrustlm/tools/deploy-tinyrustlm-web.ps1",
+      "byteCount": 214475,
+      "sha256": "e14d158edea9d01a3d276e1affb5e05d6b4137a5d6c0c11a4a0e164fe3423576"
+    },
+    {
+      "path": "tinyrustlm/tools/web-deployment-manifest.js",
+      "byteCount": 44332,
+      "sha256": "2be36952782039c5749d0552ccf53dd0de82638e61c5d112766f19a040b8b669"
+    },
+    {
+      "path": "tinyrustlm/tools/web-release-secret-scan.js",
+      "byteCount": 5245,
+      "sha256": "9838715c8c8ae2f720e5f5937150ba89024db8f075ca1e62f73fdcd1dfd198d5"
+    },
+    {
+      "path": "tinyrustlm/tests/deploy-tinyrustlm-web.test.js",
+      "byteCount": 15377,
+      "sha256": "9375e5195526a97f2efd5f5f81ec36f4e3cc4925a0bd897d64c62d8cdf3e907b"
+    },
+    {
+      "path": "tinyrustlm/tests/deploy-tinyrustlm-web.test.ps1",
+      "byteCount": 92068,
+      "sha256": "20b101eb070212e733cd3e90ce76fcfee3883890686d83c18b3f868ef7d5001b"
+    },
+    {
+      "path": "tinyrustlm/tests/web-deployment-manifest.test.js",
+      "byteCount": 11922,
+      "sha256": "ae80e30f7b61326bf24073370a8f0b935c46389dc5680477fe32b6e578e2b76b"
+    },
+    {
+      "path": "tinyrustlm/tests/web-deployment-custody.test.js",
+      "byteCount": 7363,
+      "sha256": "a2f5cf2367cab6f043fdc6d2005f3d6c06ebaff77bb9f12094d86f93f999ebda"
+    },
+    {
+      "path": "tinyrustlm/tests/web-release-secret-scan.test.js",
+      "byteCount": 5653,
+      "sha256": "269e1bc392f3191934635ba4cbdf4ef1c5d0d87a663c587c84ad6f827dfa65b8"
+    },
+    {
+      "path": "tinyrustlm/tests/immutable-publication-files.test.js",
+      "byteCount": 1785,
+      "sha256": "188ae29fce15db79880862858fe8a040e40c71e426679b0fbaf50f5da52b39d7"
+    },
+    {
+      "path": "tinyrustlm/tests/canonical-operation-scratch_test.js",
+      "byteCount": 4290,
+      "sha256": "8a884561b11804758d510c98c2a9e9a1195a99b852b3f7276db258e5b83788f2"
+    },
+    {
+      "path": "tinyrustlm/tests/site-release-contract.test.js",
+      "byteCount": 15424,
+      "sha256": "a0c411d680328776ed1191d8448915b073f11d0ab8470c61b02d922184357326"
+    },
+    {
+      "path": "tinyrustlm/tests/site-release-test-fixture_test.js",
+      "byteCount": 1251,
+      "sha256": "70745450759d97b64cdf2edb81499cb7775cf2226ede59cd536e8d99d6aa8d68"
+    },
+    {
+      "path": "tinyrustlm/tests/run-web-release-local-smoke.test.js",
+      "byteCount": 9020,
+      "sha256": "c4810045d5a61bea69a7bb2597b10767e35311c97ef4cfbafa45a00032f98d4a"
+    },
+    {
+      "path": "tinyrustlm/tests/web-release-local-smoke.test.js",
+      "byteCount": 5624,
+      "sha256": "9d5186cea456e1db5317473eca6c43d09404036fe932049b7ba888cb4c203e5b"
+    },
+    {
+      "path": "tinyrustlm/deploy/web-deployment-manifest.v2.json",
+      "byteCount": 4675,
+      "sha256": "107e5bb278d1fca016c0101841f7832938de7231cb0e290a234c470e4a42614a"
+    },
+    {
+      "path": "tinyrustlm/tools/canonical-operation-scratch.js",
+      "byteCount": 5822,
+      "sha256": "746e1fafa344ef8d71a5a85864fc1eaf34085c65789f9beda820a247af7f399e"
+    },
+    {
+      "path": "tinyrustlm/tools/immutable-publication-files.js",
+      "byteCount": 5898,
+      "sha256": "49064b04cd858e91767f2da7d83d109e41d7fb2b5ea2175f961149401e5384ab"
+    },
+    {
+      "path": "tinyrustlm/tools/site-release-contract.js",
+      "byteCount": 25893,
+      "sha256": "57dc119f4fb055a6b1e2abbd0d663e8e2be327b975e85b648041ba201a0591d8"
+    },
+    {
+      "path": "tinyrustlm/release/site-release-ledger.v1.json",
+      "byteCount": 12932,
+      "sha256": "9b02fa419d7f5b23c672713389cd71da2570bab96544292dda9edafdec4a19b4"
+    }
+  ],
+  "packageScripts": {
+    "verify:source-authority": "node tools/verify-single-source-authority.js",
+    "pretest:deployment": "npm run verify:source-authority",
+    "test:deployment": "node --test tests/deploy-tinyrustlm-web.test.js tests/web-deployment-manifest.test.js tests/web-deployment-custody.test.js"
+  },
+  "finalRun": {
+    "testFiles": [
+      "tinyrustlm/tests/deploy-tinyrustlm-web.test.js",
+      "tinyrustlm/tests/web-deployment-manifest.test.js",
+      "tinyrustlm/tests/web-deployment-custody.test.js",
+      "tinyrustlm/tests/web-release-secret-scan.test.js",
+      "tinyrustlm/tests/immutable-publication-files.test.js",
+      "tinyrustlm/tests/canonical-operation-scratch_test.js",
+      "tinyrustlm/tests/site-release-contract.test.js",
+      "tinyrustlm/tests/site-release-test-fixture_test.js",
+      "tinyrustlm/tests/run-web-release-local-smoke.test.js",
+      "tinyrustlm/tests/web-release-local-smoke.test.js"
+    ],
+    "nodeOptions": [
+      "--test",
+      "--test-concurrency=1",
+      "--experimental-test-coverage",
+      "--test-coverage-include=**/tools/web-deployment-manifest.js",
+      "--test-coverage-include=**/tools/web-release-secret-scan.js"
+    ],
+    "temporaryPolicy": "Canonical createOwnedTemporaryDirectory under artifacts/tests/publication-review; TEMP/TMP set to its root; NODE_V8_COVERAGE under root/coverage; removeOwnedTemporaryDirectory in finally. PowerShell launcher explicitly empties NODE_V8_COVERAGE.",
+    "tests": 52,
+    "passed": 52,
+    "failed": 0,
+    "skipped": 0,
+    "cancelled": 0,
+    "durationMilliseconds": 14904.5542,
+    "powershell": "Isolated AST-imported real primitives and bounded synthetic transport/fault cases; deployment main is never invoked.",
+    "browserObservations": 12,
+    "browserScope": "Four local release/application routes at three viewports with intercepted empty catalog metadata; no model inference or external publication proof.",
+    "secretScanArtifacts": 31,
+    "secretFindings": 0
+  },
+  "coverage": {
+    "tool": "Node V8 experimental test coverage",
+    "manifest": {
+      "linePercent": 83.53,
+      "branchPercent": 84.75,
+      "functionPercent": 93.44
+    },
+    "scanner": {
+      "linePercent": 88.31,
+      "branchPercent": 70,
+      "functionPercent": 87.5
+    },
+    "combined": {
+      "linePercent": 84.1,
+      "branchPercent": 82.61,
+      "functionPercent": 92.75
+    },
+    "limitation": "These two JavaScript tools only. PowerShell statement/branch coverage was not collected; isolated primitive tests are the closest automated evidence. No production FTPS host execution coverage."
+  },
+  "observedFailures": [
+    {
+      "stage": "focused primitives",
+      "observation": "Stale canonical-root fixture, old ancestry-error assertion and nonexistent app/release.js fixture failed sequentially.",
+      "correction": "Use actual canonical root/current app/site-release.js and current ancestry rejection; retain independent synthetic negative observations."
+    },
+    {
+      "stage": "new binary regressions",
+      "observation": "Valid one-byte zero payload failed PowerShell boolean-based null checks; new resume case initially expected three chunks for a two-chunk remainder.",
+      "correction": "Explicit null/length checks; use 16411-byte payload resumed at offset 13 to exercise three <=8192-byte chunks."
+    },
+    {
+      "stage": "first wider run",
+      "counts": {
+        "tests": 50,
+        "passed": 48,
+        "failed": 2
+      },
+      "observation": "Default browser launch failed; secret scan rejected canonical evidence output.",
+      "correction": "Use installed Edge via existing channel option; replace obsolete output policy and use owned canonical staging.",
+      "uncertainty": "Generic launch error does not identify the missing/default browser cause."
+    }
+  ],
+  "cleanup": {
+    "ownedTestAndCoverageOutputRemoved": true,
+    "sourceCopiesCreated": false,
+    "modelPayloadsCreated": false,
+    "blockedDeletionRetried": false,
+    "historicalOrModelDeletion": false,
+    "measuredStorageRecoveryClaimed": false
+  },
+  "unproven": [
+    "Cross-host publisher exclusion, release-wide recovery and final-marker-last-mutation guarantee; production transport admission remains false.",
+    "Complete source-authority gate: previously policy-blocked C28 installer links remain unresolved. Focused tests are not a whole-release gate pass.",
+    "Qualified default, real numerical trace, useful browser model inference, reachable initial MiniModel seed and official owner release acceptance."
+  ],
+  "deployed": false,
+  "nextDecision": "Read-only discovery of actual hosting capabilities, then implement and test a concrete publish/seed route without weakening existing release gates.",
+  "lesson": "Canonical input custody must include callers, scanner output policy and binary edge cases; local mock success establishes only observed mechanics.",
+  "additionalValidation": {
+    "managedMemory": {
+      "command": "dotnet test dotnet/tests/TinyRustLM.Package.Tests/TinyRustLM.Package.Tests.csproj --no-restore --filter FullyQualifiedName~UaixMemoryConsolidationTests --verbosity minimal",
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0
+    },
+    "packageEntryPoint": {
+      "command": "npm run test:deployment",
+      "status": "blocked-before-test-suite",
+      "code": "source_authority_scan_incomplete",
+      "unreadablePaths": [
+        "artifacts/verification/qwen3-environment-install/tinyrustlm-operation-C3ZUt9/install-temp/TmP6xn2evdh-b",
+        "artifacts/verification/qwen3-environment-install/tinyrustlm-operation-C3ZUt9/install-temp/TmPeq63_hr7-b"
+      ],
+      "blockedDeletionRetried": false
+    }
+  }
+}

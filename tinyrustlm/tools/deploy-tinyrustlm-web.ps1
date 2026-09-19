@@ -2,7 +2,7 @@ param(
     [string]$RepositoryRoot = (Split-Path -Parent (Split-Path -Parent $PSScriptRoot)),
     [string]$ManifestPath = (Join-Path (Split-Path -Parent $PSScriptRoot) "deploy\web-deployment-manifest.v2.json"),
     [string]$WorkspaceMemory = $env:TINYRUSTLM_WORKSPACE_MEMORY,
-    [string]$ReportDirectory = (Join-Path ([IO.Path]::GetTempPath()) "tinyrustlm-web-deployments"),
+    [string]$ReportDirectory = "E:\Source\Rust\TinyRustLM.com\artifacts\web-deployments",
     [string]$ReportPath = "",
     [switch]$ValidateCredentialProfileOnly,
     [switch]$ValidateOnly
@@ -56,12 +56,150 @@ function Assert-NoReparsePointAncestry {
     }
 }
 
+# Requires canonical artifact containment and inspects even missing or dangling path components.
+function Assert-CanonicalDeploymentArtifactPath {
+    param([string]$Path, [string]$SourceRoot = "E:\Source\Rust\TinyRustLM.com")
+
+    if ([string]::IsNullOrWhiteSpace($Path) -or -not [IO.Path]::IsPathRooted($Path) -or
+        [string]::IsNullOrWhiteSpace($SourceRoot) -or -not [IO.Path]::IsPathRooted($SourceRoot)) {
+        throw "Deployment output must be an absolute child of canonical project artifacts."
+    }
+    $source = [IO.Path]::GetFullPath($SourceRoot).TrimEnd("\", "/")
+    if (-not [string]::Equals($source, "E:\Source\Rust\TinyRustLM.com",
+        [StringComparison]::OrdinalIgnoreCase)) {
+        throw "Deployment output requires the canonical TinyRustLM repository."
+    }
+    $target = [IO.Path]::GetFullPath($Path)
+    $contained = $false
+    foreach ($root in @((Join-Path $source "artifacts"), (Join-Path $source "tinyrustlm\artifacts"))) {
+        if ($target.StartsWith(($root + [IO.Path]::DirectorySeparatorChar),
+            [StringComparison]::OrdinalIgnoreCase)) { $contained = $true }
+    }
+    if (-not $contained) {
+        throw "Deployment output must be an absolute child of canonical project artifacts."
+    }
+    $cursor = $target
+    while (-not [string]::IsNullOrEmpty($cursor)) {
+        $item = Get-Item -Force -LiteralPath $cursor -ErrorAction SilentlyContinue
+        if ($item -and (($item.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0 -or
+            ($cursor -ne $target -and -not ($item -is [IO.DirectoryInfo])))) {
+            throw "Deployment output ancestry must contain ordinary directories."
+        }
+        $parent = [IO.Path]::GetDirectoryName($cursor)
+        if ($parent -eq $cursor) { break }
+        $cursor = $parent
+    }
+    return $target
+}
+
+# Reads the exact Git top-level for the repository selected by release custody.
+function Get-DeploymentGitTopLevel {
+    param([string]$RepositoryRoot)
+
+    $result = Invoke-PinnedDeploymentProcess `
+        -Executable $script:gitExecutable `
+        -Arguments @("-C", $RepositoryRoot, "rev-parse", "--show-toplevel") `
+        -WorkingDirectory $RepositoryRoot
+    $output = @($result.stdout_lines)
+    if ($result.exit_code -ne 0 -or $output.Count -ne 1 -or
+        [string]::IsNullOrWhiteSpace([string]$output[0])) {
+        throw "The canonical deployment repository is not an exact Git worktree."
+    }
+    try {
+        return [IO.Path]::GetFullPath(([string]$output[0]).Trim())
+    }
+    catch {
+        throw "The canonical deployment repository is not an exact Git worktree."
+    }
+}
+
+# Confines every custody reader to the single ordinary source repository.
+function Assert-CanonicalDeploymentSourceRoot {
+    param([string]$RepositoryRoot)
+
+    if ([string]::IsNullOrWhiteSpace($RepositoryRoot) -or
+        -not [IO.Path]::IsPathRooted($RepositoryRoot)) {
+        throw "TinyRustLM release requires the canonical repository root."
+    }
+    $root = [IO.Path]::GetFullPath($RepositoryRoot).TrimEnd("\", "/")
+    if (-not [string]::Equals($root, "E:\Source\Rust\TinyRustLM.com",
+        [StringComparison]::OrdinalIgnoreCase) -or
+        -not (Test-Path -LiteralPath (Join-Path $root ".git") -PathType Container)) {
+        throw "TinyRustLM release requires the canonical repository root."
+    }
+    Assert-NoReparsePointAncestry -Path (Join-Path $root ".git") -FailureMessage "TinyRustLM release requires a canonical non-reparse repository root."
+    return $root
+}
+
+# Binds release execution to the sole non-reparse Git root derived from this script.
+function Resolve-CanonicalDeploymentRepositoryRoot {
+    param([string]$ScriptRoot, [string]$RequestedRepositoryRoot)
+
+    if ([string]::IsNullOrWhiteSpace($ScriptRoot) -or
+        [string]::IsNullOrWhiteSpace($RequestedRepositoryRoot) -or
+        -not [IO.Path]::IsPathRooted($ScriptRoot) -or
+        -not [IO.Path]::IsPathRooted($RequestedRepositoryRoot)) {
+        throw "TinyRustLM release requires the canonical repository root."
+    }
+    try {
+        $resolvedScriptRoot = [IO.Path]::GetFullPath($ScriptRoot)
+        $canonicalRoot = [IO.Path]::GetFullPath(
+            (Join-Path $resolvedScriptRoot "..\..")
+        )
+        $requestedRoot = [IO.Path]::GetFullPath($RequestedRepositoryRoot)
+        $expectedScriptRoot = [IO.Path]::GetFullPath(
+            (Join-Path $canonicalRoot "tinyrustlm\tools")
+        )
+    }
+    catch {
+        throw "TinyRustLM release requires the canonical repository root."
+    }
+    if (-not [string]::Equals(
+        $resolvedScriptRoot,
+        $expectedScriptRoot,
+        [StringComparison]::OrdinalIgnoreCase
+    ) -or -not [string]::Equals(
+        $requestedRoot,
+        $canonicalRoot,
+        [StringComparison]::OrdinalIgnoreCase
+    )) {
+        throw "TinyRustLM release requires the canonical repository root."
+    }
+    if (-not (Test-Path -LiteralPath $resolvedScriptRoot -PathType Container) -or
+        -not (Test-Path -LiteralPath $canonicalRoot -PathType Container) -or
+        -not (Test-Path -LiteralPath (Join-Path $canonicalRoot ".git") -PathType Container)) {
+        throw "TinyRustLM release requires the canonical repository root."
+    }
+    Assert-NoReparsePointAncestry `
+        -Path $resolvedScriptRoot `
+        -FailureMessage "TinyRustLM release requires a canonical non-reparse repository root."
+    Assert-NoReparsePointAncestry `
+        -Path (Join-Path $canonicalRoot ".git") `
+        -FailureMessage "TinyRustLM release requires a canonical non-reparse repository root."
+    $gitTopLevel = Get-DeploymentGitTopLevel -RepositoryRoot $canonicalRoot
+    if (-not [string]::Equals(
+        $gitTopLevel,
+        $canonicalRoot,
+        [StringComparison]::OrdinalIgnoreCase
+    )) {
+        throw "TinyRustLM release requires the canonical repository root."
+    }
+    return (Assert-CanonicalDeploymentSourceRoot -RepositoryRoot $canonicalRoot)
+}
+
 # Loads one bounded FileZilla site without enabling DTDs or exposing credential fields.
 function Get-DeploymentCredentialProfile {
-    param([string]$ProfilePath, [string]$SourceRoot)
+    param(
+        [string]$ProfilePath,
+        [string]$SourceRoot,
+        [string]$ExpectedProfileName
+    )
 
     if ([string]::IsNullOrWhiteSpace($ProfilePath) -or
-        -not [IO.Path]::IsPathRooted($ProfilePath)) {
+        -not [IO.Path]::IsPathRooted($ProfilePath) -or
+        [string]::IsNullOrWhiteSpace($ExpectedProfileName) -or
+        $ExpectedProfileName.Length -gt 128 -or
+        $ExpectedProfileName -match "[\x00-\x1f\x7f]") {
         throw "The FileZilla profile path must be absolute."
     }
     try {
@@ -122,10 +260,14 @@ function Get-DeploymentCredentialProfile {
 
     $matchingSites = @($document.SelectNodes("/FileZilla3/Servers/Server") | Where-Object {
         $nameNode = $_.SelectSingleNode("Name")
-        $nameNode -and ([string]$nameNode.InnerText) -match "(?i)^TinyRustLM(?:\.com)?$"
+        $nameNode -and [string]::Equals(
+            ([string]$nameNode.InnerText).Trim(),
+            $ExpectedProfileName,
+            [StringComparison]::Ordinal
+        )
     })
     if ($matchingSites.Count -ne 1) {
-        throw "The FileZilla profile must contain exactly one TinyRustLM deployment site."
+        throw "The FileZilla profile must contain exactly one configured deployment site."
     }
     $site = $matchingSites[0]
     $requiredNode = {
@@ -171,6 +313,7 @@ function Get-DeploymentCredentialProfile {
     if ($hostNameType -eq [UriHostNameType]::Unknown -or
         $hostNameType -eq [UriHostNameType]::IPv6 -or
         $hostName.Length -gt 253 -or
+        $portText -notmatch "^[1-9][0-9]{0,4}$" -or
         -not [int]::TryParse($portText, [ref]$port) -or
         $port -lt 1 -or $port -gt 65535 -or
         $userName.Length -gt 256 -or
@@ -182,6 +325,7 @@ function Get-DeploymentCredentialProfile {
         throw "The FileZilla TinyRustLM site contains an invalid bounded field."
     }
     return [pscustomobject]@{
+        profile = $ExpectedProfileName
         host = $hostName
         port = $port
         user = $userName
@@ -189,8 +333,8 @@ function Get-DeploymentCredentialProfile {
     }
 }
 
-# Resolves the sole external deployment profile referenced by bounded workspace memory.
-function Get-WorkspaceDeploymentCredentialProfile {
+# Reads the bounded external workspace configuration without exposing its contents.
+function Get-BoundedWorkspaceMemoryLines {
     param([string]$MemoryPath, [string]$SourceRoot)
 
     if ([string]::IsNullOrWhiteSpace($MemoryPath) -or
@@ -226,10 +370,115 @@ function Get-WorkspaceDeploymentCredentialProfile {
     catch {
         throw "Workspace memory containing the deployment profile reference cannot be read."
     }
+    return [string[]]$lines
+}
+
+# Loads the exact nonsecret target identity independently from the credential profile.
+function Get-WorkspaceDeploymentTargetBinding {
+    param([string]$MemoryPath, [string]$SourceRoot)
+
+    $lines = Get-BoundedWorkspaceMemoryLines `
+        -MemoryPath $MemoryPath `
+        -SourceRoot $SourceRoot
+    $hostName = (Get-YamlScalar -Lines $lines -Key "deployment_ftps_host").Trim()
+    $portText = (Get-YamlScalar -Lines $lines -Key "deployment_ftps_port").Trim()
+    $userName = (Get-YamlScalar -Lines $lines -Key "deployment_ftps_user").Trim()
+    $profileName = Get-YamlScalar -Lines $lines -Key "deployment_ftps_profile"
+    $siteIdentity = Get-YamlScalar -Lines $lines -Key "deployment_site_identity"
+    $sentinelPath = Get-YamlScalar `
+        -Lines $lines `
+        -Key "deployment_root_sentinel_path"
+    $sentinelSha256 = Get-YamlScalar `
+        -Lines $lines `
+        -Key "deployment_root_sentinel_sha256"
+    $port = 0
+    $hostNameType = [Uri]::CheckHostName($hostName)
+    if ($hostNameType -eq [UriHostNameType]::Unknown -or
+        $hostNameType -eq [UriHostNameType]::IPv6 -or
+        $hostName.Length -gt 253 -or
+        $portText -notmatch "^[1-9][0-9]{0,4}$" -or
+        -not [int]::TryParse($portText, [ref]$port) -or
+        $port -lt 1 -or $port -gt 65535 -or
+        [string]::IsNullOrWhiteSpace($userName) -or
+        $userName.Length -gt 256 -or
+        $userName -match "[\x00-\x1f\x7f]" -or
+        -not [string]::Equals(
+            $profileName,
+            "TinyRustLM.com",
+            [StringComparison]::Ordinal
+        ) -or
+        -not [string]::Equals(
+            $siteIdentity,
+            "tinyrustlm.com",
+            [StringComparison]::Ordinal
+        ) -or
+        -not [string]::Equals(
+            $sentinelPath,
+            ".well-known/tinyrustlm-deployment-target.v1.json",
+            [StringComparison]::Ordinal
+        ) -or
+        $sentinelSha256 -notmatch "^[0-9a-f]{64}$") {
+        throw "The configured TinyRustLM deployment target is invalid."
+    }
+    return [pscustomobject]@{
+        profile = $profileName
+        host = $hostName
+        port = $port
+        user = $userName
+        site_identity = $siteIdentity
+        sentinel_path = $sentinelPath
+        sentinel_sha256 = $sentinelSha256
+    }
+}
+
+# Resolves the sole external credential profile and selects only the configured site.
+function Get-WorkspaceDeploymentCredentialProfile {
+    param(
+        [string]$MemoryPath,
+        [string]$SourceRoot,
+        [object]$TargetBinding
+    )
+
+    if (-not $TargetBinding -or
+        [string]::IsNullOrWhiteSpace([string]$TargetBinding.profile)) {
+        throw "The configured TinyRustLM deployment target is unavailable."
+    }
+    $lines = Get-BoundedWorkspaceMemoryLines `
+        -MemoryPath $MemoryPath `
+        -SourceRoot $SourceRoot
     $profilePath = Get-YamlScalar -Lines $lines -Key "filezilla_profile"
     return Get-DeploymentCredentialProfile `
         -ProfilePath $profilePath `
-        -SourceRoot $SourceRoot
+        -SourceRoot $SourceRoot `
+        -ExpectedProfileName $TargetBinding.profile
+}
+
+# Rejects a credential profile that differs from any configured nonsecret target field.
+function Assert-DeploymentCredentialTarget {
+    param([object]$CredentialProfile, [object]$TargetBinding)
+
+    if (-not $CredentialProfile -or -not $TargetBinding -or
+        -not [string]::Equals(
+            [string]$CredentialProfile.profile,
+            [string]$TargetBinding.profile,
+            [StringComparison]::Ordinal
+        ) -or
+        -not [string]::Equals(
+            [string]$CredentialProfile.host,
+            [string]$TargetBinding.host,
+            [StringComparison]::OrdinalIgnoreCase
+        ) -or
+        [int]$CredentialProfile.port -ne [int]$TargetBinding.port -or
+        -not [string]::Equals(
+            [string]$CredentialProfile.user,
+            [string]$TargetBinding.user,
+            [StringComparison]::Ordinal
+        )) {
+        if ($CredentialProfile) {
+            $CredentialProfile.password = $null
+        }
+        throw "The credential profile does not match the configured deployment target."
+    }
 }
 
 # Computes a file hash as a stream so published artifacts are never duplicated in memory.
@@ -261,6 +510,1206 @@ function Get-Utf8Sha256 {
     }
 }
 
+# Computes the SHA-256 identity of one bounded byte array without text conversion.
+function Get-ByteArraySha256 {
+    param([byte[]]$Bytes)
+
+    if ($null -eq $Bytes -or $Bytes.Length -eq 0) {
+        throw "Cannot hash an empty byte array."
+    }
+    $sha = [Security.Cryptography.SHA256]::Create()
+    try {
+        return ([BitConverter]::ToString(
+            $sha.ComputeHash($Bytes)
+        )).Replace("-", "").ToLowerInvariant()
+    }
+    finally {
+        $sha.Dispose()
+    }
+}
+
+# Resolves one application once and binds every later launch to its exact bytes.
+function Resolve-PinnedDeploymentExecutable {
+    param(
+        [string]$CommandName,
+        [string]$ExpectedLeafName,
+        [ValidateRange(1, 1073741824)]
+        [int64]$MaximumBytes = (512 * 1024 * 1024)
+    )
+
+    $commands = @(
+        Get-Command `
+            $CommandName `
+            -CommandType Application `
+            -All `
+            -ErrorAction Stop
+    )
+    if ($commands.Count -ne 1 -or
+        [string]::IsNullOrWhiteSpace([string]$commands[0].Source)) {
+        throw "Deployment executable resolution is ambiguous."
+    }
+    $path = [IO.Path]::GetFullPath([string]$commands[0].Source)
+    if (-not [string]::Equals(
+            [IO.Path]::GetFileName($path),
+            $ExpectedLeafName,
+            [StringComparison]::OrdinalIgnoreCase
+        ) -or
+        -not (Test-Path -LiteralPath $path -PathType Leaf)) {
+        throw "Deployment executable identity is invalid."
+    }
+    Assert-NoReparsePointAncestry `
+        -Path $path `
+        -FailureMessage "Deployment executable traverses a reparse point."
+    $item = Get-Item -LiteralPath $path -Force
+    if (($item.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0 -or
+        [int64]$item.Length -le 0 -or
+        [int64]$item.Length -gt $MaximumBytes) {
+        throw "Deployment executable is not a bounded regular file."
+    }
+    return [pscustomobject]@{
+        schema = "tinyrustlm.pinned_deployment_executable.v1"
+        command = $CommandName
+        leaf_name = $ExpectedLeafName
+        path = $path
+        byte_count = [int64]$item.Length
+        sha256 = Get-FileSha256 -Path $path
+    }
+}
+
+# Binds the already-running PowerShell host to one executable and runtime identity.
+function Resolve-PinnedDeploymentHost {
+    try {
+        $processPath = [IO.Path]::GetFullPath(
+            [Diagnostics.Process]::GetCurrentProcess().MainModule.FileName
+        )
+    }
+    catch {
+        throw "The deployment PowerShell host identity is unavailable."
+    }
+    $leafName = [IO.Path]::GetFileName($processPath)
+    if ($leafName -notin @("powershell.exe", "pwsh.exe") -or
+        -not (Test-Path -LiteralPath $processPath -PathType Leaf)) {
+        throw "The deployment PowerShell host identity is invalid."
+    }
+    Assert-NoReparsePointAncestry `
+        -Path $processPath `
+        -FailureMessage "Deployment PowerShell host traverses a reparse point."
+    $item = Get-Item -LiteralPath $processPath -Force
+    $version = [string]$PSVersionTable.PSVersion
+    $edition = [string]$PSVersionTable.PSEdition
+    $languageMode = [string]$ExecutionContext.SessionState.LanguageMode
+    if (($item.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0 -or
+        [int64]$item.Length -le 0 -or
+        [int64]$item.Length -gt (512 * 1024 * 1024) -or
+        $version -notmatch "^[0-9]+\.[0-9]+(?:\.[0-9]+){0,2}$" -or
+        $edition -notin @("Desktop", "Core") -or
+        $languageMode -ne "FullLanguage") {
+        throw "The deployment PowerShell host does not satisfy the runtime contract."
+    }
+    return [pscustomobject]@{
+        schema = "tinyrustlm.pinned_deployment_host.v1"
+        command = "powershell-host"
+        leaf_name = $leafName
+        path = $processPath
+        byte_count = [int64]$item.Length
+        sha256 = Get-FileSha256 -Path $processPath
+        version = $version
+        edition = $edition
+        language_mode = $languageMode
+        process_architecture = if ([Environment]::Is64BitProcess) { "x64" } else { "x86" }
+    }
+}
+
+# Reopens the PowerShell host and rejects executable or runtime drift.
+function Assert-PinnedDeploymentHost {
+    param([object]$HostIdentity)
+
+    if (-not $HostIdentity -or
+        [string]$HostIdentity.schema -ne "tinyrustlm.pinned_deployment_host.v1" -or
+        [string]$HostIdentity.sha256 -notmatch "^[0-9a-f]{64}$" -or
+        [int64]$HostIdentity.byte_count -le 0 -or
+        [string]$HostIdentity.leaf_name -notin @("powershell.exe", "pwsh.exe") -or
+        [string]$HostIdentity.version -ne [string]$PSVersionTable.PSVersion -or
+        [string]$HostIdentity.edition -ne [string]$PSVersionTable.PSEdition -or
+        [string]$HostIdentity.language_mode -ne
+            [string]$ExecutionContext.SessionState.LanguageMode -or
+        [string]$HostIdentity.process_architecture -ne
+            $(if ([Environment]::Is64BitProcess) { "x64" } else { "x86" })) {
+        throw "Pinned deployment PowerShell host identity changed."
+    }
+    $executableIdentity = [pscustomobject]@{
+        schema = "tinyrustlm.pinned_deployment_executable.v1"
+        command = [string]$HostIdentity.command
+        leaf_name = [string]$HostIdentity.leaf_name
+        path = [string]$HostIdentity.path
+        byte_count = [int64]$HostIdentity.byte_count
+        sha256 = [string]$HostIdentity.sha256
+    }
+    Assert-PinnedDeploymentExecutable -Executable $executableIdentity | Out-Null
+    return $HostIdentity
+}
+
+# Reopens a pinned executable immediately around every child process launch.
+function Assert-PinnedDeploymentExecutable {
+    param([object]$Executable)
+
+    if (-not $Executable -or
+        [string]$Executable.schema -ne
+            "tinyrustlm.pinned_deployment_executable.v1" -or
+        [string]$Executable.sha256 -notmatch "^[0-9a-f]{64}$" -or
+        [int64]$Executable.byte_count -le 0 -or
+        -not [IO.Path]::IsPathRooted([string]$Executable.path)) {
+        throw "Pinned deployment executable identity is invalid."
+    }
+    $path = [IO.Path]::GetFullPath([string]$Executable.path)
+    if (-not [string]::Equals(
+            [IO.Path]::GetFileName($path),
+            [string]$Executable.leaf_name,
+            [StringComparison]::OrdinalIgnoreCase
+        ) -or
+        -not (Test-Path -LiteralPath $path -PathType Leaf)) {
+        throw "Pinned deployment executable is unavailable."
+    }
+    Assert-NoReparsePointAncestry `
+        -Path $path `
+        -FailureMessage "Pinned deployment executable traverses a reparse point."
+    $item = Get-Item -LiteralPath $path -Force
+    if (($item.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0 -or
+        [int64]$item.Length -ne [int64]$Executable.byte_count -or
+        (Get-FileSha256 -Path $path) -ne [string]$Executable.sha256) {
+        throw "Pinned deployment executable bytes changed."
+    }
+    return $path
+}
+
+# Quotes one Windows process argument without allowing shell re-interpretation.
+function ConvertTo-DeploymentProcessArgument {
+    param([AllowEmptyString()][string]$Value)
+
+    if ($null -eq $Value -or $Value.Contains([char]0) -or
+        $Value.Contains("`r") -or $Value.Contains("`n")) {
+        throw "Deployment subprocess argument is invalid."
+    }
+    if ($Value.Length -gt 32760) {
+        throw "Deployment subprocess argument exceeds its bound."
+    }
+    if ($Value.Length -gt 0 -and $Value -notmatch '[\s"]') {
+        return $Value
+    }
+    $builder = [Text.StringBuilder]::new()
+    [void]$builder.Append('"')
+    $backslashes = 0
+    foreach ($character in $Value.ToCharArray()) {
+        if ($character -eq '\') {
+            $backslashes += 1
+            continue
+        }
+        if ($character -eq '"') {
+            [void]$builder.Append(
+                [string]::new([char]'\', (($backslashes * 2) + 1))
+            )
+            [void]$builder.Append('"')
+            $backslashes = 0
+            continue
+        }
+        if ($backslashes -gt 0) {
+            [void]$builder.Append([string]::new([char]'\', $backslashes))
+            $backslashes = 0
+        }
+        [void]$builder.Append($character)
+    }
+    if ($backslashes -gt 0) {
+        [void]$builder.Append(
+            [string]::new([char]'\', ($backslashes * 2))
+        )
+    }
+    [void]$builder.Append('"')
+    return $builder.ToString()
+}
+
+# Creates a child process with an explicit executable and minimal inherited state.
+function New-SanitizedDeploymentProcessStartInfo {
+    param(
+        [object]$Executable,
+        [string[]]$Arguments,
+        [string]$WorkingDirectory = ""
+    )
+
+    $path = Assert-PinnedDeploymentExecutable -Executable $Executable
+    $start = [Diagnostics.ProcessStartInfo]::new()
+    $start.FileName = $path
+    $start.Arguments = [string]::Join(" ", @($Arguments | ForEach-Object {
+        ConvertTo-DeploymentProcessArgument -Value ([string]$_)
+    }))
+    $start.UseShellExecute = $false
+    $start.CreateNoWindow = $true
+    $start.RedirectStandardOutput = $true
+    $start.RedirectStandardError = $true
+    $start.EnvironmentVariables.Clear()
+    foreach ($name in @("SystemRoot", "WINDIR", "ComSpec", "TEMP", "TMP")) {
+        $value = [Environment]::GetEnvironmentVariable($name, "Process")
+        if ([string]::IsNullOrWhiteSpace($value) -or
+            $value.Contains([char]0) -or
+            -not [IO.Path]::IsPathRooted($value)) {
+            throw "Deployment subprocess environment is unavailable or unsafe."
+        }
+        $resolvedValue = [IO.Path]::GetFullPath($value)
+        $expectedPathType = if ($name -eq "ComSpec") { "Leaf" } else { "Container" }
+        if (-not (Test-Path -LiteralPath $resolvedValue -PathType $expectedPathType)) {
+            throw "Deployment subprocess environment is unavailable or unsafe."
+        }
+        Assert-NoReparsePointAncestry `
+            -Path $resolvedValue `
+            -FailureMessage "Deployment subprocess environment traverses a reparse point."
+        $start.EnvironmentVariables[$name] = $resolvedValue
+    }
+    $executableDirectories = @(
+        $script:powershellHost,
+        $script:nodeExecutable,
+        $script:curlExecutable,
+        $script:gitExecutable
+    ) | Where-Object { $_ } | ForEach-Object {
+        Split-Path -Parent ([string]$_.path)
+    } | Sort-Object -Unique
+    if ($executableDirectories.Count -gt 0) {
+        $start.EnvironmentVariables["PATH"] = [string]::Join(
+            [IO.Path]::PathSeparator,
+            [string[]]$executableDirectories
+        )
+    }
+    if (-not [string]::IsNullOrWhiteSpace($WorkingDirectory)) {
+        $resolvedWorkingDirectory = [IO.Path]::GetFullPath($WorkingDirectory)
+        if (-not (Test-Path -LiteralPath $resolvedWorkingDirectory -PathType Container)) {
+            throw "Deployment subprocess working directory is unavailable."
+        }
+        Assert-NoReparsePointAncestry `
+            -Path $resolvedWorkingDirectory `
+            -FailureMessage "Deployment subprocess working directory traverses a reparse point."
+        $start.WorkingDirectory = $resolvedWorkingDirectory
+    }
+    return $start
+}
+
+# Runs one pinned local process and captures bounded text without ambient options.
+function Invoke-PinnedDeploymentProcess {
+    param(
+        [object]$Executable,
+        [string[]]$Arguments,
+        [string]$WorkingDirectory = "",
+        [ValidateRange(1000, 600000)]
+        [int]$TimeoutMilliseconds = 300000,
+        [ValidateRange(1024, 16777216)]
+        [int]$MaximumOutputCharacters = (4 * 1024 * 1024)
+    )
+
+    $start = New-SanitizedDeploymentProcessStartInfo `
+        -Executable $Executable `
+        -Arguments $Arguments `
+        -WorkingDirectory $WorkingDirectory
+    $process = $null
+    try {
+        $process = [Diagnostics.Process]::Start($start)
+        $stdoutRead = $process.StandardOutput.ReadToEndAsync()
+        $stderrRead = $process.StandardError.ReadToEndAsync()
+        if (-not $process.WaitForExit($TimeoutMilliseconds)) {
+            try { $process.Kill() } catch { }
+            throw "Pinned deployment subprocess timed out."
+        }
+        $stdout = [string]$stdoutRead.GetAwaiter().GetResult()
+        $stderr = [string]$stderrRead.GetAwaiter().GetResult()
+        if (($stdout.Length + $stderr.Length) -gt $MaximumOutputCharacters) {
+            throw "Pinned deployment subprocess output exceeds its bound."
+        }
+        Assert-PinnedDeploymentExecutable -Executable $Executable | Out-Null
+        $normalized = $stdout.Replace("`r`n", "`n").Replace("`r", "`n")
+        $lines = if ($normalized.Length -eq 0) {
+            @()
+        }
+        else {
+            @($normalized.TrimEnd("`n").Split([char]"`n"))
+        }
+        return [pscustomobject]@{
+            exit_code = [int]$process.ExitCode
+            stdout_lines = $lines
+            stderr_present = -not [string]::IsNullOrEmpty($stderr)
+        }
+    }
+    finally {
+        if ($process) {
+            $process.Dispose()
+        }
+    }
+}
+
+# Validates tool versions only after their executable bytes have been pinned.
+function Assert-PinnedDeploymentToolVersions {
+    param(
+        [object]$PowerShellHost,
+        [object]$NodeExecutable,
+        [object]$CurlExecutable,
+        [object]$GitExecutable
+    )
+
+    Assert-PinnedDeploymentHost -HostIdentity $PowerShellHost | Out-Null
+
+    $nodeVersion = Invoke-PinnedDeploymentProcess `
+        -Executable $NodeExecutable `
+        -Arguments @("--version")
+    $nodeVersionLines = @($nodeVersion.stdout_lines)
+    $nodeVersionText = if ($nodeVersionLines.Count -eq 1) {
+        ([string]$nodeVersionLines[0]).Trim()
+    }
+    else {
+        ""
+    }
+    $nodeVersionParts = @($nodeVersionText.TrimStart([char]"v").Split("."))
+    [int]$nodeMajor = 0
+    if ($nodeVersion.exit_code -ne 0 -or
+        $nodeVersionLines.Count -ne 1 -or
+        $nodeVersionText -notmatch '^v[0-9]+\.[0-9]+\.[0-9]+$' -or
+        $nodeVersionParts.Count -ne 3 -or
+        -not [int]::TryParse($nodeVersionParts[0], [ref]$nodeMajor) -or
+        $nodeMajor -lt 24) {
+        throw "Pinned Node executable does not satisfy the deployment version contract."
+    }
+    $curlVersion = Invoke-PinnedDeploymentProcess `
+        -Executable $CurlExecutable `
+        -Arguments @("--version")
+    $curlVersionLines = @($curlVersion.stdout_lines)
+    $curlHeader = if ($curlVersionLines.Count -gt 0) {
+        [string]$curlVersionLines[0]
+    }
+    else {
+        ""
+    }
+    if ($curlVersion.exit_code -ne 0 -or
+        $curlVersionLines.Count -lt 1 -or
+        $curlHeader -notmatch '^curl [0-9]+\.[0-9]+\.[0-9]+ ' -or
+        -not ($curlVersionLines -match '^Protocols:.*\bftps\b.*\bhttps\b')) {
+        throw "Pinned curl executable does not satisfy the deployment version contract."
+    }
+    $curlVersionText = $curlHeader.Split(" ")[1]
+    $gitVersion = Invoke-PinnedDeploymentProcess `
+        -Executable $GitExecutable `
+        -Arguments @("--version")
+    $gitVersionLines = @($gitVersion.stdout_lines)
+    if ($gitVersion.exit_code -ne 0 -or
+        $gitVersionLines.Count -ne 1 -or
+        [string]$gitVersionLines[0] -notmatch
+            '^git version (?<git>[0-9]+\.[0-9]+\.[0-9]+)(?:\.windows\.[0-9]+)?$') {
+        throw "Pinned Git executable does not satisfy the deployment version contract."
+    }
+    return [pscustomobject]@{
+        powershell_version = [string]$PowerShellHost.version
+        powershell_edition = [string]$PowerShellHost.edition
+        powershell_language_mode = [string]$PowerShellHost.language_mode
+        node_version = $nodeVersionText
+        curl_version = $curlVersionText
+        git_version = (([string]$gitVersionLines[0]) -replace
+            '^git version ', '') -replace '\.windows\.[0-9]+$', ''
+        environment_allowlisted = $true
+        node_options_inherited = $false
+        inherited_environment_names = @(
+            "ComSpec",
+            "PATH",
+            "SystemRoot",
+            "TEMP",
+            "TMP",
+            "WINDIR"
+        )
+    }
+}
+
+# Produces the explicit negative capability result for the current FTPS transport.
+function Get-DeploymentTransportCapability {
+    return [pscustomobject]@{
+        schema = "tinyrustlm.deployment_transport_capability.v1"
+        transport = "ftps-per-artifact"
+        status = "blocked"
+        remote_global_compare_and_swap_lease = $false
+        release_wide_atomic_rollback = $false
+        final_marker_can_be_last_remote_mutation = $false
+        remote_mutation_admitted = $false
+    }
+}
+
+# Blocks publication until one transport can satisfy the indivisible release contract.
+function Assert-SafeDeploymentTransportCapability {
+    param([object]$Capability)
+
+    if (-not $Capability -or
+        [string]$Capability.schema -ne
+            "tinyrustlm.deployment_transport_capability.v1" -or
+        [string]$Capability.transport -ne "ftps-per-artifact" -or
+        [string]$Capability.status -ne "blocked" -or
+        $Capability.remote_global_compare_and_swap_lease -ne $false -or
+        $Capability.release_wide_atomic_rollback -ne $false -or
+        $Capability.final_marker_can_be_last_remote_mutation -ne $false -or
+        $Capability.remote_mutation_admitted -ne $false) {
+        throw "Deployment transport capability evidence is invalid."
+    }
+    $script:releaseWideTransportCapabilityAdmitted = $false
+    throw [InvalidOperationException]::new(
+        "Deployment transport capability blocker: FTPS has no bounded cross-machine " +
+        "compare-and-swap lease and no atomic release-wide commit/rollback primitive; " +
+        "it cannot both retain every predecessor through commit and make " +
+        ".well-known/site-release.json the final remote mutation."
+    )
+}
+
+# Creates a same-host create-only guard. It never proves remote/global exclusion.
+function New-ExclusiveDeploymentLease {
+    param(
+        [string]$LeasePath,
+        [string]$AttemptId,
+        [string]$ReleaseId,
+        [string]$SourceCommit,
+        [string]$ToolClosureSha256
+    )
+
+    if ([string]::IsNullOrWhiteSpace($LeasePath) -or
+        -not [IO.Path]::IsPathRooted($LeasePath) -or
+        [IO.Path]::GetFileName($LeasePath) -ne
+            "tinyrustlm.com.deployment-lease.v1.json" -or
+        $AttemptId -notmatch "^[0-9]{8}T[0-9]{13}Z-[0-9a-f]{12}$" -or
+        $ReleaseId -ne "tinyrustlm.com@0.5.0" -or
+        $SourceCommit -notmatch "^[0-9a-f]{40}$" -or
+        $ToolClosureSha256 -notmatch "^[0-9a-f]{64}$") {
+        throw "Exclusive deployment lease identity is invalid."
+    }
+    $path = Assert-CanonicalDeploymentArtifactPath -Path $LeasePath
+    $parent = Split-Path -Parent $path
+    if (-not (Test-Path -LiteralPath $parent -PathType Container)) {
+        throw "Exclusive deployment lease parent is unavailable."
+    }
+    Assert-NoReparsePointAncestry `
+        -Path $parent `
+        -FailureMessage "Exclusive deployment lease parent is unsafe."
+    $leaseId = [Guid]::NewGuid().ToString("N")
+    $text = '{"attempt_id":"' + $AttemptId +
+        '","lease_id":"' + $leaseId +
+        '","release_id":"' + $ReleaseId +
+        '","schema":"tinyrustlm.exclusive_deployment_lease.v1"' +
+        ',"source_commit":"' + $SourceCommit +
+        '","tool_closure_sha256":"' + $ToolClosureSha256 + '"}' + "`n"
+    $bytes = [Text.UTF8Encoding]::new($false, $true).GetBytes($text)
+    $stream = $null
+    try {
+        $stream = [IO.FileStream]::new(
+            $path,
+            [IO.FileMode]::CreateNew,
+            [IO.FileAccess]::ReadWrite,
+            [IO.FileShare]::None,
+            4096,
+            [IO.FileOptions]::WriteThrough
+        )
+        $stream.Write($bytes, 0, $bytes.Length)
+        $stream.Flush($true)
+        return [pscustomobject]@{
+            schema = "tinyrustlm.exclusive_deployment_lease.v1"
+            path = $path
+            attempt_id = $AttemptId
+            lease_id = $leaseId
+            release_id = $ReleaseId
+            source_commit = $SourceCommit
+            tool_closure_sha256 = $ToolClosureSha256
+            coordination_scope = "single-host-canonical-artifacts"
+            remote_global_exclusion_proven = $false
+            byte_count = [int64]$bytes.Length
+            sha256 = Get-ByteArraySha256 -Bytes $bytes
+            bytes = $bytes
+            handle = $stream
+        }
+    }
+    catch {
+        if ($stream) {
+            $stream.Dispose()
+        }
+        throw "Exclusive deployment lease is active or crash residue exists."
+    }
+}
+
+# Removes only the exact lease held by this process; mismatched residue remains blocking.
+function Remove-ExclusiveDeploymentLease {
+    param([object]$Lease)
+
+    if (-not $Lease -or
+        [string]$Lease.schema -ne "tinyrustlm.exclusive_deployment_lease.v1" -or
+        [string]$Lease.lease_id -notmatch "^[0-9a-f]{32}$" -or
+        [string]$Lease.sha256 -notmatch "^[0-9a-f]{64}$" -or
+        [int64]$Lease.byte_count -le 0 -or
+        [string]$Lease.coordination_scope -ne "single-host-canonical-artifacts" -or
+        $Lease.remote_global_exclusion_proven -ne $false -or
+        -not $Lease.handle -or
+        -not $Lease.bytes) {
+        throw "Exclusive deployment lease cleanup identity is invalid."
+    }
+    $path = Assert-CanonicalDeploymentArtifactPath -Path ([string]$Lease.path)
+    try {
+        $Lease.handle.Flush($true)
+        $Lease.handle.Position = 0
+        $observed = New-Object byte[] ([int]$Lease.byte_count)
+        $offset = 0
+        while ($offset -lt $observed.Length) {
+            $count = $Lease.handle.Read(
+                $observed,
+                $offset,
+                $observed.Length - $offset
+            )
+            if ($count -le 0) {
+                throw "Exclusive deployment lease bytes are truncated."
+            }
+            $offset += $count
+        }
+        if ($Lease.handle.ReadByte() -ne -1 -or
+            -not (Test-ExactByteArray -Left $observed -Right ([byte[]]$Lease.bytes)) -or
+            (Get-ByteArraySha256 -Bytes $observed) -ne [string]$Lease.sha256) {
+            throw "Exclusive deployment lease identity changed."
+        }
+    }
+    finally {
+        $Lease.handle.Dispose()
+    }
+    if (-not (Test-Path -LiteralPath $path -PathType Leaf)) {
+        throw "Exclusive deployment lease disappeared before cleanup."
+    }
+    Assert-NoReparsePointAncestry `
+        -Path $path `
+        -FailureMessage "Exclusive deployment lease cleanup target is unsafe."
+    $diskBytes = [IO.File]::ReadAllBytes($path)
+    if (-not (Test-ExactByteArray -Left $diskBytes -Right ([byte[]]$Lease.bytes)) -or
+        (Get-ByteArraySha256 -Bytes $diskBytes) -ne [string]$Lease.sha256) {
+        throw "Exclusive deployment lease cleanup identity changed."
+    }
+    [IO.File]::Delete($path)
+    if (Test-Path -LiteralPath $path) {
+        throw "Exclusive deployment lease cleanup could not be verified."
+    }
+    return [pscustomobject]@{
+        lease_id = [string]$Lease.lease_id
+        cleanup_verified = $true
+    }
+}
+
+# Creates one marker-bound, non-reparse ValidateOnly materialization root.
+function New-OwnedValidationMaterialization {
+    param([string]$OperationRoot, [string]$SourceRoot, [string]$OperationId)
+
+    if ([string]::IsNullOrWhiteSpace($OperationRoot) -or
+        -not [IO.Path]::IsPathRooted($OperationRoot) -or
+        [string]::IsNullOrWhiteSpace($SourceRoot) -or
+        -not [IO.Path]::IsPathRooted($SourceRoot) -or
+        $OperationId -notmatch "^[0-9a-f]{32}$") {
+        throw "Owned validation materialization identity is invalid."
+    }
+    $root = Assert-CanonicalDeploymentArtifactPath -Path $OperationRoot -SourceRoot $SourceRoot
+    if ([IO.Path]::GetFileName($root) -ne
+        ("tinyrustlm-web-validation-{0}" -f $OperationId)) {
+        throw "Owned validation materialization identity is invalid."
+    }
+    if (Test-Path -LiteralPath $root) {
+        throw "Owned validation materialization root is unavailable."
+    }
+    $parent = Split-Path -Parent $root
+    if (-not (Test-Path -LiteralPath $parent -PathType Container)) {
+        throw "Owned validation materialization parent is unavailable."
+    }
+    Assert-NoReparsePointAncestry `
+        -Path $parent `
+        -FailureMessage "Owned validation materialization parent is unsafe."
+    [IO.Directory]::CreateDirectory($root) | Out-Null
+    Assert-NoReparsePointAncestry `
+        -Path $root `
+        -FailureMessage "Owned validation materialization root is unsafe."
+    $releaseRoot = Join-Path $root "release"
+    [IO.Directory]::CreateDirectory($releaseRoot) | Out-Null
+    $ownerText = '{"operation_id":"' + $OperationId +
+        '","schema":"tinyrustlm.validation_materialization_owner.v1"}' + "`n"
+    $ownerBytes = [Text.UTF8Encoding]::new($false, $true).GetBytes($ownerText)
+    $ownerPath = Join-Path $root "owner.v1.json"
+    $descriptor = [IO.FileStream]::new(
+        $ownerPath,
+        [IO.FileMode]::CreateNew,
+        [IO.FileAccess]::Write,
+        [IO.FileShare]::None,
+        4096,
+        [IO.FileOptions]::WriteThrough
+    )
+    try {
+        $descriptor.Write($ownerBytes, 0, $ownerBytes.Length)
+        $descriptor.Flush($true)
+    }
+    finally {
+        $descriptor.Dispose()
+    }
+    return [pscustomobject]@{
+        schema = "tinyrustlm.validation_materialization_owner.v1"
+        operation_id = $OperationId
+        operation_root = $root
+        release_root = $releaseRoot
+        owner_path = $ownerPath
+        owner_bytes = $ownerBytes
+        owner_sha256 = Get-ByteArraySha256 -Bytes $ownerBytes
+    }
+}
+
+# Deletes a ValidateOnly tree only after a marker and exact bounded inventory agree.
+function Remove-OwnedValidationMaterialization {
+    param([object]$Materialization)
+
+    if (-not $Materialization -or
+        [string]$Materialization.schema -ne
+            "tinyrustlm.validation_materialization_owner.v1" -or
+        [string]$Materialization.operation_id -notmatch "^[0-9a-f]{32}$" -or
+        [string]$Materialization.owner_sha256 -notmatch "^[0-9a-f]{64}$") {
+        throw "Owned validation materialization cleanup identity is invalid."
+    }
+    $root = Assert-CanonicalDeploymentArtifactPath -Path ([string]$Materialization.operation_root)
+    $releaseRoot = [IO.Path]::GetFullPath([string]$Materialization.release_root)
+    $ownerPath = [IO.Path]::GetFullPath([string]$Materialization.owner_path)
+    if ([IO.Path]::GetFileName($root) -ne
+        ("tinyrustlm-web-validation-{0}" -f
+            [string]$Materialization.operation_id) -or
+        $releaseRoot -ne [IO.Path]::GetFullPath((Join-Path $root "release")) -or
+        $ownerPath -ne [IO.Path]::GetFullPath((Join-Path $root "owner.v1.json")) -or
+        -not (Test-Path -LiteralPath $root -PathType Container) -or
+        -not (Test-Path -LiteralPath $releaseRoot -PathType Container) -or
+        -not (Test-Path -LiteralPath $ownerPath -PathType Leaf)) {
+        throw "Owned validation materialization cleanup identity is invalid."
+    }
+    foreach ($path in @($root, $releaseRoot, $ownerPath)) {
+        Assert-NoReparsePointAncestry `
+            -Path $path `
+            -FailureMessage "Owned validation materialization cleanup target is unsafe."
+    }
+    $ownerBytes = [IO.File]::ReadAllBytes($ownerPath)
+    if (-not (Test-ExactByteArray `
+            -Left $ownerBytes `
+            -Right ([byte[]]$Materialization.owner_bytes)) -or
+        (Get-ByteArraySha256 -Bytes $ownerBytes) -ne
+            [string]$Materialization.owner_sha256) {
+        throw "Owned validation materialization marker changed."
+    }
+    $rootEntries = @(Get-ChildItem -LiteralPath $root -Force)
+    if ($rootEntries.Count -ne 2 -or
+        @($rootEntries | Where-Object {
+            $_.Name -ne "owner.v1.json" -and $_.Name -ne "release"
+        }).Count -ne 0) {
+        throw "Owned validation materialization inventory is unexpected."
+    }
+    $releaseEntries = @(Get-ChildItem -LiteralPath $releaseRoot -Force)
+    if ($releaseEntries.Count -gt 1 -or
+        @($releaseEntries | Where-Object {
+            $_.Name -ne ".well-known" -or -not $_.PSIsContainer
+        }).Count -ne 0) {
+        throw "Owned validation materialization inventory is unexpected."
+    }
+    $knownRoot = Join-Path $releaseRoot ".well-known"
+    $generatedFiles = @()
+    if (Test-Path -LiteralPath $knownRoot) {
+        Assert-NoReparsePointAncestry `
+            -Path $knownRoot `
+            -FailureMessage "Owned validation materialization cleanup target is unsafe."
+        $knownEntries = @(Get-ChildItem -LiteralPath $knownRoot -Force)
+        foreach ($entry in $knownEntries) {
+            if ($entry.PSIsContainer -or
+                ($entry.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0 -or
+                $entry.Name -notin @(
+                    "site-release-history.json",
+                    "site-release.json"
+                )) {
+                throw "Owned validation materialization inventory is unexpected."
+            }
+            $generatedFiles += $entry.FullName
+        }
+    }
+    foreach ($filePath in $generatedFiles) {
+        [IO.File]::Delete($filePath)
+    }
+    if (Test-Path -LiteralPath $knownRoot) {
+        [IO.Directory]::Delete($knownRoot)
+    }
+    [IO.Directory]::Delete($releaseRoot)
+    [IO.File]::Delete($ownerPath)
+    [IO.Directory]::Delete($root)
+    if (Test-Path -LiteralPath $root) {
+        throw "Owned validation materialization cleanup could not be verified."
+    }
+    return [pscustomobject]@{
+        cleanup_verified = $true
+        removed_generated_file_count = $generatedFiles.Count
+    }
+}
+
+# Creates an immediately marked root for one finalized-ledger candidate.
+function New-OwnedFinalizedLedgerCandidate {
+    param([string]$OperationRoot, [string]$SourceRoot, [string]$OperationId)
+
+    if ([string]::IsNullOrWhiteSpace($OperationRoot) -or
+        -not [IO.Path]::IsPathRooted($OperationRoot) -or
+        [string]::IsNullOrWhiteSpace($SourceRoot) -or
+        -not [IO.Path]::IsPathRooted($SourceRoot) -or
+        $OperationId -notmatch "^[0-9a-f]{32}$") {
+        throw "Finalized-ledger candidate custody identity is invalid."
+    }
+    $root = Assert-CanonicalDeploymentArtifactPath -Path $OperationRoot -SourceRoot $SourceRoot
+    if ([IO.Path]::GetFileName($root) -ne
+            ("tinyrustlm-finalized-ledger-candidate-{0}" -f $OperationId) -or
+        (Test-Path -LiteralPath $root)) {
+        throw "Finalized-ledger candidate custody root is unavailable."
+    }
+    $parent = Split-Path -Parent $root
+    Assert-NoReparsePointAncestry `
+        -Path $parent `
+        -FailureMessage "Finalized-ledger candidate custody parent is unsafe."
+    [IO.Directory]::CreateDirectory($root) | Out-Null
+    $ownerText = '{"operation_id":"' + $OperationId +
+        '","schema":"tinyrustlm.finalized_ledger_candidate_owner.v1"}' + "`n"
+    $ownerBytes = [Text.UTF8Encoding]::new($false, $true).GetBytes($ownerText)
+    $ownerPath = Join-Path $root "owner.v1.json"
+    $stream = $null
+    try {
+        Assert-NoReparsePointAncestry `
+            -Path $root `
+            -FailureMessage "Finalized-ledger candidate custody root is unsafe."
+        $stream = [IO.FileStream]::new(
+            $ownerPath,
+            [IO.FileMode]::CreateNew,
+            [IO.FileAccess]::Write,
+            [IO.FileShare]::None,
+            4096,
+            [IO.FileOptions]::WriteThrough
+        )
+        $stream.Write($ownerBytes, 0, $ownerBytes.Length)
+        $stream.Flush($true)
+    }
+    catch {
+        if ($stream) {
+            $stream.Dispose()
+            $stream = $null
+        }
+        if (Test-Path -LiteralPath $ownerPath -PathType Leaf) {
+            [IO.File]::Delete($ownerPath)
+        }
+        if ((Test-Path -LiteralPath $root -PathType Container) -and
+            @(Get-ChildItem -LiteralPath $root -Force).Count -eq 0) {
+            [IO.Directory]::Delete($root)
+        }
+        throw "Finalized-ledger candidate owner creation failed."
+    }
+    finally {
+        if ($stream) {
+            $stream.Dispose()
+        }
+    }
+    return [pscustomobject]@{
+        schema = "tinyrustlm.finalized_ledger_candidate_owner.v1"
+        operation_id = $OperationId
+        operation_root = $root
+        owner_path = $ownerPath
+        owner_bytes = $ownerBytes
+        owner_sha256 = Get-ByteArraySha256 -Bytes $ownerBytes
+        candidate_path = Join-Path $root "site-release-ledger.finalized.v1.json"
+    }
+}
+
+# Removes an uncommitted candidate root after exact inventory and identity checks.
+function Remove-OwnedFinalizedLedgerCandidate {
+    param(
+        [object]$Candidate,
+        [AllowNull()][Nullable[int64]]$ExpectedByteCount,
+        [AllowEmptyString()][string]$ExpectedSha256 = ""
+    )
+
+    if (-not $Candidate -or
+        [string]$Candidate.schema -ne
+            "tinyrustlm.finalized_ledger_candidate_owner.v1" -or
+        [string]$Candidate.operation_id -notmatch "^[0-9a-f]{32}$" -or
+        [string]$Candidate.owner_sha256 -notmatch "^[0-9a-f]{64}$") {
+        throw "Finalized-ledger candidate cleanup identity is invalid."
+    }
+    $root = Assert-CanonicalDeploymentArtifactPath -Path ([string]$Candidate.operation_root)
+    $ownerPath = [IO.Path]::GetFullPath([string]$Candidate.owner_path)
+    $candidatePath = [IO.Path]::GetFullPath([string]$Candidate.candidate_path)
+    if ([IO.Path]::GetFileName($root) -ne
+            ("tinyrustlm-finalized-ledger-candidate-{0}" -f
+                [string]$Candidate.operation_id) -or
+        $ownerPath -ne [IO.Path]::GetFullPath((Join-Path $root "owner.v1.json")) -or
+        $candidatePath -ne [IO.Path]::GetFullPath(
+            (Join-Path $root "site-release-ledger.finalized.v1.json")
+        ) -or
+        -not (Test-Path -LiteralPath $root -PathType Container) -or
+        -not (Test-Path -LiteralPath $ownerPath -PathType Leaf)) {
+        throw "Finalized-ledger candidate cleanup target is invalid."
+    }
+    foreach ($path in @($root, $ownerPath)) {
+        Assert-NoReparsePointAncestry `
+            -Path $path `
+            -FailureMessage "Finalized-ledger candidate cleanup target is unsafe."
+    }
+    [byte[]]$ownerBytes = [IO.File]::ReadAllBytes($ownerPath)
+    if (-not (Test-ExactByteArray `
+            -Left $ownerBytes `
+            -Right ([byte[]]$Candidate.owner_bytes)) -or
+        (Get-ByteArraySha256 -Bytes $ownerBytes) -ne
+            [string]$Candidate.owner_sha256) {
+        throw "Finalized-ledger candidate owner marker changed."
+    }
+    $entries = @(Get-ChildItem -LiteralPath $root -Force)
+    if ($entries.Count -lt 1 -or $entries.Count -gt 2 -or
+        @($entries | Where-Object {
+            $_.Name -ne "owner.v1.json" -and
+            $_.Name -ne "site-release-ledger.finalized.v1.json"
+        }).Count -ne 0) {
+        throw "Finalized-ledger candidate cleanup inventory is unexpected."
+    }
+    $removedCandidate = $false
+    if (Test-Path -LiteralPath $candidatePath) {
+        Assert-NoReparsePointAncestry `
+            -Path $candidatePath `
+            -FailureMessage "Finalized-ledger candidate cleanup target is unsafe."
+        $item = Get-Item -LiteralPath $candidatePath -Force
+        if ($item.PSIsContainer -or
+            ($item.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0 -or
+            [int64]$item.Length -le 0 -or
+            [int64]$item.Length -gt (1024 * 1024)) {
+            throw "Finalized-ledger candidate cleanup file is unsafe."
+        }
+        $digest = Get-FileSha256 -Path $candidatePath
+        if ($null -ne $ExpectedByteCount -and
+            [int64]$ExpectedByteCount -ne [int64]$item.Length) {
+            throw "Finalized-ledger candidate byte count changed before cleanup."
+        }
+        if (-not [string]::IsNullOrEmpty($ExpectedSha256) -and
+            $ExpectedSha256 -ne $digest) {
+            throw "Finalized-ledger candidate hash changed before cleanup."
+        }
+        Assert-NoReparsePointAncestry `
+            -Path $candidatePath `
+            -FailureMessage "Finalized-ledger candidate cleanup target is unsafe."
+        $deletionItem = Get-Item -LiteralPath $candidatePath -Force
+        if ($deletionItem.PSIsContainer -or
+            ($deletionItem.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0 -or
+            [int64]$deletionItem.Length -ne [int64]$item.Length -or
+            (Get-FileSha256 -Path $candidatePath) -ne $digest) {
+            throw "Finalized-ledger candidate changed at deletion time."
+        }
+        [IO.File]::Delete($candidatePath)
+        $removedCandidate = $true
+    }
+    [byte[]]$deletionOwnerBytes = [IO.File]::ReadAllBytes($ownerPath)
+    if (-not (Test-ExactByteArray `
+            -Left $deletionOwnerBytes `
+            -Right ([byte[]]$Candidate.owner_bytes)) -or
+        @(Get-ChildItem -LiteralPath $root -Force).Count -ne 1) {
+        throw "Finalized-ledger candidate owner changed at deletion time."
+    }
+    [IO.File]::Delete($ownerPath)
+    Assert-NoReparsePointAncestry `
+        -Path $root `
+        -FailureMessage "Finalized-ledger candidate cleanup root is unsafe."
+    if (@(Get-ChildItem -LiteralPath $root -Force).Count -ne 0) {
+        throw "Finalized-ledger candidate cleanup root is not empty."
+    }
+    [IO.Directory]::Delete($root)
+    if (Test-Path -LiteralPath $root) {
+        throw "Finalized-ledger candidate cleanup could not be verified."
+    }
+    return [pscustomobject]@{
+        cleanup_verified = $true
+        candidate_removed = $removedCandidate
+    }
+}
+
+# Splits the exact final current-release marker from all preceding publication bytes.
+function Get-DeploymentPublicationPlan {
+    param([object[]]$Entries)
+
+    if (-not $Entries -or $Entries.Count -lt 2) {
+        throw "Deployment publication plan is invalid."
+    }
+    $markerPath = ".well-known/site-release.json"
+    $markers = @($Entries | Where-Object {
+        [string]$_.remote -eq $markerPath
+    })
+    if ($markers.Count -ne 1 -or
+        [string]$Entries[$Entries.Count - 1].remote -ne $markerPath) {
+        throw "Deployment commit marker must be the final publication entry."
+    }
+    $regular = @($Entries | Select-Object -First ($Entries.Count - 1))
+    if (@($regular | Where-Object {
+        [string]$_.remote -eq $markerPath
+    }).Count -ne 0 -or
+        @($regular | Where-Object {
+            [string]$_.remote -eq ".well-known/site-release-history.json"
+        }).Count -ne 1) {
+        throw "Deployment publication plan is invalid."
+    }
+    return [pscustomobject]@{
+        regular = $regular
+        commit_marker = $markers[0]
+    }
+}
+
+# Discovers the bounded local CommonJS dependency closure for publisher entry points.
+function Get-DeploymentNodeToolClosure {
+    param([string]$RepositoryRoot, [string[]]$EntryPaths)
+
+    $root = Assert-CanonicalDeploymentSourceRoot -RepositoryRoot $RepositoryRoot
+    $toolsRoot = [IO.Path]::GetFullPath(
+        (Join-Path $root "tinyrustlm\tools")
+    ).TrimEnd("\", "/")
+    $toolsPrefix = $toolsRoot + [IO.Path]::DirectorySeparatorChar
+    $queue = [Collections.Generic.Queue[string]]::new()
+    foreach ($entryPath in $EntryPaths) {
+        $queue.Enqueue([IO.Path]::GetFullPath($entryPath))
+    }
+    $observed = [Collections.Generic.HashSet[string]]::new(
+        [StringComparer]::OrdinalIgnoreCase
+    )
+    $files = @()
+    $dependencyPattern = 'require\(\s*["''](?<path>\./[^"'']+)["'']\s*\)'
+    while ($queue.Count -gt 0) {
+        $path = $queue.Dequeue()
+        if (-not $observed.Add($path)) {
+            continue
+        }
+        if ($observed.Count -gt 128 -or
+            -not $path.StartsWith($toolsPrefix, [StringComparison]::OrdinalIgnoreCase) -or
+            -not (Test-Path -LiteralPath $path -PathType Leaf) -or
+            -not $path.EndsWith(".js", [StringComparison]::OrdinalIgnoreCase)) {
+            throw "Deployment Node tool closure is invalid."
+        }
+        Assert-NoReparsePointAncestry `
+            -Path $path `
+            -FailureMessage "Deployment Node tool closure traverses a reparse point."
+        $item = Get-Item -LiteralPath $path -Force
+        if ([int64]$item.Length -le 0 -or [int64]$item.Length -gt (8 * 1024 * 1024)) {
+            throw "Deployment Node tool closure contains an oversized file."
+        }
+        $relative = $path.Substring($root.Length + 1).Replace("\", "/")
+        $files += [pscustomobject]@{
+            relative_path = $relative
+            byte_count = [int64]$item.Length
+            sha256 = Get-FileSha256 -Path $path
+        }
+        $text = [IO.File]::ReadAllText(
+            $path,
+            [Text.UTF8Encoding]::new($false, $true)
+        )
+        foreach ($match in [regex]::Matches($text, $dependencyPattern)) {
+            $dependency = [IO.Path]::GetFullPath(
+                (Join-Path (Split-Path -Parent $path) $match.Groups["path"].Value)
+            )
+            if (-not $dependency.EndsWith(".js", [StringComparison]::OrdinalIgnoreCase)) {
+                $dependency += ".js"
+            }
+            $queue.Enqueue($dependency)
+        }
+    }
+    return @($files | Sort-Object -Property relative_path)
+}
+
+# Seals HEAD, clean status, publisher bytes, and the recursively loaded Node tool closure.
+function New-DeploymentSourceCustody {
+    param(
+        [string]$RepositoryRoot,
+        [string]$PublisherPath,
+        [string[]]$NodeToolPaths
+    )
+
+    $root = Assert-CanonicalDeploymentSourceRoot -RepositoryRoot $RepositoryRoot
+    $rootPrefix = $root + [IO.Path]::DirectorySeparatorChar
+    $statusResult = Invoke-PinnedDeploymentProcess `
+        -Executable $script:gitExecutable `
+        -Arguments @("-C", $root, "status", "--porcelain=v1", "--untracked-files=all") `
+        -WorkingDirectory $root
+    $status = @($statusResult.stdout_lines)
+    if ($statusResult.exit_code -ne 0 -or $status.Count -ne 0) {
+        throw "Deployment source custody requires a clean Git worktree."
+    }
+    $commitResult = Invoke-PinnedDeploymentProcess `
+        -Executable $script:gitExecutable `
+        -Arguments @("-C", $root, "rev-parse", "HEAD") `
+        -WorkingDirectory $root
+    $commitOutput = @($commitResult.stdout_lines)
+    if ($commitResult.exit_code -ne 0 -or $commitOutput.Count -ne 1 -or
+        [string]$commitOutput[0] -notmatch "^[0-9a-f]{40}$") {
+        throw "Deployment source custody could not bind HEAD."
+    }
+    $publisher = [IO.Path]::GetFullPath($PublisherPath)
+    if (-not $publisher.StartsWith(
+            $rootPrefix,
+            [StringComparison]::OrdinalIgnoreCase
+        ) -or
+        -not (Test-Path -LiteralPath $publisher -PathType Leaf)) {
+        throw "Deployment publisher source is unavailable."
+    }
+    Assert-NoReparsePointAncestry `
+        -Path $publisher `
+        -FailureMessage "Deployment publisher source traverses a reparse point."
+    $publisherItem = Get-Item -LiteralPath $publisher -Force
+    $publisherRelative = $publisher.Substring(
+        $root.Length + 1
+    ).Replace("\", "/")
+    $files = @([pscustomobject]@{
+        relative_path = $publisherRelative
+        byte_count = [int64]$publisherItem.Length
+        sha256 = Get-FileSha256 -Path $publisher
+    }) + @(Get-DeploymentNodeToolClosure `
+        -RepositoryRoot $root `
+        -EntryPaths $NodeToolPaths)
+    $relativePaths = [Collections.Generic.HashSet[string]]::new(
+        [StringComparer]::Ordinal
+    )
+    foreach ($file in $files) {
+        if (-not $relativePaths.Add([string]$file.relative_path)) {
+            throw "Deployment source custody contains duplicate tools."
+        }
+        $trackedResult = Invoke-PinnedDeploymentProcess `
+            -Executable $script:gitExecutable `
+            -Arguments @(
+                "-C",
+                $root,
+                "ls-files",
+                "--error-unmatch",
+                "--",
+                [string]$file.relative_path
+            ) `
+            -WorkingDirectory $root
+        if ($trackedResult.exit_code -ne 0) {
+            throw "Deployment source custody contains an untracked tool."
+        }
+    }
+    $files = @($files | Sort-Object -Property relative_path)
+    $identityText = [string]::Join("`n", @($files | ForEach-Object {
+        "{0}|{1}|{2}" -f $_.relative_path, $_.byte_count, $_.sha256
+    })) + "`n"
+    return [pscustomobject]@{
+        schema = "tinyrustlm.deployment_source_custody.v1"
+        source_commit = ([string]$commitOutput[0]).Trim()
+        source_tree_clean = $true
+        tool_file_count = $files.Count
+        tool_closure_sha256 = Get-Utf8Sha256 -Value $identityText
+        files = $files
+    }
+}
+
+# Recomputes the sealed source/tool identity immediately around every mutable tool process.
+function Assert-DeploymentSourceCustody {
+    param([string]$RepositoryRoot, [object]$Custody)
+
+    if (-not $Custody -or
+        [string]$Custody.schema -ne "tinyrustlm.deployment_source_custody.v1" -or
+        [string]$Custody.source_commit -notmatch "^[0-9a-f]{40}$" -or
+        [string]$Custody.tool_closure_sha256 -notmatch "^[0-9a-f]{64}$" -or
+        [int]$Custody.tool_file_count -le 0 -or
+        @($Custody.files).Count -ne [int]$Custody.tool_file_count) {
+        throw "Deployment source custody identity is invalid."
+    }
+    $root = Assert-CanonicalDeploymentSourceRoot -RepositoryRoot $RepositoryRoot
+    $statusResult = Invoke-PinnedDeploymentProcess `
+        -Executable $script:gitExecutable `
+        -Arguments @("-C", $root, "status", "--porcelain=v1", "--untracked-files=all") `
+        -WorkingDirectory $root
+    $status = @($statusResult.stdout_lines)
+    $commitResult = Invoke-PinnedDeploymentProcess `
+        -Executable $script:gitExecutable `
+        -Arguments @("-C", $root, "rev-parse", "HEAD") `
+        -WorkingDirectory $root
+    $commitOutput = @($commitResult.stdout_lines)
+    if ($statusResult.exit_code -ne 0 -or $commitResult.exit_code -ne 0 -or
+        $status.Count -ne 0 -or
+        $commitOutput.Count -ne 1 -or
+        ([string]$commitOutput[0]).Trim() -ne [string]$Custody.source_commit) {
+        throw "Deployment source custody changed."
+    }
+    $identityRows = @()
+    foreach ($file in @($Custody.files)) {
+        if ([string]$file.relative_path -notmatch
+            "^(?:tinyrustlm/tools/)[A-Za-z0-9._/-]+$" -or
+            [string]$file.relative_path -match "(^|/)(\.{1,2}|)(/|$)" -or
+            [string]$file.sha256 -notmatch "^[0-9a-f]{64}$" -or
+            [int64]$file.byte_count -le 0 -or [int64]$file.byte_count -gt (8 * 1024 * 1024)) {
+            throw "Deployment source custody path is invalid."
+        }
+        $path = [IO.Path]::GetFullPath(
+            (Join-Path $root ([string]$file.relative_path).Replace("/", "\"))
+        )
+        $toolsPrefix = (Join-Path $root "tinyrustlm\tools") + [IO.Path]::DirectorySeparatorChar
+        if (-not $path.StartsWith($toolsPrefix, [StringComparison]::OrdinalIgnoreCase)) {
+            throw "Deployment source custody path is invalid."
+        }
+        if (-not (Test-Path -LiteralPath $path -PathType Leaf)) {
+            throw "Deployment source custody tool is unavailable."
+        }
+        Assert-NoReparsePointAncestry `
+            -Path $path `
+            -FailureMessage "Deployment source custody tool traverses a reparse point."
+        $item = Get-Item -LiteralPath $path -Force
+        $digest = Get-FileSha256 -Path $path
+        if ([int64]$item.Length -ne [int64]$file.byte_count -or
+            $digest -ne [string]$file.sha256) {
+            throw "Deployment source custody tool hash changed."
+        }
+        $identityRows += "{0}|{1}|{2}" -f `
+            $file.relative_path,
+            $file.byte_count,
+            $file.sha256
+    }
+    $identityText = [string]::Join("`n", $identityRows) + "`n"
+    if ((Get-Utf8Sha256 -Value $identityText) -ne
+        [string]$Custody.tool_closure_sha256) {
+        throw "Deployment source custody closure changed."
+    }
+    return [pscustomobject]@{
+        status = "pass"
+        source_commit = [string]$Custody.source_commit
+        source_tree_clean = $true
+        tool_file_count = [int]$Custody.tool_file_count
+        tool_closure_sha256 = [string]$Custody.tool_closure_sha256
+    }
+}
+
+# Executes one sealed Node entry point with source checks immediately before and after it.
+function Invoke-CustodiedNodeTool {
+    param(
+        [string]$RepositoryRoot,
+        [object]$Custody,
+        [string]$ToolPath,
+        [string[]]$Arguments
+    )
+
+    $root = Assert-CanonicalDeploymentSourceRoot -RepositoryRoot $RepositoryRoot
+    $rootPrefix = $root + [IO.Path]::DirectorySeparatorChar
+    $tool = [IO.Path]::GetFullPath($ToolPath)
+    if (-not $tool.StartsWith($rootPrefix, [StringComparison]::OrdinalIgnoreCase)) {
+        throw "Node tool is outside deployment source custody."
+    }
+    $relative = $tool.Substring($root.Length + 1).Replace("\", "/")
+    if (@($Custody.files | Where-Object {
+        [string]$_.relative_path -eq $relative
+    }).Count -ne 1) {
+        throw "Node tool is outside deployment source custody."
+    }
+    Assert-DeploymentSourceCustody `
+        -RepositoryRoot $root `
+        -Custody $Custody | Out-Null
+    $nodeResult = Invoke-PinnedDeploymentProcess `
+        -Executable $script:nodeExecutable `
+        -Arguments (@($tool) + @($Arguments)) `
+        -WorkingDirectory $root
+    $output = @($nodeResult.stdout_lines)
+    $exitCode = [int]$nodeResult.exit_code
+    Assert-DeploymentSourceCustody `
+        -RepositoryRoot $root `
+        -Custody $Custody | Out-Null
+    if ($exitCode -ne 0) {
+        throw "Custodied Node tool failed."
+    }
+    return $output
+}
+
 # Reduces a nested transport failure to nonsecret exception and protocol status identifiers.
 function Get-SafeExceptionIdentity {
     param([Exception]$Exception)
@@ -279,7 +1728,7 @@ function Get-SafeExceptionIdentity {
     return $identity
 }
 
-# Returns true only for an FTP response that explicitly reports an unavailable object.
+# Classifies FTP 550 without treating it as proof that an object is absent.
 function Test-FtpFileUnavailable {
     param([Exception]$Exception)
 
@@ -343,13 +1792,13 @@ function Set-ArtifactOperationState {
         [ValidateSet(
             "local-validation",
             "current-artifact-readback",
-            "current-temporary-cleanup",
+            "current-temporary-admission",
+            "temporary-admission",
             "stage-write",
             "stage-authenticated-readback",
             "stage-reset",
             "stage-verification-exhausted",
             "predecessor-state-read",
-            "predecessor-backup-cleanup",
             "predecessor-backup",
             "stage-promotion",
             "promoted-readback",
@@ -357,6 +1806,7 @@ function Set-ArtifactOperationState {
             "temporary-cleanup",
             "rollback-target-removal",
             "rollback-restore",
+            "rollback-temporary-cleanup",
             "rollback-failed",
             "complete"
         )]
@@ -526,7 +1976,7 @@ function Test-RemoteFileAbsent {
     }
     catch {
         if (Test-FtpFileUnavailable -Exception $_.Exception) {
-            return $true
+            throw "FTP 550 cannot prove remote-file absence; the parent inventory is ambiguous or inaccessible."
         }
         throw
     }
@@ -539,6 +1989,11 @@ function Get-RemoteSize {
     $maximumAttempts = 4
     for ($attempt = 1; $attempt -le $maximumAttempts; $attempt += 1) {
         try {
+            # A LIST omission is not accepted on its own. Bind it to a SIZE
+            # result and require the parent inventory to remain stable around
+            # that result so a hidden, stale, or racing object cannot become
+            # an apparently absent path.
+            $absentBeforeSize = Test-RemoteFileAbsent -RemotePath $RemotePath
             try {
                 $request = New-FtpRequest `
                     -RemotePath $RemotePath `
@@ -550,16 +2005,22 @@ function Get-RemoteSize {
                 finally {
                     $response.Dispose()
                 }
-                if ($reportedSize -lt 0 -or
-                    (Test-RemoteFileAbsent -RemotePath $RemotePath)) {
-                    return [int64]-1
+                if ($reportedSize -lt 0) {
+                    throw "Remote SIZE returned an ambiguous negative value."
+                }
+                $absentAfterSize = Test-RemoteFileAbsent -RemotePath $RemotePath
+                if ($absentBeforeSize -or $absentAfterSize) {
+                    throw "Remote positive SIZE contradicted the parent LIST inventory."
                 }
                 return $reportedSize
             }
             catch {
-                if ((Test-FtpFileUnavailable -Exception $_.Exception) -and
-                    (Test-RemoteFileAbsent -RemotePath $RemotePath)) {
-                    return [int64]-1
+                if (Test-FtpFileUnavailable -Exception $_.Exception) {
+                    $absentAfterSize = Test-RemoteFileAbsent -RemotePath $RemotePath
+                    if ($absentBeforeSize -and $absentAfterSize) {
+                        return [int64]-1
+                    }
+                    throw "FTP 550 cannot prove remote-file absence; LIST and SIZE state is ambiguous."
                 }
                 throw
             }
@@ -594,7 +2055,7 @@ function Test-RemoteDirectory {
     }
     catch {
         if (Test-FtpFileUnavailable -Exception $_.Exception) {
-            return $false
+            throw "FTP 550 cannot prove remote-directory absence; remote state is ambiguous or inaccessible."
         }
         throw
     }
@@ -642,9 +2103,8 @@ function Get-RemoteDirectoryEntries {
         }
     }
     catch {
-        if ((Test-FtpFileUnavailable -Exception $_.Exception) -and
-            -not (Test-RemoteDirectory -RemotePath $RemotePath)) {
-            return @()
+        if (Test-FtpFileUnavailable -Exception $_.Exception) {
+            throw "FTP 550 cannot prove an empty or absent remote directory."
         }
         throw
     }
@@ -893,6 +2353,270 @@ function Test-HttpsArtifact {
     }
 }
 
+# Reads one bounded public JSON response and rejects redirects or non-200 outcomes.
+function Read-BoundedPublicResponse {
+    param(
+        [Net.Http.HttpResponseMessage]$Response,
+        [ValidateRange(1, 1048576)]
+        [int]$MaximumBytes
+    )
+
+    if (-not $Response -or $Response.StatusCode -ne [Net.HttpStatusCode]::OK) {
+        if ($Response -and [int]$Response.StatusCode -ge 300 -and
+            [int]$Response.StatusCode -lt 400) {
+            throw "Public predecessor readback rejected an HTTP redirect."
+        }
+        throw "Public predecessor readback requires exact HTTP 200."
+    }
+    $mediaType = if ($Response.Content.Headers.ContentType) {
+        [string]$Response.Content.Headers.ContentType.MediaType
+    }
+    else {
+        ""
+    }
+    if (-not [string]::Equals(
+        $mediaType,
+        "application/json",
+        [StringComparison]::OrdinalIgnoreCase
+    )) {
+        throw "Public predecessor readback media type is invalid."
+    }
+    $contentLength = $Response.Content.Headers.ContentLength
+    if ($null -ne $contentLength -and
+        ([int64]$contentLength -le 0 -or
+            [int64]$contentLength -gt $MaximumBytes)) {
+        throw "Public predecessor readback exceeds its byte limit."
+    }
+    $stream = $Response.Content.ReadAsStreamAsync().GetAwaiter().GetResult()
+    $memory = [IO.MemoryStream]::new()
+    $buffer = [byte[]]::new(8192)
+    $total = 0
+    try {
+        while (($count = $stream.Read($buffer, 0, $buffer.Length)) -gt 0) {
+            $total += $count
+            if ($total -gt $MaximumBytes) {
+                throw "Public predecessor readback exceeds its byte limit."
+            }
+            $memory.Write($buffer, 0, $count)
+        }
+        if ($total -le 0) {
+            throw "Public predecessor readback is empty."
+        }
+        return ,$memory.ToArray()
+    }
+    finally {
+        $memory.Dispose()
+        $stream.Dispose()
+    }
+}
+
+# Fetches one public release record without credentials, cookies, redirects, or cache reuse.
+function Read-BoundedPublicArtifact {
+    param(
+        [string]$RemotePath,
+        [ValidateRange(1, 1048576)]
+        [int]$MaximumBytes
+    )
+
+    if (-not $script:httpClient) {
+        throw "Public predecessor HTTP custody is unavailable."
+    }
+    $validatedPath = Assert-RemoteProtocolPath -RemotePath $RemotePath
+    $nonce = [Guid]::NewGuid().ToString("N")
+    $uri = "{0}/{1}?predecessor_readback={2}" -f `
+        $script:publicOrigin,
+        $validatedPath,
+        $nonce
+    $request = [Net.Http.HttpRequestMessage]::new([Net.Http.HttpMethod]::Get, $uri)
+    $request.Headers.CacheControl = [Net.Http.Headers.CacheControlHeaderValue]::new()
+    $request.Headers.CacheControl.NoCache = $true
+    $request.Headers.CacheControl.NoStore = $true
+    $request.Headers.CacheControl.MaxAge = [TimeSpan]::Zero
+    $request.Headers.Pragma.ParseAdd("no-cache")
+    $response = $null
+    try {
+        $response = $script:httpClient.SendAsync(
+            $request,
+            [Net.Http.HttpCompletionOption]::ResponseHeadersRead
+        ).GetAwaiter().GetResult()
+        return ,(Read-BoundedPublicResponse `
+            -Response $response `
+            -MaximumBytes $MaximumBytes)
+    }
+    finally {
+        if ($response) {
+            $response.Dispose()
+        }
+        $request.Dispose()
+    }
+}
+
+# Parses strict bounded UTF-8 JSON while preserving the raw bytes as the authority.
+function ConvertFrom-StrictPublicJsonBytes {
+    param([byte[]]$Bytes, [string]$Label)
+
+    if (-not $Bytes -or $Bytes.Length -le 0 -or $Bytes.Length -gt (1024 * 1024)) {
+        throw "$Label exceeds its byte limit."
+    }
+    try {
+        $text = [Text.UTF8Encoding]::new($false, $true).GetString($Bytes)
+    }
+    catch {
+        throw "$Label contains malformed UTF-8."
+    }
+    if (($text.Length -gt 0 -and [int][char]$text[0] -eq 0xfeff) -or
+        $text.Contains("`r") -or
+        -not $text.EndsWith("`n", [StringComparison]::Ordinal)) {
+        throw "$Label has a noncanonical encoding."
+    }
+    try {
+        return $text | ConvertFrom-Json
+    }
+    catch {
+        throw "$Label contains malformed JSON."
+    }
+}
+
+# Compares two bounded byte arrays without replacing byte identity with parsed semantics.
+function Test-ExactByteArray {
+    param([byte[]]$Left, [byte[]]$Right)
+
+    if ($null -eq $Left -or $null -eq $Right -or $Left.Length -eq 0 -or
+        $Left.Length -ne $Right.Length) {
+        return $false
+    }
+    for ($index = 0; $index -lt $Left.Length; $index += 1) {
+        if ($Left[$index] -ne $Right[$index]) {
+            return $false
+        }
+    }
+    return $true
+}
+
+# Requires live public release bytes to be the exact 0.4.1 prefix before pending 0.5.0.
+function Assert-PublicReleasePredecessor {
+    param([object]$Expected, [string]$PublicOrigin)
+
+    if (-not $Expected -or
+        -not [string]::Equals(
+            $PublicOrigin,
+            "https://tinyrustlm.com",
+            [StringComparison]::Ordinal
+        ) -or
+        -not [string]::Equals(
+            [string]$Expected.predecessor_release_id,
+            "tinyrustlm.com@0.4.1",
+            [StringComparison]::Ordinal
+        ) -or
+        -not [string]::Equals(
+            [string]$Expected.predecessor_version,
+            "0.4.1",
+            [StringComparison]::Ordinal
+        ) -or
+        -not [string]::Equals(
+            [string]$Expected.pending_release_id,
+            "tinyrustlm.com@0.5.0",
+            [StringComparison]::Ordinal
+        ) -or
+        -not [string]::Equals(
+            [string]$Expected.pending_version,
+            "0.5.0",
+            [StringComparison]::Ordinal
+        ) -or
+        -not $Expected.current -or
+        -not $Expected.history -or
+        [string]$Expected.predecessor_publication_id -notmatch "^[0-9a-f]{64}$" -or
+        [string]$Expected.predecessor_ledger_sha256 -notmatch "^[0-9a-f]{64}$" -or
+        -not [string]::Equals(
+            [string]$Expected.current.relative_path,
+            ".well-known/site-release.json",
+            [StringComparison]::Ordinal
+        ) -or
+        -not [string]::Equals(
+            [string]$Expected.history.relative_path,
+            ".well-known/site-release-history.json",
+            [StringComparison]::Ordinal
+        )) {
+        throw "Public predecessor expectation is invalid."
+    }
+    foreach ($record in @($Expected.current, $Expected.history)) {
+        if (-not $record -or
+            [int64]$record.byte_count -le 0 -or
+            [int64]$record.byte_count -gt (1024 * 1024) -or
+            [string]$record.sha256 -notmatch "^[0-9a-f]{64}$" -or
+            -not $record.bytes -or
+            ([byte[]]$record.bytes).Length -ne [int64]$record.byte_count -or
+            (Get-ByteArraySha256 -Bytes ([byte[]]$record.bytes)) -ne
+                [string]$record.sha256) {
+            throw "Public predecessor expected bytes are invalid."
+        }
+    }
+    [byte[]]$currentBytes = Read-BoundedPublicArtifact `
+        -RemotePath ([string]$Expected.current.relative_path) `
+        -MaximumBytes (1024 * 1024)
+    [byte[]]$historyBytes = Read-BoundedPublicArtifact `
+        -RemotePath ([string]$Expected.history.relative_path) `
+        -MaximumBytes (1024 * 1024)
+    $current = ConvertFrom-StrictPublicJsonBytes `
+        -Bytes $currentBytes `
+        -Label "Public current-release record"
+    $history = ConvertFrom-StrictPublicJsonBytes `
+        -Bytes $historyBytes `
+        -Label "Public release-history record"
+    if ([string]$current.releaseId -eq [string]$Expected.pending_release_id -or
+        [string]$current.version -eq [string]$Expected.pending_version) {
+        throw "Public release state is already newer than the required predecessor."
+    }
+    if ([string]$current.schema -ne "uaix.site_release.v1" -or
+        [string]$current.siteId -ne "tinyrustlm.com" -or
+        [string]$current.canonicalOrigin -ne "https://tinyrustlm.com" -or
+        [string]$current.releaseId -ne [string]$Expected.predecessor_release_id -or
+        [string]$current.version -ne [string]$Expected.predecessor_version -or
+        [string]$current.publicationId -ne [string]$Expected.predecessor_publication_id) {
+        throw "Public current-release record diverges from the required predecessor."
+    }
+    $historyReleases = @($history.releases)
+    if ([string]$history.schema -ne "uaix.site_release_history.v1" -or
+        [string]$history.siteId -ne "tinyrustlm.com" -or
+        [string]$history.canonicalOrigin -ne "https://tinyrustlm.com" -or
+        $historyReleases.Count -le 0) {
+        throw "Public release-history record is malformed."
+    }
+    $historyCurrent = $historyReleases[$historyReleases.Count - 1]
+    if ([string]$historyCurrent.releaseId -ne [string]$current.releaseId -or
+        [string]$historyCurrent.version -ne [string]$current.version -or
+        [string]$historyCurrent.publicationId -ne [string]$current.publicationId -or
+        @($historyReleases | Where-Object {
+            [string]$_.releaseId -eq [string]$Expected.pending_release_id -or
+            [string]$_.version -eq [string]$Expected.pending_version
+        }).Count -ne 0) {
+        throw "Public release history is inconsistent with its current predecessor."
+    }
+    if (-not (Test-ExactByteArray `
+            -Left $currentBytes `
+            -Right ([byte[]]$Expected.current.bytes)) -or
+        -not (Test-ExactByteArray `
+            -Left $historyBytes `
+            -Right ([byte[]]$Expected.history.bytes))) {
+        throw "Public release bytes diverge from the exact predecessor ledger prefix."
+    }
+    return [pscustomobject]@{
+        status = "pass"
+        predecessor_release_id = [string]$current.releaseId
+        predecessor_version = [string]$current.version
+        predecessor_publication_id = [string]$current.publicationId
+        predecessor_ledger_sha256 = [string]$Expected.predecessor_ledger_sha256
+        pending_release_id = [string]$Expected.pending_release_id
+        pending_version = [string]$Expected.pending_version
+        current_byte_count = $currentBytes.Length
+        current_sha256 = Get-ByteArraySha256 -Bytes $currentBytes
+        history_byte_count = $historyBytes.Length
+        history_sha256 = Get-ByteArraySha256 -Bytes $historyBytes
+        cache_bypassed = $true
+        read_only = $true
+    }
+}
+
 # Creates a one-client credential pipe whose discretionary ACL admits only the current user.
 function New-CurrentUserCredentialPipe {
     param([string]$Name)
@@ -945,12 +2669,21 @@ function Test-FtpsArtifact {
         $pipeConnection = $pipeServer.WaitForConnectionAsync()
 
         $uri = [Uri]("ftp://{0}:{1}/{2}" -f $script:ftpHost, $script:ftpPort, $RemotePath)
-        $start = [Diagnostics.ProcessStartInfo]::new()
-        $start.FileName = (Get-Command curl.exe -ErrorAction Stop).Source
-        $start.Arguments = '--config "{0}" --ssl-reqd --ftp-method nocwd --ftp-skip-pasv-ip --fail --silent --show-error --connect-timeout 30 --max-time 180 --output "{1}" "{2}"' -f $pipePath, $temporaryPath, $uri.AbsoluteUri
-        $start.UseShellExecute = $false
-        $start.CreateNoWindow = $true
-        $start.RedirectStandardError = $true
+        $start = New-SanitizedDeploymentProcessStartInfo `
+            -Executable $script:curlExecutable `
+            -Arguments @(
+                "--config", $pipePath,
+                "--ssl-reqd",
+                "--ftp-method", "nocwd",
+                "--ftp-skip-pasv-ip",
+                "--fail",
+                "--silent",
+                "--show-error",
+                "--connect-timeout", "30",
+                "--max-time", "180",
+                "--output", $temporaryPath,
+                $uri.AbsoluteUri
+            )
         $process = [Diagnostics.Process]::Start($start)
         if (-not $pipeConnection.Wait(5000)) {
             $process.Kill()
@@ -972,12 +2705,16 @@ function Test-FtpsArtifact {
         $passwordValue = $null
         $user = $null
 
+        $stdoutRead = $process.StandardOutput.ReadToEndAsync()
         $stderrRead = $process.StandardError.ReadToEndAsync()
         if (-not $process.WaitForExit(190000)) {
             $process.Kill()
             return $false
         }
+        $stdoutRead.GetAwaiter().GetResult() | Out-Null
         $stderrRead.GetAwaiter().GetResult() | Out-Null
+        Assert-PinnedDeploymentExecutable `
+            -Executable $script:curlExecutable | Out-Null
         if ($process.ExitCode -ne 0) {
             Write-Host "FTPS readback failed with curl exit code $($process.ExitCode)."
             return $false
@@ -1001,6 +2738,132 @@ function Test-FtpsArtifact {
         if (Test-Path -LiteralPath $temporaryPath) {
             Remove-Item -LiteralPath $temporaryPath -Force
         }
+    }
+}
+
+# Reads one small FTPS control artifact without creating or changing remote state.
+function Read-BoundedFtpsArtifact {
+    param(
+        [string]$RemotePath,
+        [ValidateRange(1, 65536)]
+        [int]$MaximumBytes
+    )
+
+    $validatedPath = Assert-RemoteProtocolPath -RemotePath $RemotePath
+    $request = New-FtpRequest `
+        -RemotePath $validatedPath `
+        -Method ([Net.WebRequestMethods+Ftp]::DownloadFile)
+    $response = $request.GetResponse()
+    try {
+        if ($response.ContentLength -gt $MaximumBytes) {
+            throw "The deployment root sentinel exceeds its byte limit."
+        }
+        $stream = $response.GetResponseStream()
+        $memory = [IO.MemoryStream]::new()
+        $buffer = [byte[]]::new(1024)
+        $total = 0
+        try {
+            while (($count = $stream.Read($buffer, 0, $buffer.Length)) -gt 0) {
+                $total += $count
+                if ($total -gt $MaximumBytes) {
+                    throw "The deployment root sentinel exceeds its byte limit."
+                }
+                $memory.Write($buffer, 0, $count)
+            }
+            return ,$memory.ToArray()
+        }
+        finally {
+            $memory.Dispose()
+            $stream.Dispose()
+        }
+    }
+    finally {
+        $response.Dispose()
+    }
+}
+
+# Proves the authenticated FTPS root has the preregistered TinyRustLM site identity.
+function Assert-DeploymentTargetIdentity {
+    param([object]$TargetBinding, [string]$PublicOrigin)
+
+    if (-not $TargetBinding -or
+        -not [string]::Equals(
+            $PublicOrigin,
+            "https://tinyrustlm.com",
+            [StringComparison]::Ordinal
+        )) {
+        throw "The deployment root sentinel identity is invalid."
+    }
+    [byte[]]$bytes = @(
+        Read-BoundedFtpsArtifact `
+            -RemotePath ([string]$TargetBinding.sentinel_path) `
+            -MaximumBytes 4096
+    )
+    if ($bytes.Length -le 1) {
+        throw "The deployment root sentinel identity is invalid."
+    }
+    $sha = [Security.Cryptography.SHA256]::Create()
+    try {
+        $actualSha256 = ([BitConverter]::ToString(
+            $sha.ComputeHash($bytes)
+        )).Replace("-", "").ToLowerInvariant()
+    }
+    finally {
+        $sha.Dispose()
+    }
+    if (-not [string]::Equals(
+        $actualSha256,
+        [string]$TargetBinding.sentinel_sha256,
+        [StringComparison]::Ordinal
+    )) {
+        throw "The deployment root sentinel hash does not match the configured identity."
+    }
+    try {
+        $text = [Text.UTF8Encoding]::new($false, $true).GetString($bytes)
+    }
+    catch {
+        throw "The deployment root sentinel identity is invalid."
+    }
+    if (($text.Length -gt 0 -and [int][char]$text[0] -eq 0xfeff) -or
+        $text.Contains("`r") -or
+        -not $text.EndsWith("`n", [StringComparison]::Ordinal) -or
+        $text.Substring(0, $text.Length - 1).Contains("`n")) {
+        throw "The deployment root sentinel encoding is invalid."
+    }
+    try {
+        $sentinel = $text | ConvertFrom-Json
+    }
+    catch {
+        throw "The deployment root sentinel JSON is invalid."
+    }
+    $fieldNames = [string[]]@($sentinel.PSObject.Properties.Name)
+    [Array]::Sort($fieldNames, [StringComparer]::Ordinal)
+    if ([string]::Join("`n", $fieldNames) -ne
+            "public_origin`nschema`nsite_identity" -or
+        -not [string]::Equals(
+            [string]$sentinel.schema,
+            "tinyrustlm.deployment_root_identity.v1",
+            [StringComparison]::Ordinal
+        ) -or
+        -not [string]::Equals(
+            [string]$sentinel.site_identity,
+            [string]$TargetBinding.site_identity,
+            [StringComparison]::Ordinal
+        ) -or
+        -not [string]::Equals(
+            [string]$sentinel.public_origin,
+            $PublicOrigin,
+            [StringComparison]::Ordinal
+        )) {
+        throw "The deployment root sentinel site identity is invalid."
+    }
+    return [pscustomobject]@{
+        status = "pass"
+        site_identity = [string]$sentinel.site_identity
+        sentinel_path = [string]$TargetBinding.sentinel_path
+        sentinel_bytes = $bytes.Length
+        sentinel_sha256 = $actualSha256
+        read_only = $true
     }
 }
 
@@ -1361,7 +3224,12 @@ function Remove-PublicArtifact {
 
 # Resumes a small stage through conservative fixed chunks accepted by this FTPS host.
 function Write-StagedSmallArtifact {
-    param([string]$LocalPath, [string]$StagePath, [int64]$ExpectedBytes)
+    param([byte[]]$Payload, [string]$StagePath, [int64]$ExpectedBytes)
+
+    if ($null -eq $Payload -or $ExpectedBytes -le 0 -or
+        $Payload.LongLength -ne $ExpectedBytes -or $ExpectedBytes -gt (8 * 1024 * 1024)) {
+        throw "Small staged payload identity is invalid."
+    }
 
     $offset = Get-RemoteSize -RemotePath $StagePath
     if ($offset -lt 0 -or $offset -gt $ExpectedBytes) {
@@ -1373,7 +3241,7 @@ function Write-StagedSmallArtifact {
     }
     $stageLeaf = (Get-RemoteFilePathParts -RemotePath $StagePath).leaf
     Write-Host "resuming $stageLeaf at $offset of $ExpectedBytes bytes"
-    $file = [IO.File]::OpenRead($LocalPath)
+    $file = [IO.MemoryStream]::new($Payload, $false)
     try {
         $file.Position = $offset
         while ($offset -lt $ExpectedBytes) {
@@ -1412,10 +3280,15 @@ function Write-StagedSmallArtifact {
 
 # Resumes a large hash-named stage through continuous FTPS streams and verified offsets.
 function Write-StagedArtifact {
-    param([string]$LocalPath, [string]$StagePath, [int64]$ExpectedBytes)
+    param([byte[]]$Payload, [string]$StagePath, [int64]$ExpectedBytes)
+
+    if ($null -eq $Payload -or $ExpectedBytes -le 0 -or
+        $Payload.LongLength -ne $ExpectedBytes -or $ExpectedBytes -gt (256 * 1024 * 1024)) {
+        throw "Staged payload identity is invalid."
+    }
 
     if ($ExpectedBytes -le (8 * 1024 * 1024)) {
-        Write-StagedSmallArtifact -LocalPath $LocalPath -StagePath $StagePath -ExpectedBytes $ExpectedBytes
+        Write-StagedSmallArtifact -Payload $Payload -StagePath $StagePath -ExpectedBytes $ExpectedBytes
         return
     }
 
@@ -1444,7 +3317,7 @@ function Write-StagedArtifact {
         }
         $request = New-FtpRequest -RemotePath $StagePath -Method $method
         $request.ContentLength = $ExpectedBytes - $offset
-        $file = [IO.File]::OpenRead($LocalPath)
+        $file = [IO.MemoryStream]::new($Payload, $false)
         $file.Position = $offset
         try {
             $upload = $request.GetRequestStream()
@@ -1513,15 +3386,20 @@ function Write-StagedArtifact {
 # Stages an artifact and retries once from byte zero if authenticated verification fails.
 function Stage-VerifiedArtifact {
     param(
-        [string]$LocalPath,
+        [byte[]]$Payload,
         [string]$StagePath,
         [int64]$ExpectedBytes,
         [string]$ExpectedSha256
     )
 
+    if ($null -eq $Payload -or $ExpectedBytes -le 0 -or $Payload.LongLength -ne $ExpectedBytes -or
+        $ExpectedBytes -gt (256 * 1024 * 1024) -or $ExpectedSha256 -notmatch "^[0-9a-f]{64}$" -or
+        (Get-ByteArraySha256 -Bytes $Payload) -ne $ExpectedSha256) {
+        throw "Staged payload failed verification before remote mutation."
+    }
     for ($cycle = 1; $cycle -le 2; $cycle += 1) {
         Set-ArtifactOperationState -Step "stage-write" -Attempt $cycle
-        Write-StagedArtifact -LocalPath $LocalPath -StagePath $StagePath -ExpectedBytes $ExpectedBytes
+        Write-StagedArtifact -Payload $Payload -StagePath $StagePath -ExpectedBytes $ExpectedBytes
         $stageLeaf = (Get-RemoteFilePathParts -RemotePath $StagePath).leaf
         Write-Host "verifying staged $stageLeaf"
         Set-ArtifactOperationState -Step "stage-authenticated-readback" -Attempt $cycle
@@ -1539,44 +3417,111 @@ function Stage-VerifiedArtifact {
     throw "Remote SHA-256 verification failed for staged artifact $StagePath."
 }
 
-# Atomically promotes one verified local artifact and restores its predecessor on any failure.
-function Publish-Artifact {
-    param(
-        [string]$Source,
-        [string]$LocalRelativePath,
-        [string]$RemoteRelativePath
+# Reads and verifies canonical bytes into bounded memory before any remote mutation.
+function Assert-DeploymentInputEntry {
+    param([object]$DeploymentInputEntry)
+
+    if (-not $DeploymentInputEntry) {
+        throw "The deployment input is unavailable."
+    }
+    $source = [string]$DeploymentInputEntry.source
+    $local = Assert-RemoteProtocolPath `
+        -RemotePath ([string]$DeploymentInputEntry.local)
+    $remote = Assert-RemoteProtocolPath `
+        -RemotePath ([string]$DeploymentInputEntry.remote)
+    if (($source -ne "source" -and $source -ne "generated-release") -or
+        -not [string]::Equals($local, $remote, [StringComparison]::Ordinal) -or
+        $remote -match "(?i)(^|/)(\.git|\.uai)(/|$)" -or
+        $remote -match "(?i)(^|/)(workspace|taboo)\.uai$" -or
+        $remote -match "(?i)(^|/)verify-single-source-authority\.(js|ps1|sh)$" -or
+        [int64]$DeploymentInputEntry.byteCount -le 0 -or
+        [int64]$DeploymentInputEntry.byteCount -gt (256 * 1024 * 1024) -or
+        [string]$DeploymentInputEntry.sha256 -notmatch "^[0-9a-f]{64}$") {
+        throw "The canonical deployment input entry is invalid."
+    }
+    $payloadRoot = if ($source -eq "source") { "E:\Source\Rust\TinyRustLM.com\tinyrustlm" }
+        else { Assert-CanonicalDeploymentArtifactPath -Path $script:generatedReleaseRoot }
+    $localPath = [IO.Path]::GetFullPath(
+        (Join-Path $payloadRoot ($remote.Replace("/", "\")))
     )
+    $payloadPrefix = $payloadRoot.TrimEnd("\", "/") +
+        [IO.Path]::DirectorySeparatorChar
+    if (-not $localPath.StartsWith(
+        $payloadPrefix,
+        [StringComparison]::OrdinalIgnoreCase
+    ) -or -not (Test-Path -LiteralPath $localPath -PathType Leaf)) {
+        throw "The canonical deployment input entry is missing or escaped custody."
+    }
+    Assert-NoReparsePointAncestry `
+        -Path $localPath `
+        -FailureMessage "The canonical deployment input entry traverses a reparse point."
+    $item = Get-Item -LiteralPath $localPath -Force
+    if (($item.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0 -or
+        [int64]$item.Length -ne [int64]$DeploymentInputEntry.byteCount -or
+        $item -isnot [IO.FileInfo]) {
+        throw "The canonical deployment input entry failed byte verification."
+    }
+    $payload = New-Object byte[] ([int]$DeploymentInputEntry.byteCount)
+    $stream = [IO.File]::Open($localPath, [IO.FileMode]::Open, [IO.FileAccess]::Read, [IO.FileShare]::Read)
+    try {
+        if ($stream.Length -ne $payload.LongLength) { throw "Deployment input length changed." }
+        $offset = 0
+        while ($offset -lt $payload.Length) {
+            $count = $stream.Read($payload, $offset, $payload.Length - $offset)
+            if ($count -le 0) { throw "Deployment input was truncated." }
+            $offset += $count
+        }
+        if ($stream.ReadByte() -ne -1 -or
+            (Get-ByteArraySha256 -Bytes $payload) -ne [string]$DeploymentInputEntry.sha256) {
+            throw "Deployment input bytes changed before publication."
+        }
+    }
+    finally { $stream.Dispose() }
+    return [pscustomobject]@{
+        source = $source
+        local = $local
+        remote = $remote
+        payload = $payload
+        byte_count = [int64]$DeploymentInputEntry.byteCount
+        sha256 = [string]$DeploymentInputEntry.sha256
+    }
+}
+
+# Promotes verified memory bytes with bounded per-file recovery after transport admission.
+function Publish-Artifact {
+    param([object]$DeploymentInputEntry, [switch]$CommitMarker)
+
+    if ($script:releaseWideTransportCapabilityAdmitted -ne $true) {
+        throw "Release-wide transport capability has not admitted remote mutation."
+    }
+    if ([string]$script:deploymentLeaseId -notmatch "^[0-9a-f]{32}$") {
+        throw "An exclusive deployment lease is required before publication."
+    }
+    $inputEntry = Assert-DeploymentInputEntry `
+        -DeploymentInputEntry $DeploymentInputEntry
+    $Source = [string]$inputEntry.source
+    $LocalRelativePath = [string]$inputEntry.local
+    $RemoteRelativePath = [string]$inputEntry.remote
+    $isCommitMarker = [string]::Equals(
+        $RemoteRelativePath,
+        ".well-known/site-release.json",
+        [StringComparison]::Ordinal
+    )
+    if ($isCommitMarker -and -not $CommitMarker) {
+        throw "Per-artifact publication cannot mutate the release commit marker."
+    }
+    if ($CommitMarker -and (-not $isCommitMarker -or $script:regularArtifactsVerifiedForCommit -ne $true)) {
+        throw "The release commit marker requires verified regular publication first."
+    }
 
     $script:activeArtifactLocal = $LocalRelativePath
     $script:activeArtifactRemote = $RemoteRelativePath
     $script:artifactPrimaryFailureStep = $null
     $script:artifactRollbackStatus = "not-started"
     Set-ArtifactOperationState -Step "local-validation"
-    $sourceRoot = if ($Source -eq "source") {
-        Join-Path $RepositoryRoot "tinyrustlm"
-    }
-    elseif ($Source -eq "generated-release") {
-        $script:generatedReleaseRoot
-    }
-    else {
-        throw "Deployment artifact source class is invalid."
-    }
-    if ([string]::IsNullOrWhiteSpace($sourceRoot)) {
-        throw "Deployment artifact source root is unavailable."
-    }
-    $localPath = Join-Path $sourceRoot ($LocalRelativePath.Replace("/", "\"))
-    if (-not (Test-Path -LiteralPath $localPath -PathType Leaf)) {
-        throw "Required deployment artifact is missing: $LocalRelativePath"
-    }
-    $item = Get-Item -LiteralPath $localPath
-    $bytes = [int64]$item.Length
-    $sha256 = Get-FileSha256 -Path $localPath
-    $validated = $script:validatedArtifacts[$LocalRelativePath]
-    if (-not $validated -or
-        [int64]$validated.byteCount -ne $bytes -or
-        [string]$validated.sha256 -ne $sha256) {
-        throw "Deployment artifact changed after release validation: $LocalRelativePath"
-    }
+    $payload = [byte[]]$inputEntry.payload
+    $bytes = [int64]$inputEntry.byte_count
+    $sha256 = [string]$inputEntry.sha256
     $isHostPolicy = $RemoteRelativePath.EndsWith(".htaccess", [StringComparison]::OrdinalIgnoreCase)
     $readbackKind = if ($isHostPolicy) {
         "authenticated-ftps"
@@ -1587,8 +3532,14 @@ function Publish-Artifact {
     $remoteParts = Get-RemoteFilePathParts -RemotePath $RemoteRelativePath
     $directory = $remoteParts.parent
     $leaf = $remoteParts.leaf
-    $stageLeaf = "deploy-{0}-stage.slm" -f $sha256.Substring(0, 12)
-    $backupLeaf = "backup-{0}.slm" -f $sha256.Substring(0, 12)
+    $artifactIdentity = ([string]$inputEntry.sha256).Substring(0, 12)
+    $leaseRouteIdentity = $script:deploymentLeaseId.Substring(0, 12)
+    $leaseRouteRemainder = $script:deploymentLeaseId.Substring(12)
+    $stageLeaf = "deploy-{0}-stage-{1}-{2}.slm" -f `
+        $leaseRouteIdentity,
+        $leaseRouteRemainder,
+        $artifactIdentity
+    $backupLeaf = "backup-{0}.slm" -f $leaseRouteIdentity
     $stagePath = if ($directory) { "$directory/$stageLeaf" } else { $stageLeaf }
     $backupPath = if ($directory) { "$directory/$backupLeaf" } else { $backupLeaf }
 
@@ -1600,17 +3551,20 @@ function Publish-Artifact {
             Set-ArtifactOperationState -Step "public-host-policy"
             $script:publicHostPolicyEvidence = Test-PublicHostPolicy
         }
-        Set-ArtifactOperationState -Step "current-temporary-cleanup"
-        foreach ($obsoleteTemporaryPath in @($stagePath, $backupPath)) {
-            Remove-RemoteFile -RemotePath $obsoleteTemporaryPath
-            if ((Get-RemoteSize -RemotePath $obsoleteTemporaryPath) -ge 0) {
-                throw "Current artifact retains an obsolete deployment temporary object."
-            }
+        Set-ArtifactOperationState -Step "current-temporary-admission"
+        $script:deploymentLeaseReleasable = $false
+        if ((Get-RemoteSize -RemotePath $stagePath) -ge 0 -or
+            (Get-RemoteSize -RemotePath $backupPath) -ge 0) {
+            throw "Operation-owned deployment temporary state already exists."
         }
+        $script:deploymentLeaseReleasable = $true
         Write-Host "verified existing $RemoteRelativePath"
+        Assert-DeploymentInputEntry `
+            -DeploymentInputEntry $DeploymentInputEntry | Out-Null
         Set-ArtifactOperationState -Step "complete"
         return [pscustomobject]@{
             source = $Source
+            custody = "canonical-deployment-input"
             local_relative_path = $LocalRelativePath
             relative_path = $RemoteRelativePath
             bytes = $bytes
@@ -1623,23 +3577,22 @@ function Publish-Artifact {
         }
     }
 
+    $script:deploymentLeaseReleasable = $false
+    Set-ArtifactOperationState -Step "temporary-admission"
+    if ((Get-RemoteSize -RemotePath $stagePath) -ge 0 -or
+        (Get-RemoteSize -RemotePath $backupPath) -ge 0) {
+        throw "Operation-owned deployment temporary state already exists."
+    }
     Stage-VerifiedArtifact `
-        -LocalPath $localPath `
+        -Payload $payload `
         -StagePath $stagePath `
         -ExpectedBytes $bytes `
         -ExpectedSha256 $sha256
 
     Set-ArtifactOperationState -Step "predecessor-state-read"
     $targetExisted = (Get-RemoteSize -RemotePath $RemoteRelativePath) -ge 0
-    $rollbackAvailable = (Get-RemoteSize -RemotePath $backupPath) -ge 0
+    $rollbackAvailable = $false
     if ($targetExisted) {
-        if ($rollbackAvailable) {
-            Set-ArtifactOperationState -Step "predecessor-backup-cleanup"
-            Remove-RemoteFile -RemotePath $backupPath
-            if ((Get-RemoteSize -RemotePath $backupPath) -ge 0) {
-                throw "Stale deployment backup could not be removed before promotion."
-            }
-        }
         Set-ArtifactOperationState -Step "predecessor-backup"
         Rename-RemoteFile -RemotePath $RemoteRelativePath -NewLeafName $backupLeaf
         $rollbackAvailable = $true
@@ -1681,6 +3634,13 @@ function Publish-Artifact {
             else {
                 $script:artifactRollbackStatus = "target-absent"
             }
+            Set-ArtifactOperationState -Step "rollback-temporary-cleanup"
+            Remove-RemoteFile -RemotePath $stagePath
+            if ((Get-RemoteSize -RemotePath $stagePath) -ge 0 -or
+                (Get-RemoteSize -RemotePath $backupPath) -ge 0) {
+                throw "Rollback temporary cleanup could not be verified."
+            }
+            $script:deploymentLeaseReleasable = $true
         }
         catch {
             $script:artifactRollbackStatus = "failed"
@@ -1691,10 +3651,14 @@ function Publish-Artifact {
         throw $promotionFailure
     }
 
+    Assert-DeploymentInputEntry `
+        -DeploymentInputEntry $DeploymentInputEntry | Out-Null
+    $script:deploymentLeaseReleasable = $true
     Write-Host "published $RemoteRelativePath"
     Set-ArtifactOperationState -Step "complete"
     return [pscustomobject]@{
         source = $Source
+        custody = "canonical-deployment-input"
         local_relative_path = $LocalRelativePath
         relative_path = $RemoteRelativePath
         bytes = $bytes
@@ -1707,7 +3671,206 @@ function Publish-Artifact {
     }
 }
 
-# Resolves one new external JSON receipt path and rejects reparse-point parents.
+# Loads the two exact predecessor-oracle files without retaining a source-ledger copy.
+function Get-PublicPredecessorExpectation {
+    param([object]$Oracle, [string]$OracleRoot)
+
+    if (-not $Oracle -or
+        [string]$Oracle.status -ne "pass" -or
+        [string]$Oracle.predecessorReleaseId -ne "tinyrustlm.com@0.4.1" -or
+        [string]$Oracle.predecessorVersion -ne "0.4.1" -or
+        [string]$Oracle.pendingReleaseId -ne "tinyrustlm.com@0.5.0" -or
+        [string]$Oracle.pendingVersion -ne "0.5.0" -or
+        @($Oracle.files).Count -ne 2) {
+        throw "Public predecessor oracle output is invalid."
+    }
+    $root = [IO.Path]::GetFullPath($OracleRoot)
+    $publicRoot = [IO.Path]::GetFullPath((Join-Path $root "public"))
+    $expected = @{}
+    foreach ($entry in @($Oracle.files)) {
+        $relativePath = Assert-RemoteProtocolPath `
+            -RemotePath ([string]$entry.relativePath)
+        if ($relativePath -ne ".well-known/site-release.json" -and
+            $relativePath -ne ".well-known/site-release-history.json") {
+            throw "Public predecessor oracle path closure is invalid."
+        }
+        $path = [IO.Path]::GetFullPath(
+            (Join-Path $publicRoot ($relativePath.Replace("/", "\")))
+        )
+        $publicPrefix = $publicRoot.TrimEnd("\", "/") +
+            [IO.Path]::DirectorySeparatorChar
+        if (-not $path.StartsWith(
+            $publicPrefix,
+            [StringComparison]::OrdinalIgnoreCase
+        ) -or -not (Test-Path -LiteralPath $path -PathType Leaf)) {
+            throw "Public predecessor oracle file escaped custody."
+        }
+        Assert-NoReparsePointAncestry `
+            -Path $path `
+            -FailureMessage "Public predecessor oracle traverses a reparse point."
+        $item = Get-Item -LiteralPath $path -Force
+        if ([int64]$item.Length -le 0 -or
+            [int64]$item.Length -gt (1024 * 1024) -or
+            [int64]$item.Length -ne [int64]$entry.byteCount -or
+            [string]$entry.sha256 -notmatch "^[0-9a-f]{64}$" -or
+            (Get-FileSha256 -Path $path) -ne [string]$entry.sha256) {
+            throw "Public predecessor oracle file identity is invalid."
+        }
+        if ($expected.ContainsKey($relativePath)) {
+            throw "Public predecessor oracle path is duplicated."
+        }
+        $expected[$relativePath] = [pscustomobject]@{
+            relative_path = $relativePath
+            byte_count = [int64]$item.Length
+            sha256 = [string]$entry.sha256
+            bytes = [IO.File]::ReadAllBytes($path)
+            local_path = $path
+        }
+    }
+    if ($expected.Count -ne 2 -or
+        -not $expected.ContainsKey(".well-known/site-release.json") -or
+        -not $expected.ContainsKey(".well-known/site-release-history.json")) {
+        throw "Public predecessor oracle closure is incomplete."
+    }
+    return [pscustomobject]@{
+        predecessor_release_id = [string]$Oracle.predecessorReleaseId
+        predecessor_version = [string]$Oracle.predecessorVersion
+        predecessor_publication_id = [string]$Oracle.predecessorPublicationId
+        pending_release_id = [string]$Oracle.pendingReleaseId
+        pending_version = [string]$Oracle.pendingVersion
+        predecessor_ledger_sha256 = [string]$Oracle.predecessorLedgerSha256
+        current = $expected[".well-known/site-release.json"]
+        history = $expected[".well-known/site-release-history.json"]
+    }
+}
+
+# Delegates predecessor cleanup to the custodied exact-inventory remover.
+function Remove-PublicPredecessorOracle {
+    param(
+        [object]$Expected,
+        [string]$OracleRoot,
+        [string]$RepositoryRoot,
+        [string]$ToolPath,
+        [object]$SourceCustody
+    )
+
+    if (-not (Test-Path -LiteralPath $OracleRoot)) {
+        if ($Expected) {
+            throw "Public predecessor oracle disappeared before verified cleanup."
+        }
+        return [pscustomobject]@{ cleanup_verified = $true; status = "already-absent" }
+    }
+    $root = [IO.Path]::GetFullPath($OracleRoot)
+    $repository = [IO.Path]::GetFullPath($RepositoryRoot).TrimEnd("\", "/")
+    $repositoryPrefix = $repository + [IO.Path]::DirectorySeparatorChar
+    if ($root.StartsWith($repositoryPrefix, [StringComparison]::OrdinalIgnoreCase) -or
+        [IO.Path]::GetFileName($root) -notmatch
+            "^tinyrustlm-web-predecessor-[0-9a-f]{32}$" -or
+        -not $Expected -or
+        -not $Expected.current -or
+        -not $Expected.history -or
+        [string]::IsNullOrWhiteSpace($ToolPath) -or
+        -not $SourceCustody) {
+        throw "Public predecessor oracle cleanup target is unsafe."
+    }
+    $output = @(Invoke-CustodiedNodeTool `
+        -RepositoryRoot $RepositoryRoot `
+        -Custody $SourceCustody `
+        -ToolPath $ToolPath `
+        -Arguments @(
+            "remove-predecessor",
+            $RepositoryRoot,
+            $root,
+            [string]$Expected.current.byte_count,
+            [string]$Expected.current.sha256,
+            [string]$Expected.history.byte_count,
+            [string]$Expected.history.sha256,
+            "--json"
+        ))
+    if ($output.Count -ne 1) {
+        throw "Public predecessor oracle cleanup failed."
+    }
+    $result = $output[0] | ConvertFrom-Json
+    if ([string]$result.status -ne "pass" -or
+        $result.cleanupVerified -ne $true -or
+        [int]$result.fileCount -ne 2 -or
+        (Test-Path -LiteralPath $root)) {
+        throw "Public predecessor oracle cleanup could not be verified."
+    }
+    return [pscustomobject]@{
+        cleanup_verified = $true
+        status = "removed"
+        file_count = 2
+    }
+}
+
+# Deletes one operation-owned evidence file only after deletion-time identity checks.
+function Remove-VerifiedDeploymentEvidenceFile {
+    param(
+        [string]$Path,
+        [string]$OwnedDirectory,
+        [int64]$ExpectedByteCount,
+        [string]$ExpectedSha256
+    )
+
+    if ([string]::IsNullOrWhiteSpace($Path) -or
+        [string]::IsNullOrWhiteSpace($OwnedDirectory) -or
+        -not [IO.Path]::IsPathRooted($Path) -or
+        -not [IO.Path]::IsPathRooted($OwnedDirectory) -or
+        $ExpectedByteCount -le 0 -or
+        $ExpectedByteCount -gt (4 * 1024 * 1024) -or
+        $ExpectedSha256 -notmatch "^[0-9a-f]{64}$") {
+        throw "Deployment evidence cleanup identity is invalid."
+    }
+    $target = [IO.Path]::GetFullPath($Path)
+    $directory = [IO.Path]::GetFullPath($OwnedDirectory).TrimEnd("\", "/")
+    $directoryPrefix = $directory + [IO.Path]::DirectorySeparatorChar
+    if (-not $target.StartsWith(
+            $directoryPrefix,
+            [StringComparison]::OrdinalIgnoreCase
+        ) -or
+        -not [string]::Equals(
+            (Split-Path -Parent $target),
+            $directory,
+            [StringComparison]::OrdinalIgnoreCase
+        ) -or
+        -not (Test-Path -LiteralPath $target -PathType Leaf)) {
+        throw "Deployment evidence cleanup escaped its owned directory."
+    }
+    foreach ($candidate in @($directory, $target)) {
+        Assert-NoReparsePointAncestry `
+            -Path $candidate `
+            -FailureMessage "Deployment evidence cleanup target is unsafe."
+    }
+    $item = Get-Item -LiteralPath $target -Force
+    $creationTime = $item.CreationTimeUtc.Ticks
+    if (($item.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0 -or
+        [int64]$item.Length -ne $ExpectedByteCount -or
+        (Get-FileSha256 -Path $target) -ne $ExpectedSha256) {
+        throw "Deployment evidence changed before cleanup."
+    }
+    Assert-NoReparsePointAncestry `
+        -Path $target `
+        -FailureMessage "Deployment evidence cleanup target is unsafe."
+    $deletionItem = Get-Item -LiteralPath $target -Force
+    if (($deletionItem.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0 -or
+        [int64]$deletionItem.Length -ne $ExpectedByteCount -or
+        $deletionItem.CreationTimeUtc.Ticks -ne $creationTime -or
+        (Get-FileSha256 -Path $target) -ne $ExpectedSha256) {
+        throw "Deployment evidence identity changed at deletion time."
+    }
+    [IO.File]::Delete($target)
+    if (Test-Path -LiteralPath $target) {
+        throw "Deployment evidence cleanup could not be verified."
+    }
+    return [pscustomobject]@{
+        cleanup_verified = $true
+        byte_count = $ExpectedByteCount
+        sha256 = $ExpectedSha256
+    }
+}
+
+# Resolves one new canonical artifact receipt path and rejects reparse-point parents.
 function Resolve-NewDeploymentReportPath {
     param([string]$Path, [string]$SourceRoot)
 
@@ -1719,19 +3882,13 @@ function Resolve-NewDeploymentReportPath {
         -not [IO.Path]::IsPathRooted($SourceRoot)) {
         throw "Deployment source root must be absolute."
     }
-    $target = [IO.Path]::GetFullPath($Path)
+    $target = Assert-CanonicalDeploymentArtifactPath -Path $Path -SourceRoot $SourceRoot
     if (-not [string]::Equals(
         [IO.Path]::GetExtension($target),
         ".json",
         [StringComparison]::OrdinalIgnoreCase
     )) {
         throw "Deployment report path must name a JSON file."
-    }
-    $source = [IO.Path]::GetFullPath($SourceRoot).TrimEnd("\", "/")
-    $sourcePrefix = $source + [IO.Path]::DirectorySeparatorChar
-    if ([string]::Equals($target, $source, [StringComparison]::OrdinalIgnoreCase) -or
-        $target.StartsWith($sourcePrefix, [StringComparison]::OrdinalIgnoreCase)) {
-        throw "Deployment reports must remain outside the source worktree."
     }
     if (Test-Path -LiteralPath $target) {
         throw "Deployment report path must be new and immutable."
@@ -1778,11 +3935,17 @@ function Write-AtomicJson {
     $target = [IO.Path]::GetFullPath($Path)
     $directory = Split-Path -Parent $target
     [IO.Directory]::CreateDirectory($directory) | Out-Null
+    Assert-NoReparsePointAncestry `
+        -Path $directory `
+        -FailureMessage "Immutable deployment report directory is unsafe."
     if (Test-Path -LiteralPath $target) {
         throw "Immutable deployment report path already exists."
     }
     $temporary = Join-Path $directory (".{0}.{1}.tmp" -f ([IO.Path]::GetFileName($target)), [Guid]::NewGuid().ToString("N"))
     $utf8 = [Text.UTF8Encoding]::new($false, $true)
+    $temporaryCreationTicks = $null
+    $temporaryExpectedBytes = $null
+    $temporaryExpectedSha256 = $null
     try {
         $json = ($Value | ConvertTo-Json -Depth 8) + [Environment]::NewLine
         $jsonBytes = $utf8.GetBytes($json)
@@ -1793,7 +3956,9 @@ function Write-AtomicJson {
             $temporary,
             [IO.FileMode]::CreateNew,
             [IO.FileAccess]::Write,
-            [IO.FileShare]::None
+            [IO.FileShare]::None,
+            4096,
+            [IO.FileOptions]::WriteThrough
         )
         try {
             $stream.Write($jsonBytes, 0, $jsonBytes.Length)
@@ -1805,19 +3970,45 @@ function Write-AtomicJson {
 
         $temporaryText = [IO.File]::ReadAllText($temporary, $utf8)
         $temporaryText | ConvertFrom-Json | Out-Null
-        $expectedBytes = [int64](Get-Item -LiteralPath $temporary).Length
-        $expectedSha256 = Get-FileSha256 -Path $temporary
+        Assert-NoReparsePointAncestry `
+            -Path $temporary `
+            -FailureMessage "Immutable deployment report temporary file is unsafe."
+        $temporaryItem = Get-Item -LiteralPath $temporary -Force
+        if (($temporaryItem.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0) {
+            throw "Immutable deployment report temporary file is unsafe."
+        }
+        $temporaryCreationTicks = $temporaryItem.CreationTimeUtc.Ticks
+        $temporaryExpectedBytes = [int64]$temporaryItem.Length
+        $temporaryExpectedSha256 = Get-FileSha256 -Path $temporary
         if (Test-Path -LiteralPath $target) {
             throw "Immutable deployment report path was claimed concurrently."
         }
+        Assert-NoReparsePointAncestry `
+            -Path $temporary `
+            -FailureMessage "Immutable deployment report temporary file is unsafe."
+        $moveItem = Get-Item -LiteralPath $temporary -Force
+        if (($moveItem.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0 -or
+            $moveItem.CreationTimeUtc.Ticks -ne $temporaryCreationTicks -or
+            [int64]$moveItem.Length -ne $temporaryExpectedBytes -or
+            (Get-FileSha256 -Path $temporary) -ne $temporaryExpectedSha256) {
+            throw "Immutable deployment report temporary identity changed."
+        }
         [IO.File]::Move($temporary, $target)
 
-        $committedBytes = [int64](Get-Item -LiteralPath $target).Length
+        Assert-NoReparsePointAncestry `
+            -Path $target `
+            -FailureMessage "Committed deployment report is unsafe."
+        $committedItem = Get-Item -LiteralPath $target -Force
+        if (($committedItem.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0 -or
+            $committedItem.CreationTimeUtc.Ticks -ne $temporaryCreationTicks) {
+            throw "Committed deployment report identity changed."
+        }
+        $committedBytes = [int64]$committedItem.Length
         $committedSha256 = Get-FileSha256 -Path $target
         $committedText = [IO.File]::ReadAllText($target, $utf8)
         $committedText | ConvertFrom-Json | Out-Null
-        if ($committedBytes -ne $expectedBytes -or
-            $committedSha256 -ne $expectedSha256) {
+        if ($committedBytes -ne $temporaryExpectedBytes -or
+            $committedSha256 -ne $temporaryExpectedSha256) {
             throw "Committed deployment report failed reopen validation."
         }
         return [pscustomobject]@{
@@ -1834,7 +4025,25 @@ function Write-AtomicJson {
     finally {
         try {
             if (Test-Path -LiteralPath $temporary) {
-                Remove-Item -LiteralPath $temporary -Force
+                if ($null -eq $temporaryCreationTicks -or
+                    $null -eq $temporaryExpectedBytes -or
+                    $null -eq $temporaryExpectedSha256) {
+                    throw "Immutable deployment report temporary identity is unavailable."
+                }
+                Assert-NoReparsePointAncestry `
+                    -Path $temporary `
+                    -FailureMessage "Immutable deployment report temporary cleanup is unsafe."
+                $cleanupItem = Get-Item -LiteralPath $temporary -Force
+                if (($cleanupItem.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0 -or
+                    $cleanupItem.CreationTimeUtc.Ticks -ne $temporaryCreationTicks -or
+                    [int64]$cleanupItem.Length -ne $temporaryExpectedBytes -or
+                    (Get-FileSha256 -Path $temporary) -ne $temporaryExpectedSha256) {
+                    throw "Immutable deployment report temporary cleanup identity changed."
+                }
+                [IO.File]::Delete($temporary)
+                if (Test-Path -LiteralPath $temporary) {
+                    throw "Immutable deployment report temporary cleanup is incomplete."
+                }
             }
         }
         catch {
@@ -1843,8 +4052,35 @@ function Write-AtomicJson {
     }
 }
 
-$RepositoryRoot = [IO.Path]::GetFullPath($RepositoryRoot)
+$script:powershellHost = Resolve-PinnedDeploymentHost
+$script:nodeExecutable = Resolve-PinnedDeploymentExecutable `
+    -CommandName "node.exe" `
+    -ExpectedLeafName "node.exe"
+$script:curlExecutable = Resolve-PinnedDeploymentExecutable `
+    -CommandName "curl.exe" `
+    -ExpectedLeafName "curl.exe"
+$script:gitExecutable = Resolve-PinnedDeploymentExecutable `
+    -CommandName "git.exe" `
+    -ExpectedLeafName "git.exe"
+$deploymentToolVersions = Assert-PinnedDeploymentToolVersions `
+    -PowerShellHost $script:powershellHost `
+    -NodeExecutable $script:nodeExecutable `
+    -CurlExecutable $script:curlExecutable `
+    -GitExecutable $script:gitExecutable
+$RepositoryRoot = Resolve-CanonicalDeploymentRepositoryRoot `
+    -ScriptRoot $PSScriptRoot `
+    -RequestedRepositoryRoot $RepositoryRoot
 $siteRoot = Join-Path $RepositoryRoot "tinyrustlm"
+if (-not (Test-Path -LiteralPath $siteRoot -PathType Container)) {
+    throw "TinyRustLM site root was not found."
+}
+$sourceAuthorityVerifier = [IO.Path]::GetFullPath(
+    (Join-Path $PSScriptRoot "verify-single-source-authority.js")
+)
+$validatorPath = Join-Path $siteRoot "tools\web-deployment-manifest.js"
+$releaseMaterializerPath = Join-Path $siteRoot "tools\site-release-contract.js"
+$secretScanTool = Join-Path $siteRoot "tools\web-release-secret-scan.js"
+$releaseLedgerPath = Join-Path $siteRoot "release\site-release-ledger.v1.json"
 $expectedManifestPath = Join-Path $siteRoot "deploy\web-deployment-manifest.v2.json"
 $ManifestPath = [IO.Path]::GetFullPath($ManifestPath)
 if (-not [string]::Equals(
@@ -1854,8 +4090,40 @@ if (-not [string]::Equals(
 )) {
     throw "Deployment requires the source-controlled TinyRustLM web manifest."
 }
-if (-not (Test-Path -LiteralPath $siteRoot -PathType Container)) {
-    throw "TinyRustLM site root was not found."
+# Seal the verifier itself and its CommonJS closure before trusting its result.
+$script:deploymentSourceCustody = New-DeploymentSourceCustody `
+    -RepositoryRoot $RepositoryRoot `
+    -PublisherPath $PSCommandPath `
+    -NodeToolPaths @(
+        $sourceAuthorityVerifier,
+        $validatorPath,
+        $releaseMaterializerPath,
+        $secretScanTool
+    )
+Assert-DeploymentSourceCustody `
+    -RepositoryRoot $RepositoryRoot `
+    -Custody $script:deploymentSourceCustody | Out-Null
+$sourceAuthorityOutput = @(Invoke-CustodiedNodeTool `
+    -RepositoryRoot $RepositoryRoot `
+    -Custody $script:deploymentSourceCustody `
+    -ToolPath $sourceAuthorityVerifier `
+    -Arguments @(
+        "--require-clean",
+        "--require-remote-exact"
+    ))
+if ($sourceAuthorityOutput.Count -ne 1) {
+    throw "TinyRustLM deployment requires one clean remote-exact canonical source root."
+}
+try {
+    $sourceAuthorityResult = $sourceAuthorityOutput[0] | ConvertFrom-Json
+}
+catch {
+    throw "TinyRustLM source-authority verifier returned malformed output."
+}
+if ([string]$sourceAuthorityResult.verdict -ne "pass" -or
+    $sourceAuthorityResult.canonicalLayoutAvailable -ne $true -or
+    $sourceAuthorityResult.localScanPerformed -ne $true) {
+    throw "TinyRustLM deployment requires one clean remote-exact canonical source root."
 }
 try {
     $deploymentManifest = Get-Content -Raw -LiteralPath $ManifestPath | ConvertFrom-Json
@@ -1864,28 +4132,45 @@ catch {
     throw "Unable to read the validated TinyRustLM deployment manifest."
 }
 $script:publicOrigin = ([string]$deploymentManifest.publicOrigin).TrimEnd("/")
-$validatorPath = Join-Path $siteRoot "tools\web-deployment-manifest.js"
-$releaseMaterializerPath = Join-Path $siteRoot "tools\site-release-contract.js"
-$releaseLedgerPath = Join-Path $siteRoot "release\site-release-ledger.v1.json"
 
 if ($ValidateCredentialProfileOnly) {
-    $validatedCredentialProfile = Get-WorkspaceDeploymentCredentialProfile `
+    $validatedDeploymentTarget = Get-WorkspaceDeploymentTargetBinding `
         -MemoryPath $WorkspaceMemory `
         -SourceRoot $RepositoryRoot
+    $validatedCredentialProfile = Get-WorkspaceDeploymentCredentialProfile `
+        -MemoryPath $WorkspaceMemory `
+        -SourceRoot $RepositoryRoot `
+        -TargetBinding $validatedDeploymentTarget
+    Assert-DeploymentCredentialTarget `
+        -CredentialProfile $validatedCredentialProfile `
+        -TargetBinding $validatedDeploymentTarget
     $validatedCredentialProfile.password = $null
     $validatedCredentialProfile = $null
+    $validatedDeploymentTarget = $null
     Write-Host "TinyRustLM external deployment credential profile validation passed."
     return
 }
 if ($ValidateOnly) {
-    $validationReleaseRoot = Join-Path ([IO.Path]::GetTempPath()) (
-        "tinyrustlm-web-validation-release-{0}" -f [Guid]::NewGuid().ToString("N")
+    $validationOperationId = [Guid]::NewGuid().ToString("N")
+    $validationParent = Assert-CanonicalDeploymentArtifactPath `
+        -Path (Join-Path $RepositoryRoot "artifacts\web-deployments") -SourceRoot $RepositoryRoot
+    [IO.Directory]::CreateDirectory($validationParent) | Out-Null
+    $validationOperationRoot = Join-Path $validationParent (
+        "tinyrustlm-web-validation-{0}" -f $validationOperationId
     )
+    $validationMaterialization = $null
     try {
-        $ledgerValidationOutput = @(
-            & node $releaseMaterializerPath validate $releaseLedgerPath
-        )
-        if ($LASTEXITCODE -ne 0 -or $ledgerValidationOutput.Count -ne 1) {
+        $validationMaterialization = New-OwnedValidationMaterialization `
+            -OperationRoot $validationOperationRoot `
+            -SourceRoot $RepositoryRoot `
+            -OperationId $validationOperationId
+        $validationReleaseRoot = [string]$validationMaterialization.release_root
+        $ledgerValidationOutput = @(Invoke-CustodiedNodeTool `
+            -RepositoryRoot $RepositoryRoot `
+            -Custody $script:deploymentSourceCustody `
+            -ToolPath $releaseMaterializerPath `
+            -Arguments @("validate", $releaseLedgerPath))
+        if ($ledgerValidationOutput.Count -ne 1) {
             throw "TinyRustLM release ledger validation failed."
         }
         $ledgerValidation = $ledgerValidationOutput[0] | ConvertFrom-Json
@@ -1893,38 +4178,47 @@ if ($ValidateOnly) {
             throw "TinyRustLM release ledger did not pass."
         }
         if ([string]::IsNullOrEmpty([string]$ledgerValidation.pendingReleaseId)) {
-            $materializationOutput = @(
-                & node $releaseMaterializerPath `
-                    materialize-finalized `
-                    $releaseLedgerPath `
+            $materializationOutput = @(Invoke-CustodiedNodeTool `
+                -RepositoryRoot $RepositoryRoot `
+                -Custody $script:deploymentSourceCustody `
+                -ToolPath $releaseMaterializerPath `
+                -Arguments @(
+                    "materialize-finalized",
+                    $releaseLedgerPath,
                     $validationReleaseRoot
-            )
+                ))
         }
         else {
             $validationPublishedAt = [DateTime]::UtcNow.ToString(
                 "yyyy-MM-ddTHH:mm:ss.fffZ",
                 [Globalization.CultureInfo]::InvariantCulture
             )
-            $materializationOutput = @(
-                & node $releaseMaterializerPath `
-                    materialize `
-                    $releaseLedgerPath `
-                    $validationReleaseRoot `
-                    ("0" * 40) `
+            $materializationOutput = @(Invoke-CustodiedNodeTool `
+                -RepositoryRoot $RepositoryRoot `
+                -Custody $script:deploymentSourceCustody `
+                -ToolPath $releaseMaterializerPath `
+                -Arguments @(
+                    "materialize",
+                    $releaseLedgerPath,
+                    $validationReleaseRoot,
+                    ("0" * 40),
                     $validationPublishedAt
-            )
+                ))
         }
-        if ($LASTEXITCODE -ne 0 -or $materializationOutput.Count -ne 1) {
+        if ($materializationOutput.Count -ne 1) {
             throw "TinyRustLM release metadata materialization failed."
         }
-        $validationOutput = @(
-            & node $validatorPath `
-                $siteRoot `
-                $ManifestPath `
-                $validationReleaseRoot `
-                --json
-        )
-        if ($LASTEXITCODE -ne 0 -or $validationOutput.Count -ne 1) {
+        $validationOutput = @(Invoke-CustodiedNodeTool `
+            -RepositoryRoot $RepositoryRoot `
+            -Custody $script:deploymentSourceCustody `
+            -ToolPath $validatorPath `
+            -Arguments @(
+                $siteRoot,
+                $ManifestPath,
+                $validationReleaseRoot,
+                "--json"
+            ))
+        if ($validationOutput.Count -ne 1) {
             throw "TinyRustLM web deployment closure validation failed."
         }
         $validation = $validationOutput[0] | ConvertFrom-Json
@@ -1934,18 +4228,12 @@ if ($ValidateOnly) {
         Write-Host "TinyRustLM web deployment validation passed for $($validation.fileCount) files."
     }
     finally {
-        $resolvedValidationRoot = [IO.Path]::GetFullPath($validationReleaseRoot)
-        $temporaryRoot = [IO.Path]::GetFullPath([IO.Path]::GetTempPath()).TrimEnd("\", "/")
-        if (-not $resolvedValidationRoot.StartsWith(
-            $temporaryRoot + [IO.Path]::DirectorySeparatorChar,
-            [StringComparison]::OrdinalIgnoreCase
-        ) -or
-            [IO.Path]::GetFileName($resolvedValidationRoot) -notmatch
-                "^tinyrustlm-web-validation-release-[0-9a-f]{32}$") {
-            throw "TinyRustLM validation release cleanup target is unsafe."
-        }
-        if (Test-Path -LiteralPath $resolvedValidationRoot) {
-            Remove-Item -LiteralPath $resolvedValidationRoot -Recurse -Force
+        if ($validationMaterialization) {
+            $validationCleanup = Remove-OwnedValidationMaterialization `
+                -Materialization $validationMaterialization
+            if ($validationCleanup.cleanup_verified -ne $true) {
+                throw "TinyRustLM validation materialization cleanup did not pass."
+            }
         }
     }
     return
@@ -1969,14 +4257,30 @@ $reportDirectory = Split-Path -Parent $ReportPath
 $script:generatedReleaseRoot = Join-Path $reportDirectory (
     "tinyrustlm-web-release-assets-{0}" -f $attemptId
 )
+$predecessorOperationId = (Get-Utf8Sha256 -Value (
+    "tinyrustlm-web-predecessor|{0}" -f $attemptId
+)).Substring(0, 32)
+$publicPredecessorRoot = Join-Path $reportDirectory (
+    "tinyrustlm-web-predecessor-{0}" -f $predecessorOperationId
+)
 $secretScanReportPath = Join-Path $reportDirectory ("tinyrustlm-web-secret-scan-{0}.json" -f $attemptId)
 $secretScanEvidenceRoot = Join-Path $reportDirectory ("tinyrustlm-web-secret-scan-evidence-{0}" -f $attemptId)
 $finalizedLedgerCandidatePath = Join-Path $reportDirectory (
     "tinyrustlm-site-release-ledger-finalized-{0}.json" -f $attemptId
 )
+$terminalDecisionPath = Join-Path $reportDirectory (
+    "tinyrustlm-web-deployment-terminal-decision-{0}.json" -f $attemptId
+)
+$deploymentLeaseDirectory = Assert-CanonicalDeploymentArtifactPath `
+    -Path (Join-Path $RepositoryRoot "artifacts\web-deployments") -SourceRoot $RepositoryRoot
+[IO.Directory]::CreateDirectory($deploymentLeaseDirectory) | Out-Null
+$deploymentLeasePath = Join-Path $deploymentLeaseDirectory "tinyrustlm.com.deployment-lease.v1.json"
+$script:regularArtifactsVerifiedForCommit = $false
 if ((Test-Path -LiteralPath $secretScanReportPath) -or
     (Test-Path -LiteralPath $secretScanEvidenceRoot) -or
     (Test-Path -LiteralPath $script:generatedReleaseRoot) -or
+    (Test-Path -LiteralPath $publicPredecessorRoot) -or
+    (Test-Path -LiteralPath $terminalDecisionPath) -or
     (Test-Path -LiteralPath $finalizedLedgerCandidatePath)) {
     throw "Unique deployment evidence output path already exists."
 }
@@ -2004,6 +4308,27 @@ $releasePublicationId = $null
 $releaseLedgerSha256 = $null
 $finalizedLedgerCandidateSha256 = $null
 $finalizedLedgerCandidateByteCount = $null
+$deploymentTarget = $null
+$deploymentTargetEvidence = $null
+$deploymentInput = $null
+$deploymentInputVerification = $null
+$inputTerminal = $null
+$script:deploymentInputEntries = @{}
+$publicationPlan = $null
+$deploymentLease = $null
+$deploymentLeaseCleanup = $null
+$script:deploymentLeaseId = $null
+$script:deploymentLeaseReleasable = $false
+$script:releaseWideTransportCapabilityAdmitted = $false
+$transportCapabilityEvidence = Get-DeploymentTransportCapability
+$releaseCommitMarkerPublished = $false
+$postCommitMaintenanceFailures = @()
+$sourceCustodyEvidence = $null
+$terminalSourceCustodyEvidence = $null
+$publicPredecessorOracle = $null
+$publicPredecessorExpected = $null
+$publicPredecessorEvidence = $null
+$publicPredecessorCleanup = $null
 $credentialProfile = $null
 $script:httpClient = $null
 $script:httpHandler = $null
@@ -2019,21 +4344,14 @@ $script:publicHostPolicyEvidence = $null
 $legacyModelDirectoryPreflight = $null
 $retiredModelDirectory = $null
 $reportReceipt = $null
+$reportWriteFailureIdentity = $null
+$terminalDecisionReceipt = $null
 try {
-    $repositoryStatus = @(
-        & git -C $RepositoryRoot status --porcelain=v1 --untracked-files=all 2>$null
-    )
-    if ($LASTEXITCODE -ne 0) {
-        throw "Unable to inspect the TinyRustLM Git worktree."
-    }
-    $sourceTreeClean = $repositoryStatus.Count -eq 0
-    if (-not $sourceTreeClean) {
-        throw "TinyRustLM deployment requires a clean committed Git worktree."
-    }
-    $currentSourceCommit = (& git -C $RepositoryRoot rev-parse HEAD 2>$null).Trim()
-    if ($LASTEXITCODE -ne 0 -or $currentSourceCommit -notmatch "^[0-9a-f]{40}$") {
-        throw "Unable to bind the deployment to a Git commit."
-    }
+    $sourceCustodyEvidence = Assert-DeploymentSourceCustody `
+        -RepositoryRoot $RepositoryRoot `
+        -Custody $script:deploymentSourceCustody
+    $sourceTreeClean = $sourceCustodyEvidence.source_tree_clean -eq $true
+    $currentSourceCommit = [string]$sourceCustodyEvidence.source_commit
     $trackedPaths = @(
         "tinyrustlm/deploy/web-deployment-manifest.v2.json"
         "tinyrustlm/release/site-release-ledger.v1.json"
@@ -2042,8 +4360,18 @@ try {
             ForEach-Object { "tinyrustlm/{0}" -f [string]$_.local })
     ) | Sort-Object -Unique
     foreach ($trackedPath in $trackedPaths) {
-        & git -C $RepositoryRoot ls-files --error-unmatch -- $trackedPath 2>$null | Out-Null
-        if ($LASTEXITCODE -ne 0) {
+        $trackedResult = Invoke-PinnedDeploymentProcess `
+            -Executable $script:gitExecutable `
+            -Arguments @(
+                "-C",
+                $RepositoryRoot,
+                "ls-files",
+                "--error-unmatch",
+                "--",
+                $trackedPath
+            ) `
+            -WorkingDirectory $RepositoryRoot
+        if ($trackedResult.exit_code -ne 0) {
             throw "Deployment artifact is not tracked by Git: $trackedPath"
         }
     }
@@ -2053,15 +4381,18 @@ try {
         "yyyy-MM-ddTHH:mm:ss.fffZ",
         [Globalization.CultureInfo]::InvariantCulture
     )
-    $materializationOutput = @(
-        & node $releaseMaterializerPath `
-            materialize `
-            $releaseLedgerPath `
-            $script:generatedReleaseRoot `
-            $currentSourceCommit `
+    $materializationOutput = @(Invoke-CustodiedNodeTool `
+        -RepositoryRoot $RepositoryRoot `
+        -Custody $script:deploymentSourceCustody `
+        -ToolPath $releaseMaterializerPath `
+        -Arguments @(
+            "materialize",
+            $releaseLedgerPath,
+            $script:generatedReleaseRoot,
+            $currentSourceCommit,
             $releasePublishedAt
-    )
-    if ($LASTEXITCODE -ne 0 -or $materializationOutput.Count -ne 1) {
+        ))
+    if ($materializationOutput.Count -ne 1) {
         throw "TinyRustLM release metadata materialization failed."
     }
     $materialization = $materializationOutput[0] | ConvertFrom-Json
@@ -2070,23 +4401,22 @@ try {
     }
 
     $operationPhase = "deployment-closure-validation"
-    $validationOutput = @(
-        & node $validatorPath `
-            $siteRoot `
-            $ManifestPath `
-            $script:generatedReleaseRoot `
-            --json
-    )
-    if ($LASTEXITCODE -ne 0 -or $validationOutput.Count -ne 1) {
+    $validationOutput = @(Invoke-CustodiedNodeTool `
+        -RepositoryRoot $RepositoryRoot `
+        -Custody $script:deploymentSourceCustody `
+        -ToolPath $validatorPath `
+        -Arguments @(
+            $siteRoot,
+            $ManifestPath,
+            $script:generatedReleaseRoot,
+            "--json"
+        ))
+    if ($validationOutput.Count -ne 1) {
         throw "TinyRustLM web deployment closure validation failed."
     }
     $validation = $validationOutput[0] | ConvertFrom-Json
     if ([string]$validation.status -ne "pass") {
         throw "TinyRustLM web deployment closure did not pass."
-    }
-    $script:validatedArtifacts = @{}
-    foreach ($validatedFile in @($validation.files)) {
-        $script:validatedArtifacts[[string]$validatedFile.local] = $validatedFile
     }
     $currentReleasePath = Join-Path `
         $script:generatedReleaseRoot `
@@ -2106,17 +4436,19 @@ try {
     }
 
     $operationPhase = "preflight-secret-scan"
-    $secretScanTool = Join-Path $siteRoot "tools\web-release-secret-scan.js"
-    $secretScanOutput = @(
-        & node $secretScanTool `
-            $siteRoot `
-            $ManifestPath `
-            $secretScanReportPath `
-            $secretScanEvidenceRoot `
-            $currentSourceCommit `
+    $secretScanOutput = @(Invoke-CustodiedNodeTool `
+        -RepositoryRoot $RepositoryRoot `
+        -Custody $script:deploymentSourceCustody `
+        -ToolPath $secretScanTool `
+        -Arguments @(
+            $siteRoot,
+            $ManifestPath,
+            $secretScanReportPath,
+            $secretScanEvidenceRoot,
+            $currentSourceCommit,
             $script:generatedReleaseRoot
-    )
-    if ($LASTEXITCODE -ne 0 -or $secretScanOutput.Count -ne 1) {
+        ))
+    if ($secretScanOutput.Count -ne 1) {
         throw "TinyRustLM web release secret scan failed."
     }
     $secretScan = $secretScanOutput[0] | ConvertFrom-Json
@@ -2131,10 +4463,209 @@ try {
         throw "Deployment manifest changed after release validation."
     }
 
+    $operationPhase = "deployment-input"
+    $inputOutput = @(Invoke-CustodiedNodeTool `
+        -RepositoryRoot $RepositoryRoot `
+        -Custody $script:deploymentSourceCustody `
+        -ToolPath $validatorPath `
+        -Arguments @(
+            "bind-input",
+            $siteRoot,
+            $ManifestPath,
+            $script:generatedReleaseRoot,
+            "--json"
+        ))
+    if ($inputOutput.Count -ne 1) {
+        throw "Canonical deployment input binding failed."
+    }
+    $deploymentInput = $inputOutput[0] | ConvertFrom-Json
+    if ([string]$deploymentInput.status -ne "pass" -or
+        [string]$deploymentInput.schema -ne "tinyrustlm.web_deployment_input.v1" -or
+        [string]$deploymentInput.manifestSha256 -ne [string]$validation.manifestSha256 -or
+        [string]$deploymentInput.releaseId -ne $releaseId -or
+        [string]$deploymentInput.publicationId -ne $releasePublicationId -or
+        [string]$deploymentInput.inputId -notmatch "^[0-9a-f]{64}$" -or
+        [int]$deploymentInput.fileCount -ne @($deploymentManifest.publish).Count -or
+        @($deploymentInput.files).Count -ne [int]$deploymentInput.fileCount) {
+        throw "Canonical deployment input identity is invalid."
+    }
+    foreach ($inputFile in @($deploymentInput.files)) {
+        $remote = [string]$inputFile.remote
+        if ($script:deploymentInputEntries.ContainsKey($remote)) {
+            throw "Canonical deployment input contains a duplicate publication path."
+        }
+        $script:deploymentInputEntries[$remote] = $inputFile
+    }
+    $publicationPlan = Get-DeploymentPublicationPlan `
+        -Entries @($deploymentInput.files)
+    $operationPhase = "deployment-input-verification"
+    $inputVerificationOutput = @(Invoke-CustodiedNodeTool `
+        -RepositoryRoot $RepositoryRoot `
+        -Custody $script:deploymentSourceCustody `
+        -ToolPath $validatorPath `
+        -Arguments @(
+            "verify-input",
+            $siteRoot,
+            $ManifestPath,
+            $script:generatedReleaseRoot,
+            [string]$deploymentInput.inputId,
+            "--json"
+        ))
+    if ($inputVerificationOutput.Count -ne 1) {
+        throw "Canonical deployment input verification failed."
+    }
+    $deploymentInputVerification = $inputVerificationOutput[0] | ConvertFrom-Json
+    if ([string]$deploymentInputVerification.status -ne "pass" -or
+        [string]$deploymentInputVerification.inputId -ne
+            [string]$deploymentInput.inputId -or
+        [int]$deploymentInputVerification.fileCount -ne
+            [int]$deploymentInput.fileCount -or
+        [int64]$deploymentInputVerification.totalByteCount -ne
+            [int64]$deploymentInput.totalByteCount) {
+        throw "Canonical deployment input verification identity disagrees."
+    }
+
+    $operationPhase = "public-predecessor-oracle"
+    $predecessorOutput = @(Invoke-CustodiedNodeTool `
+        -RepositoryRoot $RepositoryRoot `
+        -Custody $script:deploymentSourceCustody `
+        -ToolPath $validatorPath `
+        -Arguments @(
+            "predecessor",
+            $RepositoryRoot,
+            $releaseLedgerPath,
+            $publicPredecessorRoot,
+            "--json"
+        ))
+    if ($predecessorOutput.Count -ne 1) {
+        throw "Public predecessor oracle materialization failed."
+    }
+    $publicPredecessorOracle = $predecessorOutput[0] | ConvertFrom-Json
+    $publicPredecessorExpected = Get-PublicPredecessorExpectation `
+        -Oracle $publicPredecessorOracle `
+        -OracleRoot $publicPredecessorRoot
+    $operationPhase = "deployment-input-terminal-verification"
+    $inputTerminalOutput = @(Invoke-CustodiedNodeTool `
+        -RepositoryRoot $RepositoryRoot `
+        -Custody $script:deploymentSourceCustody `
+        -ToolPath $validatorPath `
+        -Arguments @(
+            "verify-input",
+            $siteRoot,
+            $ManifestPath,
+            $script:generatedReleaseRoot,
+            [string]$deploymentInput.inputId,
+            "--json"
+        ))
+    if ($inputTerminalOutput.Count -ne 1) {
+        throw "Canonical deployment input terminal verification failed."
+    }
+    $inputTerminal = $inputTerminalOutput[0] | ConvertFrom-Json
+    if ([string]$inputTerminal.status -ne "pass" -or
+        [string]$inputTerminal.inputId -ne [string]$deploymentInput.inputId -or
+        [int]$inputTerminal.fileCount -ne [int]$deploymentInput.fileCount -or
+        [int64]$inputTerminal.totalByteCount -ne
+            [int64]$deploymentInput.totalByteCount) {
+        throw "Canonical deployment input changed before transport admission."
+    }
+    $operationPhase = "release-ledger-candidate-validation"
+    $boundReleaseRoot = $script:generatedReleaseRoot
+    $finalizationOutput = @(Invoke-CustodiedNodeTool `
+        -RepositoryRoot $RepositoryRoot `
+        -Custody $script:deploymentSourceCustody `
+        -ToolPath $releaseMaterializerPath `
+        -Arguments @(
+            "finalize",
+            $releaseLedgerPath,
+            $boundReleaseRoot,
+            $finalizedLedgerCandidatePath
+        ))
+    if ($finalizationOutput.Count -ne 1) {
+        throw "TinyRustLM release ledger candidate creation failed."
+    }
+    $finalization = $finalizationOutput[0] | ConvertFrom-Json
+    if ([string]$finalization.status -ne "pass" -or
+        [string]$finalization.publicationId -ne $releasePublicationId -or
+        [string]$finalization.sha256 -notmatch "^[0-9a-f]{64}$" -or
+        [int64]$finalization.byteCount -le 0 -or
+        [int64]$finalization.byteCount -gt (1024 * 1024) -or
+        -not (Test-Path -LiteralPath $finalizedLedgerCandidatePath -PathType Leaf)) {
+        throw "TinyRustLM release ledger candidate identity is invalid."
+    }
+    Assert-NoReparsePointAncestry `
+        -Path $finalizedLedgerCandidatePath `
+        -FailureMessage "TinyRustLM release ledger candidate is unsafe."
+    $candidateItem = Get-Item -LiteralPath $finalizedLedgerCandidatePath -Force
+    if (($candidateItem.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0 -or
+        [int64]$candidateItem.Length -ne [int64]$finalization.byteCount -or
+        (Get-FileSha256 -Path $finalizedLedgerCandidatePath) -ne
+            [string]$finalization.sha256) {
+        throw "TinyRustLM release ledger candidate failed byte verification."
+    }
+    $candidateValidationOutput = @(Invoke-CustodiedNodeTool `
+        -RepositoryRoot $RepositoryRoot `
+        -Custody $script:deploymentSourceCustody `
+        -ToolPath $releaseMaterializerPath `
+        -Arguments @("validate", $finalizedLedgerCandidatePath))
+    if ($candidateValidationOutput.Count -ne 1) {
+        throw "TinyRustLM finalized release ledger candidate validation failed."
+    }
+    $candidateValidation = $candidateValidationOutput[0] | ConvertFrom-Json
+    if ([string]$candidateValidation.status -ne "pass" -or
+        $null -ne $candidateValidation.pendingReleaseId -or
+        [string]$candidateValidation.ledgerSha256 -ne
+            [string]$finalization.sha256) {
+        throw "TinyRustLM finalized release ledger candidate did not close pending 0.5.0."
+    }
+    $finalizedLedgerCandidateSha256 = [string]$finalization.sha256
+    $finalizedLedgerCandidateByteCount = [int64]$finalization.byteCount
+    $operationPhase = "terminal-source-custody"
+    $terminalSourceCustodyEvidence = Assert-DeploymentSourceCustody `
+        -RepositoryRoot $RepositoryRoot `
+        -Custody $script:deploymentSourceCustody
+    $operationPhase = "transport-capability-blocker"
+    Assert-SafeDeploymentTransportCapability `
+        -Capability $transportCapabilityEvidence
+
+    $script:httpHandler = [Net.Http.HttpClientHandler]::new()
+    $script:httpHandler.AllowAutoRedirect = $false
+    $script:httpHandler.UseCookies = $false
+    $script:httpHandler.UseDefaultCredentials = $false
+    $script:httpHandler.MaxResponseHeadersLength = 32
+    $script:httpClient = [Net.Http.HttpClient]::new($script:httpHandler, $true)
+    $script:httpClient.Timeout = [TimeSpan]::FromMinutes(5)
+    $operationPhase = "public-predecessor-gate"
+    $publicPredecessorEvidence = Assert-PublicReleasePredecessor `
+        -Expected $publicPredecessorExpected `
+        -PublicOrigin $script:publicOrigin
+    if ([string]$publicPredecessorEvidence.status -ne "pass" -or
+        $publicPredecessorEvidence.read_only -ne $true -or
+        $publicPredecessorEvidence.cache_bypassed -ne $true) {
+        throw "Public predecessor gate did not pass."
+    }
+    $publicPredecessorCleanup = Remove-PublicPredecessorOracle `
+        -Expected $publicPredecessorExpected `
+        -OracleRoot $publicPredecessorRoot `
+        -RepositoryRoot $RepositoryRoot `
+        -ToolPath $validatorPath `
+        -SourceCustody $script:deploymentSourceCustody
+    $publicPredecessorExpected = $null
+    if ($publicPredecessorCleanup.cleanup_verified -ne $true) {
+        throw "Public predecessor oracle cleanup did not pass."
+    }
+
+    $operationPhase = "deployment-target-configuration"
+    $deploymentTarget = Get-WorkspaceDeploymentTargetBinding `
+        -MemoryPath $WorkspaceMemory `
+        -SourceRoot $RepositoryRoot
     $operationPhase = "credential-profile"
     $credentialProfile = Get-WorkspaceDeploymentCredentialProfile `
         -MemoryPath $WorkspaceMemory `
-        -SourceRoot $RepositoryRoot
+        -SourceRoot $RepositoryRoot `
+        -TargetBinding $deploymentTarget
+    Assert-DeploymentCredentialTarget `
+        -CredentialProfile $credentialProfile `
+        -TargetBinding $deploymentTarget
     $script:ftpHost = [string]$credentialProfile.host
     $script:ftpPort = [int]$credentialProfile.port
     $script:credential = [Net.NetworkCredential]::new(
@@ -2142,21 +4673,29 @@ try {
         [string]$credentialProfile.password
     )
     $credentialProfile.password = $null
-    $script:httpHandler = [Net.Http.HttpClientHandler]::new()
-    $script:httpHandler.AllowAutoRedirect = $false
-    $script:httpHandler.UseCookies = $false
-    $script:httpHandler.UseDefaultCredentials = $false
-    $script:httpHandler.MaxResponseHeadersLength = 32
-    $script:httpClient = [Net.Http.HttpClient]::new($script:httpHandler, $true)
+    $operationPhase = "deployment-target-readonly-identity"
+    $deploymentTargetEvidence = Assert-DeploymentTargetIdentity `
+        -TargetBinding $deploymentTarget `
+        -PublicOrigin $script:publicOrigin
+    if ([string]$deploymentTargetEvidence.status -ne "pass" -or
+        $deploymentTargetEvidence.read_only -ne $true) {
+        throw "The deployment root sentinel identity did not pass."
+    }
     $script:httpClient.Timeout = [TimeSpan]::FromMinutes(60)
     $operationPhase = "legacy-model-directory-preflight"
+    $legacyModelRetireEntries = @($deploymentManifest.retire | Where-Object {
+        ([string]$_.remote).StartsWith(
+            "app/models/",
+            [StringComparison]::Ordinal
+        )
+    })
     $legacyModelDirectoryPreflight = Test-RetiredModelDirectoryClosure `
-        -RetireEntries @($deploymentManifest.retire)
+        -RetireEntries $legacyModelRetireEntries
     $operationPhase = "host-policy-predeployment"
     $script:predeploymentTemporaryRouteEvidence = Test-PredeploymentTemporaryRoutePolicy
 
     $operationPhase = "remote-directory-preparation"
-    $remoteDirectories = @($deploymentManifest.publish |
+    $remoteDirectories = @($deploymentInput.files |
         ForEach-Object {
             (Get-RemoteFilePathParts -RemotePath ([string]$_.remote)).parent
         } |
@@ -2166,11 +4705,9 @@ try {
         Ensure-RemoteDirectory -RemotePath $remoteDirectory
     }
     $operationPhase = "artifact-publication"
-    foreach ($entry in @($deploymentManifest.publish)) {
+    foreach ($inputEntry in @($publicationPlan.regular)) {
         $rows += Publish-Artifact `
-            -Source ([string]$entry.source) `
-            -LocalRelativePath ([string]$entry.local) `
-            -RemoteRelativePath ([string]$entry.remote)
+            -DeploymentInputEntry $inputEntry
         $script:activeArtifactLocal = $null
         $script:activeArtifactRemote = $null
         $script:artifactOperationStep = $null
@@ -2183,8 +4720,8 @@ try {
         $removedPublicArtifacts += Remove-PublicArtifact -RemotePath ([string]$entry.remote)
     }
     $retiredModelDirectory = Remove-RetiredModelDirectory
-    $operationPhase = "final-verification"
-    if ($rows.Count -ne @($deploymentManifest.publish).Count -or
+    $operationPhase = "final-precommit-verification"
+    if ($rows.Count -ne @($publicationPlan.regular).Count -or
         @($rows | Where-Object {
             $_.readback_verified -ne $true -or
             $_.temporary_cleanup_verified -ne $true
@@ -2210,44 +4747,85 @@ try {
         [string]$script:publicHostPolicyEvidence.status -ne "pass") {
         throw "Deployment did not retain complete public host-policy evidence."
     }
-    $operationPhase = "release-ledger-finalization"
-    $finalizationOutput = @(
-        & node $releaseMaterializerPath `
-            finalize `
-            $releaseLedgerPath `
-            $script:generatedReleaseRoot `
-            $finalizedLedgerCandidatePath
-    )
-    if ($LASTEXITCODE -ne 0 -or $finalizationOutput.Count -ne 1) {
-        throw "TinyRustLM release ledger finalization failed."
+    foreach ($publishedRow in @($rows)) {
+        $inputEntry = $script:deploymentInputEntries[
+            [string]$publishedRow.relative_path
+        ]
+        $authenticatedOnly = [string]$publishedRow.readback -eq "authenticated-ftps"
+        if (-not (Test-RemoteArtifact `
+            -RemotePath ([string]$publishedRow.relative_path) `
+            -ExpectedBytes ([int64]$inputEntry.byteCount) `
+            -ExpectedSha256 ([string]$inputEntry.sha256) `
+            -AuthenticatedOnly:$authenticatedOnly)) {
+            throw "A regular deployment artifact changed before the release commit marker."
+        }
     }
-    $finalization = $finalizationOutput[0] | ConvertFrom-Json
-    if ([string]$finalization.status -ne "pass" -or
-        [string]$finalization.publicationId -ne $releasePublicationId -or
-        [string]$finalization.sha256 -ne (Get-FileSha256 -Path $finalizedLedgerCandidatePath)) {
-        throw "TinyRustLM release ledger finalization did not pass identity verification."
+    $operationPhase = "canonical-input-before-release-marker"
+    $beforeMarkerOutput = @(Invoke-CustodiedNodeTool `
+        -RepositoryRoot $RepositoryRoot -Custody $script:deploymentSourceCustody -ToolPath $validatorPath `
+        -Arguments @("verify-input", $siteRoot, $ManifestPath, $script:generatedReleaseRoot,
+            [string]$deploymentInput.inputId, "--json"))
+    if ($beforeMarkerOutput.Count -ne 1) { throw "Canonical input verification before commit failed." }
+    $beforeMarkerInput = $beforeMarkerOutput[0] | ConvertFrom-Json
+    if ([string]$beforeMarkerInput.status -ne "pass" -or
+        [string]$beforeMarkerInput.inputId -ne [string]$deploymentInput.inputId) {
+        throw "Canonical inputs changed before the release commit marker."
     }
-    $finalizedLedgerCandidateSha256 = [string]$finalization.sha256
-    $finalizedLedgerCandidateByteCount = [int64]$finalization.byteCount
+    $operationPhase = "release-commit-marker"
+    $script:regularArtifactsVerifiedForCommit = $true
+    try {
+        $markerRow = Publish-Artifact -DeploymentInputEntry $publicationPlan.commit_marker -CommitMarker
+    }
+    finally { $script:regularArtifactsVerifiedForCommit = $false }
+    # Publish-Artifact returns only after marker readback and temporary cleanup pass.
+    # Latch the public terminal state before any later local accounting can fail.
+    $releaseCommitMarkerPublished = $true
     $status = "pass"
+    $operationPhase = "post-commit-local-accounting"
+    $rows += $markerRow
+    $script:activeArtifactLocal = $null
+    $script:activeArtifactRemote = $null
+    $script:artifactOperationStep = $null
+    $script:artifactOperationAttempt = $null
+    $script:artifactPrimaryFailureStep = $null
+    $script:artifactRollbackStatus = $null
+    if ([string]$markerRow.relative_path -ne ".well-known/site-release.json" -or
+        $markerRow.readback_verified -ne $true -or
+        $markerRow.temporary_cleanup_verified -ne $true -or
+        $rows.Count -ne [int]$deploymentInput.fileCount) {
+        throw "The final release commit marker did not pass publication verification."
+    }
     $operationPhase = "complete"
 }
 catch {
-    $status = "fail"
-    $failureIdentity = Get-SafeExceptionIdentity -Exception $_.Exception
-    $failureStep = if ($operationPhase -eq "artifact-publication" -and
-        $script:artifactPrimaryFailureStep) {
-        $script:artifactPrimaryFailureStep
-    }
-    elseif ($operationPhase -eq "artifact-publication" -and
-        $script:artifactOperationStep) {
-        $script:artifactOperationStep
+    if (-not $releaseCommitMarkerPublished) {
+        $status = "fail"
+        $failureIdentity = Get-SafeExceptionIdentity -Exception $_.Exception
+        $failureStep = if ($operationPhase -in @(
+                "artifact-publication",
+                "release-commit-marker"
+            ) -and $script:artifactPrimaryFailureStep) {
+            $script:artifactPrimaryFailureStep
+        }
+        elseif ($operationPhase -in @(
+                "artifact-publication",
+                "release-commit-marker"
+            ) -and $script:artifactOperationStep) {
+            $script:artifactOperationStep
+        }
+        else {
+            $operationPhase
+        }
     }
     else {
-        $operationPhase
+        $postCommitMaintenanceFailures += [pscustomobject]@{
+            step = "post-commit-control-flow"
+            failure_identity = Get-SafeExceptionIdentity -Exception $_.Exception
+        }
     }
 }
 finally {
+    try {
     if ($script:httpClient) {
         $script:httpClient.Dispose()
     }
@@ -2255,7 +4833,179 @@ finally {
     $script:credential = $null
     $credentialProfile = $null
 
-    $expectedFileCount = @($deploymentManifest.publish).Count
+    if (Test-Path -LiteralPath $publicPredecessorRoot) {
+        try {
+            if (-not $publicPredecessorExpected -and $publicPredecessorOracle) {
+                $publicPredecessorExpected = Get-PublicPredecessorExpectation `
+                    -Oracle $publicPredecessorOracle `
+                    -OracleRoot $publicPredecessorRoot
+            }
+            $publicPredecessorCleanup = Remove-PublicPredecessorOracle `
+                -Expected $publicPredecessorExpected `
+                -OracleRoot $publicPredecessorRoot `
+                -RepositoryRoot $RepositoryRoot `
+                -ToolPath $validatorPath `
+                -SourceCustody $script:deploymentSourceCustody
+            $publicPredecessorExpected = $null
+        }
+        catch {
+            $cleanupIdentity = Get-SafeExceptionIdentity -Exception $_.Exception
+            if ($releaseCommitMarkerPublished) {
+                $postCommitMaintenanceFailures += [pscustomobject]@{
+                    step = "public-predecessor-oracle-cleanup"
+                    failure_identity = $cleanupIdentity
+                }
+            }
+            elseif (-not $failureIdentity) {
+                $status = "fail"
+                $operationPhase = "public-predecessor-oracle-cleanup"
+                $failureStep = $operationPhase
+                $failureIdentity = $cleanupIdentity
+            }
+        }
+    }
+
+    # Persist the immutable deployment decision while all local coordination
+    # guards are still held. Cleanup gets a separate closure record below.
+    $terminalDecision = [pscustomobject]@{
+        schema = "tinyrustlm.deployment_terminal_decision.v1"
+        attempt_id = $attemptId
+        terminal_scope = "deployment-attempt-before-local-cleanup"
+        deployment_attempt_terminal = $true
+        deployment_status = $status
+        local_cleanup_pending = $true
+        release_commit_marker_published = $releaseCommitMarkerPublished
+        failure_identity = $failureIdentity
+        failure_step = $failureStep
+        source_commit = $currentSourceCommit
+        release_id = $releaseId
+        release_publication_id = $releasePublicationId
+        deployment_manifest_sha256 = if ($validation) {
+            [string]$validation.manifestSha256
+        }
+        else {
+            $null
+        }
+        deployment_input = if ($deploymentInput) {
+            [pscustomobject]@{
+                schema = [string]$deploymentInput.schema
+                input_id = [string]$deploymentInput.inputId
+                file_count = [int]$deploymentInput.fileCount
+                total_byte_count = [int64]$deploymentInput.totalByteCount
+                files = @($deploymentInput.files | ForEach-Object {
+                    [pscustomobject]@{
+                        source = [string]$_.source
+                        remote_relative_path = [string]$_.remote
+                        byte_count = [int64]$_.byteCount
+                        sha256 = [string]$_.sha256
+                    }
+                })
+                verified_before_credentials = (
+                    $deploymentInputVerification -and
+                    [string]$deploymentInputVerification.status -eq "pass"
+                )
+                verified_before_transport_admission = (
+                    $inputTerminal -and
+                    [string]$inputTerminal.status -eq "pass"
+                )
+                source_copy_created = $false
+                local_input_cleanup_required = $false
+            }
+        }
+        else {
+            $null
+        }
+        public_predecessor_gate = $publicPredecessorEvidence
+        publication_summary = [pscustomobject]@{
+            completed_file_count = $rows.Count
+            readback_verified_file_count = @($rows | Where-Object {
+                $_.readback_verified -eq $true
+            }).Count
+            temporary_cleanup_verified_file_count = @($rows | Where-Object {
+                $_.temporary_cleanup_verified -eq $true
+            }).Count
+        }
+        retirement_summary = [pscustomobject]@{
+            completed_artifact_count = $removedPublicArtifacts.Count
+            verified_absent_artifact_count = @($removedPublicArtifacts | Where-Object {
+                $_.ftps_absent -eq $true -and [int]$_.https_status -eq 404
+            }).Count
+        }
+        finalized_release_ledger_candidate_sha256 = $finalizedLedgerCandidateSha256
+        finalized_release_ledger_candidate_byte_count = $finalizedLedgerCandidateByteCount
+        raw_source_bytes_included = $false
+        local_paths_included = $false
+        credentials_included = $false
+    }
+    try {
+        Assert-PinnedDeploymentHost -HostIdentity $script:powershellHost | Out-Null
+        Assert-PinnedDeploymentExecutable -Executable $script:nodeExecutable | Out-Null
+        Assert-PinnedDeploymentExecutable -Executable $script:curlExecutable | Out-Null
+        Assert-PinnedDeploymentExecutable -Executable $script:gitExecutable | Out-Null
+        $terminalDecisionReceipt = Write-AtomicJson `
+            -Path $terminalDecisionPath `
+            -Value $terminalDecision
+    }
+    catch {
+        $cleanupIdentity = Get-SafeExceptionIdentity -Exception $_.Exception
+        if ($releaseCommitMarkerPublished) {
+            $postCommitMaintenanceFailures += [pscustomobject]@{
+                step = "terminal-decision-receipt"
+                failure_identity = $cleanupIdentity
+            }
+        }
+        elseif (-not $failureIdentity) {
+            $status = "fail"
+            $operationPhase = "terminal-decision-receipt"
+            $failureStep = $operationPhase
+            $failureIdentity = $cleanupIdentity
+        }
+    }
+
+    if ($deploymentLease) {
+        try {
+            if ($script:deploymentLeaseReleasable -and $terminalDecisionReceipt) {
+                $deploymentLeaseCleanup = Remove-ExclusiveDeploymentLease `
+                    -Lease $deploymentLease
+                if ($deploymentLeaseCleanup.cleanup_verified -ne $true -or
+                    [string]$deploymentLeaseCleanup.lease_id -ne
+                        [string]$deploymentLease.lease_id) {
+                    throw "Exclusive deployment lease cleanup did not pass."
+                }
+            }
+            else {
+                $deploymentLease.handle.Flush($true)
+                $deploymentLease.handle.Dispose()
+                $deploymentLeaseCleanup = [pscustomobject]@{
+                    lease_id = [string]$deploymentLease.lease_id
+                    cleanup_verified = $false
+                    blocking_residue_preserved = $true
+                }
+            }
+        }
+        catch {
+            $cleanupIdentity = Get-SafeExceptionIdentity -Exception $_.Exception
+            if ($releaseCommitMarkerPublished) {
+                $postCommitMaintenanceFailures += [pscustomobject]@{
+                    step = "deployment-lease-cleanup"
+                    failure_identity = $cleanupIdentity
+                }
+            }
+            elseif (-not $failureIdentity) {
+                $status = "fail"
+                $operationPhase = "deployment-lease-cleanup"
+                $failureStep = $operationPhase
+                $failureIdentity = $cleanupIdentity
+            }
+        }
+    }
+
+    $expectedFileCount = if ($deploymentInput) {
+        [int]$deploymentInput.fileCount
+    }
+    else {
+        0
+    }
     $expectedRetirementCount = @($deploymentManifest.retire).Count
     $publishedReadbackVerified = (
         $status -eq "pass" -and
@@ -2275,13 +5025,15 @@ finally {
         }).Count -eq 0
     )
     $report = [pscustomobject]@{
-        schema = "tinyrustlm.atomic_ftps_deployment.v7"
+        schema = "tinyrustlm.atomic_ftps_deployment.v10"
         attempt_id = $attemptId
+        terminal = $true
         deployment_scope = [string]$deploymentManifest.deploymentScope
         public_origin = $script:publicOrigin
         started_utc = $startedUtc.ToString("o")
         completed_utc = [DateTime]::UtcNow.ToString("o")
         status = $status
+        release_commit_marker_published = $releaseCommitMarkerPublished
         failure_identity = $failureIdentity
         failure_step = $failureStep
         failure_code = if ($status -eq "fail") {
@@ -2305,6 +5057,78 @@ finally {
         }
         source_commit = $currentSourceCommit
         source_tree_clean = $sourceTreeClean
+        deployment_tool_custody = [pscustomobject]@{
+            powershell = [pscustomobject]@{
+                version = [string]$deploymentToolVersions.powershell_version
+                edition = [string]$deploymentToolVersions.powershell_edition
+                language_mode = [string]$deploymentToolVersions.powershell_language_mode
+                byte_count = [int64]$script:powershellHost.byte_count
+                sha256 = [string]$script:powershellHost.sha256
+            }
+            node = [pscustomobject]@{
+                version = [string]$deploymentToolVersions.node_version
+                byte_count = [int64]$script:nodeExecutable.byte_count
+                sha256 = [string]$script:nodeExecutable.sha256
+            }
+            curl = [pscustomobject]@{
+                version = [string]$deploymentToolVersions.curl_version
+                byte_count = [int64]$script:curlExecutable.byte_count
+                sha256 = [string]$script:curlExecutable.sha256
+            }
+            git = [pscustomobject]@{
+                version = [string]$deploymentToolVersions.git_version
+                byte_count = [int64]$script:gitExecutable.byte_count
+                sha256 = [string]$script:gitExecutable.sha256
+            }
+            child_environment_allowlisted =
+                $deploymentToolVersions.environment_allowlisted
+            inherited_environment_names =
+                @($deploymentToolVersions.inherited_environment_names)
+            local_paths_included = $false
+        }
+        source_custody = if ($script:deploymentSourceCustody) {
+            [pscustomobject]@{
+                schema = [string]$script:deploymentSourceCustody.schema
+                source_commit = [string]$script:deploymentSourceCustody.source_commit
+                source_tree_clean = $script:deploymentSourceCustody.source_tree_clean
+                tool_file_count = [int]$script:deploymentSourceCustody.tool_file_count
+                tool_closure_sha256 = [string]$script:deploymentSourceCustody.tool_closure_sha256
+                initial_recheck_passed = (
+                    $sourceCustodyEvidence -and
+                    [string]$sourceCustodyEvidence.status -eq "pass"
+                )
+                terminal_recheck_passed = (
+                    $terminalSourceCustodyEvidence -and
+                    [string]$terminalSourceCustodyEvidence.status -eq "pass"
+                )
+            }
+        }
+        else {
+            $null
+        }
+        deployment_lease = if ($deploymentLease) {
+            [pscustomobject]@{
+                schema = [string]$deploymentLease.schema
+                lease_id = [string]$deploymentLease.lease_id
+                sha256 = [string]$deploymentLease.sha256
+                source_commit = [string]$deploymentLease.source_commit
+                tool_closure_sha256 = [string]$deploymentLease.tool_closure_sha256
+                coordination_scope = [string]$deploymentLease.coordination_scope
+                remote_global_exclusion_proven =
+                    $deploymentLease.remote_global_exclusion_proven
+                cleanup_verified = (
+                    $deploymentLeaseCleanup -and
+                    $deploymentLeaseCleanup.cleanup_verified -eq $true
+                )
+                blocking_residue_preserved = (
+                    $deploymentLeaseCleanup -and
+                    $deploymentLeaseCleanup.blocking_residue_preserved -eq $true
+                )
+            }
+        }
+        else {
+            $null
+        }
         release_id = $releaseId
         release_version = $releaseVersion
         release_date = $releaseDate
@@ -2321,7 +5145,7 @@ finally {
         finalized_release_ledger_candidate_requires_source_review_and_commit = (
             $status -eq "pass"
         )
-        release_metadata_generated_outside_source = $true
+        release_metadata_confined_to_canonical_artifacts = $true
         release_metadata_https_readback_verified = (
             $status -eq "pass" -and
             @($rows | Where-Object {
@@ -2329,16 +5153,74 @@ finally {
             }).Count -eq 2
         )
         deployment_manifest_sha256 = [string]$validation.manifestSha256
+        terminal_decision_receipt = if ($terminalDecisionReceipt) {
+            [pscustomobject]@{
+                schema = "tinyrustlm.deployment_terminal_decision.v1"
+                file = [IO.Path]::GetFileName($terminalDecisionPath)
+                sha256 = [string]$terminalDecisionReceipt.sha256
+                byte_count = [int64]$terminalDecisionReceipt.bytes
+                deployment_attempt_terminal = $true
+                recorded_before_local_cleanup = $true
+            }
+        }
+        else {
+            $null
+        }
+        deployment_input = if ($deploymentInput) {
+            [pscustomobject]@{
+                schema = [string]$deploymentInput.schema
+                input_id = [string]$deploymentInput.inputId
+                file_count = [int]$deploymentInput.fileCount
+                total_byte_count = [int64]$deploymentInput.totalByteCount
+                fully_verified_before_credentials = (
+                    $deploymentInputVerification -and
+                    [string]$deploymentInputVerification.status -eq "pass"
+                )
+                source_paths_included = $false
+                git_metadata_included = $false
+                authority_markers_included = $false
+                source_copy_created = $false
+                local_input_cleanup_required = $false
+            }
+        }
+        else {
+            $null
+        }
+        public_predecessor_gate = $publicPredecessorEvidence
         secret_scan_report_sha256 = $secretScanReportSha256
         secret_scan_scope_manifest_sha256 = $secretScanScopeManifestSha256
         secret_scan_receipt_id = $secretScanReceiptId
         secret_finding_count = $secretFindingCount
         secret_material_included = $false
         published_release_model_bytes_present = $false
-        publication_transaction_scope = "per-artifact"
-        per_artifact_atomic_promotion = $true
+        transport_capability = $transportCapabilityEvidence
+        publication_transaction_scope = if (
+            $transportCapabilityEvidence.remote_mutation_admitted -eq $true
+        ) { "release-wide" } else { "blocked-before-remote-mutation" }
+        per_artifact_atomic_promotion = $false
         whole_site_atomic_promotion = $false
+        release_wide_rollback_available =
+            $transportCapabilityEvidence.release_wide_atomic_rollback
+        remote_global_lease_available =
+            $transportCapabilityEvidence.remote_global_compare_and_swap_lease
+        remote_mutation_admitted =
+            $transportCapabilityEvidence.remote_mutation_admitted
         dependency_ordered_publication = $true
+        final_remote_commit_marker = ".well-known/site-release.json"
+        final_remote_commit_marker_published_last = (
+            $releaseCommitMarkerPublished -and
+            $transportCapabilityEvidence.final_marker_can_be_last_remote_mutation -eq $true
+        )
+        post_commit_maintenance = [pscustomobject]@{
+            status = if ($postCommitMaintenanceFailures.Count -eq 0) {
+                "pass"
+            }
+            else {
+                "attention-required"
+            }
+            affects_committed_public_release_status = $false
+            failures = $postCommitMaintenanceFailures
+        }
         immutable_attempt_report = $true
         fresh_artifact_readback_required = $true
         predeployment_temporary_route_policy = $script:predeploymentTemporaryRouteEvidence
@@ -2359,11 +5241,44 @@ finally {
         )
         retired_model_directory = $retiredModelDirectory
     }
-    $reportReceipt = Write-AtomicJson -Path $ReportPath -Value $report
+    try {
+        $reportReceipt = Write-AtomicJson -Path $ReportPath -Value $report
+    }
+    catch {
+        $reportWriteFailureIdentity = Get-SafeExceptionIdentity -Exception $_.Exception
+    }
+    }
+    catch {
+        $maintenanceIdentity = Get-SafeExceptionIdentity -Exception $_.Exception
+        if ($releaseCommitMarkerPublished) {
+            $status = "pass"
+            $postCommitMaintenanceFailures += [pscustomobject]@{
+                step = "post-commit-local-finalization"
+                failure_identity = $maintenanceIdentity
+            }
+            if (-not $reportWriteFailureIdentity) {
+                $reportWriteFailureIdentity = $maintenanceIdentity
+            }
+        }
+        elseif (-not $failureIdentity) {
+            $status = "fail"
+            $operationPhase = "local-finalization"
+            $failureStep = $operationPhase
+            $failureIdentity = $maintenanceIdentity
+        }
+    }
 }
 
 if ($status -ne "pass") {
+    if (-not $reportReceipt) {
+        throw "TinyRustLM deployment failed before the public release commit marker, and its local receipt could not be persisted."
+    }
     throw "TinyRustLM deployment attempt failed; inspect immutable receipt $([IO.Path]::GetFileName($ReportPath))."
 }
 Write-Host "TinyRustLM $($deploymentManifest.deploymentScope) deployment passed for $($rows.Count) files with $($removedPublicArtifacts.Count) retired model routes verified absent."
-Write-Host "Immutable deployment report: $([IO.Path]::GetFileName($ReportPath)) ($($reportReceipt.sha256))"
+if ($reportReceipt) {
+    Write-Host "Immutable deployment report: $([IO.Path]::GetFileName($ReportPath)) ($($reportReceipt.sha256))"
+}
+else {
+    Write-Warning "The public release commit marker passed, but local deployment receipt persistence requires attention ($reportWriteFailureIdentity)."
+}

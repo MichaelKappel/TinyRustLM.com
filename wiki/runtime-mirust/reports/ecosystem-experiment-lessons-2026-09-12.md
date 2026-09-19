@@ -868,6 +868,69 @@ historical/model removal or measured storage recovery occurred. Passing fixture
 validation prepares the next registration; it does not supply the missing
 source/release gates or authorize replay of a closed experiment.
 
+## C31. Canonical input custody must reach every publication boundary
+
+Question: can the unfinished publisher eliminate copied source staging while
+retaining exact artifact identity, bounded transfer and honest release claims?
+The reviewed source parent is `1114003d35e52f4fdb9a2f1b76a4f3bd53ecd8db`;
+the exact changed tools/tests and supporting inputs are bound in
+`artifacts/ecosystem-cleanup-20260912/publication-canonical-input-review.json`.
+
+The current path hashes canonical publication inputs, re-verifies their identity
+and transfers exact bounded memory payloads. Source-copy snapshot exports and CLI
+commands were removed. Predecessor/generated metadata retain bounded owned output
+and verified cleanup. The marker uses an explicit commit route only after regular
+artifacts are verified. The production transport-admission flag is never enabled:
+ordinary FTPS operations have not established cross-host exclusion, release-wide
+recovery or a final-marker-last-mutation guarantee.
+
+The first focused run exposed stale fixtures that pretended to be the canonical
+repository, expected an obsolete reparse error, or referenced a nonexistent asset.
+They now inspect the real canonical root and current asset, while synthetic
+negative observations remain isolated. Direct memory tests then found that
+PowerShell boolean coercion rejects a valid one-byte zero payload. Explicit null
+and length checks now distinguish it from null or empty bytes, including in
+hashing and comparison. One new resume test initially miscounted chunks; its
+payload now actually crosses the intended third-chunk boundary.
+
+Broader checks found two integration issues. The package command still bypassed
+the scratch-owning test launcher; it now invokes that launcher while retaining
+the source-authority pretest. The secret scanner still required output outside
+the source worktree, conflicting with canonical artifact storage. Its current
+guard requires canonical artifact descendants and ordinary ancestry; staging
+uses the existing ownership helper. API and CLI checks reject scattered paths,
+artifact roots, junctions, replacement reports and invalid input without leaking
+absolute paths. The scan count is 31: one manifest plus 30 declared public files.
+
+An initial wider run passed 48/50 checks: the scanner rejected canonical output
+and the default browser launch failed. Selecting installed Edge through the
+existing channel option passed the browser check; no browser was installed and
+the launch failure alone did not diagnose the missing/default browser cause.
+After the fixes and additional CLI check, the complete affected run passed
+**52/52**, zero skips or cancellations, including PowerShell fault cases and
+12 local page observations. V8 reports manifest-tool coverage of 83.53 percent
+lines / 84.75 branches and scan-tool coverage of 88.31 / 70.00. Combined line
+coverage is 84.10 percent. PowerShell statement/branch coverage was not collected;
+its isolated primitive tests are the closest automated evidence, not a coverage
+percentage. No production FTPS mutation path was exercised against a real host.
+
+The six affected managed memory-consistency checks pass. Invoking the actual
+package command confirms its pretest stops before the suite with
+`source_authority_scan_incomplete` on the two previously policy-blocked installer
+links. The direct focused run is not a complete source/release gate pass.
+
+Decision: retain the tested local refactor and keep remote capability admission
+closed. All operation-owned test/coverage output was removed. Previous
+policy-blocked artifacts remain; none was retried or removed. Model quality,
+numerical agreement, seed availability and owner release acceptance remain open.
+The owner deferred ternary/Bonsai research, so it did not expand this change.
+
+Reusable lesson: replacing a staging mechanism requires checking its caller,
+scanner, temporary-output policy and binary edge cases together. Successful local
+transport mocks establish their observed mechanics only. The next smallest
+release experiment is bounded read-only hosting capability discovery; it must
+precede a concrete remote publication design and any live mutation.
+
 ## Continue the review
 
 Before deleting an experiment that is not covered above, record its purpose,

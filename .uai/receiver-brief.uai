@@ -1,5 +1,5 @@
 profile: tinyrustlm.receiver-brief.current.v1
-updated_utc: 2026-09-19T15:37:57Z
+updated_utc: 2026-09-19T17:18:30Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
@@ -9,7 +9,8 @@ brief:
   - All 16 September reports have reviewed dispositions and applied domain guidance. Read report_decision_index before raw reports; earlier 47-report intake is historical.
   - Production Companion acquisition/conversion/inspection/transfer/listener and browser client wiring exist. There is no qualified default or proven real acquisition through that coordinator.
   - Unchanged Qwen3-0.6B@c1899de289a04d12100db370d81485cdf75e47ca stays rejected for product quality. Diagnostic numerical work does not qualify it.
-  - C30 supports only current v3 registration; environment and synthetic checks passed historically, but no actual v3 registration or real trace exists. C31 publication refactor remains unfinished.
+  - C30 supports only current v3 registration; environment and synthetic checks passed historically, but no actual v3 registration or real trace exists. C31 canonical-input publication refactor has local regression and Edge smoke evidence; live transport capability remains blocked.
+  - The owner deferred ternary/Bonsai research and requested continued implementation; no new quantizer/model research is the current task.
   - Source-authority scanning remains incomplete on two policy-blocked installer links. Do not bypass rejected deletion or describe wider cleanup as done.
   - Advance exact source quality, semantic/numerical diagnosis and real browser measurements; discover hosting capabilities alongside them. Do not replace the current format merely because a report calls it legacy.
   - MiniModel initial server seeds are authorized. Restore a usable installed model or obtain a small qualified default; keep HF/import/conversion/peer/IP controls under Advanced and prompts local.

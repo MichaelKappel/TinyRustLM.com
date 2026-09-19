@@ -1,5 +1,5 @@
 profile: tinyrustlm.startup-packet.current.v1
-updated_utc: 2026-09-19T15:37:57Z
+updated_utc: 2026-09-19T17:18:30Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
@@ -32,4 +32,4 @@ current_intake:
   reports: 16 reviewed; useful guidance applied to domain UAI, exact raw evidence and report-level decisions retained.
   maturity: Early alpha, never a working release; no debt, obsolete code or legacy support until a fully working release is officially accepted by the owner.
   routing: .uai/index.uai separates current guidance from dated historical receipts; earlier August resume prose is not current source state.
-  blockers: Two policy-blocked installer links still prevent source scan completion; real v3 registration, qualified default, live seed and C31 publication completion remain open.
+  blockers: Two policy-blocked installer links still prevent source scan completion; real v3 registration, qualified default, live seed and remote publication capabilities remain open. C31 canonical-input refactor has local tests only.

@@ -1,5 +1,66 @@
+param([Parameter(Mandatory = $true)][string]$OperationRoot)
+
 $ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
+Add-Type -AssemblyName System.Net.Http
+
+if (-not ("TinyRustLMSyntheticPublicHandler" -as [type])) {
+    Add-Type -ReferencedAssemblies ([Net.Http.HttpClient].Assembly.Location) -TypeDefinition @'
+using System;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Threading;
+using System.Threading.Tasks;
+
+public sealed class TinyRustLMSyntheticPublicHandler : HttpMessageHandler
+{
+    private readonly byte[] content;
+
+    public TinyRustLMSyntheticPublicHandler(byte[] content)
+    {
+        this.content = content;
+    }
+
+    public string ObservedMethod { get; private set; }
+    public string ObservedUri { get; private set; }
+    public bool ObservedNoCache { get; private set; }
+    public bool ObservedNoStore { get; private set; }
+    public long ObservedMaxAgeTicks { get; private set; }
+    public bool ObservedPragmaNoCache { get; private set; }
+    public bool ObservedAuthorization { get; private set; }
+    public bool ObservedCookie { get; private set; }
+
+    protected override Task<HttpResponseMessage> SendAsync(
+        HttpRequestMessage request,
+        CancellationToken cancellationToken)
+    {
+        this.ObservedMethod = request.Method.Method;
+        this.ObservedUri = request.RequestUri.AbsoluteUri;
+        CacheControlHeaderValue cacheControl = request.Headers.CacheControl;
+        this.ObservedNoCache = cacheControl != null && cacheControl.NoCache;
+        this.ObservedNoStore = cacheControl != null && cacheControl.NoStore;
+        this.ObservedMaxAgeTicks = cacheControl != null && cacheControl.MaxAge.HasValue
+            ? cacheControl.MaxAge.Value.Ticks
+            : -1;
+        foreach (NameValueHeaderValue value in request.Headers.Pragma)
+        {
+            if (String.Equals(value.Name, "no-cache", StringComparison.OrdinalIgnoreCase))
+            {
+                this.ObservedPragmaNoCache = true;
+            }
+        }
+        this.ObservedAuthorization = request.Headers.Authorization != null;
+        this.ObservedCookie = request.Headers.Contains("Cookie");
+
+        HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
+        response.Content = new ByteArrayContent(this.content);
+        response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+        return Task.FromResult(response);
+    }
+}
+'@
+}
 
 function Assert-True {
     param([bool]$Condition, [string]$Message)
@@ -64,14 +125,40 @@ $deploymentScript = [IO.Path]::GetFullPath(
     (Join-Path $PSScriptRoot "..\tools\deploy-tinyrustlm-web.ps1")
 )
 Import-DeploymentFunctions -ScriptPath $deploymentScript -Names @(
+    "Get-DeploymentGitTopLevel"
+    "Resolve-CanonicalDeploymentRepositoryRoot"
     "Get-YamlScalar"
     "Assert-NoReparsePointAncestry"
+    "Get-BoundedWorkspaceMemoryLines"
+    "Get-WorkspaceDeploymentTargetBinding"
     "Get-DeploymentCredentialProfile"
     "Get-WorkspaceDeploymentCredentialProfile"
+    "Assert-DeploymentCredentialTarget"
     "Get-FileSha256"
     "Get-Utf8Sha256"
+    "Get-ByteArraySha256"
+    "Resolve-PinnedDeploymentExecutable"
+    "Resolve-PinnedDeploymentHost"
+    "Assert-PinnedDeploymentExecutable"
+    "Assert-PinnedDeploymentHost"
+    "ConvertTo-DeploymentProcessArgument"
+    "New-SanitizedDeploymentProcessStartInfo"
+    "Invoke-PinnedDeploymentProcess"
+    "Assert-PinnedDeploymentToolVersions"
+    "Get-DeploymentTransportCapability"
+    "Assert-SafeDeploymentTransportCapability"
+    "New-ExclusiveDeploymentLease"
+    "Remove-ExclusiveDeploymentLease"
+    "New-OwnedValidationMaterialization"
+    "Remove-OwnedValidationMaterialization"
+    "Get-DeploymentPublicationPlan"
+    "Get-DeploymentNodeToolClosure"
+    "New-DeploymentSourceCustody"
+    "Assert-DeploymentSourceCustody"
+    "Invoke-CustodiedNodeTool"
     "Get-SafeExceptionIdentity"
     "Test-FtpFileUnavailable"
+    "Test-RemoteFileAbsent"
     "Get-RemoteSize"
     "Test-RetryableFtpsReadFailure"
     "Test-RetryableFtpsCleanupFailure"
@@ -83,20 +170,90 @@ Import-DeploymentFunctions -ScriptPath $deploymentScript -Names @(
     "ConvertFrom-FtpDirectoryEntry"
     "Remove-RemoteFile"
     "New-CurrentUserCredentialPipe"
+    "Read-BoundedFtpsArtifact"
+    "Assert-DeploymentTargetIdentity"
+    "Read-BoundedPublicResponse"
+    "Read-BoundedPublicArtifact"
+    "ConvertFrom-StrictPublicJsonBytes"
+    "Test-ExactByteArray"
+    "Assert-PublicReleasePredecessor"
+    "Assert-DeploymentInputEntry"
+    "Assert-CanonicalDeploymentSourceRoot"
+    "Assert-CanonicalDeploymentArtifactPath"
+    "Write-StagedSmallArtifact"
+    "Write-StagedArtifact"
+    "Stage-VerifiedArtifact"
     "Publish-Artifact"
     "Invoke-PublicHostPolicyProbes"
     "Test-RetiredModelDirectoryClosure"
     "Remove-RetiredModelDirectory"
+    "Remove-PublicArtifact"
     "Resolve-NewDeploymentReportPath"
     "Write-AtomicJson"
 )
 
-$temporaryBase = [IO.Path]::GetFullPath([IO.Path]::GetTempPath()).TrimEnd("\", "/")
-$root = Join-Path $temporaryBase (
-    "tinyrustlm-web-deployment-test-{0}" -f [Guid]::NewGuid().ToString("N")
-)
-[IO.Directory]::CreateDirectory($root) | Out-Null
+$canonicalRepositoryRoot = "E:\Source\Rust\TinyRustLM.com"
+$root = Assert-CanonicalDeploymentArtifactPath -Path $OperationRoot -SourceRoot $canonicalRepositoryRoot
+if (-not (Test-Path -LiteralPath (Join-Path $root ".tinyrustlm-operation-owner.v1") -PathType Leaf)) {
+    throw "Run this suite through its Node launcher, which owns and cleans the test output."
+}
 try {
+    $script:powershellHost = Resolve-PinnedDeploymentHost
+    $script:nodeExecutable = Resolve-PinnedDeploymentExecutable `
+        -CommandName "node.exe" `
+        -ExpectedLeafName "node.exe"
+    $script:curlExecutable = Resolve-PinnedDeploymentExecutable `
+        -CommandName "curl.exe" `
+        -ExpectedLeafName "curl.exe"
+    $script:gitExecutable = Resolve-PinnedDeploymentExecutable `
+        -CommandName "git.exe" `
+        -ExpectedLeafName "git.exe"
+    $toolVersions = Assert-PinnedDeploymentToolVersions `
+        -PowerShellHost $script:powershellHost `
+        -NodeExecutable $script:nodeExecutable `
+        -CurlExecutable $script:curlExecutable `
+        -GitExecutable $script:gitExecutable
+    Assert-True (
+        $toolVersions.environment_allowlisted -and
+        -not $toolVersions.node_options_inherited -and
+        [string]$toolVersions.node_version -match "^v24\." -and
+        [string]$toolVersions.curl_version -match "^[0-9]+\." -and
+        [string]$toolVersions.git_version -match "^[0-9]+\."
+    ) "Pinned deployment tool custody did not pass."
+    $priorNodeOptions = $env:NODE_OPTIONS
+    try {
+        $env:NODE_OPTIONS = "--require=untrusted-deployment-hook.js"
+        $sanitizedStart = New-SanitizedDeploymentProcessStartInfo `
+            -Executable $script:nodeExecutable `
+            -Arguments @("--version")
+        Assert-True (
+            -not $sanitizedStart.EnvironmentVariables.ContainsKey("NODE_OPTIONS") -and
+            -not $sanitizedStart.EnvironmentVariables.ContainsKey("GIT_CONFIG_GLOBAL") -and
+            -not $sanitizedStart.EnvironmentVariables.ContainsKey("HTTP_PROXY") -and
+            $sanitizedStart.EnvironmentVariables.ContainsKey("PATH")
+        ) "Deployment subprocess inherited ambient execution configuration."
+    }
+    finally {
+        if ($null -eq $priorNodeOptions) {
+            Remove-Item Env:\NODE_OPTIONS -ErrorAction SilentlyContinue
+        }
+        else {
+            $env:NODE_OPTIONS = $priorNodeOptions
+        }
+    }
+    $transportCapability = Get-DeploymentTransportCapability
+    Assert-True (
+        [string]$transportCapability.status -eq "blocked" -and
+        $transportCapability.remote_global_compare_and_swap_lease -eq $false -and
+        $transportCapability.release_wide_atomic_rollback -eq $false -and
+        $transportCapability.final_marker_can_be_last_remote_mutation -eq $false -and
+        $transportCapability.remote_mutation_admitted -eq $false
+    ) "FTPS transport capability was overstated."
+    Assert-Throws {
+        Assert-SafeDeploymentTransportCapability `
+            -Capability $transportCapability
+    } "transport capability blocker|atomic release-wide|compare-and-swap"
+
     $sourceRoot = Join-Path $root "source"
     $profileRoot = Join-Path $root "external-profile"
     [IO.Directory]::CreateDirectory($sourceRoot) | Out-Null
@@ -112,21 +269,345 @@ try {
 </Server></Servers></FileZilla3>
 '@
     [IO.File]::WriteAllText($validProfile, $validXml, $utf8)
-    $workspaceMemory = Join-Path $root "workspace.uai"
+    $sentinelText = '{"public_origin":"https://tinyrustlm.com",' +
+        '"schema":"tinyrustlm.deployment_root_identity.v1",' +
+        '"site_identity":"tinyrustlm.com"}' + "`n"
+    $sentinelBytes = $utf8.GetBytes($sentinelText)
+    $sentinelSha256 = Get-Utf8Sha256 -Value $sentinelText
+
+    $predecessorCurrentText = '{"canonicalOrigin":"https://tinyrustlm.com",' +
+        '"publicationId":"' + ("5" * 64) + '",' +
+        '"releaseId":"tinyrustlm.com@0.4.1",' +
+        '"schema":"uaix.site_release.v1",' +
+        '"siteId":"tinyrustlm.com","version":"0.4.1"}' + "`n"
+    $predecessorHistoryText = '{"canonicalOrigin":"https://tinyrustlm.com",' +
+        '"releases":[' + $predecessorCurrentText.TrimEnd("`n") + '],' +
+        '"schema":"uaix.site_release_history.v1",' +
+        '"siteId":"tinyrustlm.com"}' + "`n"
+    $predecessorCurrentBytes = $utf8.GetBytes($predecessorCurrentText)
+    $predecessorHistoryBytes = $utf8.GetBytes($predecessorHistoryText)
+    $predecessorExpected = [pscustomobject]@{
+        predecessor_release_id = "tinyrustlm.com@0.4.1"
+        predecessor_version = "0.4.1"
+        predecessor_publication_id = "5" * 64
+        predecessor_ledger_sha256 = "4" * 64
+        pending_release_id = "tinyrustlm.com@0.5.0"
+        pending_version = "0.5.0"
+        current = [pscustomobject]@{
+            relative_path = ".well-known/site-release.json"
+            byte_count = $predecessorCurrentBytes.Length
+            sha256 = Get-Utf8Sha256 -Value $predecessorCurrentText
+            bytes = $predecessorCurrentBytes
+        }
+        history = [pscustomobject]@{
+            relative_path = ".well-known/site-release-history.json"
+            byte_count = $predecessorHistoryBytes.Length
+            sha256 = Get-Utf8Sha256 -Value $predecessorHistoryText
+            bytes = $predecessorHistoryBytes
+        }
+    }
+    $syntheticHandler = [TinyRustLMSyntheticPublicHandler]::new(
+        $predecessorCurrentBytes
+    )
+    $script:httpClient = [Net.Http.HttpClient]::new($syntheticHandler, $true)
+    $script:publicOrigin = "https://tinyrustlm.com"
+    try {
+        [byte[]]$syntheticRead = Read-BoundedPublicArtifact `
+            -RemotePath ".well-known/site-release.json" `
+            -MaximumBytes 1024
+        Assert-True (
+            Test-ExactByteArray -Left $syntheticRead -Right $predecessorCurrentBytes
+        ) "Synthetic cache-bypassed public bytes changed."
+        Assert-True (
+            $syntheticHandler.ObservedMethod -eq "GET" -and
+            $syntheticHandler.ObservedUri -match
+                '^https://tinyrustlm\.com/\.well-known/site-release\.json\?predecessor_readback=[0-9a-f]{32}$' -and
+            $syntheticHandler.ObservedNoCache -and
+            $syntheticHandler.ObservedNoStore -and
+            $syntheticHandler.ObservedMaxAgeTicks -eq 0 -and
+            $syntheticHandler.ObservedPragmaNoCache -and
+            -not $syntheticHandler.ObservedAuthorization -and
+            -not $syntheticHandler.ObservedCookie
+        ) "Public predecessor request lost read-only cache-bypass custody."
+    }
+    finally {
+        $script:httpClient.Dispose()
+        $script:httpClient = $null
+        $script:publicOrigin = $null
+    }
+    $global:SyntheticPublicArtifacts = @{
+        ".well-known/site-release.json" = $predecessorCurrentBytes
+        ".well-known/site-release-history.json" = $predecessorHistoryBytes
+    }
+    function global:Read-BoundedPublicArtifact {
+        param([string]$RemotePath, [int]$MaximumBytes)
+        [byte[]]$value = $global:SyntheticPublicArtifacts[$RemotePath]
+        if (-not $value) {
+            throw "Synthetic public artifact is unavailable."
+        }
+        return ,$value
+    }
+    try {
+        $predecessorEvidence = Assert-PublicReleasePredecessor `
+            -Expected $predecessorExpected `
+            -PublicOrigin "https://tinyrustlm.com"
+        Assert-True (
+            $predecessorEvidence.status -eq "pass" -and
+            $predecessorEvidence.predecessor_version -eq "0.4.1" -and
+            $predecessorEvidence.predecessor_ledger_sha256 -eq ("4" * 64) -and
+            $predecessorEvidence.pending_version -eq "0.5.0"
+        ) "Public predecessor evidence changed."
+
+        $global:SyntheticPublicArtifacts[".well-known/site-release.json"] =
+            $utf8.GetBytes($predecessorCurrentText.Replace("0.4.1", "0.5.0"))
+        Assert-Throws {
+            Assert-PublicReleasePredecessor `
+                -Expected $predecessorExpected `
+                -PublicOrigin "https://tinyrustlm.com" | Out-Null
+        } "newer|predecessor"
+
+        $global:SyntheticPublicArtifacts[".well-known/site-release.json"] =
+            $utf8.GetBytes($predecessorCurrentText.Replace("tinyrustlm.com@0.4.1", "tinyrustlm.com@0.4.0"))
+        Assert-Throws {
+            Assert-PublicReleasePredecessor `
+                -Expected $predecessorExpected `
+                -PublicOrigin "https://tinyrustlm.com" | Out-Null
+        } "divergent|predecessor"
+
+        $global:SyntheticPublicArtifacts[".well-known/site-release.json"] =
+            $utf8.GetBytes("{not-json}`n")
+        Assert-Throws {
+            Assert-PublicReleasePredecessor `
+                -Expected $predecessorExpected `
+                -PublicOrigin "https://tinyrustlm.com" | Out-Null
+        } "JSON|malformed"
+
+        $global:SyntheticPublicArtifacts[".well-known/site-release.json"] =
+            [byte[]]::new((1024 * 1024) + 1)
+        Assert-Throws {
+            Assert-PublicReleasePredecessor `
+                -Expected $predecessorExpected `
+                -PublicOrigin "https://tinyrustlm.com" | Out-Null
+        } "byte limit|oversized"
+
+        $global:SyntheticPublicArtifacts[".well-known/site-release.json"] =
+            $predecessorCurrentBytes
+        $global:SyntheticPublicArtifacts[".well-known/site-release-history.json"] =
+            $utf8.GetBytes($predecessorHistoryText.Replace(("5" * 64), ("6" * 64)))
+        Assert-Throws {
+            Assert-PublicReleasePredecessor `
+                -Expected $predecessorExpected `
+                -PublicOrigin "https://tinyrustlm.com" | Out-Null
+        } "inconsistent|divergent|predecessor"
+
+        $global:SyntheticPublicArtifacts[".well-known/site-release-history.json"] =
+            $predecessorHistoryBytes
+        $global:SyntheticPublicArtifacts[".well-known/site-release.json"] =
+            $utf8.GetBytes($predecessorCurrentText.Replace("{", "{ "))
+        Assert-Throws {
+            Assert-PublicReleasePredecessor `
+                -Expected $predecessorExpected `
+                -PublicOrigin "https://tinyrustlm.com" | Out-Null
+        } "exact predecessor|diverge"
+    }
+    finally {
+        Remove-Item `
+            -LiteralPath Function:\global:Read-BoundedPublicArtifact `
+            -Force
+        Remove-Variable `
+            -Name SyntheticPublicArtifacts `
+            -Scope Global `
+            -ErrorAction SilentlyContinue
+    }
+
+    $redirectResponse = [Net.Http.HttpResponseMessage]::new(
+        [Net.HttpStatusCode]::Found
+    )
+    try {
+        $redirectResponse.Headers.Location = [Uri]"https://example.invalid/newer"
+        Assert-Throws {
+            Read-BoundedPublicResponse `
+                -Response $redirectResponse `
+                -MaximumBytes 1024 | Out-Null
+        } "HTTP 200|redirect"
+    }
+    finally {
+        $redirectResponse.Dispose()
+    }
+    $workspaceMemory = Join-Path $root "deployment-memory-fixture.txt"
     [IO.File]::WriteAllText(
         $workspaceMemory,
-        "filezilla_profile: $validProfile`n",
+        "filezilla_profile: $validProfile`n" +
+            "deployment_ftps_host: example.com`n" +
+            "deployment_ftps_port: 21`n" +
+            "deployment_ftps_user: deployment-test`n" +
+            "deployment_ftps_profile: TinyRustLM.com`n" +
+            "deployment_site_identity: tinyrustlm.com`n" +
+            "deployment_root_sentinel_path: " +
+                ".well-known/tinyrustlm-deployment-target.v1.json`n" +
+            "deployment_root_sentinel_sha256: $sentinelSha256`n",
         $utf8
     )
 
-    $credentialProfile = Get-WorkspaceDeploymentCredentialProfile `
+    $targetBinding = Get-WorkspaceDeploymentTargetBinding `
         -MemoryPath $workspaceMemory `
         -SourceRoot $sourceRoot
+    $credentialProfile = Get-WorkspaceDeploymentCredentialProfile `
+        -MemoryPath $workspaceMemory `
+        -SourceRoot $sourceRoot `
+        -TargetBinding $targetBinding
+    Assert-DeploymentCredentialTarget `
+        -CredentialProfile $credentialProfile `
+        -TargetBinding $targetBinding
     Assert-True ($credentialProfile.host -eq "example.com") "Credential host changed."
     Assert-True ($credentialProfile.port -eq 21) "Credential port changed."
     Assert-True ($credentialProfile.user -eq "deployment-test") "Credential user changed."
+    Assert-True ($credentialProfile.profile -eq "TinyRustLM.com") "Credential profile changed."
     Assert-True ($credentialProfile.password.Length -gt 0) "Credential password was not decoded."
     $credentialProfile.password = $null
+
+    $canonicalFixture = $canonicalRepositoryRoot
+    $canonicalScriptRoot = Join-Path $canonicalFixture "tinyrustlm\tools"
+    $wrongRepository = Join-Path $root "wrong-repository"
+    [IO.Directory]::CreateDirectory($wrongRepository) | Out-Null
+    $global:SyntheticGitTopLevel = $canonicalFixture
+    function global:Get-DeploymentGitTopLevel {
+        param([string]$RepositoryRoot)
+        return $global:SyntheticGitTopLevel
+    }
+    try {
+        $resolvedCanonical = Resolve-CanonicalDeploymentRepositoryRoot `
+            -ScriptRoot $canonicalScriptRoot `
+            -RequestedRepositoryRoot $canonicalFixture
+        Assert-True (
+            $resolvedCanonical -eq [IO.Path]::GetFullPath($canonicalFixture)
+        ) "Canonical deployment repository identity changed."
+        Assert-Throws {
+            Resolve-CanonicalDeploymentRepositoryRoot `
+                -ScriptRoot $canonicalScriptRoot `
+                -RequestedRepositoryRoot $wrongRepository | Out-Null
+        } "canonical repository root"
+
+        $global:SyntheticGitTopLevel = $wrongRepository
+        Assert-Throws {
+            Resolve-CanonicalDeploymentRepositoryRoot `
+                -ScriptRoot $canonicalScriptRoot `
+                -RequestedRepositoryRoot $canonicalFixture | Out-Null
+        } "canonical repository root"
+
+        $canonicalJunction = Join-Path $root "canonical-repository-junction"
+        try {
+            New-Item `
+                -ItemType Junction `
+                -Path $canonicalJunction `
+                -Target $canonicalFixture `
+                -ErrorAction Stop | Out-Null
+            $junctionScriptRoot = Join-Path $canonicalJunction "tinyrustlm\tools"
+            $global:SyntheticGitTopLevel = $canonicalJunction
+            Assert-Throws {
+                Resolve-CanonicalDeploymentRepositoryRoot `
+                    -ScriptRoot $junctionScriptRoot `
+                    -RequestedRepositoryRoot $canonicalJunction | Out-Null
+            } "non-reparse"
+        }
+        finally {
+            if (Test-Path -LiteralPath $canonicalJunction) {
+                [IO.Directory]::Delete($canonicalJunction)
+            }
+        }
+    }
+    finally {
+        Remove-Item `
+            -LiteralPath Function:\global:Get-DeploymentGitTopLevel `
+            -Force
+        Remove-Variable `
+            -Name SyntheticGitTopLevel `
+            -Scope Global `
+            -ErrorAction SilentlyContinue
+    }
+
+    foreach ($field in @("host", "port", "user", "profile")) {
+        $wrongCredential = [pscustomobject]@{
+            host = $credentialProfile.host
+            port = $credentialProfile.port
+            user = $credentialProfile.user
+            profile = $credentialProfile.profile
+            password = "synthetic-password"
+        }
+        $wrongCredential.$field = switch ($field) {
+            "host" { "wrong.example" }
+            "port" { 22 }
+            "user" { "wrong-user" }
+            "profile" { "Wrong profile" }
+        }
+        Assert-Throws {
+            Assert-DeploymentCredentialTarget `
+                -CredentialProfile $wrongCredential `
+                -TargetBinding $targetBinding
+        } "configured deployment target"
+        $wrongCredential.password = $null
+    }
+
+    $global:SyntheticSentinelBytes = $sentinelBytes
+    $global:SyntheticSentinelReads = 0
+    function global:Read-BoundedFtpsArtifact {
+        param([string]$RemotePath, [int]$MaximumBytes)
+        $global:SyntheticSentinelReads += 1
+        return [byte[]]$global:SyntheticSentinelBytes
+    }
+    try {
+        $targetEvidence = Assert-DeploymentTargetIdentity `
+            -TargetBinding $targetBinding `
+            -PublicOrigin "https://tinyrustlm.com"
+        Assert-True (
+            $targetEvidence.status -eq "pass" -and
+            $targetEvidence.site_identity -eq "tinyrustlm.com" -and
+            $targetEvidence.sentinel_sha256 -eq $sentinelSha256 -and
+            $global:SyntheticSentinelReads -eq 1
+        ) "Read-only deployment root identity changed."
+
+        $global:SyntheticSentinelBytes = $utf8.GetBytes(
+            $sentinelText.Replace("tinyrustlm.com", "wrong.example")
+        )
+        Assert-Throws {
+            Assert-DeploymentTargetIdentity `
+                -TargetBinding $targetBinding `
+                -PublicOrigin "https://tinyrustlm.com" | Out-Null
+        } "sentinel"
+
+        $wrongSentinelText = $sentinelText.Replace(
+            '"site_identity":"tinyrustlm.com"',
+            '"site_identity":"wrong.example"'
+        )
+        $global:SyntheticSentinelBytes = $utf8.GetBytes($wrongSentinelText)
+        $wrongIdentityBinding = [pscustomobject]@{
+            profile = $targetBinding.profile
+            host = $targetBinding.host
+            port = $targetBinding.port
+            user = $targetBinding.user
+            site_identity = $targetBinding.site_identity
+            sentinel_path = $targetBinding.sentinel_path
+            sentinel_sha256 = Get-Utf8Sha256 -Value $wrongSentinelText
+        }
+        Assert-Throws {
+            Assert-DeploymentTargetIdentity `
+                -TargetBinding $wrongIdentityBinding `
+                -PublicOrigin "https://tinyrustlm.com" | Out-Null
+        } "site identity"
+    }
+    finally {
+        Remove-Item `
+            -LiteralPath Function:\global:Read-BoundedFtpsArtifact `
+            -Force
+        Remove-Variable `
+            -Name SyntheticSentinelBytes `
+            -Scope Global `
+            -ErrorAction SilentlyContinue
+        Remove-Variable `
+            -Name SyntheticSentinelReads `
+            -Scope Global `
+            -ErrorAction SilentlyContinue
+    }
 
     $rootParts = Get-RemoteFilePathParts -RemotePath ".htaccess"
     Assert-True (
@@ -152,6 +633,229 @@ try {
         } "Remote protocol path"
     }
 
+    $leasePath = Join-Path $root "tinyrustlm.com.deployment-lease.v1.json"
+    $lease = New-ExclusiveDeploymentLease `
+        -LeasePath $leasePath `
+        -AttemptId "20260831T1200000000000Z-0123456789ab" `
+        -ReleaseId "tinyrustlm.com@0.5.0" `
+        -SourceCommit ("1" * 40) `
+        -ToolClosureSha256 ("2" * 64)
+    Assert-True (
+        (Test-Path -LiteralPath $leasePath -PathType Leaf) -and
+        [string]$lease.lease_id -match "^[0-9a-f]{32}$" -and
+        [string]$lease.coordination_scope -eq "single-host-canonical-artifacts" -and
+        $lease.remote_global_exclusion_proven -eq $false
+    ) "Local deployment guard was not created with an exact bounded identity."
+    Assert-Throws {
+        New-ExclusiveDeploymentLease `
+            -LeasePath $leasePath `
+            -AttemptId "20260831T1200000000000Z-fedcba987654" `
+            -ReleaseId "tinyrustlm.com@0.5.0" `
+            -SourceCommit ("1" * 40) `
+            -ToolClosureSha256 ("2" * 64) | Out-Null
+    } "lease.*(?:active|residue|exists)|exclusive"
+    Assert-True (
+        (Test-Path -LiteralPath $leasePath -PathType Leaf)
+    ) "A concurrent lease attempt removed the active lease."
+    $leaseCleanup = Remove-ExclusiveDeploymentLease -Lease $lease
+    Assert-True (
+        $leaseCleanup.cleanup_verified -and
+        -not (Test-Path -LiteralPath $leasePath)
+    ) "Identity-bound lease cleanup did not complete."
+    [IO.File]::WriteAllText($leasePath, "crash-residue`n", $utf8)
+    Assert-Throws {
+        New-ExclusiveDeploymentLease `
+            -LeasePath $leasePath `
+            -AttemptId "20260831T1200000000000Z-aaaaaaaaaaaa" `
+            -ReleaseId "tinyrustlm.com@0.5.0" `
+            -SourceCommit ("1" * 40) `
+            -ToolClosureSha256 ("2" * 64) | Out-Null
+    } "lease.*(?:active|residue|exists)|exclusive"
+    Assert-True (
+        [IO.File]::ReadAllText($leasePath, $utf8) -eq "crash-residue`n"
+    ) "Crash residue was guessed stale or rewritten."
+    [IO.File]::Delete($leasePath)
+
+    $publicationPlan = Get-DeploymentPublicationPlan -Entries @(
+        [pscustomobject]@{ remote = "app/app.js" }
+        [pscustomobject]@{ remote = ".well-known/site-release-history.json" }
+        [pscustomobject]@{ remote = ".well-known/site-release.json" }
+    )
+    Assert-True (
+        @($publicationPlan.regular).Count -eq 2 -and
+        [string]$publicationPlan.commit_marker.remote -eq
+            ".well-known/site-release.json"
+    ) "Publication plan did not isolate one final commit marker."
+    Assert-Throws {
+        Get-DeploymentPublicationPlan -Entries @(
+            [pscustomobject]@{ remote = ".well-known/site-release.json" }
+            [pscustomobject]@{ remote = "app/app.js" }
+        ) | Out-Null
+    } "commit marker.*final|publication plan"
+
+    $validationOperationRoot = Join-Path $root (
+        "tinyrustlm-web-validation-{0}" -f ("3" * 32)
+    )
+    $validationMaterialization = New-OwnedValidationMaterialization `
+        -OperationRoot $validationOperationRoot `
+        -SourceRoot $canonicalRepositoryRoot `
+        -OperationId ("3" * 32)
+    $validationWellKnown = Join-Path $validationMaterialization.release_root ".well-known"
+    [IO.Directory]::CreateDirectory($validationWellKnown) | Out-Null
+    [IO.File]::WriteAllText(
+        (Join-Path $validationWellKnown "site-release-history.json"),
+        "{}`n",
+        $utf8
+    )
+    [IO.File]::WriteAllText(
+        (Join-Path $validationWellKnown "site-release.json"),
+        "{}`n",
+        $utf8
+    )
+    $validationCleanup = Remove-OwnedValidationMaterialization `
+        -Materialization $validationMaterialization
+    Assert-True (
+        $validationCleanup.cleanup_verified -and
+        -not (Test-Path -LiteralPath $validationOperationRoot)
+    ) "Owned validation materialization cleanup did not complete."
+
+    $hostileValidationRoot = Join-Path $root (
+        "tinyrustlm-web-validation-{0}" -f ("4" * 32)
+    )
+    $hostileValidation = New-OwnedValidationMaterialization `
+        -OperationRoot $hostileValidationRoot `
+        -SourceRoot $canonicalRepositoryRoot `
+        -OperationId ("4" * 32)
+    [IO.File]::WriteAllText(
+        (Join-Path $hostileValidation.release_root "unexpected.txt"),
+        "unexpected`n",
+        $utf8
+    )
+    Assert-Throws {
+        Remove-OwnedValidationMaterialization `
+            -Materialization $hostileValidation | Out-Null
+    } "inventory|unexpected|undeclared"
+    Assert-True (
+        (Test-Path -LiteralPath (
+            (Join-Path $hostileValidation.release_root "unexpected.txt")
+        ))
+    ) "Hostile validation cleanup mutated an unverified inventory."
+
+    if ([Environment]::OSVersion.Platform -eq [PlatformID]::Win32NT) {
+        $reparseValidationRoot = Join-Path $root (
+            "tinyrustlm-web-validation-{0}" -f ("5" * 32)
+        )
+        $reparseValidation = New-OwnedValidationMaterialization `
+            -OperationRoot $reparseValidationRoot `
+            -SourceRoot $canonicalRepositoryRoot `
+            -OperationId ("5" * 32)
+        $reparseTarget = Join-Path $root "validation-reparse-target"
+        [IO.Directory]::CreateDirectory($reparseTarget) | Out-Null
+        $reparseSentinel = Join-Path $reparseTarget "sentinel.txt"
+        [IO.File]::WriteAllText($reparseSentinel, "do-not-delete`n", $utf8)
+        $validationJunction = Join-Path $reparseValidation.release_root ".well-known"
+        New-Item `
+            -ItemType Junction `
+            -Path $validationJunction `
+            -Target $reparseTarget | Out-Null
+        Assert-Throws {
+            Remove-OwnedValidationMaterialization `
+                -Materialization $reparseValidation | Out-Null
+        } "reparse|unsafe"
+        Assert-True (
+            (Test-Path -LiteralPath $reparseSentinel -PathType Leaf)
+        ) "Reparse-hostile cleanup mutated an external target."
+        [IO.Directory]::Delete($validationJunction)
+        $reparseCleanup = Remove-OwnedValidationMaterialization `
+            -Materialization $reparseValidation
+        Assert-True (
+            $reparseCleanup.cleanup_verified -and
+            (Test-Path -LiteralPath $reparseSentinel -PathType Leaf)
+        ) "Owned validation cleanup did not recover after safe junction removal."
+    }
+
+    # Read the real tool closure; Git/child-process observations are synthetic in memory.
+    $custodyRepository = $canonicalRepositoryRoot
+    $custodyPublisher = $deploymentScript
+    $custodyEntry = Join-Path $canonicalRepositoryRoot "tinyrustlm\tools\web-deployment-manifest.js"
+    $realProcess = (Get-Item Function:\Invoke-PinnedDeploymentProcess).ScriptBlock
+    $global:CustodyStatus = @()
+    $global:CustodyHead = "1" * 40
+    $global:CustodyDriftAfterNode = $false
+    $global:CustodyNodeExit = 0
+    function global:Invoke-PinnedDeploymentProcess {
+        param([object]$Executable, [string[]]$Arguments, [string]$WorkingDirectory)
+        if ($Arguments -contains "status") {
+            return [pscustomobject]@{ exit_code = 0; stdout_lines = @($global:CustodyStatus) }
+        }
+        if ($Arguments -contains "rev-parse") {
+            return [pscustomobject]@{ exit_code = 0; stdout_lines = @($global:CustodyHead) }
+        }
+        if ($Arguments -contains "ls-files") {
+            return [pscustomobject]@{ exit_code = 0; stdout_lines = @($Arguments[-1]) }
+        }
+        if ($global:CustodyDriftAfterNode) { $global:CustodyStatus = @("?? observed-drift") }
+        return [pscustomobject]@{ exit_code = $global:CustodyNodeExit; stdout_lines = @('{"status":"pass"}') }
+    }
+    try {
+        $custody = New-DeploymentSourceCustody -RepositoryRoot $custodyRepository `
+            -PublisherPath $custodyPublisher -NodeToolPaths @($custodyEntry)
+        Assert-True ([int]$custody.tool_file_count -gt 3 -and
+            @($custody.files | Where-Object { $_.relative_path -eq
+                "tinyrustlm/tools/canonical-operation-scratch.js" }).Count -eq 1
+        ) "Source custody did not seal the real transitive Node closure."
+        Assert-DeploymentSourceCustody -RepositoryRoot $custodyRepository -Custody $custody | Out-Null
+        foreach ($badRoot in @($root, "E:\TinyRustLM-vnext-tools", "relative")) {
+            Assert-Throws { New-DeploymentSourceCustody -RepositoryRoot $badRoot `
+                -PublisherPath $custodyPublisher -NodeToolPaths @($custodyEntry) | Out-Null
+            } "canonical repository root"
+            Assert-Throws { Assert-DeploymentSourceCustody -RepositoryRoot $badRoot `
+                -Custody $custody | Out-Null } "canonical repository root"
+        }
+        foreach ($badPath in @("tinyrustlm/tools/../app/release.js",
+            "tinyrustlm/tools/../../../outside.js", "tinyrustlm/tools//entry.js")) {
+            $changed = $custody | ConvertTo-Json -Depth 10 | ConvertFrom-Json
+            $changed.files[0].relative_path = $badPath
+            Assert-Throws { Assert-DeploymentSourceCustody -RepositoryRoot $custodyRepository `
+                -Custody $changed | Out-Null } "custody path is invalid"
+        }
+        $changed = $custody | ConvertTo-Json -Depth 10 | ConvertFrom-Json
+        $changed.files[0].sha256 = "0" * 64
+        Assert-Throws { Assert-DeploymentSourceCustody -RepositoryRoot $custodyRepository `
+            -Custody $changed | Out-Null } "tool hash changed"
+        $changed = $custody | ConvertTo-Json -Depth 10 | ConvertFrom-Json
+        $changed.tool_closure_sha256 = "0" * 64
+        Assert-Throws { Assert-DeploymentSourceCustody -RepositoryRoot $custodyRepository `
+            -Custody $changed | Out-Null } "closure changed"
+        $global:CustodyStatus = @("?? observed-untracked-input")
+        Assert-Throws { Assert-DeploymentSourceCustody -RepositoryRoot $custodyRepository `
+            -Custody $custody | Out-Null } "source custody changed"
+        $global:CustodyStatus = @()
+        $global:CustodyHead = "2" * 40
+        Assert-Throws { Assert-DeploymentSourceCustody -RepositoryRoot $custodyRepository `
+            -Custody $custody | Out-Null } "source custody changed"
+        $global:CustodyHead = "1" * 40
+        $output = @(Invoke-CustodiedNodeTool -RepositoryRoot $custodyRepository `
+            -Custody $custody -ToolPath $custodyEntry -Arguments @())
+        Assert-True ($output.Count -eq 1 -and $output[0] -eq '{"status":"pass"}'
+        ) "Custodied invocation lost its observed output."
+        $global:CustodyNodeExit = 1
+        Assert-Throws { Invoke-CustodiedNodeTool -RepositoryRoot $custodyRepository `
+            -Custody $custody -ToolPath $custodyEntry -Arguments @() | Out-Null
+        } "Custodied Node tool failed"
+        $global:CustodyNodeExit = 0
+        $global:CustodyDriftAfterNode = $true
+        Assert-Throws { Invoke-CustodiedNodeTool -RepositoryRoot $custodyRepository `
+            -Custody $custody -ToolPath $custodyEntry -Arguments @() | Out-Null
+        } "source custody changed"
+    }
+    finally {
+        Set-Item Function:\global:Invoke-PinnedDeploymentProcess -Value $realProcess
+        foreach ($name in @("CustodyStatus", "CustodyHead", "CustodyDriftAfterNode", "CustodyNodeExit")) {
+            Remove-Variable -Name $name -Scope Global -ErrorAction SilentlyContinue
+        }
+    }
+
     $global:FalsePositiveSizeResponse = [pscustomobject]@{
         ContentLength = [int64]37
     }
@@ -164,20 +868,105 @@ try {
         param([string]$RemotePath, [string]$Method)
         return $global:FalsePositiveSizeRequest
     }
+    $global:FalsePositiveListObservation = 0
+    $originalTestRemoteFileAbsent = (Get-Command Test-RemoteFileAbsent).ScriptBlock
     function global:Test-RemoteFileAbsent {
         param([string]$RemotePath)
-        return $true
+        $global:FalsePositiveListObservation += 1
+        return $global:FalsePositiveListObservation -gt 1
     }
     try {
-        Assert-True (
-            (Get-RemoteSize -RemotePath "app/models/fresh-nonce.json") -eq -1
-        ) "A false-positive SIZE response bypassed exact parent-listing absence."
+        Assert-Throws {
+            Get-RemoteSize -RemotePath "app/models/fresh-nonce.json" | Out-Null
+        } "positive SIZE contradicted the parent LIST inventory|ambiguous"
+        Set-Item `
+            -Path Function:\global:Test-RemoteFileAbsent `
+            -Value {
+                param([string]$RemotePath)
+                return $true
+            }
+        Assert-Throws {
+            Get-RemoteSize -RemotePath "app/models/list-omission.json" | Out-Null
+        } "positive SIZE contradicted the parent LIST inventory|ambiguous"
     }
     finally {
         Remove-Item -LiteralPath Function:\global:New-FtpRequest -Force
-        Remove-Item -LiteralPath Function:\global:Test-RemoteFileAbsent -Force
+        Set-Item `
+            -Path Function:\global:Test-RemoteFileAbsent `
+            -Value $originalTestRemoteFileAbsent
+        Remove-Variable -Name FalsePositiveListObservation -Scope Global -ErrorAction SilentlyContinue
         Remove-Variable -Name FalsePositiveSizeResponse -Scope Global -ErrorAction SilentlyContinue
         Remove-Variable -Name FalsePositiveSizeRequest -Scope Global -ErrorAction SilentlyContinue
+    }
+
+    $global:UnavailableSizeRequest = [pscustomobject]@{}
+    $global:UnavailableSizeRequest | Add-Member -MemberType ScriptMethod -Name GetResponse -Value {
+        throw "synthetic FTP 550"
+    }
+    function global:New-FtpRequest {
+        param([string]$RemotePath, [string]$Method)
+        return $global:UnavailableSizeRequest
+    }
+    $originalTestRemoteFileAbsent = (Get-Command Test-RemoteFileAbsent).ScriptBlock
+    $originalTestFtpFileUnavailable = (Get-Command Test-FtpFileUnavailable).ScriptBlock
+    function global:Test-RemoteFileAbsent {
+        param([string]$RemotePath)
+        return $false
+    }
+    function global:Test-FtpFileUnavailable {
+        param([Exception]$Exception)
+        return $true
+    }
+    try {
+        Assert-Throws {
+            Get-RemoteSize -RemotePath "app/ftp-550.js" | Out-Null
+        } "FTP 550 cannot prove remote-file absence|ambiguous"
+        Set-Item `
+            -Path Function:\global:Test-RemoteFileAbsent `
+            -Value {
+                param([string]$RemotePath)
+                return $true
+            }
+        $verifiedAbsentSize = Get-RemoteSize -RemotePath "app/verified-absent.js"
+        Assert-True (
+            $verifiedAbsentSize -eq -1
+        ) "Stable LIST omission plus SIZE 550 did not produce bounded absence."
+    }
+    finally {
+        Remove-Item -LiteralPath Function:\global:New-FtpRequest -Force
+        Set-Item `
+            -Path Function:\global:Test-RemoteFileAbsent `
+            -Value $originalTestRemoteFileAbsent
+        Set-Item `
+            -Path Function:\global:Test-FtpFileUnavailable `
+            -Value $originalTestFtpFileUnavailable
+        Remove-Variable -Name UnavailableSizeRequest -Scope Global -ErrorAction SilentlyContinue
+    }
+
+    $global:UnavailableListRequest = [pscustomobject]@{}
+    $global:UnavailableListRequest | Add-Member -MemberType ScriptMethod -Name GetResponse -Value {
+        throw "synthetic inaccessible parent listing"
+    }
+    function global:New-FtpRequest {
+        param([string]$RemotePath, [string]$Method)
+        return $global:UnavailableListRequest
+    }
+    $originalTestFtpFileUnavailable = (Get-Command Test-FtpFileUnavailable).ScriptBlock
+    function global:Test-FtpFileUnavailable {
+        param([Exception]$Exception)
+        return $true
+    }
+    try {
+        Assert-Throws {
+            Test-RemoteFileAbsent -RemotePath "app/inaccessible.js" | Out-Null
+        } "FTP 550 cannot prove remote-file absence|ambiguous|inaccessible"
+    }
+    finally {
+        Remove-Item -LiteralPath Function:\global:New-FtpRequest -Force
+        Set-Item `
+            -Path Function:\global:Test-FtpFileUnavailable `
+            -Value $originalTestFtpFileUnavailable
+        Remove-Variable -Name UnavailableListRequest -Scope Global -ErrorAction SilentlyContinue
     }
 
     $global:TransientSizeAttempt = 0
@@ -448,15 +1237,16 @@ namespace System.Net {
         $validXml.Replace(
             "</Servers>",
             "<Server><Host>example.org</Host><Port>21</Port><User>second</User>" +
-                "<Pass>second</Pass><Name>TinyRustLM</Name></Server></Servers>"
+                "<Pass>second</Pass><Name>TinyRustLM.com</Name></Server></Servers>"
         ),
         $utf8
     )
     Assert-Throws {
         Get-DeploymentCredentialProfile `
             -ProfilePath $duplicateProfile `
-            -SourceRoot $sourceRoot | Out-Null
-    } "exactly one TinyRustLM"
+            -SourceRoot $sourceRoot `
+            -ExpectedProfileName "TinyRustLM.com" | Out-Null
+    } "exactly one configured deployment site"
 
     $dtdProfile = Join-Path $profileRoot "dtd.xml"
     [IO.File]::WriteAllText(
@@ -468,13 +1258,15 @@ namespace System.Net {
     Assert-Throws {
         Get-DeploymentCredentialProfile `
             -ProfilePath $dtdProfile `
-            -SourceRoot $sourceRoot | Out-Null
+            -SourceRoot $sourceRoot `
+            -ExpectedProfileName "TinyRustLM.com" | Out-Null
     } "DTD|prohibited|security"
 
     Assert-Throws {
         Get-DeploymentCredentialProfile `
             -ProfilePath "relative-profile.xml" `
-            -SourceRoot $sourceRoot | Out-Null
+            -SourceRoot $sourceRoot `
+            -ExpectedProfileName "TinyRustLM.com" | Out-Null
     } "must be absolute"
 
     $insideSourceProfile = Join-Path $sourceRoot "sitemanager.xml"
@@ -482,7 +1274,8 @@ namespace System.Net {
     Assert-Throws {
         Get-DeploymentCredentialProfile `
             -ProfilePath $insideSourceProfile `
-            -SourceRoot $sourceRoot | Out-Null
+            -SourceRoot $sourceRoot `
+            -ExpectedProfileName "TinyRustLM.com" | Out-Null
     } "outside the source worktree"
 
     $profileJunction = Join-Path $root "profile-junction"
@@ -495,7 +1288,8 @@ namespace System.Net {
         Assert-Throws {
             Get-DeploymentCredentialProfile `
                 -ProfilePath (Join-Path $profileJunction "sitemanager.xml") `
-                -SourceRoot $sourceRoot | Out-Null
+                -SourceRoot $sourceRoot `
+                -ExpectedProfileName "TinyRustLM.com" | Out-Null
         } "ancestry is unsafe"
     }
     finally {
@@ -506,24 +1300,24 @@ namespace System.Net {
 
     $resolvedReportPath = Resolve-NewDeploymentReportPath `
         -Path (Join-Path $profileRoot "deployment-report.json") `
-        -SourceRoot $sourceRoot
+        -SourceRoot $canonicalRepositoryRoot
     Assert-True (
         $resolvedReportPath -eq (Join-Path $profileRoot "deployment-report.json")
-    ) "External deployment report path changed."
+    ) "Canonical deployment report path changed."
     Assert-Throws {
         Resolve-NewDeploymentReportPath `
             -Path "relative-report.json" `
-            -SourceRoot $sourceRoot | Out-Null
+            -SourceRoot $canonicalRepositoryRoot | Out-Null
     } "must be absolute"
     Assert-Throws {
         Resolve-NewDeploymentReportPath `
-            -Path (Join-Path $sourceRoot "deployment-report.json") `
-            -SourceRoot $sourceRoot | Out-Null
-    } "outside the source worktree"
+            -Path (Join-Path $canonicalRepositoryRoot "deployment-report.json") `
+            -SourceRoot $canonicalRepositoryRoot | Out-Null
+    } "canonical project artifacts"
     Assert-Throws {
         Resolve-NewDeploymentReportPath `
             -Path (Join-Path $profileRoot "deployment-report.txt") `
-            -SourceRoot $sourceRoot | Out-Null
+            -SourceRoot $canonicalRepositoryRoot | Out-Null
     } "must name a JSON file"
     $junctionTarget = Join-Path $root "junction-target"
     $junctionPath = Join-Path $root "junction-output"
@@ -537,8 +1331,8 @@ namespace System.Net {
         Assert-Throws {
             Resolve-NewDeploymentReportPath `
                 -Path (Join-Path $junctionPath "nested\deployment-report.json") `
-                -SourceRoot $sourceRoot | Out-Null
-        } "cannot traverse a reparse point"
+                -SourceRoot $canonicalRepositoryRoot | Out-Null
+        } "Deployment output ancestry must contain ordinary directories"
         Assert-True (
             -not (Test-Path -LiteralPath (Join-Path $junctionTarget "nested"))
         ) "Unsafe report validation created a directory through a junction."
@@ -708,37 +1502,266 @@ namespace System.Net {
             -ErrorAction SilentlyContinue
     }
 
-    $fakeRepository = Join-Path $root "fake-repository"
-    $fakeSite = Join-Path $fakeRepository "tinyrustlm"
-    $fakeApp = Join-Path $fakeSite "app"
-    [IO.Directory]::CreateDirectory($fakeApp) | Out-Null
-    $fakeLocalPath = Join-Path $fakeApp "release.js"
-    [IO.File]::WriteAllText($fakeLocalPath, "release-bytes`n", $utf8)
-    $fakeHostPolicyPath = Join-Path $fakeSite ".htaccess"
-    [IO.File]::WriteAllText($fakeHostPolicyPath, "host-policy`n", $utf8)
+    $global:RetiredBridgePresent = $true
+    $global:RetiredBridgeHttpsStatus = 404
+    $global:RetiredBridgeSizeReads = 0
+    function global:Get-RemoteSize {
+        param([string]$RemotePath)
+        if ($RemotePath -ne "app/companion-bridge.js") {
+            throw "unexpected retirement path"
+        }
+        $global:RetiredBridgeSizeReads += 1
+        if ($global:RetiredBridgePresent) {
+            return [int64]31
+        }
+        return [int64]-1
+    }
+    function global:Remove-RemoteFile {
+        param([string]$RemotePath)
+        if ($RemotePath -ne "app/companion-bridge.js") {
+            throw "unexpected retirement path"
+        }
+        $global:RetiredBridgePresent = $false
+    }
+    function global:Test-HttpsMissing {
+        param([string]$RemotePath)
+        $script:lastHttpsMissingObservation = [pscustomobject]@{
+            request_succeeded = $true
+            status_code = $global:RetiredBridgeHttpsStatus
+            error_identity = $null
+        }
+        return $global:RetiredBridgeHttpsStatus -eq 404
+    }
+    function global:Start-Sleep {
+        param([int]$Milliseconds)
+    }
+    try {
+        $retiredBridge = Remove-PublicArtifact `
+            -RemotePath "app/companion-bridge.js"
+        Assert-True (
+            $retiredBridge.status -eq "removed" -and
+            $retiredBridge.ftps_absent -and
+            $retiredBridge.https_status -eq 404 -and
+            $global:RetiredBridgeSizeReads -eq 2
+        ) "Retired companion bridge did not prove authenticated absence and HTTPS 404."
+
+        $global:RetiredBridgePresent = $false
+        $global:RetiredBridgeHttpsStatus = 200
+        Assert-Throws {
+            Remove-PublicArtifact `
+                -RemotePath "app/companion-bridge.js" | Out-Null
+        } "did not return HTTP 404"
+    }
+    finally {
+        foreach ($functionName in @(
+            "Get-RemoteSize"
+            "Remove-RemoteFile"
+            "Test-HttpsMissing"
+            "Start-Sleep"
+        )) {
+            Remove-Item -LiteralPath ("Function:\global:{0}" -f $functionName) -Force
+        }
+        foreach ($variableName in @(
+            "RetiredBridgePresent"
+            "RetiredBridgeHttpsStatus"
+            "RetiredBridgeSizeReads"
+        )) {
+            Remove-Variable `
+                -Name $variableName `
+                -Scope Global `
+                -ErrorAction SilentlyContinue
+        }
+    }
+
+    # Exercise real staging functions against memory-only transport observations.
+    $global:StagingStream = [IO.MemoryStream]::new()
+    $global:StagingCalls = [Collections.Generic.List[string]]::new()
+    $global:StagingVerificationFailures = 0
+    $global:StagingRequest = $null
+    function global:Get-RemoteSize {
+        param([string]$RemotePath)
+        $global:StagingCalls.Add("size:$RemotePath")
+        return [int64]$global:StagingStream.ToArray().LongLength
+    }
+    function global:Remove-RemoteFile {
+        param([string]$RemotePath)
+        $global:StagingCalls.Add("remove:$RemotePath")
+        $global:StagingStream.Dispose()
+        $global:StagingStream = [IO.MemoryStream]::new()
+    }
+    function global:Write-RemoteChunk {
+        param([string]$RemotePath, [byte[]]$Bytes, [bool]$Append)
+        $global:StagingCalls.Add("chunk:$RemotePath")
+        if (-not $Append) { $global:StagingStream.SetLength(0) }
+        $global:StagingStream.Position = $global:StagingStream.Length
+        $global:StagingStream.Write($Bytes, 0, $Bytes.Length)
+    }
+    function global:New-FtpRequest {
+        param([string]$RemotePath, [string]$Method)
+        $global:StagingCalls.Add("request:$RemotePath")
+        $global:StagingRequest = [pscustomobject]@{ ContentLength = [int64]0; Method = $Method }
+        $global:StagingRequest | Add-Member -MemberType ScriptMethod -Name GetRequestStream -Value {
+            return $global:StagingStream
+        }
+        $global:StagingRequest | Add-Member -MemberType ScriptMethod -Name GetResponse -Value {
+            return [IO.MemoryStream]::new()
+        }
+        return $global:StagingRequest
+    }
+    function global:Test-RemoteArtifact {
+        param([string]$RemotePath, [int64]$ExpectedBytes, [string]$ExpectedSha256,
+            [switch]$AuthenticatedOnly)
+        $global:StagingCalls.Add("verify:$RemotePath")
+        Assert-True $AuthenticatedOnly.IsPresent "Stage verification used the public route."
+        if ($global:StagingVerificationFailures -gt 0) {
+            $global:StagingVerificationFailures -= 1
+            return $false
+        }
+        $observed = $global:StagingStream.ToArray()
+        return $observed.LongLength -eq $ExpectedBytes -and
+            (Get-ByteArraySha256 -Bytes $observed) -eq $ExpectedSha256
+    }
+    function global:Start-Sleep {
+        param([int]$Milliseconds, [int]$Seconds)
+    }
+    try {
+        $smallPayload = [byte[]]::new(16411)
+        [Random]::new(20260919).NextBytes($smallPayload)
+        $stagePath = "app/deploy-synthetic-stage.slm"
+        $smallSha256 = Get-ByteArraySha256 -Bytes $smallPayload
+        foreach ($invalid in @(
+            @{ Payload = $smallPayload; ExpectedBytes = 1; ExpectedSha256 = $smallSha256 },
+            @{ Payload = $smallPayload; ExpectedBytes = $smallPayload.Length; ExpectedSha256 = ("0" * 64) },
+            @{ Payload = [byte[]]::new(0); ExpectedBytes = 0; ExpectedSha256 = ("0" * 64) },
+            @{ Payload = $null; ExpectedBytes = 1; ExpectedSha256 = ("0" * 64) }
+        )) {
+            $global:StagingCalls.Clear()
+            Assert-Throws { Stage-VerifiedArtifact @invalid -StagePath $stagePath } "before remote mutation"
+            Assert-True ($global:StagingCalls.Count -eq 0) "Invalid memory payload reached transport."
+        }
+        foreach ($writer in @("Write-StagedSmallArtifact", "Write-StagedArtifact")) {
+            $global:StagingCalls.Clear()
+            Assert-Throws { & $writer -Payload $smallPayload -StagePath $stagePath -ExpectedBytes 1 } "payload identity"
+            Assert-True ($global:StagingCalls.Count -eq 0) "Invalid staging length reached transport."
+        }
+
+        # A one-byte zero is valid binary data, although PowerShell treats it as false.
+        $zeroPayload = [byte[]]@(0)
+        Stage-VerifiedArtifact -Payload $zeroPayload -StagePath $stagePath -ExpectedBytes 1 `
+            -ExpectedSha256 (Get-ByteArraySha256 -Bytes $zeroPayload)
+        Assert-True (Test-ExactByteArray -Left $global:StagingStream.ToArray() -Right $zeroPayload) `
+            "A one-byte zero payload was lost."
+
+        Remove-RemoteFile -RemotePath $stagePath
+        $global:StagingStream.Write($smallPayload, 0, 13)
+        $global:StagingCalls.Clear()
+        Stage-VerifiedArtifact -Payload $smallPayload -StagePath $stagePath `
+            -ExpectedBytes $smallPayload.Length -ExpectedSha256 $smallSha256
+        Assert-True (Test-ExactByteArray -Left $global:StagingStream.ToArray() -Right $smallPayload) `
+            "Small in-memory resumption changed bytes."
+        Assert-True (@($global:StagingCalls | Where-Object { $_ -like 'chunk:*' }).Count -eq 3) `
+            "Small resumption did not preserve bounded chunks."
+        $global:StagingCalls.Clear()
+        Stage-VerifiedArtifact -Payload $smallPayload -StagePath $stagePath `
+            -ExpectedBytes $smallPayload.Length -ExpectedSha256 $smallSha256
+        Assert-True (@($global:StagingCalls | Where-Object { $_ -like 'chunk:*' }).Count -eq 0) `
+            "Complete verified stage was retransmitted."
+
+        $global:StagingCalls.Clear()
+        $global:StagingVerificationFailures = 1
+        Stage-VerifiedArtifact -Payload $smallPayload -StagePath $stagePath `
+            -ExpectedBytes $smallPayload.Length -ExpectedSha256 $smallSha256
+        Assert-True (@($global:StagingCalls | Where-Object { $_ -like 'remove:*' }).Count -eq 1 -and
+            (Test-ExactByteArray -Left $global:StagingStream.ToArray() -Right $smallPayload)) `
+            "Failed stage readback did not reset and retransmit the same verified bytes."
+        $global:StagingVerificationFailures = 2
+        Assert-Throws { Stage-VerifiedArtifact -Payload $smallPayload -StagePath $stagePath `
+            -ExpectedBytes $smallPayload.Length -ExpectedSha256 $smallSha256 } "verification failed"
+        Assert-True ($script:artifactOperationAttempt -eq 2 -and $global:StagingStream.Length -eq 0) `
+            "Stage verification did not stop after its bounded attempts."
+
+        $largePayload = [byte[]]::new((8 * 1024 * 1024) + 3)
+        [Random]::new(20260920).NextBytes($largePayload)
+        $global:StagingStream.Write($largePayload, 0, 17)
+        $global:StagingCalls.Clear()
+        Stage-VerifiedArtifact -Payload $largePayload -StagePath $stagePath `
+            -ExpectedBytes $largePayload.Length -ExpectedSha256 (Get-ByteArraySha256 -Bytes $largePayload)
+        Assert-True ($global:StagingRequest.Method -eq [Net.WebRequestMethods+Ftp]::AppendFile -and
+            $global:StagingRequest.ContentLength -eq ($largePayload.Length - 17) -and
+            (Get-ByteArraySha256 -Bytes $global:StagingStream.ToArray()) -eq
+                (Get-ByteArraySha256 -Bytes $largePayload)) "Large memory stream resumption changed bytes or offsets."
+    }
+    finally {
+        $global:StagingStream.Dispose()
+        foreach ($name in @("Get-RemoteSize", "Remove-RemoteFile", "Write-RemoteChunk",
+            "New-FtpRequest", "Test-RemoteArtifact", "Start-Sleep")) {
+            Remove-Item -LiteralPath ("Function:\global:{0}" -f $name) -Force
+        }
+        foreach ($name in @("StagingStream", "StagingCalls", "StagingVerificationFailures", "StagingRequest")) {
+            Remove-Variable -Name $name -Scope Global
+        }
+        $largePayload = $null
+    }
+
+    # Use canonical source bytes directly, with only bounded generated JSON on disk.
+    $fakeLocalPath = Join-Path $canonicalRepositoryRoot "tinyrustlm\app\site-release.js"
+    $fakeHostPolicyPath = Join-Path $canonicalRepositoryRoot "tinyrustlm\.htaccess"
     $fakeBytes = [int64](Get-Item -LiteralPath $fakeLocalPath).Length
     $fakeHash = Get-FileSha256 -Path $fakeLocalPath
     $fakeHostPolicyBytes = [int64](Get-Item -LiteralPath $fakeHostPolicyPath).Length
     $fakeHostPolicyHash = Get-FileSha256 -Path $fakeHostPolicyPath
-    $fakeRemotePath = "app/release.js"
-    $fakeStagePath = "app/deploy-$($fakeHash.Substring(0, 12))-stage.slm"
-    $fakeBackupPath = "app/backup-$($fakeHash.Substring(0, 12)).slm"
+    $fakeRemotePath = "app/site-release.js"
+    $script:deploymentLeaseId = "6" * 32
+    $fakeStagePath = "app/deploy-{0}-stage-{1}-{2}.slm" -f `
+        $script:deploymentLeaseId.Substring(0, 12),
+        $script:deploymentLeaseId.Substring(12),
+        $fakeHash.Substring(0, 12)
+    $fakeBackupPath = "app/backup-{0}.slm" -f `
+        $script:deploymentLeaseId.Substring(0, 12)
+    Assert-True (
+        $fakeStagePath -match "(^|/)deploy-[0-9a-f]{12}-stage[^/]*$" -and
+        $fakeBackupPath -match "(^|/)backup-[0-9a-f]{12}\.slm$"
+    ) "Lease-owned temporary paths escaped the deployed host-policy deny rules."
 
-    $global:RepositoryRoot = $fakeRepository
-    $script:validatedArtifacts = @{
-        "app/release.js" = [pscustomobject]@{
-            byteCount = $fakeBytes
-            sha256 = $fakeHash
-        }
-        ".htaccess" = [pscustomobject]@{
-            byteCount = $fakeHostPolicyBytes
-            sha256 = $fakeHostPolicyHash
-        }
+    $script:generatedReleaseRoot = Join-Path $root "generated-release"
+    $fakeMarkerDirectory = Join-Path $script:generatedReleaseRoot ".well-known"
+    [IO.Directory]::CreateDirectory($fakeMarkerDirectory) | Out-Null
+    $fakeMarkerPath = Join-Path $fakeMarkerDirectory "site-release.json"
+    [IO.File]::WriteAllText($fakeMarkerPath, "{}`n", $utf8)
+    $script:regularArtifactsVerifiedForCommit = $false
+    $fakeReleaseInputEntry = [pscustomobject]@{
+        source = "source"
+        local = "app/site-release.js"
+        remote = "app/site-release.js"
+        byteCount = $fakeBytes
+        sha256 = $fakeHash
     }
+    $fakeHostPolicyInputEntry = [pscustomobject]@{
+        source = "source"
+        local = ".htaccess"
+        remote = ".htaccess"
+        byteCount = $fakeHostPolicyBytes
+        sha256 = $fakeHostPolicyHash
+    }
+    $fakeMarkerInputEntry = [pscustomobject]@{
+        source = "generated-release"
+        local = ".well-known/site-release.json"
+        remote = ".well-known/site-release.json"
+        byteCount = [int64](Get-Item -LiteralPath $fakeMarkerPath).Length
+        sha256 = Get-FileSha256 -Path $fakeMarkerPath
+    }
+    $canonicalBytes = Assert-DeploymentInputEntry -DeploymentInputEntry $fakeReleaseInputEntry
+    Assert-True ((Get-ByteArraySha256 -Bytes $canonicalBytes.payload) -eq $fakeHash) `
+        "Canonical reader did not return the bound source bytes."
+    $changedEntry = $fakeMarkerInputEntry | ConvertTo-Json | ConvertFrom-Json
+    [IO.File]::WriteAllText($fakeMarkerPath, "[]`n", $utf8)
+    Assert-Throws { Assert-DeploymentInputEntry -DeploymentInputEntry $changedEntry | Out-Null } "bytes changed"
+    [IO.File]::WriteAllText($fakeMarkerPath, "{}`n", $utf8)
     $global:FakeRemoteObjects = @{}
     $global:EnsuredRemoteDirectories = [Collections.Generic.List[string]]::new()
     $global:FailPromotionRename = $false
     $global:FailPublicHostPolicy = $false
+    $global:FailStageWrite = $false
     function global:Get-RemoteSize {
         param([string]$RemotePath)
         if ($global:FakeRemoteObjects.ContainsKey($RemotePath)) {
@@ -753,7 +1776,7 @@ namespace System.Net {
     function global:Rename-RemoteFile {
         param([string]$RemotePath, [string]$NewLeafName)
         if ($global:FailPromotionRename -and
-            $RemotePath.EndsWith("-stage.slm", [StringComparison]::Ordinal)) {
+            $RemotePath -match "(^|/)deploy-[0-9a-f]{12}-stage-") {
             throw "simulated promotion failure"
         }
         if (-not $global:FakeRemoteObjects.ContainsKey($RemotePath)) {
@@ -766,7 +1789,7 @@ namespace System.Net {
     }
     function global:Stage-VerifiedArtifact {
         param(
-            [string]$LocalPath,
+            [byte[]]$Payload,
             [string]$StagePath,
             [int64]$ExpectedBytes,
             [string]$ExpectedSha256
@@ -774,6 +1797,9 @@ namespace System.Net {
         $global:FakeRemoteObjects[$StagePath] = [pscustomobject]@{
             bytes = $ExpectedBytes
             sha256 = $ExpectedSha256
+        }
+        if ($global:FailStageWrite) {
+            throw "simulated partial stage failure"
         }
     }
     function global:Test-RemoteArtifact {
@@ -853,7 +1879,48 @@ namespace System.Net {
         }
         return $true
     }
+    Assert-Throws {
+        Publish-Artifact `
+            -DeploymentInputEntry $fakeReleaseInputEntry | Out-Null
+    } "Release-wide transport capability has not admitted remote mutation"
+    Assert-True (
+        $global:FakeRemoteObjects.Count -eq 0
+    ) "Blocked transport admission performed a remote mutation."
+
+    # Unit-only admission exercises the bounded per-artifact primitives. The
+    # production orchestrator never sets this capability while FTPS lacks the
+    # required release-wide transaction and remote/global lease.
+    $script:releaseWideTransportCapabilityAdmitted = $true
     try {
+        $badEntry = $fakeReleaseInputEntry | ConvertTo-Json | ConvertFrom-Json
+        $badEntry.sha256 = "0" * 64
+        Assert-Throws { Publish-Artifact -DeploymentInputEntry $badEntry | Out-Null } "bytes changed"
+        Assert-True ($global:FakeRemoteObjects.Count -eq 0) "Changed canonical bytes reached publication."
+        Assert-Throws {
+            Publish-Artifact `
+                -DeploymentInputEntry $fakeMarkerInputEntry | Out-Null
+        } "Per-artifact publication cannot mutate the release commit marker"
+        Assert-True (
+            $global:FakeRemoteObjects.Count -eq 0
+        ) "Per-artifact marker rejection performed a remote mutation."
+        Assert-Throws {
+            Publish-Artifact -DeploymentInputEntry $fakeMarkerInputEntry -CommitMarker | Out-Null
+        } "requires verified regular publication"
+        $script:regularArtifactsVerifiedForCommit = $true
+        Assert-Throws {
+            Publish-Artifact -DeploymentInputEntry $fakeReleaseInputEntry -CommitMarker | Out-Null
+        } "requires verified regular publication"
+        Assert-True ($global:FakeRemoteObjects.Count -eq 0) "Invalid marker admission mutated transport."
+        try {
+            $marker = Publish-Artifact -DeploymentInputEntry $fakeMarkerInputEntry -CommitMarker
+            Assert-True ($marker.status -eq "published" -and $marker.readback_verified -and
+                $marker.temporary_cleanup_verified -and $global:FakeRemoteObjects.Count -eq 1 -and
+                $global:FakeRemoteObjects[$fakeMarkerInputEntry.remote].sha256 -eq $fakeMarkerInputEntry.sha256) `
+                "The explicitly admitted marker did not publish exact bytes."
+        }
+        finally { $script:regularArtifactsVerifiedForCommit = $false }
+        $global:FakeRemoteObjects.Clear()
+
         Assert-Throws {
             Invoke-PublicHostPolicyProbes -Kinds @(
                 "stage"
@@ -879,14 +1946,25 @@ namespace System.Net {
             $global:FakeRemoteObjects.Count -eq 0
         ) "Policy failure regression left a probe object behind."
 
+        $global:FailStageWrite = $true
+        $script:deploymentLeaseReleasable = $true
+        Assert-Throws {
+            Publish-Artifact `
+                -DeploymentInputEntry $fakeReleaseInputEntry | Out-Null
+        } "simulated partial stage failure"
+        Assert-True (
+            -not $script:deploymentLeaseReleasable -and
+            $global:FakeRemoteObjects.ContainsKey($fakeStagePath)
+        ) "Ambiguous stage residue did not preserve the blocking lease disposition."
+        $global:FakeRemoteObjects.Clear()
+        $global:FailStageWrite = $false
+
         $oldRemote = [pscustomobject]@{ bytes = 7; sha256 = "old" }
-        $global:FakeRemoteObjects[$fakeBackupPath] = $oldRemote
+        $global:FakeRemoteObjects[$fakeRemotePath] = $oldRemote
         $global:FailPromotionRename = $true
         Assert-Throws {
             Publish-Artifact `
-                -Source "source" `
-                -LocalRelativePath "app/release.js" `
-                -RemoteRelativePath $fakeRemotePath | Out-Null
+                -DeploymentInputEntry $fakeReleaseInputEntry | Out-Null
         } "simulated promotion failure"
         Assert-True (
             $global:FakeRemoteObjects.ContainsKey($fakeRemotePath) -and
@@ -905,6 +1983,11 @@ namespace System.Net {
             $script:artifactRollbackStatus -eq "restored"
         ) "Successful rollback status was not retained."
         Assert-True (
+            $script:deploymentLeaseReleasable -and
+            -not $global:FakeRemoteObjects.ContainsKey($fakeStagePath) -and
+            -not $global:FakeRemoteObjects.ContainsKey($fakeBackupPath)
+        ) "Verified rollback did not restore a releasable lease disposition."
+        Assert-True (
             $script:activeArtifactRemote -eq $fakeRemotePath
         ) "Active artifact identity was not retained for failure evidence."
 
@@ -915,9 +1998,7 @@ namespace System.Net {
         $global:FakeRemoteObjects[".htaccess"] = $oldHostPolicy
         Assert-Throws {
             Publish-Artifact `
-                -Source "source" `
-                -LocalRelativePath ".htaccess" `
-                -RemoteRelativePath ".htaccess" | Out-Null
+                -DeploymentInputEntry $fakeHostPolicyInputEntry | Out-Null
         } "simulated public host policy failure"
         Assert-True (
             $global:FakeRemoteObjects.ContainsKey(".htaccess") -and
@@ -946,23 +2027,29 @@ namespace System.Net {
             sha256 = $fakeHash
         }
         $global:FakeRemoteObjects[$fakeBackupPath] = $oldRemote
-        $current = Publish-Artifact `
-            -Source "source" `
-            -LocalRelativePath "app/release.js" `
-            -RemoteRelativePath $fakeRemotePath
-        Assert-True ($current.status -eq "already-current") "Current artifact status changed."
-        Assert-True ($current.temporary_cleanup_verified) "Current artifact cleanup was not verified."
+        Assert-Throws {
+            Publish-Artifact `
+                -DeploymentInputEntry $fakeReleaseInputEntry | Out-Null
+        } "Operation-owned deployment temporary state already exists"
         Assert-True (
-            -not $global:FakeRemoteObjects.ContainsKey($fakeStagePath) -and
-            -not $global:FakeRemoteObjects.ContainsKey($fakeBackupPath)
-        ) "Current artifact retained stale deployment objects."
+            $global:FakeRemoteObjects.ContainsKey($fakeStagePath) -and
+            $global:FakeRemoteObjects.ContainsKey($fakeBackupPath) -and
+            -not $script:deploymentLeaseReleasable
+        ) "A blocked operation deleted pre-existing deployment objects."
+        $global:FakeRemoteObjects.Remove($fakeStagePath)
+        $global:FakeRemoteObjects.Remove($fakeBackupPath)
+        $current = Publish-Artifact `
+            -DeploymentInputEntry $fakeReleaseInputEntry
+        Assert-True ($current.status -eq "already-current") "Current artifact status changed."
+        Assert-True (
+            $current.temporary_cleanup_verified -and
+            $script:deploymentLeaseReleasable
+        ) "Current artifact cleanup was not verified."
 
         $global:FakeRemoteObjects.Clear()
         $global:FakeRemoteObjects[$fakeRemotePath] = $oldRemote
         $published = Publish-Artifact `
-            -Source "source" `
-            -LocalRelativePath "app/release.js" `
-            -RemoteRelativePath $fakeRemotePath
+            -DeploymentInputEntry $fakeReleaseInputEntry
         Assert-True ($published.status -eq "published") "Artifact was not promoted."
         Assert-True ($published.temporary_cleanup_verified) "Published cleanup was not verified."
         Assert-True (
@@ -997,27 +2084,22 @@ namespace System.Net {
         Remove-Variable -Name EnsuredRemoteDirectories -Scope Global -ErrorAction SilentlyContinue
         Remove-Variable -Name FailPromotionRename -Scope Global -ErrorAction SilentlyContinue
         Remove-Variable -Name FailPublicHostPolicy -Scope Global -ErrorAction SilentlyContinue
-        Remove-Variable -Name RepositoryRoot -Scope Global -ErrorAction SilentlyContinue
-        $script:validatedArtifacts = $null
+        Remove-Variable -Name FailStageWrite -Scope Global -ErrorAction SilentlyContinue
+        $script:generatedReleaseRoot = $null
         $script:activeArtifactLocal = $null
         $script:activeArtifactRemote = $null
         $script:artifactOperationStep = $null
         $script:artifactOperationAttempt = $null
         $script:artifactPrimaryFailureStep = $null
         $script:artifactRollbackStatus = $null
+        $script:deploymentLeaseId = $null
+        $script:deploymentLeaseReleasable = $false
+        $script:releaseWideTransportCapabilityAdmitted = $false
     }
 }
 finally {
-    $resolvedRoot = [IO.Path]::GetFullPath($root)
-    $expectedPrefix = $temporaryBase + [IO.Path]::DirectorySeparatorChar +
-        "tinyrustlm-web-deployment-test-"
-    if (-not $resolvedRoot.StartsWith(
-        $expectedPrefix,
-        [StringComparison]::OrdinalIgnoreCase
-    )) {
-        throw "Refusing to clean an unexpected deployment-test path."
-    }
-    Remove-Item -LiteralPath $resolvedRoot -Recurse -Force
+    # The Node parent verifies the exact owner marker, inventories, and removes this tree.
+    Assert-CanonicalDeploymentArtifactPath -Path $root -SourceRoot $canonicalRepositoryRoot | Out-Null
 }
 
 Write-Host "TinyRustLM deployment persistence and credential-profile tests passed."
