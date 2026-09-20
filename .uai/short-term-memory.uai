@@ -1,9 +1,10 @@
 profile: tinyrustlm.short-term-memory.current.v1
-updated_utc: 2026-09-20T16:28:57Z
+updated_utc: 2026-09-20T16:46:20Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
 now:
+  conversion_cancellation: C70 propagates cancellation through live input/result hashes while preserving committed evidence and existing companion reconciliation. All 97 Core and 228 companion tests pass; read conversion-hash-cancellation-review.json. Synchronous disk reads and output-pipe lifetime require separate bounds; no real model or NuGet release. Preserve blocked cleanup and unrelated work.
   candidate_selection: C69 defaults only omitted limits, rejects invalid explicit values and validates the entire selected slice before acquisition. All 48 affected and three gate checks pass; three suites now have discoverable filenames. See candidate-selection-limits-review.json. Metadata screening is not converter support or model quality; only the Qwen3/Qwen-tokenizer conversion chain is exposed today. Preserve unrelated work and blocked cleanup cohorts.
   nuget_native_binding: C68 closes a real missing-package-DLL false pass caused by inherited TINYRUSTLM_NATIVE_PATH. The verifier binds its own asset/output layout and Core tests bind actual fixture output. All 105 Node and 124 managed checks pass, plus Windows audit/native smoke. See nuget-consumer-native-binding-review.json. Linux/ARM64 and publication gates remain; preserve unrelated and blocked cleanup cohorts.
   nuget_consumers: C67 requires all three platform consumers of the same package bytes before publication, and corrects eleven executable Git modes. All 103 Node and 38 managed checks pass with independent YAML/Bash validation. Read nuget-prepublish-consumer-review.json. Real hosted ARM64 and release/source-authority gates remain; no credential read or push. Preserve unrelated work.

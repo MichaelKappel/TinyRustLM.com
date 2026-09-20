@@ -1,0 +1,330 @@
+{
+  "schema": "tinyrustlm.ecosystem-cleanup.conversion-hash-cancellation-review.v1",
+  "checkpoint": "C70",
+  "parent": "1f691a7f2f0c98041780fc3c6398472286bf64df",
+  "reviewedUtc": "2026-09-20T16:49:57.241Z",
+  "status": "implemented-and-tested; owned-output-removed",
+  "previousGoalTurn": "The latest key-location reply confirmed existing memory without changing implementation (no progress on the broad goal). Revalidated the worktree and continued from C69's committed candidate-selection work.",
+  "findings": [
+    "Cancellation was first checked after synchronous launch input validation, which hashes both source locks and the executable.",
+    "Live verification did not propagate caller cancellation while hashing six artifacts, component receipts and the executable after process exit.",
+    "Companion cancellation handling intentionally performs uncancelled read-only terminal reconciliation: a valid committed pass or rejection wins."
+  ],
+  "implementation": [
+    "Check cancellation before launch validation; pass the caller token through all live file-hash paths and bounded receipt reads.",
+    "Use a single 1 MiB streaming SHA-256 helper with checks before/after every read, including EOF; preserve short-read behavior, size validation, I/O errors and caller ownership.",
+    "Preserve synchronous intent creation, durable reconciliation, public API, identities and terminal evidence."
+  ],
+  "verification": {
+    "initial": {
+      "pass": 0,
+      "fail": 1,
+      "result": "PrecancelledConversionDoesNotRevalidateInputsOrCreateOutput expected OperationCanceledException but received FileNotFoundException."
+    },
+    "focused": {
+      "pass": 56,
+      "fail": 0,
+      "skip": 0
+    },
+    "core": {
+      "pass": 97,
+      "fail": 0,
+      "skip": 0,
+      "newCases": 11
+    },
+    "companion": {
+      "pass": 228,
+      "fail": 0,
+      "skip": 0,
+      "includes": "Actual converter fixture processes, cancellation, malformed outputs, timeout, output limits, late durable pass and rejection."
+    },
+    "packageAndMemory": {
+      "pass": 38,
+      "fail": 0,
+      "skip": 0
+    },
+    "testEvidence": [
+      {
+        "file": "before.trx",
+        "sha256": "b803b4997e2db538b10e8816dda719d957643cd91b0db7d8d71625a98559733d",
+        "counters": "<Counters total=\"1\" executed=\"1\" passed=\"0\" failed=\"1\" error=\"0\" timeout=\"0\" aborted=\"0\" inconclusive=\"0\" passedButRunAborted=\"0\" notRunnable=\"0\" notExecuted=\"0\" disconnected=\"0\" warning=\"0\" completed=\"0\" inProgress=\"0\" pending=\"0\" xmlns=\"http://microsoft.com/schemas/VisualStudio/TeamTest/2010\" />",
+        "start": "2026-09-20T09:42:18.6898072-07:00",
+        "finish": "2026-09-20T09:42:20.7341595-07:00"
+      },
+      {
+        "file": "companion-final.trx",
+        "sha256": "d5a90203e002162090ec2734bfd57e15ed173ca6f67979a9f0a7055199e02505",
+        "counters": "<Counters total=\"228\" executed=\"228\" passed=\"228\" failed=\"0\" error=\"0\" timeout=\"0\" aborted=\"0\" inconclusive=\"0\" passedButRunAborted=\"0\" notRunnable=\"0\" notExecuted=\"0\" disconnected=\"0\" warning=\"0\" completed=\"0\" inProgress=\"0\" pending=\"0\" xmlns=\"http://microsoft.com/schemas/VisualStudio/TeamTest/2010\" />",
+        "start": "2026-09-20T09:45:32.2823793-07:00",
+        "finish": "2026-09-20T09:45:47.9357619-07:00"
+      },
+      {
+        "file": "conversion.trx",
+        "sha256": "203abf7343dcc7197cba87ec8718816d7d31c63d05bfd2f0e1d185977e03f512",
+        "counters": "<Counters total=\"56\" executed=\"56\" passed=\"56\" failed=\"0\" error=\"0\" timeout=\"0\" aborted=\"0\" inconclusive=\"0\" passedButRunAborted=\"0\" notRunnable=\"0\" notExecuted=\"0\" disconnected=\"0\" warning=\"0\" completed=\"0\" inProgress=\"0\" pending=\"0\" xmlns=\"http://microsoft.com/schemas/VisualStudio/TeamTest/2010\" />",
+        "start": "2026-09-20T09:44:14.5132511-07:00",
+        "finish": "2026-09-20T09:44:21.2825753-07:00"
+      },
+      {
+        "file": "core-final.trx",
+        "sha256": "39df54f43c02c38541f2c869d586404506dbe79da81c74f64a6d85c503c078ff",
+        "counters": "<Counters total=\"97\" executed=\"97\" passed=\"97\" failed=\"0\" error=\"0\" timeout=\"0\" aborted=\"0\" inconclusive=\"0\" passedButRunAborted=\"0\" notRunnable=\"0\" notExecuted=\"0\" disconnected=\"0\" warning=\"0\" completed=\"0\" inProgress=\"0\" pending=\"0\" xmlns=\"http://microsoft.com/schemas/VisualStudio/TeamTest/2010\" />",
+        "start": "2026-09-20T09:45:04.6209439-07:00",
+        "finish": "2026-09-20T09:45:10.8803601-07:00"
+      },
+      {
+        "file": "package-final.trx",
+        "sha256": "8dbe4aa7dc07dc80fb07d792824d2b5bb8f0be9f188a086e3336a4d0ba47cd27",
+        "counters": "<Counters total=\"38\" executed=\"38\" passed=\"38\" failed=\"0\" error=\"0\" timeout=\"0\" aborted=\"0\" inconclusive=\"0\" passedButRunAborted=\"0\" notRunnable=\"0\" notExecuted=\"0\" disconnected=\"0\" warning=\"0\" completed=\"0\" inProgress=\"0\" pending=\"0\" xmlns=\"http://microsoft.com/schemas/VisualStudio/TeamTest/2010\" />",
+        "start": "2026-09-20T09:47:53.6585816-07:00",
+        "finish": "2026-09-20T09:47:55.7853791-07:00"
+      }
+    ],
+    "coreCoverage": [
+      {
+        "name": "TinyRustLM.TinyRustLmConversionTool",
+        "line_rate": "0.8848580441640379",
+        "branch_rate": "0.7340425531914894",
+        "methods": [
+          {
+            "name": "VerifySummary",
+            "line_rate": "0.9393939393939394",
+            "branch_rate": "0.65625",
+            "lines": 33,
+            "covered": 31
+          },
+          {
+            "name": "VerifyDurablePass",
+            "line_rate": "0.9473684210526315",
+            "branch_rate": "0.6071428571428571",
+            "lines": 57,
+            "covered": 54
+          },
+          {
+            "name": "ValidateReceipt",
+            "line_rate": "0.9722222222222222",
+            "branch_rate": "0.9019607843137255",
+            "lines": 72,
+            "covered": 70
+          },
+          {
+            "name": "ReadAndValidateAttempt",
+            "line_rate": "1",
+            "branch_rate": "1",
+            "lines": 23,
+            "covered": 23
+          },
+          {
+            "name": "ValidateComponentReceipt",
+            "line_rate": "0.8333333333333334",
+            "branch_rate": "0.5",
+            "lines": 12,
+            "covered": 10
+          },
+          {
+            "name": "ValidateIntentForLaunch",
+            "line_rate": "0.9444444444444444",
+            "branch_rate": "0.6153846153846154",
+            "lines": 36,
+            "covered": 34
+          },
+          {
+            "name": "FileHashEquals",
+            "line_rate": "0.5",
+            "branch_rate": "1",
+            "lines": 4,
+            "covered": 2
+          },
+          {
+            "name": "ReadIdentity",
+            "line_rate": "0.7727272727272727",
+            "branch_rate": "0.5",
+            "lines": 22,
+            "covered": 17
+          },
+          {
+            "name": "ReadBoundedRegularFile",
+            "line_rate": "0.7916666666666666",
+            "branch_rate": "0.5",
+            "lines": 24,
+            "covered": 19
+          },
+          {
+            "name": "Sha256File",
+            "line_rate": "1",
+            "branch_rate": "1",
+            "lines": 10,
+            "covered": 10
+          },
+          {
+            "name": "Sha256Stream",
+            "line_rate": "1",
+            "branch_rate": "1",
+            "lines": 11,
+            "covered": 11
+          }
+        ]
+      },
+      {
+        "name": "TinyRustLM.TinyRustLmConversionTool",
+        "line_rate": "1",
+        "branch_rate": "1",
+        "methods": []
+      }
+    ],
+    "platform": ".NET SDK 10.0.401 / net8.0 Windows; shared compilation disabled; build/results/TEMP confined to original owned canonical root",
+    "coverageEvidence": [
+      {
+        "path": "results/0378cd91-1a88-446e-8b51-d3d711639b3c/Michael_PLUTO_2026-09-20.09_44_21.cobertura.xml",
+        "bytes": 1665095,
+        "sha256": "e3c35985920087a2c4e400c9daa9a315d4dbd344cd47e109be343c707a49fbf8"
+      },
+      {
+        "path": "results/6aee8b78-ed11-4a67-a404-75a97f03cb48/Michael_PLUTO_2026-09-20.09_45_10.cobertura.xml",
+        "bytes": 1822594,
+        "sha256": "81d9d4c1e4c800efcab3663b5a686f99da08ce6a73f595035d881bb7f834ca84"
+      },
+      {
+        "path": "results/a7307c95-c926-4439-9b7f-130673aebe36/Michael_PLUTO_2026-09-20.09_45_47.cobertura.xml",
+        "bytes": 3638538,
+        "sha256": "0ed8967175a6120eda29f720d13e0bc89ff9850b6b701254b569ff33a44b7544"
+      },
+      {
+        "path": "results/Michael_PLUTO_2026-09-20_09_44_16/In/PLUTO/Michael_PLUTO_2026-09-20.09_44_21.cobertura.xml",
+        "bytes": 1665095,
+        "sha256": "e3c35985920087a2c4e400c9daa9a315d4dbd344cd47e109be343c707a49fbf8"
+      },
+      {
+        "path": "results/Michael_PLUTO_2026-09-20_09_45_05/In/PLUTO/Michael_PLUTO_2026-09-20.09_45_10.cobertura.xml",
+        "bytes": 1822594,
+        "sha256": "81d9d4c1e4c800efcab3663b5a686f99da08ce6a73f595035d881bb7f834ca84"
+      },
+      {
+        "path": "results/Michael_PLUTO_2026-09-20_09_45_35/In/PLUTO/Michael_PLUTO_2026-09-20.09_45_47.cobertura.xml",
+        "bytes": 3638538,
+        "sha256": "0ed8967175a6120eda29f720d13e0bc89ff9850b6b701254b569ff33a44b7544"
+      }
+    ]
+  },
+  "repositories": [
+    {
+      "repository": "LMComposer.com",
+      "branch": "main",
+      "head": "618e081b510ad75411f2d7bec1d60a8e4f98cbbf",
+      "dirtyEntries": 0
+    },
+    {
+      "repository": "MiniModel.MiRust.com",
+      "branch": "master",
+      "head": "b437611c34ad4f80312016f4bf9aa1a08398d07a",
+      "dirtyEntries": 0
+    },
+    {
+      "repository": "MiniModel.org",
+      "branch": "master",
+      "head": "4b815cbb877a709e8d3060c2039c13e993c334eb",
+      "dirtyEntries": 0
+    },
+    {
+      "repository": "MiRust.com",
+      "branch": "master",
+      "head": "b9420a10feb0819ca6bbf89d92c9199ba89d7c86",
+      "dirtyEntries": 0
+    },
+    {
+      "repository": "Runtime.MiRust.com",
+      "branch": "master",
+      "head": "8623dcf5603ab419d02ffd0809e9ae987fb5b2a0",
+      "dirtyEntries": 15
+    },
+    {
+      "repository": "TinyRustLM.com",
+      "branch": "codex/model-acquisition-v2",
+      "head": "1f691a7f2f0c98041780fc3c6398472286bf64df",
+      "dirtyEntries": 29
+    },
+    {
+      "repository": "TinyRustLM.MiRust.com",
+      "branch": "master",
+      "head": "d17f77af652e9ac086482414a5bd0b6eb2250a50",
+      "dirtyEntries": 1
+    }
+  ],
+  "limits": [
+    "Synchronous filesystem reads already in progress must finish before cancellation is observed. No real-model latency or end-to-end disk deadline established.",
+    "Output-pipe draining lacks the caller/deadline propagation used for process exit; investigate that distinct lifecycle next. No descendant-process experiment run in C70.",
+    "No new Linux/ARM64 execution, model acquisition, numerical agreement, qualified default, live seed, NuGet push or deployment.",
+    "Policy-blocked deletions and unrelated WIP remain untouched. NuGet key contents were not read."
+  ],
+  "cleanup": {
+    "root": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\conversion-cancellation\\tinyrustlm-operation-d5qxpT",
+    "marker": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\conversion-cancellation\\tinyrustlm-operation-d5qxpT.owner.v2",
+    "status": "removed-and-verified-absent",
+    "files": 692,
+    "directories": 152,
+    "logicalBytes": 83911027,
+    "markerLogicalBytes": 65,
+    "physicalBytesRecovered": null,
+    "processCheck": "All owned exec handles terminal; fresh Win32_Process query found no matching dotnet/testhost/fixture/MSBuild/compiler process."
+  },
+  "secretScan": {
+    "status": "pass",
+    "findings": 0,
+    "scanned": 10,
+    "scopeComplete": false,
+    "scopeManifestSha256": "fd137a86dfe5db003a197f0606e604a24c47602f4fc2a5ae2693a82aa130ac37",
+    "reportSha256": "89fea4ce306fbfa5076a1841fbee98a53072b8b2af119bb804f756962b683aa1"
+  },
+  "sourceFiles": [
+    {
+      "path": "dotnet/src/TinyRustLM.Conversion/TinyRustLmConversionTool.cs",
+      "bytes": 57384,
+      "sha256": "9d3fc56bd63c70a9d4f7740e83774b8fc02675c1cc7ef177e892db79278a56f5"
+    },
+    {
+      "path": "dotnet/tests/TinyRustLM.Core.Tests/ConversionToolTests.cs",
+      "bytes": 34690,
+      "sha256": "d486daef9d6853ee3d39f0133edd0758d3bac6883cea803e7746a4bd5cf0eb53"
+    },
+    {
+      "path": "docs/companion/README.md",
+      "bytes": 17066,
+      "sha256": "cff080f0dd632a1b1c45f7ec20d98e5b5978b1fa161bfa582db23e2d2abb5b34"
+    },
+    {
+      "path": "docs/ecosystem-cleanup-2026-09-12.md",
+      "bytes": 138158,
+      "sha256": "737d31a398b1f1febcc8b5825f8ce0f695b42a9c5e0ddf5ba53fc3a564e63d6f"
+    },
+    {
+      "path": "wiki/runtime-mirust/reports/ecosystem-experiment-lessons-2026-09-12.md",
+      "bytes": 167963,
+      "sha256": "ddebe3f752145962bd12cde21904e9b15d3eaf960fe590372bc31ad8474e01ef"
+    },
+    {
+      "path": "wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md",
+      "bytes": 59867,
+      "sha256": "2d41f7b74eba8bd058aac8fe489a164f7a64701af69d78d60f6ddf50669ae2be"
+    },
+    {
+      "path": ".uai/startup-packet.uai",
+      "bytes": 16323,
+      "sha256": "5e3678a04c058f328d4c08fd906493bed08959a05d51c9a93dad4103b7cbe969"
+    },
+    {
+      "path": ".uai/operations.uai",
+      "bytes": 24968,
+      "sha256": "f4c21628f88a5fbcbff75a24a5229c33742339f325b0ea748a3ece0ceaeeec80"
+    },
+    {
+      "path": ".uai/short-term-memory.uai",
+      "bytes": 19986,
+      "sha256": "a00814ddce5814fe52ccf3fd5a0b123d366cbab0d5df21b5d76cdf9298b4fe67"
+    },
+    {
+      "path": ".uai/long-term-memory.uai",
+      "bytes": 8880,
+      "sha256": "67206c0f180a7355c6d50cb558b179ff799999696bced1fc0ab9b773e51ab5d8"
+    }
+  ]
+}

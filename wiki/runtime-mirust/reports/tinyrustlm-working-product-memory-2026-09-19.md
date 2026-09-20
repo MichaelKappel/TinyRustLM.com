@@ -16,6 +16,14 @@ Authority order is current owner instructions, inspected current contracts and b
 
 ## Current evidence and its limits
 
+**C70 conversion cancellation:** the live owner now stops cancelled input and
+result hashing between bounded reads, preserving the caller token and terminal
+evidence. All 97 Core and 228 companion checks pass, including late terminal
+reconciliation; hash-loop line/branch coverage is 100%. Read
+`conversion-hash-cancellation-review.json`. Synchronous reads must return before
+cancellation is observed; durable reconciliation still completes verification.
+This is fixture evidence, not real-model quality, NuGet publication or deployment.
+
 **C69 candidate selection:** explicit invalid limits now reject instead of becoming
 default-sized discovery/download batches. The complete selected slice is validated
 before acquisition. All 48 affected checks and three unit-gate checks pass; three

@@ -8,6 +8,87 @@ namespace TinyRustLM.Tests;
 
 public sealed class ConversionToolTests
 {
+    /// <summary>Chunk boundaries and short reads must not change the standard SHA-256 identity.</summary>
+    [Theory]
+    [InlineData(0, 3, false)]
+    [InlineData(1, 3, true)]
+    [InlineData(257, 3, true)]
+    [InlineData(1_048_576, 1_048_576, false)]
+    [InlineData(1_048_583, 1_048_576, true)]
+    public void StreamHashMatchesIndependentDigestAndLeavesStreamOpen(
+        int length, int maximumRead, bool supplyToken)
+    {
+        var payload = Enumerable.Range(0, length + 2).Select(value => (byte)(value % 251)).ToArray();
+        using var stream = new ObservedReadStream(payload, maximumRead);
+        stream.Position = 2;
+        using var cancellation = new CancellationTokenSource();
+
+        var digest = supplyToken
+            ? TinyRustLmConversionTool.Sha256Stream(stream, cancellation.Token)
+            : TinyRustLmConversionTool.Sha256Stream(stream);
+
+        Assert.Equal(Convert.ToHexString(SHA256.HashData(payload.AsSpan(2))).ToLowerInvariant(), digest);
+        Assert.Equal(payload.Length, stream.Position);
+        Assert.InRange(stream.MaximumRequestedBytes, 1, 1_048_576);
+        Assert.True(stream.CanRead);
+    }
+
+    /// <summary>Cancellation on entry, partial data, or EOF must stop reads and preserve the token.</summary>
+    [Theory]
+    [InlineData(0)]
+    [InlineData(1)]
+    [InlineData(2)]
+    [InlineData(3)]
+    public void StreamHashStopsAtCancellationIncludingEof(int cancelOnRead)
+    {
+        using var cancellation = new CancellationTokenSource();
+        using var stream = new ObservedReadStream(new byte[5], 3, read =>
+        {
+            if (read == cancelOnRead) cancellation.Cancel();
+        });
+        if (cancelOnRead == 0) cancellation.Cancel();
+
+        var error = Assert.Throws<OperationCanceledException>(() =>
+            TinyRustLmConversionTool.Sha256Stream(stream, cancellation.Token));
+
+        Assert.Equal(cancellation.Token, error.CancellationToken);
+        Assert.Equal(cancelOnRead, stream.Reads);
+        Assert.True(stream.CanRead);
+    }
+
+    /// <summary>A read error after partial input cannot become a digest or close the caller's stream.</summary>
+    [Fact]
+    public void StreamHashPreservesReadFailure()
+    {
+        var failure = new IOException("fixture-read-failure");
+        using var stream = new ObservedReadStream(new byte[5], 3, read =>
+        {
+            if (read == 2) throw failure;
+        });
+
+        Assert.Same(failure, Assert.Throws<IOException>(() => TinyRustLmConversionTool.Sha256Stream(stream)));
+        Assert.Equal(2, stream.Reads);
+        Assert.True(stream.CanRead);
+    }
+
+    /// <summary>A stopped caller must not inspect changed inputs or launch a converter.</summary>
+    [Fact]
+    public async Task PrecancelledConversionDoesNotRevalidateInputsOrCreateOutput()
+    {
+        using var fixture = new ConversionFixture("pass");
+        var tool = fixture.Tool();
+        var intent = tool.CreateCompositionIntent(fixture.Request());
+        File.Delete(fixture.ModelSourceLockPath);
+        using var cancellation = new CancellationTokenSource();
+        cancellation.Cancel();
+
+        var error = await Assert.ThrowsAnyAsync<OperationCanceledException>(() =>
+            tool.ConvertCompositionAsync(intent, cancellation.Token));
+
+        Assert.Equal(cancellation.Token, error.CancellationToken);
+        Assert.False(Directory.Exists(fixture.OutputRoot));
+    }
+
     [Fact]
     public async Task CompleteCompositionVerifiesSummaryReceiptLineageAndAllSixArtifacts()
     {
@@ -546,6 +627,24 @@ public sealed class ConversionToolTests
         Assert.Equal(
             expectedInvalid,
             TinyRustLmConversionTool.IsInvalidOutputEntry((FileAttributes)rawAttributes));
+    }
+
+    /// <summary>Supplies deterministic short reads and read-boundary cancellation without timing races.</summary>
+    private sealed class ObservedReadStream(byte[] payload, int maximumRead, Action<int>? afterRead = null)
+        : MemoryStream(payload)
+    {
+        internal int Reads { get; private set; }
+        internal int MaximumRequestedBytes { get; private set; }
+
+        /// <summary>Records the requested bound and invokes the observer after the actual read, including EOF.</summary>
+        public override int Read(byte[] buffer, int offset, int count)
+        {
+            MaximumRequestedBytes = Math.Max(MaximumRequestedBytes, count);
+            var result = base.Read(buffer, offset, Math.Min(count, maximumRead));
+            Reads++;
+            afterRead?.Invoke(Reads);
+            return result;
+        }
     }
 
     private sealed class ConversionFixture : IDisposable

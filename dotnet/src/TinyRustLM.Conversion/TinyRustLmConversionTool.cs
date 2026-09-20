@@ -312,12 +312,13 @@ public sealed partial class TinyRustLmConversionTool
             intent.OutputRoot);
     }
 
-    /// <summary>Runs and independently verifies one exact create-only composition intent.</summary>
+    /// <summary>Runs and verifies one create-only intent; caller cancellation also stops file hashing.</summary>
     public async Task<TinyRustLmCompositionConversionResult> ConvertCompositionAsync(
         TinyRustLmCompositionConversionIntent intent,
         CancellationToken cancellationToken = default)
     {
-        ValidateIntentForLaunch(intent);
+        cancellationToken.ThrowIfCancellationRequested();
+        ValidateIntentForLaunch(intent, cancellationToken);
 
         var startInfo = new ProcessStartInfo
         {
@@ -392,11 +393,13 @@ public sealed partial class TinyRustLmConversionTool
         var result = VerifySummary(
             intent,
             stdout,
-            stopwatch.Elapsed);
-        if (!FileHashEquals(intent.ConverterExecutablePath, intent.ConverterExecutableSha256))
+            stopwatch.Elapsed,
+            cancellationToken);
+        if (!FileHashEquals(intent.ConverterExecutablePath, intent.ConverterExecutableSha256, cancellationToken))
         {
             throw new TinyRustLmException("converter-executable-drift");
         }
+        cancellationToken.ThrowIfCancellationRequested();
         return result;
     }
 
@@ -440,11 +443,14 @@ public sealed partial class TinyRustLmConversionTool
             null);
     }
 
+    /// <summary>Checks the live summary against durable bytes without turning cancellation into corruption.</summary>
     private static TinyRustLmCompositionConversionResult VerifySummary(
         TinyRustLmCompositionConversionIntent intent,
         byte[] summaryBytes,
-        TimeSpan duration)
+        TimeSpan duration,
+        CancellationToken cancellationToken)
     {
+        cancellationToken.ThrowIfCancellationRequested();
         var summary = Deserialize<NativeConversionSummary>(summaryBytes, "converter-summary-json");
         var outputName = Path.GetFileName(intent.OutputRoot);
         if (summary.Schema != SummarySchema ||
@@ -460,7 +466,7 @@ public sealed partial class TinyRustLmConversionTool
             throw new TinyRustLmException("converter-summary-contract");
         }
 
-        var composition = VerifyDurablePass(intent);
+        var composition = VerifyDurablePass(intent, cancellationToken);
         if (summary.OperationId != composition.OperationId ||
             summary.GraphIdentitySha256 != composition.GraphIdentitySha256)
         {
@@ -489,15 +495,19 @@ public sealed partial class TinyRustLmConversionTool
                 duration));
     }
 
+    /// <summary>Verifies all durable members; read-only reconciliation deliberately supplies no cancellation.</summary>
     private static TinyRustLmVerifiedComposition VerifyDurablePass(
-        TinyRustLmCompositionConversionIntent intent)
+        TinyRustLmCompositionConversionIntent intent,
+        CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
         ValidatePassInventory(intent.OutputRoot);
         var receiptPath = Path.Combine(intent.OutputRoot, ReceiptFileName);
         var receiptBytes = ReadBoundedRegularFile(
             receiptPath,
             MaximumReceiptBytes,
-            "converter-receipt-file");
+            "converter-receipt-file",
+            cancellationToken);
         var receipt = Deserialize<NativeCompleteReceipt>(receiptBytes, "converter-receipt-json");
         if (receipt.Artifacts is null || receipt.Artifacts.Count != ArtifactExpectations.Length)
         {
@@ -520,7 +530,7 @@ public sealed partial class TinyRustLmConversionTool
                 throw new TinyRustLmException("converter-receipt-artifacts");
             }
             var artifactPath = Path.Combine(intent.OutputRoot, expected.FileName);
-            var identity = ReadIdentity(artifactPath, "converter-artifact-file");
+            var identity = ReadIdentity(artifactPath, "converter-artifact-file", cancellationToken);
             if (identity.ByteLength != observed.ByteLength || identity.Sha256 != observed.Sha256)
             {
                 throw new TinyRustLmException("converter-receipt-artifacts");
@@ -533,8 +543,8 @@ public sealed partial class TinyRustLmConversionTool
                 identity.Sha256);
         }
 
-        ValidateReceipt(receipt, intent, verifiedArtifacts);
-        var attempt = ReadAndValidateAttempt(intent);
+        ValidateReceipt(receipt, intent, verifiedArtifacts, cancellationToken);
+        var attempt = ReadAndValidateAttempt(intent, cancellationToken);
         if (attempt.OperationId != receipt.OperationId ||
             attempt.ConverterVersion != receipt.Converter.ImplementationVersion)
         {
@@ -562,10 +572,12 @@ public sealed partial class TinyRustLmConversionTool
             RequiredNextGate);
     }
 
+    /// <summary>Checks provenance and component receipts, carrying the live caller's hash cancellation.</summary>
     private static void ValidateReceipt(
         NativeCompleteReceipt receipt,
         TinyRustLmCompositionConversionIntent intent,
-        IReadOnlyList<TinyRustLmCompositionArtifact> artifacts)
+        IReadOnlyList<TinyRustLmCompositionArtifact> artifacts,
+        CancellationToken cancellationToken)
     {
         if (receipt.Schema != ReceiptSchema ||
             receipt.Status != "pass" ||
@@ -642,20 +654,25 @@ public sealed partial class TinyRustLmConversionTool
         ValidateComponentReceipt(
             intent.OutputRoot,
             receipt.ComponentReceipts.Model,
-            "model.slm2.conversion-receipt.json");
+            "model.slm2.conversion-receipt.json",
+            cancellationToken);
         ValidateComponentReceipt(
             intent.OutputRoot,
             receipt.ComponentReceipts.Tokenizer,
-            "tokenizer.tokenizer2.conversion-receipt.json");
+            "tokenizer.tokenizer2.conversion-receipt.json",
+            cancellationToken);
     }
 
+    /// <summary>Reads the bounded attempt record for live verification or uncancelled reconciliation.</summary>
     private static NativeAttemptReceipt ReadAndValidateAttempt(
-        TinyRustLmCompositionConversionIntent intent)
+        TinyRustLmCompositionConversionIntent intent,
+        CancellationToken cancellationToken = default)
     {
         var bytes = ReadBoundedRegularFile(
             Path.Combine(intent.OutputRoot, AttemptFileName),
             MaximumReceiptBytes,
-            "converter-attempt-file");
+            "converter-attempt-file",
+            cancellationToken);
         var attempt = Deserialize<NativeAttemptReceipt>(bytes, "converter-attempt-json");
         if (attempt.Schema != AttemptSchema ||
             attempt.Status != "started" ||
@@ -700,10 +717,12 @@ public sealed partial class TinyRustLmConversionTool
         return rejection.ErrorCode;
     }
 
+    /// <summary>Matches one component receipt's exact bytes with cancellation between hash reads.</summary>
     private static void ValidateComponentReceipt(
         string outputRoot,
         NativeComponentReceipt? receipt,
-        string expectedFile)
+        string expectedFile,
+        CancellationToken cancellationToken)
     {
         if (receipt is null ||
             receipt.File != expectedFile ||
@@ -714,7 +733,8 @@ public sealed partial class TinyRustLmConversionTool
         }
         var identity = ReadIdentity(
             Path.Combine(outputRoot, expectedFile),
-            "converter-component-receipt-file");
+            "converter-component-receipt-file",
+            cancellationToken);
         if (identity.ByteLength != receipt.ByteLength || identity.Sha256 != receipt.Sha256)
         {
             throw new TinyRustLmException("converter-component-receipt-identity");
@@ -925,7 +945,10 @@ public sealed partial class TinyRustLmConversionTool
         return match.Success ? match.Groups[1].Value : "converter-process-failed";
     }
 
-    private void ValidateIntentForLaunch(TinyRustLmCompositionConversionIntent intent)
+    /// <summary>Rechecks create-only paths and pinned inputs before launch, stopping cancelled hash work.</summary>
+    private void ValidateIntentForLaunch(
+        TinyRustLmCompositionConversionIntent intent,
+        CancellationToken cancellationToken)
     {
         ValidateCompositionIntent(intent);
         if (!PathEquals(intent.ConverterExecutablePath, _toolPath) ||
@@ -963,9 +986,9 @@ public sealed partial class TinyRustLmConversionTool
             throw new TinyRustLmException("converter-intent-path-drift");
         }
         ValidateTreeRelationships(modelDirectory, tokenizerDirectory, outputRoot);
-        if (!FileHashEquals(modelLock, intent.ModelSourceLockSha256) ||
-            !FileHashEquals(tokenizerLock, intent.TokenizerSourceLockSha256) ||
-            !FileHashEquals(converter, intent.ConverterExecutableSha256))
+        if (!FileHashEquals(modelLock, intent.ModelSourceLockSha256, cancellationToken) ||
+            !FileHashEquals(tokenizerLock, intent.TokenizerSourceLockSha256, cancellationToken) ||
+            !FileHashEquals(converter, intent.ConverterExecutableSha256, cancellationToken))
         {
             throw new TinyRustLmException("converter-intent-file-drift");
         }
@@ -1032,11 +1055,12 @@ public sealed partial class TinyRustLmConversionTool
         ? StringComparison.OrdinalIgnoreCase
         : StringComparison.Ordinal;
 
-    private static bool FileHashEquals(string path, string expected)
+    /// <summary>Maps unreadable input to mismatch while preserving the caller's cancellation exception.</summary>
+    private static bool FileHashEquals(string path, string expected, CancellationToken cancellationToken)
     {
         try
         {
-            return Sha256File(path) == expected;
+            return Sha256File(path, cancellationToken) == expected;
         }
         catch (Exception error) when (error is IOException or UnauthorizedAccessException)
         {
@@ -1101,8 +1125,10 @@ public sealed partial class TinyRustLmConversionTool
         }
     }
 
-    private static ArtifactIdentity ReadIdentity(string path, string code)
+    /// <summary>Streams an ordinary artifact's identity, retaining size checks and cancellation identity.</summary>
+    private static ArtifactIdentity ReadIdentity(string path, string code, CancellationToken cancellationToken)
     {
+        cancellationToken.ThrowIfCancellationRequested();
         try
         {
             var info = new FileInfo(path);
@@ -1123,7 +1149,7 @@ public sealed partial class TinyRustLmConversionTool
             {
                 throw new TinyRustLmException(code);
             }
-            var digest = Convert.ToHexString(SHA256.HashData(stream)).ToLowerInvariant();
+            var digest = Sha256Stream(stream, cancellationToken);
             if (stream.Position != length || stream.Length != length)
             {
                 throw new TinyRustLmException(code);
@@ -1136,8 +1162,11 @@ public sealed partial class TinyRustLmConversionTool
         }
     }
 
-    private static byte[] ReadBoundedRegularFile(string path, int maximumBytes, string code)
+    /// <summary>Reads one size-bounded receipt and checks cancellation before and after its single read.</summary>
+    private static byte[] ReadBoundedRegularFile(
+        string path, int maximumBytes, string code, CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
         try
         {
             var info = new FileInfo(path);
@@ -1160,6 +1189,7 @@ public sealed partial class TinyRustLmConversionTool
             }
             var bytes = new byte[checked((int)length)];
             stream.ReadExactly(bytes);
+            cancellationToken.ThrowIfCancellationRequested();
             if (stream.Position != length || stream.Length != length)
             {
                 throw new TinyRustLmException(code);
@@ -1172,8 +1202,10 @@ public sealed partial class TinyRustLmConversionTool
         }
     }
 
-    private static string Sha256File(string path)
+    /// <summary>Hashes a caller-selected ordinary input; intent creation uses the uncancelled default.</summary>
+    private static string Sha256File(string path, CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
         using var stream = new FileStream(
             path,
             FileMode.Open,
@@ -1181,7 +1213,26 @@ public sealed partial class TinyRustLmConversionTool
             FileShare.Read,
             HashBufferBytes,
             FileOptions.SequentialScan);
-        return Convert.ToHexString(SHA256.HashData(stream)).ToLowerInvariant();
+        return Sha256Stream(stream, cancellationToken);
+    }
+
+    /// <summary>Hashes from the current position in bounded chunks, leaving stream ownership with the caller.</summary>
+    internal static string Sha256Stream(Stream stream, CancellationToken cancellationToken = default)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        using var hash = IncrementalHash.CreateHash(HashAlgorithmName.SHA256);
+        var buffer = new byte[HashBufferBytes];
+        while (true)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            var count = stream.Read(buffer, 0, buffer.Length);
+            cancellationToken.ThrowIfCancellationRequested();
+            if (count == 0)
+            {
+                return Convert.ToHexString(hash.GetHashAndReset()).ToLowerInvariant();
+            }
+            hash.AppendData(buffer, 0, count);
+        }
     }
 
     private static string Sha256Bytes(byte[] bytes) =>

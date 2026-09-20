@@ -5,6 +5,31 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C70: honor conversion cancellation during file verification, September 20
+
+The managed conversion owner checked cancellation while the child ran, but not
+while hashing inputs before launch or checking the resulting composition. A
+pre-cancelled call with a removed source lock reproduced the defect: it reported
+`FileNotFoundException` instead of preserving the caller's cancellation.
+
+Live verification now carries the caller token through input, artifact, component
+receipt and final executable hashes. One shared bounded hash loop checks before
+and after every read, including EOF. It preserves exact digests, size checks,
+stream ownership and durable evidence. Synchronous intent creation and terminal
+reconciliation remain unchanged: a committed pass must still be fully checked
+before the companion reports it as available.
+
+All 97 Core and 228 companion checks pass, including eleven new cases, actual
+converter fixture processes, output limits, timeout, cancellation, malformed
+receipts and late-pass/rejection reconciliation. The hash loop has 100% line and
+branch coverage; the conversion owner has 88.49% line and 73.40% branch coverage
+in the Core run. A filesystem read already in progress can delay cancellation;
+the process timeout is not an end-to-end disk deadline. Output-pipe lifecycle
+review remains separate. No real model, NuGet release or site deployment is
+claimed. See `conversion-hash-cancellation-review.json` for exact evidence,
+memory/secret checks and operation-owned output retirement. Blocked cleanup
+cohorts and unrelated edits remain untouched.
+
 ## C69: honor explicit candidate download limits, September 20
 
 Candidate acquisition used truthy defaults, so an explicit zero or NaN count

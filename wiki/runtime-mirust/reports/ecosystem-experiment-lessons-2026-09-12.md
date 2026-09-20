@@ -11,6 +11,28 @@ Keep useful findings and compact evidence identities in the owning canonical
 repository. Keep source history in Git and current model payloads only in
 `D:\LLMs\TinyRustLM`.
 
+## C70: process cancellation alone does not cancel file verification
+
+- Question: does the live managed conversion call stop cancelled verification?
+- Exact inputs: parent `1f691a7f2f0c98041780fc3c6398472286bf64df`, canonical
+  conversion owner, synthetic converter processes and deterministic short-read
+  streams; no real weights or historical material experiment replay.
+- Method: cancel before launch with a removed input; cancel on partial reads and
+  EOF; compare empty, partial and multi-buffer digests to the independent SHA-256
+  API; inject a read error; run the full Core and companion suites.
+- Result: the pre-fix case threw a file error. After token propagation and a
+  shared bounded hash loop, 97 Core and 228 companion tests pass. The new hash
+  loop has 100% line/branch coverage. Committed pass/rejection reconciliation
+  still wins over a late cancellation without inventing a live observation.
+- Uncertainty: an in-progress synchronous filesystem read cannot be interrupted;
+  no measured real-model cancellation latency or whole-pipeline deadline follows.
+  Output-pipe lifetime and real model/release gates remain separate work.
+- Decision: cancel live hashing, preserve all terminal bytes, and let the existing
+  uncancelled reconciliation verify any already committed outcome.
+- Reusable lesson: propagate the token through costly verification work, and
+  distinguish stopping observation from changing durable transaction truth.
+- Evidence: `artifacts/ecosystem-cleanup-20260912/conversion-hash-cancellation-review.json`.
+
 ## C69: a zero download limit must not turn into the default batch
 
 - Question: do explicit selection controls bound network and storage work?

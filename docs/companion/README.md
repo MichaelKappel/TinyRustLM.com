@@ -130,6 +130,15 @@ evidence and advances through `Converting`, `VerifyingComposition`, and
 separate from stdout hash and elapsed-time observations, so process-loss
 recovery never fabricates live evidence.
 
+Caller cancellation is checked before live input validation and between each
+1 MiB file-hash read, including EOF, during launch validation and result
+verification. It preserves the caller's cancellation token and all durable
+output; it does not turn a stopped verification into an integrity failure.
+A synchronous filesystem read already in progress must return before the next
+check. Intent creation and read-only terminal reconciliation remain synchronous;
+reconciliation must finish verifying a committed result even after cancellation.
+The process-duration policy does not promise a deadline for this disk work.
+
 `ReconcileTerminal` accepts only an intent-bound source operation in
 `Converting` or `VerifyingComposition`. It launches, adopts, retries, and kills
 nothing. An absent or nonterminal bounded root remains pending with no journal
