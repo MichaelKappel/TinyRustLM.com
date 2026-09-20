@@ -1,5 +1,5 @@
 profile: tinyrustlm.operations.current.v1
-updated_utc: 2026-09-20T02:23:10Z
+updated_utc: 2026-09-20T11:16:12Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
@@ -10,15 +10,24 @@ historical_checkpoint:
   boundary: These August 28 source/test counts are historical. They do not describe current implementation or establish real-model qualification or deployment.
 
 current_state:
+  nuget_development: C55 replaces copied-source consumers with one canonical project and owned output, fixes three Windows build path expressions and required P2P metadata. Rust 169, managed 86 plus 38, and focused Node 15 checks pass; actual Windows package audit and consumer pass. See artifacts/ecosystem-cleanup-20260912/nuget-consumer-build-review.json. Linux and clean three-RID release/publication gates remain open; no package pushed.
   nuget_owner_requirement: Keep publication current at https://www.nuget.org/profiles/Michael.Kappel; include feed freshness, eligible package updates and public payload readback in every SDK release checkpoint.
   nuget_evidence: artifacts/ecosystem-cleanup-20260912/nuget-publication-current-review.json
   nuget_state: C54 found all three current TinyRustLM public IDs absent at source version 0.1.8. Feed checks now distinguish genuine 404 absence from unknown failure; the daily monitor source no longer requires opt-in. All 38 focused and 17 package-boundary checks pass. No package was published.
-  nuget_remaining: Configure publishing authentication, reconcile GitHub default-branch workflow, complete all three RID/package/consumer verification and clean source-authority release admission. Repository secrets and nuget-release environment were absent; only win-x64 output was present locally. Owner was asked which authentication method to configure; never request plaintext credentials in chat.
+  nuget_remaining: Use the owner-provided local credential location below for eligible publication; key validity, expiry and package scope remain unverified. Reconcile GitHub default-branch workflow, complete all three RID/package/consumer verification and clean source-authority release admission. Repository secrets and nuget-release environment were absent at C54; local credential discovery does not configure GitHub Actions.
   authority: workspace.uai current_companion_truth
   implementation: Production source acquisition, exclusive operation ownership, contained conversion, terminal reconciliation, six-member transfer and listener wiring exist; the product UI loads the capability client and composition installer.
   blocker: No qualified real default model or real-source acquisition receipt through this coordinator is established. Numerical and outside-network seed evidence remain open.
   source_review: artifacts/ecosystem-cleanup-20260912/public-source-metadata-review.json
   hosting: docs/server-seeded-startup-2026-09-12.md
+
+nuget_publishing_credential:
+  owner_provided_utc_date: 2026-09-20
+  local_file: 'C:\Users\Michael\.codex\nuget-api-key.txt'
+  account_profile: https://www.nuget.org/profiles/Michael.Kappel
+  verification: File existence confirmed by metadata only; contents were not read, printed or copied for this memory update. Validity, expiry and package scope are unverified.
+  handling: Read locally only when required for authorized NuGet publication. Keep the key out of chat, logs, source, receipts and committed configuration; record only this location. Do not request the key in chat or duplicate it into the repository.
+  authorization: The owner's standing requirement to keep eligible NuGet packages current remains in force; this location is not proof that release gates passed or a package was published.
 
 active_operation:
   name: Ecosystem cleanup and code-quality review of every project in E:\Source\Rust

@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="TinyRustLM.Abstractions" Version="[$(TinyRustLmConsumerPackageVersion)]" />
+    <PackageReference Include="TinyRustLM.Core" Version="[$(TinyRustLmConsumerPackageVersion)]" />
+    <PackageReference Include="TinyRustLM.P2P" Version="[$(TinyRustLmConsumerPackageVersion)]" />
+    <PackageReference Include="TinyRustLM.MemoryEndpoints" Version="[$(TinyRustLmConsumerPackageVersion)]" Condition="'$(TinyRustLmConsumerMemoryEndpoints)' == 'true'" />
+    <PackageReference Include="TinyRustLM.Conversion" Version="[$(TinyRustLmConsumerPackageVersion)]" Condition="'$(TinyRustLmConsumerConversion)' == 'true'" />
+  </ItemGroup>
+</Project>

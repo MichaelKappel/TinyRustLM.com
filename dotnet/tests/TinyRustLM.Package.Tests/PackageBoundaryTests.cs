@@ -386,13 +386,28 @@ public sealed class PackageBoundaryTests
             Assert.DoesNotContain("tinyrustlm-slm-pack", verifier, StringComparison.Ordinal);
         }
 
+        var consumerProject = File.ReadAllText(Path.Combine(root, "eng/consumer-smoke/TinyRustLM.ConsumerSmoke.csproj"));
+        foreach (var packageId in DefaultPackageIds.Concat(OptionalPackageIds))
+        {
+            Assert.Contains($"Include=\"{packageId}\"", consumerProject, StringComparison.Ordinal);
+        }
+        Assert.DoesNotContain("ProjectReference", consumerProject, StringComparison.Ordinal);
+        Assert.Contains("[$(TinyRustLmConsumerPackageVersion)]", consumerProject, StringComparison.Ordinal);
+        var consumerOwner = File.ReadAllText(Path.Combine(root, "eng/verify-consumer.js"));
+        Assert.Contains("consumer-smoke/TinyRustLM.ConsumerSmoke.csproj", consumerOwner, StringComparison.Ordinal);
+        Assert.Contains("canonical-operation-scratch.js", consumerOwner, StringComparison.Ordinal);
+        Assert.Contains("BaseIntermediateOutputPath", consumerOwner, StringComparison.Ordinal);
+        Assert.Contains("NUGET_PACKAGES", consumerOwner, StringComparison.Ordinal);
+        var ci = File.ReadAllText(Path.Combine(root, ".github/workflows/ci.yml"));
+        Assert.Contains("run: eng/verify-package.ps1\n", ci.Replace("\r\n", "\n", StringComparison.Ordinal), StringComparison.Ordinal);
+        Assert.DoesNotContain("run: eng/verify-package.ps1 -IncludeOptionalMemoryEndpoints", ci, StringComparison.Ordinal);
         foreach (var consumerPath in new[] { "eng/verify-consumer.ps1", "eng/verify-consumer.sh" })
         {
             var consumer = File.ReadAllText(Path.Combine(root, consumerPath));
-            foreach (var packageId in DefaultPackageIds.Concat(OptionalPackageIds))
-            {
-                Assert.Contains(packageId, consumer, StringComparison.Ordinal);
-            }
+            Assert.Contains("verify-consumer.js", consumer, StringComparison.Ordinal);
+            Assert.DoesNotContain("Copy-Item", consumer, StringComparison.Ordinal);
+            Assert.DoesNotContain("mktemp", consumer, StringComparison.Ordinal);
+            Assert.DoesNotContain("dotnet new", consumer, StringComparison.Ordinal);
             Assert.DoesNotContain("CONSUMER_CORE_PACKAGE_ID", consumer, StringComparison.Ordinal);
             Assert.DoesNotContain("CONSUMER_P2P_PACKAGE_ID", consumer, StringComparison.Ordinal);
             Assert.DoesNotContain("CONSUMER_CONVERSION_PACKAGE_ID", consumer, StringComparison.Ordinal);

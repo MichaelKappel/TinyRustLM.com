@@ -32,6 +32,39 @@ test("native build scripts copy from the explicit target-triple Cargo output", (
 });
 
 if (process.platform === "win32") {
+  test("native, converter and seed builders resolve Windows paths before any build", () => {
+    const builders = ["build-native.ps1", "build-converter.ps1", "build-p2p-seed.ps1"];
+    const script = `$ErrorActionPreference='Stop'
+$RepoRoot='${repositoryRoot.replaceAll("'", "''")}'
+$results=@(foreach($builder in @(${builders.map((name) => `'${name}'`).join(",")})) {
+  $tokens=$null; $parseErrors=$null
+  $ast=[System.Management.Automation.Language.Parser]::ParseFile((Join-Path $RepoRoot "eng/$builder"),[ref]$tokens,[ref]$parseErrors)
+  if($parseErrors.Count){throw 'builder parse failure'}
+  $definition=$ast.FindAll({param($node) $node -is [System.Management.Automation.Language.FunctionDefinitionAst] -and $node.Name -eq 'Resolve-CargoTargetDirectory'},$true)
+  if($definition.Count -ne 1){throw 'builder resolver unavailable'}
+  Invoke-Expression $definition[0].Extent.Text
+  foreach($value in @('E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\target', 'E:/Source/Rust/TinyRustLM.com/artifacts/target', '\\\\server\\share\\target', '//server/share/target', 'relative-target', 'E:\\')) {
+    $env:CARGO_TARGET_DIR=$value
+    try { @{builder=$builder;value=$value;path=(Resolve-CargoTargetDirectory)} }
+    catch { @{builder=$builder;value=$value;error=$_.Exception.Message} }
+  }
+})
+ConvertTo-Json -InputObject $results -Depth 4 -Compress`;
+    const result = spawnSync("powershell.exe", ["-NoProfile", "-NonInteractive", "-EncodedCommand",
+      Buffer.from(script, "utf16le").toString("base64")], {
+      cwd: repositoryRoot, encoding: "utf8", windowsHide: true, timeout: 10000,
+      env: { ...process.env, NODE_V8_COVERAGE: "" },
+    });
+    assert.equal(result.status, 0, result.stderr);
+    const rows = JSON.parse(result.stdout.trim());
+    assert.equal(rows.length, 18);
+    for (const row of rows) {
+      if (row.value === "relative-target") assert.match(row.error, /must be an absolute path/);
+      else if (row.value === "E:\\") assert.match(row.error, /must not be a filesystem root/);
+      else { assert.equal(row.error, undefined); assert.equal(row.path, path.win32.normalize(row.value)); }
+    }
+  });
+
   test("Windows native builder rejects a relative Cargo target before build", () => {
     const result = spawnSync("powershell.exe", [
       "-NoLogo",

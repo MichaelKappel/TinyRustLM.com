@@ -84,6 +84,11 @@ jobs:
         with:
           dotnet-version: 8.0.x
 
+      - name: Setup Node for canonical consumer verification
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
 

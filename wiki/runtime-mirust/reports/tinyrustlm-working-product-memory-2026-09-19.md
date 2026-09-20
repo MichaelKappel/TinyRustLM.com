@@ -16,6 +16,18 @@ Authority order is current owner instructions, inspected current contracts and b
 
 ## Current evidence and its limits
 
+**C55 Windows NuGet preparation:** the canonical consumer project replaces both
+source-copy workflows; mutable build/cache output is owned under artifacts and
+retired. Native/converter/seed Windows path parsing and missing P2P metadata are
+fixed. Rust formatting/Clippy and 169 tests passed, followed by a real Windows
+native build, 86 managed core and 38 package tests, and passing package audit plus
+packaged-native consumer execution. Fifteen focused checks pass. These are local
+development packages, retired after inspection. On September 20 the owner supplied
+the local NuGet credential location, recorded in `.uai/operations.uai` without its
+contents. File existence is confirmed; credential validity/scope, Linux execution,
+default-branch reconciliation and release admission remain open.
+See `artifacts/ecosystem-cleanup-20260912/nuget-consumer-build-review.json`.
+
 **Owner NuGet requirement (September 19):** keep publication current on the
 [Michael.Kappel profile](https://www.nuget.org/profiles/Michael.Kappel). Include
 feed freshness, package/native/consumer checks, publication and payload readback
@@ -24,8 +36,9 @@ and TinyRustLM.P2P; do not revive retired implementations. C54 found all three
 indexes returning 404 at source version 0.1.8. GitHub's default branch is older
 than the canonical branch; its release workflow is not registered, Actions secrets
 are empty and nuget-release is absent. Only local win-x64 native output is present.
-Authentication, workflow-branch reconciliation, full release verification and
-source-authority admission remain open. No package was pushed. See
+The local credential location is now known; validation, workflow-branch
+reconciliation, full release verification and source-authority admission remain
+open. No package was pushed. See
 `artifacts/ecosystem-cleanup-20260912/nuget-publication-current-review.json`.
 
 **C53 static-seed browser evidence:** MiniModel commit

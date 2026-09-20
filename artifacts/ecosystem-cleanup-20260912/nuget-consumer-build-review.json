@@ -1,0 +1,386 @@
+{
+  "schema": "tinyrustlm.ecosystem.nuget_consumer_build_review.v1",
+  "checkpoint": "C55",
+  "recorded_utc": "2026-09-20T11:16:12Z",
+  "source_parent": "39870a9ce200afeba62c77a73c8ae24839348fe7",
+  "canonical_source": "E:\\Source\\Rust\\TinyRustLM.com",
+  "scope": "Canonical package-only consumer, Windows build path handling, P2P metadata and consistent three-package CI; no public publication.",
+  "changes": [
+    "Replace copied temporary consumer projects with one checked-in project and shared Node runner; exact NuGet version ranges, isolated mutable output and bounded owned cleanup.",
+    "Preserve caller-relative feeds and independently detected optional local packages; reject invalid sources and versions before dotnet execution.",
+    "Correct Windows/UNC path expressions in all three PowerShell builders.",
+    "Supply the existing audit's required share-kit P2P tag; keep audit and release gates unchanged.",
+    "Use the same default three-package graph in CI; install Node 24 in release/monitor consumer jobs.",
+    "Record the owner-provided local credential location in operations.uai; existence checked without reading its contents."
+  ],
+  "environment": {
+    "node": "24.14.0",
+    "dotnet_sdk": "10.0.401",
+    "consumer_target": "net8.0",
+    "rust": "1.96.0 (ac68faa20 2026-05-25)",
+    "cargo": "1.96.0",
+    "msvc": "14.51.36231",
+    "native_rid": "win-x64",
+    "notes": "Rustup invocation initially synchronized/downloaded three components in the existing toolchain location; subsequent Rust commands used the installed direct toolchain with offline Cargo. No Linux runtime execution is claimed."
+  },
+  "verification": {
+    "rust": {
+      "format": "pass",
+      "clippy": "pass; warnings denied",
+      "tests_passed": 169,
+      "tests_failed": 0,
+      "tests_ignored": 0,
+      "limit": "Passed before the Windows shell path correction; Rust source unchanged afterward."
+    },
+    "managed_release": {
+      "core_passed": 86,
+      "package_passed": 38,
+      "failed": 0,
+      "skipped": 0
+    },
+    "focused_node": {
+      "command": "node --test --experimental-test-coverage --test-coverage-include=eng/verify-consumer.js tinyrustlm/tests/verify-consumer.test.js tinyrustlm/tests/build-native-script.test.js",
+      "passed": 15,
+      "failed": 0,
+      "skipped": 0,
+      "consumer_coverage": {
+        "line_percent": 83.96,
+        "branch_percent": 96.43,
+        "function_percent": 80
+      },
+      "powershell_resolver_cases": 18,
+      "coverage_limit": "Coverage percentage applies only to the shared JavaScript runner; real AST resolver cases cover three PowerShell builders. Bash syntax checked; Linux consumer/native execution remains unverified."
+    },
+    "memory_consolidation": {
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0
+    },
+    "actual_package_audit": {
+      "status": "pass",
+      "package_count": 3,
+      "symbol_count": 3,
+      "all_violation_counts": 0,
+      "required_native_rids": [
+        "win-x64"
+      ],
+      "limit": "Development-only Windows audit; not three-RID release admission."
+    },
+    "actual_consumer": {
+      "status": "pass",
+      "entrypoint": "eng/verify-consumer.ps1",
+      "exit_code": 0,
+      "source": "eng/consumer-smoke/TinyRustLM.ConsumerSmoke.csproj",
+      "restore_ms": 290,
+      "build_seconds": 2.54,
+      "build_warnings": 0,
+      "build_errors": 0,
+      "observations": [
+        "consumer-smoke-native-contract-15",
+        "consumer-smoke-slm2-inspected",
+        "consumer-smoke-acg2-assembled",
+        "consumer-smoke-slm2-assembled",
+        "consumer-smoke-create-only-rejected",
+        "consumer-smoke-manifest-tamper-rejected"
+      ],
+      "limit": "Exact locally packed Windows bytes and synthetic format vectors; not real model qualification or public feed readback."
+    }
+  },
+  "failed_attempts": [
+    {
+      "stage": "Initial focused tests",
+      "result": "10 pass, 1 fail",
+      "finding": "A nonexistent absolute Windows path was classified as a URL scheme.",
+      "fix": "Reject nonexistent absolute source paths before URL parsing."
+    },
+    {
+      "stage": "Initial full Windows verification",
+      "result": "Rust formatting, Clippy and 169 tests passed; native builder then rejected a normal absolute Windows CARGO_TARGET_DIR.",
+      "fix": "Correct all three PowerShell path expressions; validate 18 resolver cases."
+    },
+    {
+      "stage": "Build/pack after path correction",
+      "result": "Native release and all managed tests passed; package audit failed, so consumer did not start.",
+      "evidence": "First failed audit was 35,714 bytes with SHA-256 206247eb3990154b9e7366ff9825a8bc9a1c2f3c057f1fab683a3ea1a06634f1; detailed findings were not retained before owned cleanup."
+    },
+    {
+      "stage": "Controlled diagnostic repack",
+      "result": "Reproduced all six preceding package identities; isolated missing_search_term_count=1, TinyRustLM.P2P missing share-kit; other violations zero.",
+      "fix": "Add the required tag without changing audit criteria."
+    },
+    {
+      "stage": "Memory test after outer verification cleanup",
+      "result": "NETSDK1064: xunit.analyzers 1.16.0 missing.",
+      "finding": "Outer build harness CLI home/cache isolation left shared project.assets.json references to its retired package cache. The new consumer isolates obj and does not retain those references.",
+      "fix": "Normal restore of Core.Tests, Package.Tests, ConsoleSample and P2PShareSample restored developer generated state. Six memory tests then passed; 17 asset files subsequently checked, zero retired verification-cache references.",
+      "lesson": "When an outer harness isolates NuGet caches, also isolate all generated restore assets or repair their canonical cache bindings before retiring the owned cache."
+    }
+  ],
+  "native_output": {
+    "path": "artifacts/native/win-x64/tinyrustlm_native.dll",
+    "before": {
+      "bytes": 4177920,
+      "sha256": "f368a45586a7aed05a412e40594c94971e25cf040218d4479eb5e7673ce4bc5d"
+    },
+    "after": {
+      "bytes": 1283072,
+      "sha256": "58a34170d9d9ccbc4cec4eb3734f1b5b06af2e62ce27d2d74a46d3c8a6bfba36"
+    },
+    "retention": "Current output replaced in place; no backup DLL."
+  },
+  "package_version": "0.1.8",
+  "verified_packages": [
+    {
+      "file": "TinyRustLM.Abstractions.0.1.8.nupkg",
+      "bytes": 36401,
+      "sha256": "7848ae2dafbc4466900395a05d2b0bc3241fc3d52a86fb827131f0695a2a7644"
+    },
+    {
+      "file": "TinyRustLM.Abstractions.0.1.8.snupkg",
+      "bytes": 12163,
+      "sha256": "128747c8b2242bfe2211c347757baf1ee02d826e60314f5db9a9d13fbc600787"
+    },
+    {
+      "file": "TinyRustLM.Core.0.1.8.nupkg",
+      "bytes": 558051,
+      "sha256": "ff3d9886bf2255c11bc05f3108cb8120a37e126a22424e0446a6562ef7ac1a00"
+    },
+    {
+      "file": "TinyRustLM.Core.0.1.8.snupkg",
+      "bytes": 12805,
+      "sha256": "c147c0f6303de12c8cdccbda14a8962eb9831905ffe9cf12fea410b1186bb95d"
+    },
+    {
+      "file": "TinyRustLM.P2P.0.1.8.nupkg",
+      "bytes": 23322,
+      "sha256": "32edf15ab353b9eb8cd89067914dc50fd71b758dc72f6da4f0a27fa2674b1b58"
+    },
+    {
+      "file": "TinyRustLM.P2P.0.1.8.snupkg",
+      "bytes": 10434,
+      "sha256": "077919ae8132da9f7acbd838f169773c34341269c46df1c322038717ad68289c"
+    }
+  ],
+  "prior_failed_p2p_packages": [
+    {
+      "file": "TinyRustLM.P2P.0.1.8.nupkg",
+      "bytes": 23310,
+      "sha256": "8d077c838d54859e2c01cbe97d75e26ff121fcae54316aa0930434f3658f2e65"
+    },
+    {
+      "file": "TinyRustLM.P2P.0.1.8.snupkg",
+      "bytes": 10422,
+      "sha256": "72f02e1fae7f00ec4d077f54d37e25f0353fec6aaaf8bbbe2e0b96c305fa16af"
+    }
+  ],
+  "retirement": {
+    "owned_trees": [
+      {
+        "path": "artifacts/tests/nuget-package-verification/tinyrustlm-operation-TpXIfe",
+        "files": 1490,
+        "logical_bytes": 979463240
+      },
+      {
+        "path": "artifacts/tests/nuget-package-verification/tinyrustlm-operation-DSOPZ0",
+        "files": 1102,
+        "logical_bytes": 268137676
+      },
+      {
+        "path": "artifacts/tests/nuget-package-verification/tinyrustlm-operation-otZ3Yt",
+        "files": 11,
+        "logical_bytes": 692814
+      },
+      {
+        "path": "artifacts/tests/nuget-package-verification/tinyrustlm-operation-lOHRaO",
+        "files": 11,
+        "logical_bytes": 692838
+      }
+    ],
+    "logical_bytes_removed": 1248986568,
+    "physical_bytes_recovered": null,
+    "absence_verified": true,
+    "consumer_scratch": "artifacts/tests/nuget-consumer/tinyrustlm-operation-gY3fyI",
+    "consumer_scratch_absent": true,
+    "consumer_logical_bytes_not_measured": true,
+    "source_copies_created": 0,
+    "package_payloads_retained": 0,
+    "method": "Existing canonical operation ownership, containment and identity checks; only operation-owned trees removed. Previously policy-blocked cleanup was not retried."
+  },
+  "source_authority": {
+    "status": "source_authority_scan_incomplete",
+    "unreadable_paths": [
+      "artifacts/verification/qwen3-environment-install/tinyrustlm-operation-C3ZUt9/install-temp/TmP6xn2evdh-b",
+      "artifacts/verification/qwen3-environment-install/tinyrustlm-operation-C3ZUt9/install-temp/TmPeq63_hr7-b"
+    ],
+    "note": "First invocation lacked process-local Git safe.directory and failed identity admission. Corrected invocation reached the existing two unreadable installer links. Neither was a pass; no deletion retried."
+  },
+  "publication": {
+    "packages_pushed": 0,
+    "credential_location": "Owner supplied local file; secret-free location and handling recorded only in .uai/operations.uai.",
+    "credential_check": "Metadata-only existence confirmed; contents, validity, expiry and package scope untested.",
+    "remaining": [
+      "Linux x64 and arm64 native/release verification",
+      "Default-branch workflow reconciliation",
+      "Clean exact source and source-authority admission",
+      "Eligible release packing and authenticated push",
+      "Independent public package-byte readback"
+    ]
+  },
+  "claim_limits": [
+    "No public NuGet publication, real-model qualification, browser-model qualification, initial public seed or website deployment.",
+    "SDK package verification does not qualify the unchanged rejected Qwen3 product checkpoint.",
+    "Thirty unrelated worktree entries are outside this checkpoint."
+  ],
+  "inputs": [
+    {
+      "path": ".github/workflows/ci.yml",
+      "bytes": 12554,
+      "sha256": "c37e585c2b05dcbd0b26cd2e7c57b899153baaab9c0259016aec8a0d42c8f097"
+    },
+    {
+      "path": ".github/workflows/nuget-feed-monitor.yml",
+      "bytes": 5151,
+      "sha256": "50286002122b3ef36ff98e542c292df43c9905e61dbe1f64f3f43cc51df3f408"
+    },
+    {
+      "path": ".github/workflows/release-nuget.yml",
+      "bytes": 11998,
+      "sha256": "216d119c4ba89ce93e262977bcbe384ae56a64da7d51b25f562856be1a744605"
+    },
+    {
+      "path": "docs/nuget/README.md",
+      "bytes": 12247,
+      "sha256": "0cd5a660ee1c6d4cb0b05d3334394ad6ffdb7c7283c8f76296fc04bcc0e1a6a8"
+    },
+    {
+      "path": "docs/ecosystem-cleanup-2026-09-12.md",
+      "bytes": 108144,
+      "sha256": "8eaed132de47294277c6947dc072bd4bb290bcb469f407573cd17d64f81d8500"
+    },
+    {
+      "path": "dotnet/src/TinyRustLM.P2P/TinyRustLM.P2P.csproj",
+      "bytes": 1598,
+      "sha256": "b0fd3e8747e64bda7805d467684060bc51676fad1c959d136e811ab5016bd60f"
+    },
+    {
+      "path": "dotnet/tests/TinyRustLM.Package.Tests/PackageBoundaryTests.cs",
+      "bytes": 37168,
+      "sha256": "71769495e71423e2a1d2e1398b7e0425cdc23fa1ef7286e19aefb403bd9b09b6"
+    },
+    {
+      "path": "eng/build-native.ps1",
+      "bytes": 3442,
+      "sha256": "30c555c5f3fd38de73161ae07b59cec3ad6b4effc919e16189f318ec677fa332"
+    },
+    {
+      "path": "eng/build-converter.ps1",
+      "bytes": 3382,
+      "sha256": "4073fd68c87b62d96b32fec83ce6660ee2d96a3294a23b51152ff3c671697415"
+    },
+    {
+      "path": "eng/build-p2p-seed.ps1",
+      "bytes": 3437,
+      "sha256": "8a8faa5f7eedbb7821a160f4b7988da51d7503bbc232aadbf2f542a0b146d258"
+    },
+    {
+      "path": "eng/verify-consumer.ps1",
+      "bytes": 575,
+      "sha256": "3f4f863aca1b7c43592e92ee3e259553980986a1d1cc37d5c2ede025945e627d"
+    },
+    {
+      "path": "eng/verify-consumer.sh",
+      "bytes": 383,
+      "sha256": "f0cbf85d982fb64ccc3cc0d2c2df368567f5868d5d8a4eaa7876efc01157ca18"
+    },
+    {
+      "path": "eng/verify-consumer.js",
+      "bytes": 5007,
+      "sha256": "0c4579e3f64c984a2791e67f00d363ca8b50382e552359c65a4c14e6de7586b0"
+    },
+    {
+      "path": "eng/consumer-smoke/TinyRustLM.ConsumerSmoke.csproj",
+      "bytes": 937,
+      "sha256": "61702a14717bc998153a777be25764ee3ab703a302915a0ce9910ceb528972b5"
+    },
+    {
+      "path": "tinyrustlm/tests/build-native-script.test.js",
+      "bytes": 4237,
+      "sha256": "e234a30db824d21b0a92661aa11b06f1393f4f792a74861cdd0c9b46c63bfb12"
+    },
+    {
+      "path": "tinyrustlm/tests/verify-consumer.test.js",
+      "bytes": 7124,
+      "sha256": "ed8884498b5686f986ddadd0d8a3cd071bc8c36fa2ad9a04b249d4171170a886"
+    },
+    {
+      "path": "wiki/runtime-mirust/reports/ecosystem-experiment-lessons-2026-09-12.md",
+      "bytes": 139286,
+      "sha256": "379e20c9dee1743db177e2175b18c9265dafd8fd7299b3361c16901394cd34c5"
+    },
+    {
+      "path": "wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md",
+      "bytes": 50141,
+      "sha256": "f111ab8d445ad2fe048f48da3e98b99c9a4cee0ba47699d07e5225d5a30d1493"
+    },
+    {
+      "path": ".uai/operations.uai",
+      "bytes": 17622,
+      "sha256": "14b3e84a7bd0f44aeb39a530f49f95312af1710aa3f528d5f6d278ce0fd8b0ea"
+    },
+    {
+      "path": ".uai/startup-packet.uai",
+      "bytes": 10071,
+      "sha256": "cf79fb58db79e207ced3371254d735cfeaf099514683b02809af92119061234e"
+    },
+    {
+      "path": ".uai/short-term-memory.uai",
+      "bytes": 14119,
+      "sha256": "29862a3e051e6f1129cbd7ea017294a0ec3a86c7b95146b2e11de3c5203287f3"
+    },
+    {
+      "path": ".uai/long-term-memory.uai",
+      "bytes": 8896,
+      "sha256": "b912b90019eea5283c63f4a11e8a01543f84dd01178c345ca0f16f3af98f0f2c"
+    },
+    {
+      "path": "eng/consumer-smoke/Program.cs",
+      "bytes": 8848,
+      "sha256": "8cbdc2c73516e0eacca8ac598443dd78054d71d13cf59149d812fc7307276f9e"
+    },
+    {
+      "path": "eng/pack.ps1",
+      "bytes": 7512,
+      "sha256": "20e94f7a57b538cc724da5d2dc08497051284d5f73a25f638eb258440529c1cf"
+    },
+    {
+      "path": "eng/verify-package.ps1",
+      "bytes": 1873,
+      "sha256": "27ae1c5c0d4ca60fbbd339229a8df643336b0de9d26963300fd2a7fc36ab2475"
+    },
+    {
+      "path": "eng/write-package-audit.ps1",
+      "bytes": 49670,
+      "sha256": "4579ddcaea40260e1d6aaca6edf20b283133f77f5728433e8a6bd5feb6735182"
+    },
+    {
+      "path": "eng/write-package-audit.sh",
+      "bytes": 43550,
+      "sha256": "08cb1341e791446c54d0185955b3d264d7a389c895e1a98ce63c467ab0533695"
+    },
+    {
+      "path": "tinyrustlm/tools/canonical-operation-scratch.js",
+      "bytes": 6416,
+      "sha256": "c35f164205e68792510c9cfbb7287a9df58fa9ac28f9eec8471b3a2a746a98d6"
+    },
+    {
+      "path": "Cargo.toml",
+      "bytes": 1792,
+      "sha256": "787b110dc2e416bbfcc3d40da7c79c5416a70746817828b7e545c71c200d607a"
+    },
+    {
+      "path": "Cargo.lock",
+      "bytes": 25746,
+      "sha256": "6b5e6ab614c254adc0298b727a0578a0d3aa42bb768cc10659d719fefdeb31c0"
+    }
+  ]
+}

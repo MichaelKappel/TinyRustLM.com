@@ -161,10 +161,14 @@ eng\verify-consumer.ps1 `
   -PackageVersion 0.1.8
 ```
 
-The consumer is created under a uniquely owned temporary root, uses isolated
-global and HTTP NuGet caches, references package bytes rather than project
-references, verifies the package-local native runtime, and removes only its
-marked temporary root.
+The consumer compiles the single checked-in project at
+`eng/consumer-smoke/TinyRustLM.ConsumerSmoke.csproj` against exact package versions.
+Both shell entry points delegate to `eng/verify-consumer.js` (Node 24 required).
+Its build output, NuGet caches, CLI home and temporary files live in a uniquely
+owned directory under `artifacts/tests/nuget-consumer`. No source is copied.
+Relative folder feeds are resolved against the caller's directory before work
+starts. The consumer verifies the package-local native runtime and removes only
+its identity-checked owned output after success or failure.
 
 ## Publication Boundary
 

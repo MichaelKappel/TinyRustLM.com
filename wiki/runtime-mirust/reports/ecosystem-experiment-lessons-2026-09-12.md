@@ -11,6 +11,20 @@ Keep useful findings and compact evidence identities in the owning canonical
 repository. Keep source history in Git and current model payloads only in
 `D:\LLMs\TinyRustLM`.
 
+## C55: run the actual package path before claiming release readiness
+
+Question: can the current SDK pack and run without copied source? The canonical
+consumer now uses exact package references and owned build/cache output. Real
+execution found Windows path regexes that only handled forward slashes, then a
+missing required P2P search tag. Corrected builders pass positive and negative
+resolver cases; actual package audit and Windows consumer pass without weakening
+requirements. Keep a real normal-path check alongside rejection tests, resolve
+feeds before changing directory, and retain diagnostic findings before retiring
+payloads. Rust 169, managed 86 + 38 and focused Node 15 checks passed; Linux/public
+release remain unproven. Evidence: `nuget-consumer-build-review.json` in the cleanup
+artifact directory. The first audit receipt was retired with only its identity;
+a controlled repack reproduced the same six payload hashes and isolated the tag.
+
 ## C54: distinguish an absent package from an unknown feed
 
 Question: can feed freshness safely decide whether publication is needed? Method:

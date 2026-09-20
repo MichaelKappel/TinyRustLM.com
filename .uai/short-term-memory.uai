@@ -1,10 +1,10 @@
 profile: tinyrustlm.short-term-memory.current.v1
-updated_utc: 2026-09-20T02:23:10Z
+updated_utc: 2026-09-20T11:16:12Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
 now:
-  task: Owner added current NuGet publication. C54 records missing current packages and authentication/default-branch/native/source gates, corrects feed failure classification and enables daily monitor execution in source. C53 completed local Apache/Edge CORS verification. Continue release preparation and original product gates; ternary/Bonsai research stays deferred.
+  task: C55 completes Windows package audit and real consumer execution, removes copied-source setup and fixes build path/metadata defects. The owner supplied the local NuGet API-key path; operations.uai records its location without the secret. Continue Linux and clean release preparation, credential validation/default-branch reconciliation and original product gates. C54 feed fixes and C53 Apache/Edge evidence remain; ternary/Bonsai research stays deferred.
   maturity: Early alpha, never a working release; no code debt, obsolete code or legacy support before the owner's official acceptance of a fully working release.
   broader_goal: Ecosystem cleanup and usable release remain incomplete.
   manifest: docs/report-intake/2026-09-19/working-product-research/MANIFEST.md

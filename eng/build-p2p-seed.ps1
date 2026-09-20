@@ -13,8 +13,8 @@ function Resolve-CargoTargetDirectory {
         return [IO.Path]::GetFullPath((Join-Path $RepoRoot "target"))
     }
     $configured = $env:CARGO_TARGET_DIR
-    $isWindowsAbsolute = $configured -match '^[A-Za-z]:[\/]'
-    $isUncAbsolute = $configured -match '^(?:\\|//)[^\/]+[\/][^\/]+'
+    $isWindowsAbsolute = $configured -match '^[A-Za-z]:[\\/]'
+    $isUncAbsolute = $configured -match '^(?:\\\\|//)[^\\/]+[\\/][^\\/]+'
     $isPosixAbsolute = $configured.StartsWith("/", [StringComparison]::Ordinal)
     if (-not ($isWindowsAbsolute -or $isUncAbsolute -or $isPosixAbsolute)) {
         throw "CARGO_TARGET_DIR must be an absolute path"

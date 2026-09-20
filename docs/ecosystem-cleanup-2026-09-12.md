@@ -5,6 +5,40 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C55: execute the Windows package consumer without copied source, September 19
+
+Both consumer entry points now use one canonical project and Node runner. Exact
+package references, build output, caches, CLI home and temporary files stay under
+owned canonical artifacts; the runner removes them after success or failure.
+Relative feeds resolve before execution. CI now packs the same three public IDs
+that its next step requires; release and monitor jobs explicitly install Node 24.
+
+The real verification path exposed two further defects. Three PowerShell builders
+used incorrectly escaped path expressions that rejected normal Windows paths;
+native, converter and seed builders now pass eighteen resolver cases. The package
+audit rejected a missing required `share-kit` tag; P2P metadata now supplies it.
+Neither audit nor release requirements were weakened.
+
+Rust formatting, warnings-denied Clippy and all 169 Rust tests passed. A subsequent
+Windows native build and managed Release run passed 86 core and 38 package tests.
+After the metadata correction, all three packages and matching symbol packages
+passed the actual package audit. The real consumer loaded the packaged native
+library, verified fifteen ABI symbols, inspected SLM2, assembled SLM2/ACG2 fixtures,
+and rejected collisions and manifest tampering. Fifteen focused Node checks pass;
+the new runner has 83.96% measured line coverage. Bash syntax was checked; Linux
+native/consumer execution was not established.
+
+Four operation-owned package/build trees were retired: 1,248,986,568 logical bytes,
+with physical recovery unmeasured. Consumer scratch is also absent. Source files
+were not copied. The current Windows native output replaces the earlier DLL;
+candidate package payloads were retired after their identities and outcomes were
+recorded. See `artifacts/ecosystem-cleanup-20260912/nuget-consumer-build-review.json`.
+No package was published. On September 20 the owner supplied the local NuGet
+credential location; `.uai/operations.uai` records it without the secret. File
+existence is confirmed; credential validity/scope, default-branch reconciliation,
+complete three-RID release validation, source admission and real product gates
+remain open.
+
 ## C54: keep NuGet publication current, September 19
 
 The owner requires current NuGet publication at the Michael.Kappel profile.

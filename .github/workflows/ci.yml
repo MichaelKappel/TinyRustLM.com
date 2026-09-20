@@ -269,7 +269,7 @@ jobs:
 
       - name: Verify package boundary
         shell: pwsh
-        run: eng/verify-package.ps1 -IncludeOptionalMemoryEndpoints
+        run: eng/verify-package.ps1
 
       - name: Verify exact public package graph
         shell: pwsh
