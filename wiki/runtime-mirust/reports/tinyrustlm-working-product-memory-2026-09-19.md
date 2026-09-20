@@ -85,6 +85,17 @@ abort events ceased or changing production cancellation. See
 `artifacts/ecosystem-cleanup-20260912/completed-runtime-probe-review.json` and lesson
 C45. Source scan, real model, public seed and deployment remain unresolved.
 
+**C46 cache cancellation:** a failed source could hold the composition-store lock
+while iterator cleanup stalled, even after later user cancellation. The cleanup
+wait now keeps the existing cancellation listener active and preserves the primary
+error. Three source forms reproduce the former failure; 118 affected checks and
+two Edge OPFS/cache tests pass. Real storage retains the previous installation and
+releases its lock without activating the failed candidate. Both shell hashes are
+updated and twelve direct smoke observations pass. See
+`artifacts/ecosystem-cleanup-20260912/composition-cleanup-cancellation-review.json`.
+This is synthetic storage evidence; further ownership/replacement review and all
+real model/public gates remain open.
+
 Compare three routes by evidence:
 - Qualify an already useful compact checkpoint and adapt the sole runtime where justified.
 - Run a bounded new-derivative training experiment after inference, data and independent review readiness.

@@ -5,6 +5,34 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C46: keep cancellation active during failed source cleanup, September 19
+
+The composition store checked cancellation before iterator cleanup, then awaited
+the iterator's return without listening for a later cancellation. A malformed
+source with a stalled return could therefore keep the writer lock indefinitely
+after the user cancelled. Reproducers failed for a custom iterator, reader adapter
+and native ReadableStream; all three exceeded the 500 ms test observation bound.
+
+The cleanup wait now uses the store's existing cancellation boundary. It preserves
+the original validation failure and observes late cleanup rejection. It cannot
+activate the failed candidate or replace the prior pointer. The two generated
+shells bind the new script hash; visual markup and the six-member format are
+unchanged. All 118 affected unit/integration/publication checks pass, with store
+Node line/branch/function coverage of 86.75/80.51/89.13 percent. Two installed-Edge
+tests pass, including real OPFS/Web Locks with delayed stream cleanup and the
+existing persistent-cache/restart/tamper checks. The directly invoked zero-argument
+release-smoke runner passes twelve observations and verifies cleanup.
+
+Evidence: `artifacts/ecosystem-cleanup-20260912/composition-cleanup-cancellation-review.json`.
+Fixtures are explicitly synthetic and never qualify a real model. Cancellation
+requires a supplied signal; this change does not introduce a storage deadline or
+prove every storage failure path. Further cache ownership/replacement review
+remains part of the active goal. Owned test output was removed; only logical byte
+counts were measured. Seven canonical repositories were inventoried, and this
+checkpoint changes TinyRustLM only. The read-only source scan still stops at the
+same two blocked installer links; the package preflight and material/public gates
+remain open. No blocked deletion, real model, seed or deployment is claimed.
+
 ## C45: distinguish verified probe bodies from browser transport events, September 19
 
 A minimal Edge page reproduced the runtime abort without application code and,

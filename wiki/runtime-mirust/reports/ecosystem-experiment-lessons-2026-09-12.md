@@ -1507,6 +1507,34 @@ and the incomplete source scan are unchanged.
   observer needs its own bounded completion contract; a type signature alone
   does not prove the installed implementation handles both terminal paths.
 
+## C46: cancellation must remain observable while source cleanup is pending
+
+- **Question:** can a user stop installation after a malformed source has entered
+  a stalled iterator-return or reader-cancel operation?
+- **Exact inputs:** parent `b6a8b7e560f0c84e1478fbeb88427d87c2372423`, the unchanged
+  six-member store contract and final source/test hashes in
+  `artifacts/ecosystem-cleanup-20260912/composition-cleanup-cancellation-review.json`.
+- **Method:** install a prior synthetic composition, feed one excess byte from a
+  candidate, hold its cleanup promise, then cancel after cleanup begins. Exercise
+  custom async iterator, explicit reader and native ReadableStream paths. Check
+  the original error, exact prior pointer, failed-candidate removal, available
+  lock, fresh-store reopen and observed late cleanup rejection. Repeat the native
+  stream case with actual Edge OPFS and Web Locks.
+- **Result:** before correction, three leaf cases timed out at 500 ms (44 reported
+  tests: 40 pass, four fail including the parent). After using the existing
+  cancellation-aware wait, all 118 affected checks pass. Two actual Edge cache
+  tests and twelve direct release-smoke observations also pass. No frozen model
+  experiment was rerun; synthetic storage fixtures are never live-model evidence.
+- **Uncertainty:** the bounds are development-test observation limits, not product
+  performance budgets. Signal-free callers have no newly introduced deadline.
+  Whole-cache ownership safety and other adapter failures are not proved here.
+- **Decision:** retain one current cleanup path and the new regression cases;
+  preserve the primary source failure rather than replacing it with a secondary
+  cleanup error. Update both shell asset identities without a visual redesign.
+- **Reusable lesson:** checking a signal once before cleanup is insufficient.
+  Keep cancellation attached for the duration of every cancellable wait, including
+  finally blocks, and prove the next caller can acquire the lock afterward.
+
 ## Continue the review
 
 Before deleting an experiment that is not covered above, record its purpose,

@@ -466,6 +466,7 @@ function (root, admissionApi, catalogApi) {
     reject(code);
   }
 
+  // Bound each chunk and keep cancellation live while an interrupted source closes.
   async function* boundedChunks(source, chunkBytes, signal, stagingId, code) {
     const state = sourceIterator(source, code);
     let complete = false;
@@ -499,7 +500,7 @@ function (root, admissionApi, catalogApi) {
           if (signal && signal.aborted) {
             Promise.resolve(returned).catch(() => {});
           } else {
-            await returned;
+            await nextWithCancellation(returned, signal, stagingId);
           }
         } catch (_) {
           // The primary typed failure remains authoritative.

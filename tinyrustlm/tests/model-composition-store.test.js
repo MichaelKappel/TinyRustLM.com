@@ -1385,6 +1385,65 @@ test("cancellation does not wait for a stalled source iterator", async () => {
   assert.equal(adapter.entriesUnder(["staging"]).length, 0);
 });
 
+test("late cancellation escapes stalled source cleanup without replacing the prior installation", async t => {
+  for (const sourceKind of ["iterator", "reader", "native-stream"]) {
+    await t.test(sourceKind, async () => {
+      const adapter = new MemoryAdapter();
+      const store = createStore(adapter);
+      const prior = fixture(`cleanup-cancel-prior-${sourceKind}`);
+      const active = await store.install({ manifest: prior.manifest,
+        admissionAuthority: prior.admissionAuthority, sources: sourceSet(prior.members) });
+      const pointerBefore = adapter.readFile(["active.json"]);
+      const candidate = fixture(`cleanup-cancel-next-${sourceKind}`);
+      const controller = new AbortController();
+      const cleanupStarted = Promise.withResolvers();
+      const cleanup = Promise.withResolvers();
+      const extraBytes = new Uint8Array(candidate.members["model.slm2"].byteLength + 1);
+      let released = false;
+      let activated = false;
+      // Fail length validation first, then hold source cleanup independently of cancellation.
+      const finishSource = () => { cleanupStarted.resolve(); return cleanup.promise; };
+      const sources = sourceSet(candidate.members);
+      if (sourceKind === "native-stream") {
+        sources["model.slm2"] = new ReadableStream({
+          start(stream) { stream.enqueue(extraBytes); }, cancel: finishSource
+        });
+      } else {
+        const reader = { read: async () => ({ done: false, value: extraBytes }),
+          cancel: finishSource, releaseLock: () => { released = true; } };
+        sources["model.slm2"] = sourceKind === "reader" ? { getReader: () => reader } : {
+          [Symbol.asyncIterator]: () => ({ next: reader.read, return: finishSource })
+        };
+      }
+      const outcome = store.install({ manifest: candidate.manifest,
+        admissionAuthority: candidate.admissionAuthority, sources, signal: controller.signal,
+        activate: async () => { activated = true; return true; }
+      }).then(value => ({ value }), error => ({ error }));
+      try {
+        await settleWithin(cleanupStarted.promise);
+        controller.abort();
+        const result = await settleWithin(outcome);
+        assert.equal(result.value, undefined);
+        errorCode("model-composition-store-source-length")(result.error);
+        assert.equal(activated, false);
+        assert.deepEqual(adapter.readFile(["active.json"]), pointerBefore);
+        assert.equal(adapter.entriesUnder(["staging"]).length, 0);
+        assert.deepEqual((await adapter.listEntries(["installed"], 20)).map(entry => entry.name),
+          [active.manifestSha256]);
+        assert.equal((await settleWithin(createStore(adapter).openActive())).manifestSha256,
+          active.manifestSha256);
+        if (sourceKind === "reader") assert.equal(released, true);
+        // Late cleanup rejection must remain observed after the caller has already returned.
+        cleanup.reject(new Error("synthetic late source cleanup failure"));
+        await new Promise(resolve => setImmediate(resolve));
+      } finally {
+        cleanup.resolve();
+        await outcome;
+      }
+    });
+  }
+});
+
 test("abort immediately before pointer commit stays canceled across restart", async () => {
   const controller = new AbortController();
   let armed = false;

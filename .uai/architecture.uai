@@ -1,5 +1,5 @@
 profile: tinyrustlm.architecture.current.v1
-updated_utc: 2026-09-19T15:37:57Z
+updated_utc: 2026-09-20T00:16:44Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
@@ -29,6 +29,7 @@ companion:
   route_choice: Restore a usable eligible cached model or automatically acquire a small qualified MiniModel composition. HF, local files, conversion and manual peer/IP controls belong in Advanced; never silently convert or use remote inference.
 
 browser:
+  - C46 keeps composition-source cancellation active during iterator cleanup, preserving the primary failure and prior installation; supplied signals remain required. Real Edge OPFS and Web Locks pass synthetic regression checks. See composition-cleanup-cancellation-review.json; this does not qualify a model or prove every cache lifecycle path.
   - Dedicated worker owns composition, tokenizer, KV cache, generation, and cancellation.
   - Typed messages bind composition, conversation, turn, generation, message, sequence, and bounded payload identities.
   - UI deduplicates event identity, not repeated token text, and renders each assistant output exactly once.

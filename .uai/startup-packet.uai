@@ -1,5 +1,5 @@
 profile: tinyrustlm.startup-packet.current.v1
-updated_utc: 2026-09-20T00:02:12Z
+updated_utc: 2026-09-20T00:16:44Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
@@ -10,6 +10,7 @@ startup_steps:
   - Preserve immutable failed operations and all campaign counters.
 
 current_truth:
+  cache_cancellation: C46 fixes a stalled source-cleanup wait that ignored later cancellation. All 118 affected checks, two Edge OPFS/cache tests and twelve direct smoke observations pass. Previous installation and lock availability are preserved; supplied signals are required. See composition-cleanup-cancellation-review.json. Whole-cache review and real model/public gates remain open.
   release_smoke: C45 v8 retains raw abort events and separately attributes only exact HTTP 200 probe bodies after independent byte verification. Minimal-page trials reproduced the distinction; bounded terminal-event waits replace a stalled Playwright response wait. All 34 smoke and 42 unchanged runtime checks plus the normal CLI pass. See completed-runtime-probe-review.json; no real model or public result.
   runtime_lifetime: C43 defers runtime download until a model operation, adds one 60-second deadline and cancellation through the shared admission/runtime helper, and reserves activation ownership before waiting. 262 focused, 26 artifact/publication and 14 Edge chooser checks pass. See browser-runtime-lifetime-review.json; model/public gates remain open.
   runtime_bytes: C42 bounds decoded runtime downloads before allocation/copy and moves build checks into owned canonical artifacts. All 48 checks pass; two offline builds exactly reproduce the tracked WASM after binding virtual profile mapping. See browser-runtime-streaming-review.json. No promotion, real model or public result.

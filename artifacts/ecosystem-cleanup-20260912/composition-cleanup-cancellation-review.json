@@ -1,0 +1,255 @@
+{
+  "schema": "tinyrustlm.composition-cleanup-cancellation-review.v1",
+  "observedAtUtc": "2026-09-20T00:16:44Z",
+  "localDate": "2026-09-19",
+  "sourceParent": "b6a8b7e560f0c84e1478fbeb88427d87c2372423",
+  "status": "local-source-cancellation-fixed-no-real-model-or-publication-claim",
+  "inputs": [
+    {
+      "path": "tinyrustlm/app/model-composition-store.js",
+      "bytes": 75353,
+      "sha256": "2cf2db4a878e789e52c79114b15ba8130415046764445767f4701dbc00ea2c8c"
+    },
+    {
+      "path": "tinyrustlm/tests/model-composition-store.test.js",
+      "bytes": 88263,
+      "sha256": "2e8db8ea90a765c0fe8cc83740f18a81a8ad663f0d83d9ff97a5ebf58e4e4b51"
+    },
+    {
+      "path": "tinyrustlm/e2e/composition-cache.spec.js",
+      "bytes": 53112,
+      "sha256": "36a59522bee3d14ebd45f3339ae2df276b0a9abd6aab515f09d81ee46cb82b7e"
+    },
+    {
+      "path": "tinyrustlm/app/index.html",
+      "bytes": 48604,
+      "sha256": "916853c7394dccb175b8a111c45d1838d7357731138a64a14201a34bec65cc4d"
+    },
+    {
+      "path": "tinyrustlm/index.html",
+      "bytes": 48684,
+      "sha256": "76131b9936fba4f13b791914c5720d369f0ac79ae13dfa9916e9418d3ddfc5c9"
+    },
+    {
+      "path": "tinyrustlm/tests/model-cache-custody-integration.test.js",
+      "bytes": 29381,
+      "sha256": "34bc5c311e2e4a1c7c9ccb38142227830dddd5e8ad026fda27f53b87dbff9e9f"
+    },
+    {
+      "path": "tinyrustlm/tests/p2p-composition-install.test.js",
+      "bytes": 45141,
+      "sha256": "356570a67bd3ea6354de021aac73a9ddd499019c3453f45329969503c37443da"
+    },
+    {
+      "path": "tinyrustlm/tests/companion-composition-install.test.js",
+      "bytes": 24905,
+      "sha256": "de712487f22d2186815bb53446368329a6f197b23355d45c60417876fd1dd2cf"
+    },
+    {
+      "path": "tinyrustlm/tests/static-shell-parity.test.js",
+      "bytes": 5127,
+      "sha256": "c20d60933c2f75bc60a243b2603545c26823a4aafdef4304c87e8e2bc634c89d"
+    },
+    {
+      "path": "tinyrustlm/tests/web-deployment-manifest.test.js",
+      "bytes": 11975,
+      "sha256": "4c68f345ff731af733f6a157d2b2d2ecd0b39544a2549f67a58d97fc672467fd"
+    },
+    {
+      "path": "tinyrustlm/app/p2p-composition-install.js",
+      "bytes": 50486,
+      "sha256": "55a53359bb7af64062eb8b7505251af6eab487bc94a8105a92698830ea6ae8e4"
+    },
+    {
+      "path": "tinyrustlm/app/companion-composition-install.js",
+      "bytes": 34515,
+      "sha256": "7099cf16f30fe3fdcebb69bdc3ec8a88db24e5b83df105966b6e1c03c41cf948"
+    },
+    {
+      "path": "tinyrustlm/app/browser-model-admission.js",
+      "bytes": 14858,
+      "sha256": "87cdc059e71435f1572b3ad03fcce17701d5b73e83c3a6172e078a3349e5b683"
+    },
+    {
+      "path": "tinyrustlm/app/minimodel-catalog-v1.js",
+      "bytes": 74274,
+      "sha256": "4868dba65b57197b68de6f3e74987602b9728c5fa0cf28ca05ec2a3166c35333"
+    },
+    {
+      "path": "tinyrustlm/app/incremental-sha256.js",
+      "bytes": 9404,
+      "sha256": "e28faf3a02617d3d6747a0061f10f20b756500ae727f5c02e18da9912c767095"
+    },
+    {
+      "path": "tinyrustlm/e2e/owned-browser-profile.js",
+      "bytes": 2432,
+      "sha256": "35a330243dbbd3c076eab57a6174dcd1a892b33af4774a37ec15bff7e697c4ff"
+    },
+    {
+      "path": "tinyrustlm/tools/static-shell-parity.js",
+      "bytes": 5964,
+      "sha256": "100ae82d9151f592db9607a6803d316d45934b3f349b3533d9c6df9d1e28fdeb"
+    },
+    {
+      "path": "tinyrustlm/tools/web-release-browser-smoke.js",
+      "bytes": 44097,
+      "sha256": "871da8e65d1f0b7ae6935a0a80d77d8409249dc025afac228905d70f8acb605b"
+    },
+    {
+      "path": "tinyrustlm/deploy/web-deployment-manifest.v2.json",
+      "bytes": 4802,
+      "sha256": "3c97a713670f119a978a1aea1611169dfb7d9cf1974ad8ae7c4a201454a04df8"
+    }
+  ],
+  "finding": {
+    "path": "tinyrustlm/app/model-composition-store.js",
+    "function": "boundedChunks",
+    "before": "The finally block detached cleanup only if the signal was already aborted. Otherwise it awaited iterator.return without listening for an abort that arrived later, retaining the installation lock.",
+    "trigger": "A candidate source yields one excess byte, fails source-length validation, then its iterator return or reader cancellation remains pending. The caller aborts only after that cleanup starts.",
+    "correction": "Use the existing nextWithCancellation boundary while awaiting source cleanup. Keep primary validation failure, observe late cleanup rejection, release an explicit reader lock, and allow outer candidate cleanup to finish."
+  },
+  "invariants": [
+    "The old active pointer remains byte-identical; the prior six-member installation can reopen from a fresh store.",
+    "The failed candidate is never activated, never becomes the active pointer, and does not remain in staging or installed storage in the exercised cases.",
+    "Late cleanup rejection is observed after the caller returns.",
+    "No new format, old reader, alternate cleanup implementation or model payload is introduced.",
+    "Both existing shells bind the current store script hash; visual markup is unchanged."
+  ],
+  "reproducer": {
+    "classification": "ordinary bounded development regression, not a material model experiment",
+    "sourceSha256": "349c3589d49603e436e9860661296377de6fd777c5a0c9ca5447c03df4d0f3ca",
+    "testSha256": "2e8db8ea90a765c0fe8cc83740f18a81a8ad663f0d83d9ff97a5ebf58e4e4b51",
+    "sourceForms": [
+      "custom async iterator",
+      "explicit getReader adapter",
+      "native ReadableStream"
+    ],
+    "baseline": {
+      "reportedTests": 44,
+      "passed": 40,
+      "failed": 4,
+      "failedLeafCases": 3,
+      "skipped": 0,
+      "explanation": "Each leaf exceeded the 500 ms settle observation bound after cancellation; Node also marks the parent test failed. Finally blocks resolved the held fixture cleanup and allowed each operation to end."
+    },
+    "correctedUnitRun": {
+      "reportedTests": 44,
+      "passed": 44,
+      "failed": 0,
+      "skipped": 0
+    },
+    "boundMeaning": "500 ms unit and 2000 ms browser bounds stop a hanging development test; they are not qualified product latency budgets."
+  },
+  "verification": {
+    "affected": {
+      "tests": 118,
+      "passed": 118,
+      "failed": 0,
+      "skipped": 0,
+      "suites": [
+        "model-composition-store.test.js",
+        "model-cache-custody-integration.test.js",
+        "p2p-composition-install.test.js",
+        "companion-composition-install.test.js",
+        "static-shell-parity.test.js",
+        "web-deployment-manifest.test.js"
+      ]
+    },
+    "browser": {
+      "engine": "Microsoft Edge 153.0.4234.48",
+      "playwright": "1.61.1",
+      "project": "desktop",
+      "tests": 2,
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0,
+      "retries": 0,
+      "scope": "Actual OPFS and Web Locks with a native ReadableStream whose cleanup remains pending until after cancellation; existing persistent cache/restart/tamper contract also passes.",
+      "fixtureAuthority": "test-only-never-live synthetic member bytes and metadata; never qualified model evidence"
+    },
+    "releaseSmoke": {
+      "entryPoint": "node tinyrustlm/tools/run-web-release-local-smoke.js",
+      "invocation": "Direct zero-argument Node runner with canonical scratch; package-level source preflight is separately incomplete.",
+      "status": "pass",
+      "observations": 12,
+      "reportSha256": "49ae233875498e93d7ffb9c1193aa162d38923738872ff134689ea876393f186",
+      "temporaryOutputCleanup": "verified"
+    },
+    "memory": {
+      "suite": "UaixMemoryConsolidationTests",
+      "tests": 6,
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0
+    },
+    "coverage": {
+      "tool": "Node experimental test coverage, affected suites",
+      "file": "tinyrustlm/app/model-composition-store.js",
+      "linePercent": 86.75,
+      "branchPercent": 80.51,
+      "functionPercent": 89.13,
+      "limit": "Real Edge exercises OPFS code; that browser execution is not represented as Node coverage."
+    }
+  },
+  "cleanup": {
+    "runs": [
+      {
+        "label": "unit reproducer before correction",
+        "files": 2,
+        "logicalBytes": 451839
+      },
+      {
+        "label": "store unit correction",
+        "files": 2,
+        "logicalBytes": 450164
+      },
+      {
+        "label": "affected store, installer, custody, shell and publication checks",
+        "files": 7,
+        "logicalBytes": 2255815
+      },
+      {
+        "label": "actual Edge OPFS and persistent cache",
+        "files": 12,
+        "logicalBytes": 856097
+      },
+      {
+        "label": "direct zero-argument release smoke",
+        "files": 3,
+        "logicalBytes": 2681973
+      }
+    ],
+    "measuredFiles": 26,
+    "measuredLogicalBytes": 6695888,
+    "physicalRecoveredBytes": null,
+    "perTestRemovedProfileBytes": null,
+    "result": "Owned roots removed using existing identity/containment checks. Composition-cancellation scratch, Playwright profile and local-release parents verified empty. Per-test profile bytes already removed before measurement are not included."
+  },
+  "sourceGate": {
+    "status": "source_authority_scan_incomplete",
+    "unchangedBlockedPaths": [
+      "artifacts/verification/qwen3-environment-install/tinyrustlm-operation-C3ZUt9/install-temp/TmP6xn2evdh-b",
+      "artifacts/verification/qwen3-environment-install/tinyrustlm-operation-C3ZUt9/install-temp/TmPeq63_hr7-b"
+    ],
+    "action": "Read-only rerun; no rejected deletion retried or bypassed."
+  },
+  "scope": {
+    "changedProject": "TinyRustLM.com",
+    "otherInventoriedProjects": [
+      "LMComposer.com",
+      "MiniModel.MiRust.com",
+      "MiniModel.org",
+      "MiRust.com",
+      "Runtime.MiRust.com",
+      "TinyRustLM.MiRust.com"
+    ],
+    "otherProjectChanges": "None in C46; unrelated work retained.",
+    "deferredResearch": "Ternary/Bonsai/Hadamard remains deferred by owner."
+  },
+  "limits": [
+    "Cancellation requires a supplied signal; no new storage deadline was introduced for signal-free callers.",
+    "This does not prove all adapter/cleanup failure paths or whole-cache ownership safety. Review ownership admission for unexpected staging/installed entries next.",
+    "No real model ran; no qualified default, numerical parity, useful default-model browser conversation, live initial seed, deployment or owner release acceptance is claimed."
+  ],
+  "lesson": "Cancellation must stay attached while cleanup is pending, including finally blocks; test that the next caller can acquire the lock and reopen the prior verified installation."
+}

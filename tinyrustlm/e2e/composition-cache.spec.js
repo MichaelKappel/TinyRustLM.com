@@ -282,6 +282,88 @@ async function openRuntimePage(context, baseURL) {
   return page;
 }
 
+test("late source cancellation releases the real OPFS writer lock and preserves the saved model", async ({}, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop", "The OPFS contract runs in desktop Chromium");
+  const fixtures = { prior: createSyntheticFixture("cleanup-prior", 127),
+    candidate: createSyntheticFixture("cleanup-candidate", 149) };
+  const profileRoot = createOwnedBrowserProfile("late-source-cleanup");
+  let context = null;
+  try {
+    context = await launchProfile(profileRoot);
+    const page = await openRuntimePage(context, String(testInfo.project.use.baseURL));
+    const pageErrors = [];
+    page.on("pageerror", error => pageErrors.push(error.message));
+    const result = await page.evaluate(async ({ fixtures, rootName, lockName }) => {
+      const api = globalThis.TinyRustLMModelCompositionStore;
+      const adapter = api.createOpfsAdapter({ createSha256: globalThis.TinyRustLMIncrementalSha256.createSha256 });
+      const createStore = () => api.createModelCompositionStore({ adapter });
+      // All six members are synthetic; only storage and cancellation are under test.
+      const sources = value => Object.fromEntries(api.memberNames.map(fileName => [fileName, {
+        async *[Symbol.asyncIterator]() {
+          yield Uint8Array.from(atob(value.members[fileName]), character => character.charCodeAt(0));
+        }
+      }]));
+      const bounded = async promise => {
+        let timer;
+        try {
+          return await Promise.race([promise, new Promise((_, reject) => {
+            timer = setTimeout(() => reject(new Error("store did not settle after cancellation")), 2000);
+          })]);
+        } finally { clearTimeout(timer); }
+      };
+      const store = createStore();
+      const active = await store.install({ manifest: fixtures.prior.manifest,
+        admissionAuthority: fixtures.prior.admissionAuthority, sources: sources(fixtures.prior),
+        activate: async () => true, authorizeCommit: async () => true });
+      const root = await (await navigator.storage.getDirectory()).getDirectoryHandle(rootName);
+      const readPointer = async () => (await (await root.getFileHandle("active.json")).getFile()).text();
+      const before = await readPointer();
+      const cleanupStarted = Promise.withResolvers();
+      const cleanup = Promise.withResolvers();
+      const controller = new AbortController();
+      const candidateSources = sources(fixtures.candidate);
+      let activated = false;
+      candidateSources["model.slm2"] = new ReadableStream({
+        start(stream) {
+          stream.enqueue(new Uint8Array(fixtures.candidate.manifest.members[0].byteLength + 1));
+        },
+        cancel() { cleanupStarted.resolve(); return cleanup.promise; }
+      });
+      const outcome = store.install({ manifest: fixtures.candidate.manifest,
+        admissionAuthority: fixtures.candidate.admissionAuthority, sources: candidateSources,
+        signal: controller.signal, activate: async () => { activated = true; return true; },
+        authorizeCommit: async () => true
+      }).then(() => "unexpected-success", error => error.code);
+      try {
+        await bounded(cleanupStarted.promise);
+        controller.abort();
+        const code = await bounded(outcome);
+        const held = (await navigator.locks.query()).held.filter(lock => lock.name === lockName);
+        const reopened = await bounded(createStore().openActive());
+        const installed = [];
+        const staging = [];
+        for await (const name of (await root.getDirectoryHandle("installed")).keys()) installed.push(name);
+        for await (const name of (await root.getDirectoryHandle("staging")).keys()) staging.push(name);
+        cleanup.reject(new Error("synthetic late cleanup rejection"));
+        await new Promise(resolve => setTimeout(resolve, 0));
+        return { code, activated, held: held.length, before, after: await readPointer(),
+          reopened: reopened.manifestSha256, prior: active.manifestSha256, installed, staging };
+      } finally { cleanup.resolve(); await outcome; }
+    }, { fixtures, rootName: OPFS_ROOT_NAME, lockName: LOCK_NAME });
+    expect(result.code).toBe("model-composition-store-source-length");
+    expect(result.activated).toBe(false);
+    expect(result.held).toBe(0);
+    expect(result.after).toBe(result.before);
+    expect(result.reopened).toBe(fixtures.prior.manifestSha256);
+    expect(result.installed).toEqual([result.prior]);
+    expect(result.staging).toEqual([]);
+    expect(pageErrors).toEqual([]);
+  } finally {
+    if (context !== null) await context.close();
+    removeOwnedBrowserProfile(profileRoot);
+  }
+});
+
 test("persistent OPFS cache keeps only the admitted six-member composition", async ({}, testInfo) => {
   test.skip(testInfo.project.name !== "desktop", "The persistent-cache contract runs in desktop Chromium");
   test.slow();
