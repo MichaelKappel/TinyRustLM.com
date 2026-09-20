@@ -1,0 +1,111 @@
+{
+  "schema": "ecosystem.preflight-admission-ownership-review/1",
+  "reviewedUtc": "2026-09-20T19:04:22Z",
+  "sourceParent": "7c84f5756348d3d1831d45aadf98887119133637",
+  "purpose": "Make the pending local preflight admit canonical source before starting dependent checks, and confine disposable release metadata to original owned scratch.",
+  "baselineUncommittedFiles": [
+    {
+      "path": "tinyrustlm/tools/interview-demo-preflight.js",
+      "bytes": 25042,
+      "sha256": "d66fede6b851f144e5d8e14480dc4c09eb7340253f899086bec1204e7e9c2df3"
+    },
+    {
+      "path": "tinyrustlm/tests/interview-demo-preflight.test.js",
+      "bytes": 21658,
+      "sha256": "60b4b8e91702c134261db3d01e774315036406bf1d9fce946a0edeb48938e1b7"
+    }
+  ],
+  "findings": [
+    "Promise.all previously started deployment materialization, module/host checks and live catalog acquisition concurrently with source-authority verification.",
+    "Deployment closure previously used os.tmpdir(), mkdtemp and recursive removal based only on parent/prefix.",
+    "Existing 37 tests passed but did not exercise the real default deployment closure."
+  ],
+  "implementation": [
+    "Run source authority first. Failure, rejection or timeout skips remaining checks without executing them; the report remains blocked.",
+    "Default child execution and release materialization admit only the canonical site and matching repository.",
+    "Use canonical-operation-scratch original directory/marker ownership for release metadata and remove it on success or validation failure.",
+    "Move this test suite's synthetic fixtures into marked canonical output. Preserve existing UI/live distinction and unmet content-bound external-peer proof."
+  ],
+  "tests": {
+    "baseline": {
+      "passed": 37,
+      "failed": 0
+    },
+    "regressionBeforeFix": {
+      "passed": 37,
+      "failed": 7,
+      "explanation": "Four ordering subcases, their aggregate and the timeout case failed as expected. One ownership-test setup failed because the helper export is frozen; test observation was corrected to track real filesystem allocation."
+    },
+    "affected": {
+      "passed": 88,
+      "failed": 0,
+      "skipped": 0,
+      "files": [
+        "interview-demo-preflight.test.js",
+        "canonical-operation-scratch.test.js",
+        "site-release-contract.test.js",
+        "web-deployment-manifest.test.js"
+      ],
+      "coverage": {
+        "preflightLinePercent": 91.93,
+        "branchPercent": 83.61,
+        "functionPercent": 85.71
+      }
+    },
+    "relatedPendingConsumers": {
+      "passed": 19,
+      "failed": 0,
+      "files": [
+        "interview-demo-server.test.js",
+        "interview-demo-launcher.test.js"
+      ],
+      "limit": "These remaining uncommitted launcher/server files are preserved; their fixture/server checks are not full current CLI admission or useful model proof."
+    },
+    "actualCli": {
+      "command": "node tinyrustlm/tools/interview-demo-preflight.js --live-model",
+      "exitCode": 1,
+      "status": "blocked",
+      "failed": 1,
+      "skipped": 8,
+      "code": "demo_source_authority_failed",
+      "environment": "Observed both without and with process-local Git safe.directory bindings for the seven known roots; public output is the same sanitized code.",
+      "outputCreated": false,
+      "limit": "The separate direct verifier observation identifies the same two unreadable installer links; the preflight deliberately does not expose its underlying paths."
+    },
+    "managedMemory": {
+      "passed": 38,
+      "failed": 0,
+      "skipped": 0
+    },
+    "standardDiscovery": true
+  },
+  "preservation": {
+    "productUiChanges": false,
+    "sourceCopiesCreated": false,
+    "blockedDeletionsRetried": false,
+    "nugetKeyRead": false,
+    "published": false
+  },
+  "remaining": [
+    "Full source scan still fails on two policy-blocked installer links.",
+    "Twenty C76 model fixtures remain after a rejected deletion; strict storage changes are uncommitted and failing on that exact cohort.",
+    "No qualified default, fresh material parity, useful browser model, external seed, three-RID release or NuGet publication is established."
+  ],
+  "lesson": "A verifier is an admission prerequisite only when dependent work actually waits for it. Output ownership must survive validation errors; a prefix alone cannot authorize cleanup.",
+  "secretScan": {
+    "status": "pass",
+    "files": 10,
+    "findings": 0,
+    "scopeManifestSha256": "83d0db221c037b40fd08e674c68c98bff3e54c39a9c797a26d43b92188681588",
+    "scope": "Ten selected files before final receipt accounting fields; no key content read."
+  },
+  "temporaryOutput": {
+    "files": 143,
+    "directories": 39,
+    "logicalBytes": 5632525,
+    "markerBytes": 65,
+    "rootAbsent": true,
+    "markerAbsent": true,
+    "physicalRecoveredBytes": null
+  }
+}

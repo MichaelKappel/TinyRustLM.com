@@ -16,6 +16,14 @@ Authority order is current owner instructions, inspected current contracts and b
 
 ## Current evidence and its limits
 
+**C77 preflight admission:** local preflight now waits for canonical-source
+verification before starting dependent checks, release metadata or catalog work.
+Metadata uses original owned canonical scratch and is removed on success/failure.
+All 88 affected and 19 related checks pass; line coverage is 91.93%. The actual
+live-mode CLI remains blocked, reporting source failure and eight skipped checks.
+Read `preflight-admission-ownership-review.json`. This does not qualify a model,
+resolve blocked removals or admit publication.
+
 **C76 retired fault paths:** the SLM1 tensor-offset executor and obsolete
 copied-source package consumer are removed. All 35 focused tests and six actual
 Edge fault scenarios pass; one pinned-Chromium test is skipped. Required fault

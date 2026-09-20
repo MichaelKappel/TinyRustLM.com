@@ -11,6 +11,31 @@ Keep useful findings and compact evidence identities in the owning canonical
 repository. Keep source history in Git and current model payloads only in
 `D:\LLMs\TinyRustLM`.
 
+## C77: admission must finish before dependent preflight work starts
+
+- Question: does the pending local preflight prevent work before source admission
+  and preserve ownership of its generated release metadata?
+- Inputs: TinyRust parent `7c84f5756348d3d1831d45aadf98887119133637`; exact prior
+  uncommitted preflight/test identities are in the compact review receipt.
+- Method: hold source admission pending, resolve true/false, force a timeout,
+  observe dependent calls, run real default closure and inject ledger/manifest
+  read failures. Reject alternate roots before children or directories start.
+- Result: the 37-test baseline passed. Four ordering subcases and a timeout case
+  exposed work starting too early; one new ownership test needed a harness fix
+  because the shared helper export is frozen. After correction, all 88 affected
+  and 19 related consumer checks pass, with 91.93% preflight line/83.61% branch
+  coverage. Actual metadata scratch and fixture roots are empty after execution.
+- Decision: source admission is sequential. Later checks are explicitly skipped
+  when admission fails. Generated release records use original canonical scratch
+  ownership through cleanup, including parse/validation failures.
+- Limits: actual live CLI remains blocked with one source failure and eight
+  skipped checks; the direct verifier still identifies two blocked installer
+  links. Pending launcher/server checks are local fixtures, not model readiness.
+  No credentials, public deployment, model qualification or blocked deletion.
+- Lesson: running a verifier alongside dependent work is not admission. Bind
+  cleanup to original ownership rather than trusting a directory's name.
+- Evidence: `artifacts/ecosystem-cleanup-20260912/preflight-admission-ownership-review.json`.
+
 ## C76: retire obsolete fault executors without erasing missing evidence
 
 - Question: are the retained SLM1/ADP1/ACG1 fixtures still current test inputs?

@@ -5,6 +5,30 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C77: enforce local preflight admission and owned output, September 20
+
+The pending preflight previously started release-file creation and live catalog
+checks concurrently with source verification. It now awaits admission first;
+failure or timeout marks every dependent check skipped. Default child execution
+and materialization reject alternate site/repository roots before side effects.
+
+Release metadata now uses the shared canonical scratch owner, retaining original
+directory/marker identities through success or validation failure. This suite's
+synthetic fixtures use the same bounded mechanism. No source trees are copied.
+The command remains `node tinyrustlm/tools/interview-demo-preflight.js --ui` or
+`--live-model`; UI readiness is separate from real model and peer readiness.
+
+All 88 affected and 19 related pending-consumer checks pass. Preflight coverage
+is 91.93% lines and 83.61% branches. The actual live-mode CLI correctly reports
+source failure and eight skipped checks, creates no output, and remains blocked.
+The direct source verifier still identifies the same two installer links; no
+blocked removal was retried. The 20 C76 fixtures and strict storage failure remain.
+
+See `preflight-admission-ownership-review.json` for the baseline, reproduced
+ordering defects and corrected test-harness error. Pending launcher/UI integration
+work is preserved separately. No qualified model, seed, NuGet package publication
+or deployed site is established.
+
 ## C76: retire old model fault executors; payload removal blocked, September 20
 
 Removed the SLM1 tensor-offset/checksum execution and the package fault consumer

@@ -1,5 +1,5 @@
 profile: tinyrustlm.startup-packet.current.v1
-updated_utc: 2026-09-20T18:50:19Z
+updated_utc: 2026-09-20T19:04:22Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
@@ -10,6 +10,7 @@ startup_steps:
   - Preserve immutable failed operations and all campaign counters.
 
 current_truth:
+  preflight_admission: C77 makes local preflight await source admission before any other checks and keeps disposable release records under original canonical ownership. All 88 affected and 19 related checks pass; preflight line coverage is 91.93%. Actual live-mode CLI reports one source failure and eight skipped checks without creating output. Read preflight-admission-ownership-review.json. Existing installer/model deletion blocks and real product/release requirements remain; no credentials or publication.
   retired_model_faults: C76 retires the obsolete SLM1 tensor-offset executor and copied-source package fault consumer; required faults stay 24. All 35 focused tests and six actual Edge scenarios pass, with one pinned-Chromium test skipped. Automatic review blocked deletion of twenty model files; preserve that exact cohort and its parent, and do not retry another API. The strict storage check fails on those files and remains uncommitted. Read retired-model-fixture-review.json; no model, package publication or source-authority pass.
   retired_release_tools: C75 removes LMComposer's terminal-only publisher and manifest builder. All 19 repository checks pass; historical records, public files and blocked staging output remain unchanged. See LMComposer.com artifacts/ecosystem-cleanup-20260912/closed-release-tool-retirement.json. No credentials or publication; the source scan still fails on the two known installer links.
   catalog_unicode: C74 preserves valid supplementary Unicode and combining sequences across both catalog readers, rejects lone surrogates and stops silently stripping UTF-8 BOMs. All 412 TinyRust/88 MiniModel checks and four Edge chooser/stream checks pass; fourteen MiniModel observations include actual browser parsing. Read catalog-unicode-review.json for controlled visual evidence and limits. No model, seed, package or publication claim; preserve blocked cleanup.
