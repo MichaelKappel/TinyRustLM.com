@@ -11,6 +11,38 @@ Keep useful findings and compact evidence identities in the owning canonical
 repository. Keep source history in Git and current model payloads only in
 `D:\LLMs\TinyRustLM`.
 
+## C73: metadata bounds must cover reads and verification observation
+
+- Question: can stalled metadata leave the catalog loading forever, and can
+  a size check after response.text prevent excessive buffering?
+- Exact inputs: MiniModel parent `4b815cbb877a709e8d3060c2039c13e993c334eb`;
+  implementation `81f0b4c2bdee23abde6abd36d751e533b2425554`; canonical TinyRust
+  consumer at `f2875551ca695abe9f16767f315623e2bdcb0976`.
+- Method: use signed synthetic metadata, ignored fetch cancellation, blocked
+  stream reads, split/invalid UTF-8, exact/oversized bodies, many empty chunks,
+  stale requests and stalled crypto. Execute real Edge against loopback streams;
+  retain complete matching baseline observations and screenshot identities.
+- Result: both baseline cases failed. All 86 focused checks now pass; catalog
+  line/branch coverage is 91.95/82.54 percent. Fourteen Edge observations pass
+  and eight existing initial-viewport captures remain byte-identical.
+- Failure history: the first run caught a stale script query hash. Broader
+  execution exposed pre-commit public-byte mismatch and stale shared-tool pins.
+  After reviewed pin updates and commit, 117/121 checks pass; four publication
+  checks still encounter the known blocked installer links. Preserve that failed
+  gate instead of weakening it or declaring later admission successful.
+- Decision: one operation owns both streamed requests and the deadline through
+  verification. Cancel siblings and superseded work; observe late rejections.
+- Uncertainty: abort ends observation but cannot force arbitrary injected tasks
+  or WebCrypto to terminate. Timers do not preempt synchronous JavaScript. Empty
+  historical fixtures and viewport captures do not prove a working real model,
+  full-page visual parity, seed availability or publication.
+- Reusable lesson: post-allocation size checks and stale-render guards alone
+  do not bound resource use. Pin changes must propagate to their consumers after
+  reviewing the underlying committed change, while preserving admission gates.
+- Evidence: MiniModel.org `artifacts/reports/catalog-lifetime-review-20260920.json`
+  retains source/log identities, failures, visual comparison and owned cleanup.
+  No key read, publication, new model payload or blocked deletion occurred.
+
 ## C72: a successful test command can execute zero report validators
 
 - Question: do the workflow report-schema steps actually inspect their files?

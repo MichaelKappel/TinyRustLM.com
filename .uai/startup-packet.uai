@@ -1,5 +1,5 @@
 profile: tinyrustlm.startup-packet.current.v1
-updated_utc: 2026-09-20T17:27:00Z
+updated_utc: 2026-09-20T17:52:00Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
@@ -10,6 +10,7 @@ startup_steps:
   - Preserve immutable failed operations and all campaign counters.
 
 current_truth:
+  minimodel_catalog: C73 gives both metadata streams and crypto observation one deadline, bounded bytes/chunks and cancellation. All 86 focused checks and fourteen Edge observations pass; eight baseline captures match. Broader 117/121 leaves four publication checks blocked by the known installer links. Read MiniModel.org artifacts/reports/catalog-lifetime-review-20260920.json; source/evidence commits 81f0b4c and 1042253 are pushed. No model, seed, NuGet or site publication; preserve blocked cleanup.
   release_reports: C72 replaces absent-test filters with ten explicit file checks across release, monitor and UI workflows. All 172 affected Node checks pass; missing/malformed reports and inconsistent evidence reject. Read release-report-validation-review.json. Hosted run 35524709256 remains billing-blocked before execution; all three public NuGet indexes return 404. No key read or publication; full release/model gates remain.
   conversion_pipes: C71 bounds process and stdout/stderr observation with the same caller/deadline signal. Reader failure stops siblings; all tasks settle before return. Both real Windows held-pipe regressions and all 110 Core/228 companion tests pass; reader coverage is 100%. Read conversion-pipe-lifetime-review.json. Test-owned descendant cleanup is not OS sandbox containment; model and publication gates remain.
   conversion_cancellation: C70 propagates caller cancellation through live input/result hashing, preserving exact identities and durable terminal evidence. All 97 Core and 228 companion tests pass; the hash loop has 100% line/branch coverage. Read conversion-hash-cancellation-review.json. Synchronous reads and uncancelled terminal reconciliation retain their limits; no real model, NuGet or deployment proof.

@@ -1,0 +1,117 @@
+{
+  "schema": "tinyrustlm.ecosystem-minimodel-catalog-review.v1",
+  "reviewId": "C73",
+  "parentCommit": "f2875551ca695abe9f16767f315623e2bdcb0976",
+  "priorTurnClassification": "C72 source work was progress; intervening key-location confirmation made no ecosystem progress. Resumed unfinished C73 implementation.",
+  "implementationOwner": "MiniModel.org",
+  "implementationCommit": "81f0b4c2bdee23abde6abd36d751e533b2425554",
+  "evidenceCommit": "104225396a021d449d4966e5c7c555d1be037ac5",
+  "directRemoteEqualsEvidenceCommit": true,
+  "sourceEvidence": "../MiniModel.org/artifacts/reports/catalog-lifetime-review-20260920.json",
+  "result": "Bound streaming, cancellation and verification observation; preserve current rendering and admission gates.",
+  "checks": {
+    "focusedNode": {
+      "passed": 86,
+      "failed": 0,
+      "skipped": 0
+    },
+    "broaderNode": {
+      "passed": 117,
+      "failed": 4,
+      "skipped": 0,
+      "limitation": "Four publication assertions cannot reach later admission because source scan fails on the same two policy-blocked installer links."
+    },
+    "managed": {
+      "passed": 38,
+      "failed": 0,
+      "skipped": 0,
+      "project": "dotnet/tests/TinyRustLM.Package.Tests/TinyRustLM.Package.Tests.csproj",
+      "configuration": "Release",
+      "purpose": "Current UAI pointers, report intake and package contract checks; no package publication or real model execution."
+    },
+    "visual": {
+      "before": 8,
+      "after": 14,
+      "matchingExisting": 8,
+      "scope": "Real installed Edge initial viewport plus DOM checks; exact hash equality in owning MiniModel receipt."
+    }
+  },
+  "repositoriesRediscovered": [
+    "LMComposer.com",
+    "MiniModel.MiRust.com",
+    "MiniModel.org",
+    "MiRust.com",
+    "Runtime.MiRust.com",
+    "TinyRustLM.MiRust.com",
+    "TinyRustLM.com"
+  ],
+  "scopeBoundary": "Only MiniModel implementation and current TinyRust memory/evidence changed. Other repository work and blocked deletion cohorts preserved. Key contents not read; no NuGet or website publication. Goal remains active.",
+  "memoryInputs": [
+    {
+      "path": ".uai/startup-packet.uai",
+      "bytes": 17678,
+      "sha256": "43fbc727848967e2941438dd807598bcf930827fd010c2ede6a547981878694e"
+    },
+    {
+      "path": ".uai/operations.uai",
+      "bytes": 26374,
+      "sha256": "5c21c63c3e75c3eefe70f898a401cce06d5be71709e81a055a2060a11753afee"
+    },
+    {
+      "path": ".uai/short-term-memory.uai",
+      "bytes": 21246,
+      "sha256": "fc061111305e22fc8b6d280d46e6051e4c94fede763eaa102ce1b5691426dc2c"
+    },
+    {
+      "path": ".uai/long-term-memory.uai",
+      "bytes": 8937,
+      "sha256": "41a619dbfac203c2a63afdc35a8d678562355a8cd57f514191ff3ede4b01ac2e"
+    },
+    {
+      "path": "docs/ecosystem-cleanup-2026-09-12.md",
+      "bytes": 143790,
+      "sha256": "6e2aea083444ccf35c2fd075e912a1ae794f9e91c8af2be37dc1db7aaf2ae327"
+    },
+    {
+      "path": "wiki/runtime-mirust/reports/ecosystem-experiment-lessons-2026-09-12.md",
+      "bytes": 173595,
+      "sha256": "508a9eb1cb297ca2dcd264fc70ebeb66f8b71128d07942e592a1e80b26322053"
+    },
+    {
+      "path": "wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md",
+      "bytes": 61645,
+      "sha256": "b37fbfa30aec262506aace51271634f0d565f976b82d4606b105743b1bbd0d63"
+    }
+  ],
+  "managedEvidence": [
+    {
+      "path": "package-tests.log",
+      "bytes": 2458,
+      "sha256": "769d91e63e0bde758d3266aea30114b0bbc8bdd972099d30a507e95f523c6a2a"
+    },
+    {
+      "path": "results/package.trx",
+      "bytes": 60301,
+      "sha256": "4256b8a297080dd2fd7192ee6cf97907aa9fec8ca1563f1793b3c373fb0d15cb"
+    }
+  ],
+  "sourceEvidenceSha256": "f0cfbf19cd330a3b4dce300a7c04c2bbbc1f827cfc4a9b957141839fa1b7ad78",
+  "secretScan": {
+    "status": "pass",
+    "artifacts": 19,
+    "findings": 0,
+    "scopeComplete": false,
+    "reportSha256": "0906cdf48faf440e7f7f318ffaa6a07ed5e8852359a2c526ef12a89d086f5a33"
+  },
+  "cleanup": {
+    "root": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\catalog-lifetime\\tinyrustlm-operation-xBD8rF",
+    "filesRemoved": 146,
+    "directoriesRemoved": 44,
+    "logicalFileBytes": 5646392,
+    "externalMarkerBytes": 65,
+    "rootAbsent": true,
+    "markerAbsent": true,
+    "physicalStorageRecoveryMeasured": false,
+    "scope": "Only original marked C73 test/build/scan output, after terminal dotnet and Node processes; no historical or blocked path."
+  }
+}

@@ -5,6 +5,38 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C73: bound MiniModel catalog loading, September 20
+
+MiniModel's loader could wait indefinitely for metadata and checked body size
+only after allocating the entire response. Two baseline regressions reproduced
+those failures. Its current loader streams at most one MiB and 4096 chunks per
+response, with one ten-second deadline across both requests and signature
+verification. Caller cancellation, failure and replacement stop stale work;
+late responses and task rejections are observed without blocking cleanup.
+
+All 86 focused checks pass. Fourteen real Edge loopback observations include
+stalled and oversized responses, closure of both stalled server responses and
+recovery. The eight existing desktop/mobile observations, geometry and initial
+viewport screenshot hashes exactly match the baseline. Catalog line/branch
+coverage is 91.95/82.54 percent. This is bounded fixture evidence, not a qualified
+model, public seed or full-page visual review.
+
+Broader testing exposed stale pins for the shared source gate's committed
+September 19 policy-identity change. MiniModel now binds that reviewed gate and
+the resulting manifest-tool identity. After source commit `81f0b4c`, 117 of 121
+checks pass; four publication checks still stop at the two known policy-blocked
+installer links. Nested Pester is 26 of 27. The gate and tests were not weakened,
+and no blocked deletion was retried. Exact publication-manifest regeneration,
+catalog/model/hosting admission and live readback remain outstanding.
+
+MiniModel owns the compact receipt at
+`artifacts/reports/catalog-lifetime-review-20260920.json`. Its parent test output
+was removed after terminal process observation: eight entries and 215850 logical
+file bytes; physical storage recovery was not measured. TinyRustLM's current
+memory routes here and retains the reusable lesson. All seven repositories were
+rediscovered; unrelated work and existing cleanup blocks remain. No NuGet key
+was read and no package or website was published.
+
 ## C72: execute required release-report checks, September 20
 
 Nine workflow commands selected seven test methods that do not exist in the

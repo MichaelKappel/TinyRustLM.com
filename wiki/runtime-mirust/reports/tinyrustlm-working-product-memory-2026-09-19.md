@@ -16,6 +16,15 @@ Authority order is current owner instructions, inspected current contracts and b
 
 ## Current evidence and its limits
 
+**C73 MiniModel catalog:** metadata streams now share a ten-second deadline
+through signature verification, with one MiB/4096-chunk bounds, cancellation
+and disposal of late responses. All 86 focused checks and fourteen Edge fixture
+observations pass; eight existing viewport captures match exactly. Broader
+committed-source checks pass 117/121; four publication checks stop at the known
+source scan blocker. MiniModel's `catalog-lifetime-review-20260920.json` records
+reviewed tool-pin updates and failures. No real model, live seed, NuGet package
+or site publication is established; blocked cleanup remains untouched.
+
 **C72 release reports:** nine workflow commands selected absent test methods;
 the stale feed-current filter returned success with zero tests. Ten explicit
 report-file checks now reject missing or inconsistent evidence and bind the
