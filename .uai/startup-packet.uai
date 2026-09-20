@@ -1,5 +1,5 @@
 profile: tinyrustlm.startup-packet.current.v1
-updated_utc: 2026-09-20T11:31:27Z
+updated_utc: 2026-09-20T12:04:38Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
@@ -10,7 +10,8 @@ startup_steps:
   - Preserve immutable failed operations and all campaign counters.
 
 current_truth:
-  nuget_readiness: C56 blocks superseded/unknown feed observations and lookalike Trusted Publishing URLs; 86 focused and 38 managed checks pass, including full local PowerShell and WSL Bash readiness. Hosted C55 jobs never executed; operations.uai records the operator boundary. No key read or package published; full Linux/release gates remain.
+  nuget_linux: C57 passes Linux x64 native build/four ABI tests, two-RID package audit, 124 managed checks and Windows/Linux packaged consumers. Windows compiled the consumer; actual Linux .NET ran it. ARM64 and clean release/publication gates remain open. Read nuget-linux-consumer-review.json and operations.uai for the blocked temporary header deletion; do not retry it or delete its parent.
+  nuget_readiness: C56 blocks superseded/unknown feed observations and lookalike Trusted Publishing URLs; 86 focused and 38 managed checks pass, including full local PowerShell and WSL Bash readiness. Hosted C55 jobs never executed; operations.uai records the operator boundary. No key read or package published; C57 supplies Linux x64 proof while ARM64/release gates remain.
   nuget_windows: C55 completes actual Windows package audit and packaged-native consumer execution after correcting build path parsing, copied-source consumer setup and required P2P metadata. See nuget-consumer-build-review.json. Candidate payloads retired; no Linux or public release proof.
   nuget: Owner requires current NuGet publication. C54 records absent current package IDs, repairs false missing-package classification and removes the monitor opt-in in source. The owner supplied a local API-key file on September 20; read operations.uai nuget_publishing_credential for its location and handling. File existence is confirmed; credential validity, default-branch workflow, full native/package verification and source-authority gates remain open. No package was published.
   static_seed_browser: C53 MiniModel commit 4b815cbb877a709e8d3060c2039c13e993c334eb passes 79 checks including real Edge CORS and six exact Apache fixture bodies. Public TLS/LiteSpeed, real composition installation and qualification remain unproven.

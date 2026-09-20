@@ -5,6 +5,41 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C57: execute the packaged SDK on Linux x64, September 20
+
+The canonical native build now runs on installed WSL Ubuntu 24.04.4 x64 with
+Rust 1.96.0, and all four native ABI tests pass. The default three packages pass
+the two-RID Windows/Linux audit, 86 managed core tests, 38 package tests and the
+Windows packaged consumer. The same package bytes also pass all six consumer
+observations in an actual Linux .NET 8.0.31 process, without a native-path override
+or the compiler's library search path. Consumer restore/build used the Windows
+.NET SDK against the canonical package-only project; no Linux SDK build is claimed.
+
+Tool downloads were hash-verified and extracted under owned canonical artifacts.
+The attempted system compiler installation failed on stale download URLs before
+installation; after refreshing metadata, the proposed libc upgrade was declined.
+Isolated compiler payloads supplied the successful build. The resulting ELF has
+no RPATH/RUNPATH and references GLIBC symbols through 2.34; this one Ubuntu run
+does not establish support on older distributions. Setup failures and exact
+package/tool identities are retained in
+`artifacts/ecosystem-cleanup-20260912/nuget-linux-consumer-review.json`.
+
+The NuGet credential location remains recorded in `.uai/operations.uai`; no key
+was read and nothing was published. Real ARM64 execution, clean three-RID release
+admission, hosted-workflow/account recovery and public package readback remain.
+The source-authority scan and real default-model/seed gates are still incomplete.
+Automatic approval review blocked removal of the unused partial Linux header
+directory `artifacts/verification/linux-sdk/tinyrustlm-operation-OFb8Tf/sysroot/usr/include`
+with only "blocked by policy". That directory and its ancestors remain; no retry
+or parent deletion is authorized by the successful package tests.
+
+Disjoint tool payloads and the separate owned build/package directory were removed:
+2,140,269,091 logical bytes (physical storage recovery was not measured). The
+blocked headers retain 5,717,939 logical bytes plus their ownership marker and
+ancestors. Initial build cleanup encountered locked compiler-analyzer DLLs; after
+graceful compiler-server shutdown, the original root identity and exact remaining
+inventory were checked and retirement completed. No blocked path was retried.
+
 ## C56: distinguish publishable versions from superseded versions, September 20
 
 Both readiness owners now admit complete, consistent current-format feed reports

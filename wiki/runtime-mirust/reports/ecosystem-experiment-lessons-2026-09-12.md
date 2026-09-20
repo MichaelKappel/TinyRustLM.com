@@ -11,6 +11,42 @@ Keep useful findings and compact evidence identities in the owning canonical
 repository. Keep source history in Git and current model payloads only in
 `D:\LLMs\TinyRustLM`.
 
+## C57: separate Linux execution proof from toolchain setup failures
+
+Question: can the current package run in Linux while hosted jobs cannot start?
+On installed WSL Ubuntu 24.04.4 x64, the Rust 1.96.0 native build and four ABI
+tests pass. The three exact two-RID packages pass audit and all six observations
+in both Windows and an actual Linux .NET 8.0.31 consumer. The consumer was restored
+and compiled by the Windows SDK from canonical source using package references;
+Linux ran the resulting managed assembly and its hash-matched packaged native
+asset with no native override or compiler library path. Managed checks: 86 + 38.
+
+Setup failures were not runtime disagreements: stale apt URLs stopped installation,
+case-distinct Linux headers collided on the Windows filesystem, component archive
+manifests collided, uncached Cargo dependencies stopped offline builds, and host
+build scripts needed their own working `cc` launcher. A generated launcher first
+contained literal backslash-n characters; correcting its newline bytes resolved
+that harness failure. No product source, acceptance condition or Cargo lock changed.
+Extract only required tool payloads, preflight the actual child, and distinguish
+host-build-script linker configuration from target Rust flags. Windows metadata
+inspection also failed on a dangling Linux tool link; Linux lstat can inventory
+such links without following them, but never authorizes retrying a policy denial.
+
+The shared C# compiler retained two analyzer DLLs in the owned temporary directory
+and caused a partial cleanup failure. Graceful compiler-server shutdown released
+them; original root identity and exact remaining inventory were revalidated before
+retirement. Future bounded package runs should disable shared compilation as well
+as MSBuild node reuse. Disjoint tools and build output totaling 2,140,269,091 logical
+bytes were removed; physical free-space recovery was not measured.
+
+The ELF has no tool-prefix RPATH/RUNPATH and requires GLIBC symbols up to 2.34.
+Older Linux distributions, real ARM64 execution, full release admission and public
+publication remain unproven. Automatic review denied deletion of the partial
+`sysroot/usr/include` under operation `OFb8Tf`; preserve it and never delete its
+parent to bypass that decision. Evidence and cleanup observations:
+`nuget-linux-consumer-review.json` in the cleanup artifact directory. No key or
+real model was loaded. No inference-quality or seed claim follows from these tests.
+
 ## C56: freshness failure does not always mean a missing release
 
 Question: does every failed freshness report permit a new push? No: an existing

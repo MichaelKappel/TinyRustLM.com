@@ -1,0 +1,587 @@
+{
+  "schema": "tinyrustlm.ecosystem.nuget_linux_consumer_review.v1",
+  "checkpoint": "C57",
+  "recorded_utc": "2026-09-20T12:07:34.965Z",
+  "source_parent": "275bb52a77447deea04f66e15064d32361484d25",
+  "scope": "Local Linux x64 native build and actual package-only consumer execution; no product-code changes or NuGet publication.",
+  "credential": {
+    "memory": ".uai/operations.uai#nuget_publishing_credential",
+    "file_existence_verified": true,
+    "contents_read": false,
+    "contents_copied": false,
+    "key_validated": false,
+    "packages_published": false
+  },
+  "execution": {
+    "distribution": "Installed OSM-Ubuntu WSL, Ubuntu 24.04.4, x86_64",
+    "native_toolchain": "Rust and Cargo 1.96.0; isolated Ubuntu GCC 13.3.0 compiler payloads",
+    "consumer_build": "Windows .NET SDK 10.0.401 restores and builds the canonical AnyCPU net8.0 consumer using exact package references.",
+    "consumer_run": "Linux x64 Microsoft.NETCore.App 8.0.31 executes the built assembly from the owned consumer directory.",
+    "native_override": false,
+    "compiler_library_search_path_during_consumer": false,
+    "linux_dotnet_sdk_installed": false,
+    "system_compiler_install_completed": false,
+    "system_libc_upgrade_executed": false
+  },
+  "tools": {
+    "rustManifest": {
+      "url": "https://static.rust-lang.org/dist/channel-rust-1.96.0.toml",
+      "sha256": "9af50610e1d82699f78a40b985c9277ae1a2c5a0bec86ae430cfe58832038285"
+    },
+    "runtimeMetadata": {
+      "url": "https://dotnetcli.blob.core.windows.net/dotnet/release-metadata/8.0/releases.json",
+      "sha256": "21cc0b1f333822c9c86df690b9dad0191ee3bd4abebd05ad86a0bb353e38fc0b"
+    },
+    "packages": [
+      {
+        "component": "rustc",
+        "url": "https://static.rust-lang.org/dist/2026-05-28/rustc-1.96.0-x86_64-unknown-linux-gnu.tar.xz",
+        "hash": "7d7fa1d0cfb0fab71a956bb78f41107202c17f30ab56c45288e869a37fd9633d",
+        "algorithm": "sha256"
+      },
+      {
+        "component": "rust-std",
+        "url": "https://static.rust-lang.org/dist/2026-05-28/rust-std-1.96.0-x86_64-unknown-linux-gnu.tar.xz",
+        "hash": "c09c7c646248f14f473f5f7a029af15ee57c3a9f9bc93dfa72d9621938586b82",
+        "algorithm": "sha256"
+      },
+      {
+        "component": "cargo",
+        "url": "https://static.rust-lang.org/dist/2026-05-28/cargo-1.96.0-x86_64-unknown-linux-gnu.tar.xz",
+        "hash": "dee75c3c8f9f600ad75bc0c93249e767d3047845a4dd668327ce43ab039ba266",
+        "algorithm": "sha256"
+      },
+      {
+        "component": "dotnet-runtime",
+        "version": "8.0.31",
+        "url": "https://builds.dotnet.microsoft.com/dotnet/Runtime/8.0.31/dotnet-runtime-8.0.31-linux-x64.tar.gz",
+        "hash": "f336bdec58d54bf50d74a1b38efa82f7290d976bd2ed98b845ebcbac42cf0d8cef504684fc088d4b05f98737b996bf3302e52bd9c23005deae7c60780b2652fb",
+        "algorithm": "sha512"
+      }
+    ],
+    "host_runtime_dependencies": [
+      {
+        "source": "/lib/x86_64-linux-gnu/libm.so.6",
+        "relative_destination": "lib/x86_64-linux-gnu/libm.so.6",
+        "bytes": 952616,
+        "sha256": "e9c4b28d340e415b8137480ec442662f981e1399386c5931dae0e886e3639e91"
+      },
+      {
+        "source": "/lib/x86_64-linux-gnu/libmvec.so.1",
+        "relative_destination": "lib/x86_64-linux-gnu/libmvec.so.1",
+        "bytes": 1018144,
+        "sha256": "5def2254818922462209834d08bded55536eea5946aa29809517a0362d690078"
+      },
+      {
+        "source": "/lib/x86_64-linux-gnu/libc.so.6",
+        "relative_destination": "lib/x86_64-linux-gnu/libc.so.6",
+        "bytes": 2125328,
+        "sha256": "8db37cf3f2169f59a0f07ef1fea308c35656668c64c8ff294e1860f4121eb161"
+      },
+      {
+        "source": "/lib64/ld-linux-x86-64.so.2",
+        "relative_destination": "lib64/ld-linux-x86-64.so.2",
+        "bytes": 236616,
+        "sha256": "cd4df4f3c7b83673d61189bf2eaebd33ca4f2853ab9772b8a25e025ef99b1e81"
+      },
+      {
+        "source": "/lib/x86_64-linux-gnu/libgcc_s.so.1",
+        "relative_destination": "usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
+        "bytes": 183024,
+        "sha256": "d93224d2b0dab4247598be683adca02f5cf00586f99c187579cd7e92058fb7cb"
+      }
+    ],
+    "ubuntu_payloads": [
+      {
+        "name": "cpp-13-x86-64-linux-gnu_13.3.0-6ubuntu2~24.04.1_amd64.deb",
+        "bytes": 10714542,
+        "sha256": "2ca48bf0c2d6465bc39322899715a85d934b4d7442dd5586a7bebbe3ce0f806b"
+      },
+      {
+        "name": "cpp-13_13.3.0-6ubuntu2~24.04.1_amd64.deb",
+        "bytes": 1042,
+        "sha256": "c7535331fbb183c802c3bf4b6b210872dcc12d0421b3212b3c4b940f2c59ed3a"
+      },
+      {
+        "name": "cpp-x86-64-linux-gnu_4%3a13.2.0-7ubuntu1_amd64.deb",
+        "bytes": 5326,
+        "sha256": "85059b30960de3582e8612740614da3dfe47241d0368a28dea686188cf7648dd"
+      },
+      {
+        "name": "cpp_4%3a13.2.0-7ubuntu1_amd64.deb",
+        "bytes": 22442,
+        "sha256": "b51f8094760f7b41afdcb1fe1b5a57fc64b75a090859918af17450a10f8c7d31"
+      },
+      {
+        "name": "gcc-13-base_13.3.0-6ubuntu2~24.04.1_amd64.deb",
+        "bytes": 51616,
+        "sha256": "e859aca26585bb91113a451f1e66bc0e5283cb08797d679aacc1d936ae6dff8e"
+      },
+      {
+        "name": "gcc-13-x86-64-linux-gnu_13.3.0-6ubuntu2~24.04.1_amd64.deb",
+        "bytes": 21084546,
+        "sha256": "a134b0319a82d14581b3a14820d2832af4ec9778ed8b9b4ddaeecfb0555ec325"
+      },
+      {
+        "name": "gcc-13_13.3.0-6ubuntu2~24.04.1_amd64.deb",
+        "bytes": 494262,
+        "sha256": "7438ff160b020a74970672189ecae25d0ca650de6d7f543f12a3134192cffbd9"
+      },
+      {
+        "name": "gcc-x86-64-linux-gnu_4%3a13.2.0-7ubuntu1_amd64.deb",
+        "bytes": 1212,
+        "sha256": "72e79089a10e381360bfc6f03c5e5d8c2ff177d6dbac2cd7ffb3cc1383f57591"
+      },
+      {
+        "name": "gcc_4%3a13.2.0-7ubuntu1_amd64.deb",
+        "bytes": 5018,
+        "sha256": "0e0bb8b25153ed1c44ab92bc219eed469fcb5820c5c0bc6454b2fd366a33d3ee"
+      },
+      {
+        "name": "libasan8_14.2.0-4ubuntu2~24.04.1_amd64.deb",
+        "bytes": 3026656,
+        "sha256": "8321aac6230fa1da320e76eb6288b7436164624aec449ed3933ea6c4cc86daac"
+      },
+      {
+        "name": "libatomic1_14.2.0-4ubuntu2~24.04.1_amd64.deb",
+        "bytes": 10466,
+        "sha256": "fe49cbbc7be753528380c724a8eef5f1e31dffa9221f692c5069048d81c7449d"
+      },
+      {
+        "name": "libc6-dev_2.39-0ubuntu8.9_amd64.deb",
+        "bytes": 2125612,
+        "sha256": "e13d5fcc1b2a86f75bca8e0026a8e39f24fe97ca86e92be79991f8697eb1306f"
+      },
+      {
+        "name": "libcc1-0_14.2.0-4ubuntu2~24.04.1_amd64.deb",
+        "bytes": 48002,
+        "sha256": "454456436ca767817a860557263d7cc2489f0a410f03efff4c0bb236d579ec09"
+      },
+      {
+        "name": "libcrypt-dev_1%3a4.4.36-4build1_amd64.deb",
+        "bytes": 111780,
+        "sha256": "2edff420ef80b4a3f3751e65c33423ef30e563122a58b759e4854ea8d84ba1b1"
+      },
+      {
+        "name": "libgcc-13-dev_13.3.0-6ubuntu2~24.04.1_amd64.deb",
+        "bytes": 2680642,
+        "sha256": "cd689db2691edaa10f37329307292796bb599e722e0505c79e14caaa1fe9a93a"
+      },
+      {
+        "name": "libgomp1_14.2.0-4ubuntu2~24.04.1_amd64.deb",
+        "bytes": 148062,
+        "sha256": "e8a95ec58125b4933597f30ff56c2ae10edf90f287262e366d4b6edea3019144"
+      },
+      {
+        "name": "libhwasan0_14.2.0-4ubuntu2~24.04.1_amd64.deb",
+        "bytes": 1640706,
+        "sha256": "2195318cfe68fe16b601913ef7b33c9a900372f57861643fdc9ae6fef84534cd"
+      },
+      {
+        "name": "libisl23_0.26-3build1.1_amd64.deb",
+        "bytes": 679812,
+        "sha256": "4e040926e50fb961fae9bf95660189d468336a4a17bc321872c434fc8f777e7f"
+      },
+      {
+        "name": "libitm1_14.2.0-4ubuntu2~24.04.1_amd64.deb",
+        "bytes": 29702,
+        "sha256": "1fca498129dd3510294809d77ee754f72a9de281111200e9b7b9a5adf37faa9f"
+      },
+      {
+        "name": "liblsan0_14.2.0-4ubuntu2~24.04.1_amd64.deb",
+        "bytes": 1321652,
+        "sha256": "dc0c2a1a053e833ba4d71e1ec2ba4244fe301761ad4a91d6725f927a52d86a14"
+      },
+      {
+        "name": "libmpc3_1.3.1-1build1.1_amd64.deb",
+        "bytes": 54636,
+        "sha256": "cebe6098bb3d66fdacac9dc6fe406a651216d9c00f27c3f9c159d15d96cdf864"
+      },
+      {
+        "name": "libquadmath0_14.2.0-4ubuntu2~24.04.1_amd64.deb",
+        "bytes": 153316,
+        "sha256": "dc8f0ca542e09d662f29370c8393c016440dd4bc5c996c5fcc19f632b63ce3b0"
+      },
+      {
+        "name": "libtsan2_14.2.0-4ubuntu2~24.04.1_amd64.deb",
+        "bytes": 2771910,
+        "sha256": "8cbcc9b3ae5ef23b449383d47a9035b27596e307d7dce7df9b83d47a7acd1d91"
+      },
+      {
+        "name": "libubsan1_14.2.0-4ubuntu2~24.04.1_amd64.deb",
+        "bytes": 1183812,
+        "sha256": "a16dea3abe2dcac99bcfae27e7e5672fde64573c3c170dcb0cd55631238f9814"
+      },
+      {
+        "name": "linux-libc-dev_6.8.0-139.139_amd64.deb",
+        "bytes": 1527454,
+        "sha256": "f8292b3414cac372ec28ba484a45e3f18b3ac5fc7872ca82661835286f1c5865"
+      },
+      {
+        "name": "rpcsvc-proto_1.4.2-0ubuntu7_amd64.deb",
+        "bytes": 67446,
+        "sha256": "7eb710fe148d224c159ddec1ceb0ba53ead52a80a6793dcdae1474acf20d8f71"
+      }
+    ]
+  },
+  "setup_observations": [
+    "APT stale metadata returned 404 before installation. Metadata refresh was successful; the resulting libc upgrade proposal was not executed. Compiler payloads were extracted in the owned tool root instead.",
+    "Full Linux header extraction met a case-insensitive filename collision on the Windows mounted filesystem. Revised extraction selected executable/library payloads only; partial headers remain because deletion was automatically denied.",
+    "Component archive manifest.in names collided; revised extraction omitted component installer metadata and verified existing payload bytes before proceeding.",
+    "Missing cached Cargo dependencies prevented the initial offline build; cargo fetch --locked --target x86_64-unknown-linux-gnu populated the existing developer cache. Cargo.lock stayed byte-identical.",
+    "The compiler preflight first lacked cc, then linker-script runtime libraries. The successful isolated linker used hash-bound host runtime dependencies.",
+    "An explicit Rust target left host build-script linker settings separate. A generated cc launcher initially contained literal backslash-n sequences; correcting its newline bytes allowed the same canonical build and tests to pass.",
+    "Windows lstat could not inspect a dangling Linux tool link. Linux lstat inspected links without following them; cleanup selected only disjoint tool paths and never attempted the policy-blocked headers or a parent directory.",
+    "WSL emitted a pre-existing unrelated Windows PATH translation warning; no global PATH or profile was changed.",
+    "Shared C# compilation retained analyzer DLLs despite MSBuild node reuse being disabled. Graceful compiler-server shutdown released them; future bounded runs should also disable shared compilation."
+  ],
+  "verification": {
+    "native": {
+      "build": {
+        "exit_code": 0,
+        "seconds": 48.306
+      },
+      "tests": {
+        "exit_code": 0,
+        "seconds": 72.762,
+        "passed": 4,
+        "failed": 0
+      },
+      "cargo_lock_unchanged": true,
+      "cargo_lock_sha256": "6b5e6ab614c254adc0298b727a0578a0d3aa42bb768cc10659d719fefdeb31c0",
+      "native": {
+        "bytes": 2297616,
+        "sha256": "feb5253988305deeca5b7beaf0d54f0490c490a4fdcb0b660fc4efbf6ba24cc5"
+      },
+      "commands": [
+        "bash eng/build-native.sh release linux-x64",
+        "cargo test --locked --offline -p tinyrustlm-native --target x86_64-unknown-linux-gnu"
+      ]
+    },
+    "elf": {
+      "needed": [
+        "libgcc_s.so.1",
+        "libm.so.6",
+        "libc.so.6",
+        "ld-linux-x86-64.so.2"
+      ],
+      "rpath_or_runpath": false,
+      "maximum_glibc_symbol_version": "2.34",
+      "ldd_resolved_to_system_libraries": true,
+      "older_distributions_tested": false
+    },
+    "windows_native": {
+      "path": "artifacts/native/win-x64/tinyrustlm_native.dll",
+      "bytes": 1283072,
+      "sha256": "bff17ff1a4e3441ce34640308387d711f416c2a457cca07e12a540d146100348"
+    },
+    "managed": {
+      "core": {
+        "passed": 86,
+        "failed": 0,
+        "skipped": 0
+      },
+      "package": {
+        "passed": 38,
+        "failed": 0,
+        "skipped": 0
+      }
+    },
+    "package": {
+      "version": "0.1.8",
+      "required_rids": [
+        "win-x64",
+        "linux-x64"
+      ],
+      "status": "pass",
+      "identity": {
+        "bytes": 35723,
+        "sha256": "769118f6989c8e458d56e8bee75a1c6d20cf4f0993a88aa8b7a11c24bca3affd"
+      },
+      "counts": {
+        "missing_package_count": 0,
+        "unexpected_package_count": 0,
+        "missing_symbol_package_count": 0,
+        "unexpected_symbol_package_count": 0,
+        "package_identity_mismatch_count": 0,
+        "symbol_package_identity_mismatch_count": 0,
+        "missing_metadata_count": 0,
+        "metadata_policy_violation_count": 0,
+        "missing_search_term_count": 0,
+        "missing_package_file_count": 0,
+        "package_documentation_mismatch_count": 0,
+        "missing_dependency_count": 0,
+        "unexpected_dependency_count": 0,
+        "unexpected_native_entry_count": 0,
+        "unexpected_package_content_entry_count": 0,
+        "missing_public_api_entry_count": 0,
+        "unexpected_public_api_entry_count": 0,
+        "missing_documentation_count": 0,
+        "source_file_count": 0,
+        "debug_symbol_count": 0,
+        "generated_output_count": 0,
+        "absolute_path_match_count": 0,
+        "noncanonical_package_timestamp_entry_count": 0,
+        "symbol_package_unexpected_entry_count": 0,
+        "symbol_package_missing_pdb_count": 0,
+        "symbol_package_source_file_count": 0,
+        "symbol_package_generated_output_count": 0,
+        "symbol_package_absolute_path_match_count": 0,
+        "noncanonical_symbol_package_timestamp_entry_count": 0,
+        "package_count": 3,
+        "symbol_package_count": 3
+      },
+      "payloads": [
+        {
+          "name": "TinyRustLM.Abstractions.0.1.8.nupkg",
+          "bytes": 36753,
+          "sha256": "2f09246a50f396212bf98104e91fc9c7a9ec20623c8d6a75cc1581b288451f45"
+        },
+        {
+          "name": "TinyRustLM.Core.0.1.8.nupkg",
+          "bytes": 1378996,
+          "sha256": "96d13b3c91d225b7b34644ad15643ce9f72596e52eed0001cfbe17af73557e28"
+        },
+        {
+          "name": "TinyRustLM.P2P.0.1.8.nupkg",
+          "bytes": 23672,
+          "sha256": "a0d8690fe945790e955a4db65c81beaddcb24fd1c6fd813ef4f134cfdb44f949"
+        },
+        {
+          "name": "TinyRustLM.Abstractions.0.1.8.snupkg",
+          "bytes": 12164,
+          "sha256": "283755b4bd3ffe7d5944ad46c5524bb95dfa34a91b062fcbab0a2f6a6700d376"
+        },
+        {
+          "name": "TinyRustLM.Core.0.1.8.snupkg",
+          "bytes": 12808,
+          "sha256": "31720cc3213345905d6b1303a3e01745f0949d3b03d59c9e445667754780b65e"
+        },
+        {
+          "name": "TinyRustLM.P2P.0.1.8.snupkg",
+          "bytes": 10436,
+          "sha256": "3cf4cbd790c274cc6e3bc1154224fbb29286244b4e44875b2d1c924cc96bd362"
+        }
+      ]
+    },
+    "consumer": {
+      "windows": "All six canonical observations pass during eng/pack.ps1.",
+      "linux": {
+        "passed": true,
+        "observations": [
+          "consumer-smoke-native-contract-15",
+          "consumer-smoke-slm2-inspected",
+          "consumer-smoke-acg2-assembled",
+          "consumer-smoke-slm2-assembled",
+          "consumer-smoke-create-only-rejected",
+          "consumer-smoke-manifest-tamper-rejected"
+        ],
+        "milliseconds": 8898,
+        "packaged_native": {
+          "stage": "packaged-linux-native-identity",
+          "bytes": 2297616,
+          "sha256": "feb5253988305deeca5b7beaf0d54f0490c490a4fdcb0b660fc4efbf6ba24cc5"
+        },
+        "owned_output_removed": true
+      },
+      "limitations": "Synthetic contract vectors; no useful conversation or real model qualification. This is Linux runtime execution after Windows compilation, not a Linux SDK build."
+    },
+    "log_identities": [
+      {
+        "name": "native-build.log",
+        "bytes": 3115,
+        "sha256": "6ea544ffa99b99ed8dd41723e8b33986a62b1d12b710cf59fe3546df0e220dd0"
+      },
+      {
+        "name": "native-tests.log",
+        "bytes": 3925,
+        "sha256": "2fdc85ca1f1a55404ec41b1320999c1b72738eb88600959df83562804f6a0a6e"
+      },
+      {
+        "name": "package-build.log",
+        "bytes": 11723,
+        "sha256": "f6e5e0118712e93ae5f76d6c3341303debaf6edf8e697d1269d565e133ba430e"
+      },
+      {
+        "name": "linux-consumer-result.json",
+        "bytes": 2268,
+        "sha256": "efa15884684c2c0e1c948baac8d8a73ceb8a043e1bcba396eccde3cd5ae8c44f"
+      }
+    ],
+    "memory_checks": {
+      "command": "dotnet test dotnet/tests/TinyRustLM.Package.Tests/TinyRustLM.Package.Tests.csproj --configuration Release --no-build --no-restore --filter FullyQualifiedName~UaixMemoryConsolidationTests --verbosity minimal",
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0
+    }
+  },
+  "cleanup": {
+    "tool_root": "artifacts/verification/linux-sdk/tinyrustlm-operation-OFb8Tf",
+    "disjoint_paths_removed": [
+      {
+        "path": "downloads",
+        "regular_files": 4,
+        "links": 0,
+        "logical_bytes": 152382596,
+        "absence_verified": true
+      },
+      {
+        "path": "rust",
+        "regular_files": 148,
+        "links": 0,
+        "logical_bytes": 611831025,
+        "absence_verified": true
+      },
+      {
+        "path": "dotnet",
+        "regular_files": 188,
+        "links": 0,
+        "logical_bytes": 72360190,
+        "absence_verified": true
+      },
+      {
+        "path": "debs",
+        "regular_files": 27,
+        "links": 0,
+        "logical_bytes": 49961672,
+        "absence_verified": true
+      },
+      {
+        "path": "temp",
+        "regular_files": 0,
+        "links": 0,
+        "logical_bytes": 0,
+        "absence_verified": true
+      },
+      {
+        "path": "sysroot/lib",
+        "regular_files": 3,
+        "links": 0,
+        "logical_bytes": 4096088,
+        "absence_verified": true
+      },
+      {
+        "path": "sysroot/lib64",
+        "regular_files": 1,
+        "links": 0,
+        "logical_bytes": 236616,
+        "absence_verified": true
+      },
+      {
+        "path": "sysroot/usr/bin",
+        "regular_files": 12,
+        "links": 27,
+        "logical_bytes": 32692426,
+        "absence_verified": true
+      },
+      {
+        "path": "sysroot/usr/lib",
+        "regular_files": 209,
+        "links": 38,
+        "logical_bytes": 62802817,
+        "absence_verified": true
+      },
+      {
+        "path": "sysroot/usr/libexec",
+        "regular_files": 5,
+        "links": 0,
+        "logical_bytes": 61076760,
+        "absence_verified": true
+      },
+      {
+        "path": "sysroot/usr/share",
+        "regular_files": 55,
+        "links": 0,
+        "logical_bytes": 1178483,
+        "absence_verified": true
+      }
+    ],
+    "tool_removed_logical_bytes": 1048618673,
+    "blocked": {
+      "path": "artifacts/verification/linux-sdk/tinyrustlm-operation-OFb8Tf/sysroot/usr/include",
+      "review_response": "blocked by policy",
+      "retry_attempted": false,
+      "parent_deletion_attempted": false,
+      "files": 933,
+      "logical_bytes": 5717939,
+      "tree_identity_before": "02992e01c3933b03f54a4e7876f7063aef8803e68b24533fe32a86c53eafc433",
+      "tree_identity_after": "02992e01c3933b03f54a4e7876f7063aef8803e68b24533fe32a86c53eafc433",
+      "unchanged": true,
+      "retained_ancestors_and_owner_marker": true
+    },
+    "build_root": "artifacts/tests/linux-sdk/tinyrustlm-operation-otrGb6",
+    "build_inventory": {
+      "files": 3220,
+      "logical_bytes": 1091650418
+    },
+    "build_retirement": "Completed; exact original owned root absence verified.",
+    "removed_logical_bytes": 2140269091,
+    "initial_build_cleanup": {
+      "outcome": "Partial EPERM failure on two locked xUnit analyzer DLLs retained by the C# compiler server.",
+      "correction": "dotnet build-server shutdown --vbcscompiler completed; verified original root device/inode and exact remaining ordinary-file inventory before completing deletion.",
+      "policy_denial": false,
+      "final_absence_verified": true
+    },
+    "physical_storage_recovery_measured": false,
+    "measurement_note": "Logical bytes sum file lengths; aliases can share storage. No physical free-space recovery claim."
+  },
+  "remaining": [
+    "Actual ARM64 native and packaged consumer execution.",
+    "Clean exact three-RID package/release admission and source-authority completion.",
+    "GitHub hosted account/workflow and default-branch reconciliation; do not retry jobs that were rejected before execution.",
+    "Credential validity/scope and public package byte readback after an eligible push.",
+    "No qualified default model, useful acquired-model browser result, public initial seed or completed ecosystem cleanup."
+  ],
+  "source_inputs": [
+    {
+      "path": "eng/build-native.sh",
+      "bytes": 1779,
+      "sha256": "28ab68260306b9aad16bd17964048fd4a8b7dd0f8817496637a5088724572c0c"
+    },
+    {
+      "path": "eng/build-native.ps1",
+      "bytes": 3442,
+      "sha256": "30c555c5f3fd38de73161ae07b59cec3ad6b4effc919e16189f318ec677fa332"
+    },
+    {
+      "path": "eng/pack.ps1",
+      "bytes": 7512,
+      "sha256": "20e94f7a57b538cc724da5d2dc08497051284d5f73a25f638eb258440529c1cf"
+    },
+    {
+      "path": "eng/verify-consumer.js",
+      "bytes": 5007,
+      "sha256": "0c4579e3f64c984a2791e67f00d363ca8b50382e552359c65a4c14e6de7586b0"
+    },
+    {
+      "path": "eng/consumer-smoke/TinyRustLM.ConsumerSmoke.csproj",
+      "bytes": 937,
+      "sha256": "61702a14717bc998153a777be25764ee3ab703a302915a0ce9910ceb528972b5"
+    },
+    {
+      "path": "eng/consumer-smoke/Program.cs",
+      "bytes": 8848,
+      "sha256": "8cbdc2c73516e0eacca8ac598443dd78054d71d13cf59149d812fc7307276f9e"
+    },
+    {
+      "path": "dotnet/Directory.Build.props",
+      "bytes": 2667,
+      "sha256": "6829f8afa45c8850d0f3f7486fa7249136aff0922a85ecf9cbe52ded400d7f39"
+    },
+    {
+      "path": "docs/nuget/README.md",
+      "bytes": 13170,
+      "sha256": "4526c2c5922d42575706e4da802623257a2ba5e90c5891982e8eb679c323330b"
+    },
+    {
+      "path": "contracts/vnext/slm2-q8-weight-vectors.v1.json",
+      "bytes": 42623,
+      "sha256": "f81d30bd0646efa4a267ffed8c697c2b7a5c84a67ded9d498aa3ffb10007ca2d"
+    },
+    {
+      "path": "contracts/vnext/acg2-format-vectors.v1.json",
+      "bytes": 74373,
+      "sha256": "d7f0f956ccbc909b242d24410ff9f2f60216d8ff8537a108bff0f698c7b6a441"
+    }
+  ]
+}

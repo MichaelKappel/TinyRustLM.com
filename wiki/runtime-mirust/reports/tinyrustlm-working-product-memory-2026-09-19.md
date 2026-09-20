@@ -16,6 +16,15 @@ Authority order is current owner instructions, inspected current contracts and b
 
 ## Current evidence and its limits
 
+**C57 Linux package execution:** the canonical Linux x64 native build and four ABI
+tests pass. Two-RID package audit, 86 core and 38 package checks, and both Windows
+and actual Linux .NET consumers pass. Windows compiled the canonical package-only
+consumer; Linux .NET 8.0.31 executed it without a native-path override or compiler
+library path. Real ARM64, older Linux compatibility and full release/publication
+gates remain open. A temporary header-directory deletion was policy-blocked and
+must not be retried through its parent or another API. See
+`artifacts/ecosystem-cleanup-20260912/nuget-linux-consumer-review.json`.
+
 **C56 NuGet readiness:** both owners distinguish missing, current, superseded and
 unknown feed observations, bind exact package/version reports and restrict Trusted
 Publishing to the official feed. All 86 focused checks and 38 managed checks pass;

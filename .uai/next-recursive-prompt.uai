@@ -1,5 +1,5 @@
 profile: tinyrustlm.next-goal.current.v1
-updated_utc: 2026-09-19T17:18:30Z
+updated_utc: 2026-09-20T12:04:38Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
@@ -28,7 +28,7 @@ continue_cleanup:
   lessons: wiki/runtime-mirust/reports/ecosystem-experiment-lessons-2026-09-12.md
   publication: C31 local canonical-input refactor is tested; resolve actual remote publication/exclusion/recovery capability before deployment. Do not reintroduce source snapshots or treat local transfer mocks as remote proof.
   owner_deferral: Skip ternary/Bonsai/Hadamard research for now and continue implementation toward the working product.
-  blocked: Two installer links and earlier reviewed deletion cohorts remain policy-blocked. Never retry through another API, rename, truncation or parent deletion.
+  blocked: Two installer links, earlier reviewed deletion cohorts and C57's artifacts/verification/linux-sdk/tinyrustlm-operation-OFb8Tf/sysroot/usr/include remain policy-blocked. Never retry through another API, rename, truncation or parent deletion. Read operations.uai for the current NuGet credential location and remaining release gates.
 
 stop_doing:
   - Renaming rejected weights; training around unknown inference defects; unbounded model/quantizer searches; public cases relabeled as holdout.
