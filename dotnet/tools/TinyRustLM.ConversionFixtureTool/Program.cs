@@ -1,4 +1,5 @@
 using System.Buffers.Binary;
+using System.Diagnostics;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
@@ -7,6 +8,20 @@ const string profileId = "tinyrustlm.qwen3-complete-composition-conversion/4";
 const string profileSha256 = "19e43c7ae532e7bc1822cbdcf179ee9bf1ed111298d3c6e5b13d37d990ee47e8";
 const string nextGate = "source-native-browser-numerical-parity-untouched-quality-and-product-chat";
 const string converterVersion = "fixture-1";
+
+// Keep inherited pipes open after the fixture parent exits; the test owns teardown.
+if (args.Length == 3 && args[0] == "hold-output")
+{
+    using var stdout = Console.OpenStandardOutput();
+    using var stderr = Console.OpenStandardError();
+    File.WriteAllText(args[1], JsonSerializer.Serialize(new
+    {
+        parentId = int.Parse(args[2], System.Globalization.CultureInfo.InvariantCulture),
+        childId = Environment.ProcessId
+    }));
+    await Task.Delay(TimeSpan.FromSeconds(30));
+    return 0;
+}
 
 if (args.Length != 6)
 {
@@ -31,6 +46,25 @@ var rustSeedScenario = scenario is "rust-seed-pass" or "rust-seed-variant-pass";
 var seedFixtureLabel = scenario == "rust-seed-variant-pass" ? "JS2" : "CLI";
 switch (scenario)
 {
+    case "held-output":
+        Directory.CreateDirectory(outputRoot);
+        File.WriteAllText(Path.Combine(outputRoot, "composition.attempt.json"), "preserved\n");
+        var controlPath = Path.Combine(modelSourceDirectory, "pipe-processes.json");
+        var releasePath = Path.Combine(modelSourceDirectory, "release-parent");
+        var childStart = new ProcessStartInfo(Environment.ProcessPath!)
+        {
+            UseShellExecute = false,
+            CreateNoWindow = true
+        };
+        childStart.ArgumentList.Add("hold-output");
+        childStart.ArgumentList.Add(controlPath);
+        childStart.ArgumentList.Add(Environment.ProcessId.ToString(System.Globalization.CultureInfo.InvariantCulture));
+        using (var child = Process.Start(childStart) ?? throw new InvalidOperationException("Fixture child did not start."))
+        {
+            using var bound = new CancellationTokenSource(TimeSpan.FromSeconds(30));
+            while (!File.Exists(releasePath)) await Task.Delay(20, bound.Token);
+        }
+        return 0;
     case "error":
         Console.Error.WriteLine("TinyRustLM conversion failed: qwen3-source-hash-mismatch");
         return 1;
@@ -38,8 +72,10 @@ switch (scenario)
         Console.Error.WriteLine("private path C:\\secret\\source");
         return 1;
     case "oversized":
-        Console.Write(new string('x', 100_000));
-        Console.Out.Flush();
+    case "oversized-error":
+        var output = scenario == "oversized-error" ? Console.Error : Console.Out;
+        output.Write(new string('x', 100_000));
+        output.Flush();
         await Task.Delay(TimeSpan.FromMinutes(1));
         return 1;
     case "hang":

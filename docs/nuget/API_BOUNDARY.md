@@ -105,9 +105,15 @@ model authoring.
 `tinyrustlm-convert qwen3-composition` transaction. The managed request binds
 the expected model source-lock, tokenizer source-lock, registered profile, two
 source directories, and one absent output root. The wrapper owns bounded
-stdout/stderr, duration, process-tree cancellation, strict summary and receipt
+stdout/stderr, duration through pipe EOF, cancellation, strict summary and receipt
 parsing, deterministic operation-ID recomputation, exact terminal inventory,
 and fresh streamed hashes for all six artifacts and both component receipts.
+
+On failure it requests active-process-tree termination, cancels pending pipe
+reads and observes every task before returning. An already detached descendant
+cannot be recovered through an exited parent handle; this is not an OS sandbox
+for arbitrary executables. Read-only terminal reconciliation and synchronous
+disk verification retain the limits described in `docs/companion/README.md`.
 
 There is no managed model-only or tokenizer-only success operation. Those
 native component commands are private compiler primitives whose receipts feed

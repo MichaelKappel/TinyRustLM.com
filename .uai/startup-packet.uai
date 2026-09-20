@@ -1,5 +1,5 @@
 profile: tinyrustlm.startup-packet.current.v1
-updated_utc: 2026-09-20T16:46:20Z
+updated_utc: 2026-09-20T17:00:10Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
@@ -10,6 +10,7 @@ startup_steps:
   - Preserve immutable failed operations and all campaign counters.
 
 current_truth:
+  conversion_pipes: C71 bounds process and stdout/stderr observation with the same caller/deadline signal. Reader failure stops siblings; all tasks settle before return. Both real Windows held-pipe regressions and all 110 Core/228 companion tests pass; reader coverage is 100%. Read conversion-pipe-lifetime-review.json. Test-owned descendant cleanup is not OS sandbox containment; model and publication gates remain.
   conversion_cancellation: C70 propagates caller cancellation through live input/result hashing, preserving exact identities and durable terminal evidence. All 97 Core and 228 companion tests pass; the hash loop has 100% line/branch coverage. Read conversion-hash-cancellation-review.json. Synchronous reads and uncancelled terminal reconciliation retain their limits; no real model, NuGet or deployment proof.
   candidate_selection: C69 rejects invalid explicit discovery/download limits, defaults only omission and validates the selected slice before acquisition. All 48 affected and three gate checks pass; three unchanged suites now use discoverable names. Profiles screen metadata, while the Rust CLI exposes only Qwen3/Qwen-tokenizer conversion. See candidate-selection-limits-review.json. No real model or publication evidence; converter/model gates remain.
   nuget_native_binding: C68 forces package-consumer children to their own native asset and output layout; Core conversion fixtures bind actual MSBuild output. A real missing-DLL false pass is now rejected; intact Windows packages pass. All 105 Node and 124 managed checks pass, plus audit/native smoke. See nuget-consumer-native-binding-review.json. No new Linux/ARM64 execution, key read or publication; release gates remain open.

@@ -34,7 +34,7 @@ transaction:
 - `TinyRustLM.Conversion` is private local-feed tooling around the exact
   `tinyrustlm-convert` executable. It invokes only the registered
   `qwen3-composition` transaction, binds both expected source-lock hashes and
-  the profile hash, owns bounded process-tree cancellation, and independently
+  the profile hash, bounds process/pipe observation with cancellation, and independently
   validates the ten-file terminal inventory, operation and receipt lineage,
   component-receipt identities, and all six streamed artifact hashes. It is
   not eligible for the public publish allowlist and exposes no component-level

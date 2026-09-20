@@ -1,5 +1,5 @@
 profile: tinyrustlm.operations.current.v1
-updated_utc: 2026-09-20T16:46:20Z
+updated_utc: 2026-09-20T17:00:10Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
@@ -10,7 +10,8 @@ historical_checkpoint:
   boundary: These August 28 source/test counts are historical. They do not describe current implementation or establish real-model qualification or deployment.
 
 current_state:
-  conversion_cancellation: C70 stops cancelled live hash work before/after each bounded read, including EOF, without erasing terminal evidence or changing reconciliation. All 97 Core and 228 companion checks pass; hash-loop coverage is 100%. Read conversion-hash-cancellation-review.json. Disk reads already in progress and output-pipe lifecycle remain separate lifetime limits; no model or publication claim.
+  conversion_pipes: C71 propagates caller/deadline cancellation to output reads, jointly observes exit/stdout/stderr and stops siblings on any failure. All 110 Core/228 companion tests pass, including actual Windows inherited pipes; reader coverage is 100%. Read conversion-pipe-lifetime-review.json. The test independently terminates its child; arbitrary detached-process containment and Linux execution are not proven.
+  conversion_cancellation: C70 stops cancelled live hash work before/after each bounded read, including EOF, without erasing terminal evidence or changing reconciliation. All 97 Core and 228 companion checks pass; hash-loop coverage is 100%. Read conversion-hash-cancellation-review.json. Disk reads already in progress retain their limits; C71 adds output-pipe cancellation. No model or publication claim.
   candidate_selection: C69 prevents zero/NaN limits from starting default-sized acquisition and validates all selected candidates before I/O. All 48 affected and three standard-gate checks pass; metadata/storage/exclusion suites are now discoverable. Read candidate-selection-limits-review.json. Discovery profiles do not imply converter support; Rust currently exposes the Qwen3/Qwen-tokenizer chain. No real source download, qualification or publication.
   nuget_native_binding: C68 ignores inherited developer native paths in package verification by binding the child's exact installed asset; fixes consumer output layout and Core fixture metadata. Missing packaged DLL now rejects, and intact Windows packages pass even with bad parent settings. All 105 Node and 124 managed checks pass with package audit/native smoke. Read nuget-consumer-native-binding-review.json for failed setup evidence and cleanup. Other platform and release gates remain open; no key read or push.
   nuget_consumers: C67 separates one audited pack, three actual-host package-consumer jobs and protected publication. The publisher downloads the verified artifact and builds only report validators; credentials/OIDC are confined to it. Eleven Bash script modes are corrected. All 103 Node and 38 managed checks pass; YAML/Bash syntax and host-guard execution pass. See nuget-prepublish-consumer-review.json. No hosted ARM64 run or package push is claimed; do not retry unchanged billing-blocked jobs.

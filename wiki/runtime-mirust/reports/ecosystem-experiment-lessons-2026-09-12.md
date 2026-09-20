@@ -11,6 +11,28 @@ Keep useful findings and compact evidence identities in the owning canonical
 repository. Keep source history in Git and current model payloads only in
 `D:\LLMs\TinyRustLM`.
 
+## C71: process exit and output EOF are different lifetime boundaries
+
+- Question: does cancellation or timeout end conversion observation after the
+  parent exits but another process retains its redirected handles?
+- Exact inputs: parent `f4c286bcf9e8b8cf9130a1a899675f137e8b69c8`, registered
+  synthetic executable fixture, separately owned inherited-pipe child, five-second
+  deadline and eight-second test observation window; no real model bytes.
+- Method: keep the fixture parent alive until the test holds both process handles,
+  release it, verify parent exit and live child, then cancel or await the deadline.
+  Teardown terminates the exact owned child and observes the conversion task.
+- Result: both initial cases exceeded the observation window. Both pass after
+  reader cancellation and joint supervision. The full 110 Core and 228 companion
+  tests pass; reader line/branch coverage is 100%, live owner line coverage 95.89%.
+- Decision: supervise exit and both streams together, stop siblings on failure,
+  observe all terminal tasks and preserve measured output-limit errors.
+- Uncertainty: Windows fixture proof does not establish Linux behavior or OS
+  containment of already detached descendants. Disk verification retains C70's
+  separate synchronous-read and reconciliation limits.
+- Reusable lesson: process termination is not stream completion; byte bounds and
+  time bounds must reach pending reads, and cleanup must observe every task.
+- Evidence: `artifacts/ecosystem-cleanup-20260912/conversion-pipe-lifetime-review.json`.
+
 ## C70: process cancellation alone does not cancel file verification
 
 - Question: does the live managed conversion call stop cancelled verification?

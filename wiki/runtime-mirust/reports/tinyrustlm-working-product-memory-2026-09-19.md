@@ -16,6 +16,13 @@ Authority order is current owner instructions, inspected current contracts and b
 
 ## Current evidence and its limits
 
+**C71 conversion pipes:** caller/deadline cancellation now reaches stdout/stderr
+through EOF and the owner observes process exit plus both readers, stopping
+siblings on failure. The held-pipe Windows regressions pass along with all 110
+Core and 228 companion tests; reader line/branch coverage is 100%. See
+`conversion-pipe-lifetime-review.json`. Tests terminate their own fixture child;
+this is not an OS sandbox for detached descendants or real-model/public evidence.
+
 **C70 conversion cancellation:** the live owner now stops cancelled input and
 result hashing between bounded reads, preserving the caller token and terminal
 evidence. All 97 Core and 228 companion checks pass, including late terminal

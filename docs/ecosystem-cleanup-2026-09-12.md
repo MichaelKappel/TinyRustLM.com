@@ -5,6 +5,34 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C71: bound conversion output observation through EOF, September 20
+
+Two real Windows fixture-process cases reproduced a stuck conversion after its
+parent exited while a child retained the output pipes. Caller cancellation and
+the configured five-second deadline both failed to settle the wrapper during
+the test's eight-second observation window. The test then terminated its own
+child and observed the original conversion before removing the fixture.
+
+The owner now supervises process exit and both readers together. Each pipe read
+receives the shared caller/deadline token and rejects late data or EOF after
+cancellation. Any failed task stops sibling reads and requests termination of
+the active process tree; every task is observed before returning. Measured
+output-limit violations retain precedence over cancellation. The old separate
+overflow exception is removed in favor of the existing bounded error code.
+
+All 110 Core and 228 companion checks pass, including thirteen additional cases:
+inherited pipes, stdout/stderr floods, exact byte limits, short reads, pending-read
+cancellation, late EOF and I/O failure. The reader has 100% line/branch coverage;
+the async conversion owner has 95.89% line and 75% branch coverage. Package and
+memory checks, exact identities and owned cleanup are recorded in
+`conversion-pipe-lifetime-review.json`.
+
+This is Windows process/pipe proof with synthetic compositions. The fixture child
+is independently owned and terminated by the test; the wrapper cannot recover an
+already detached descendant through an exited parent handle. Documentation now
+states that boundary explicitly. There is no new Linux/ARM64, real-model, NuGet
+publication or site-deployment evidence, and no blocked deletion was retried.
+
 ## C70: honor conversion cancellation during file verification, September 20
 
 The managed conversion owner checked cancellation while the child ran, but not

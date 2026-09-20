@@ -1,0 +1,288 @@
+{
+  "schema": "tinyrustlm.ecosystem-cleanup.conversion-pipe-lifetime-review.v1",
+  "checkpoint": "C71",
+  "parent": "f4c286bcf9e8b8cf9130a1a899675f137e8b69c8",
+  "reviewedUtc": "2026-09-20T17:04:21.074Z",
+  "status": "implemented-and-tested; owned-output-removed",
+  "previousGoalTurn": "Progress: C70 propagated cancellation through live hashes, passed 363 checks, removed owned output and committed/pushed f4c286b with fresh remote equality. C71 continues the complete ecosystem goal.",
+  "findings": [
+    "After a converter parent exited, inherited stdout/stderr handles kept the output tasks pending. Caller cancellation and the five-second process deadline both failed to settle during an eight-second test observation window.",
+    "The previous owner awaited process exit before observing reader failure and did not pass cancellation to reads."
+  ],
+  "implementation": [
+    "Supervise exit and both output tasks together, observing any failure immediately.",
+    "Pass the shared caller/deadline token into every read and check before/after, including EOF.",
+    "On failure cancel sibling reads, request active-process-tree termination and await all observations before preserving the original outcome.",
+    "Preserve an observed converter-output-limit failure over concurrent cancellation; remove the redundant private overflow exception.",
+    "Clarify active-tree termination versus OS containment across package/companion documentation."
+  ],
+  "verification": {
+    "initial": {
+      "tests": 2,
+      "pass": 0,
+      "fail": 2,
+      "result": "Both held-pipe cases produced the test observation TimeoutException instead of caller cancellation or converter-timeout. Finally teardown killed exact fixture children and observed the original tasks."
+    },
+    "heldPipesAfter": {
+      "tests": 2,
+      "pass": 2,
+      "fail": 0
+    },
+    "core": {
+      "tests": 110,
+      "pass": 110,
+      "fail": 0,
+      "skip": 0,
+      "additionalCases": 13
+    },
+    "companion": {
+      "tests": 228,
+      "pass": 228,
+      "fail": 0,
+      "skip": 0
+    },
+    "packageAndMemory": {
+      "tests": 38,
+      "pass": 38,
+      "fail": 0,
+      "skip": 0
+    },
+    "testEvidence": [
+      {
+        "file": "companion-final.trx",
+        "sha256": "0a1fe0e04d2cef6f333babcc08221ae0d20b04209d51a3fe2b24f4dcf714c623",
+        "total": 228,
+        "passed": 228,
+        "failed": 0,
+        "start": "2026-09-20T09:59:37.8619231-07:00",
+        "finish": "2026-09-20T09:59:51.4630065-07:00"
+      },
+      {
+        "file": "core-final.trx",
+        "sha256": "a34dfbbacaedbe23ac2d60d3de706e0ff3c77bdf1b3043edb70bb00308531dd2",
+        "total": 110,
+        "passed": 110,
+        "failed": 0,
+        "start": "2026-09-20T09:58:28.8010373-07:00",
+        "finish": "2026-09-20T09:58:40.9167522-07:00"
+      },
+      {
+        "file": "package-final.trx",
+        "sha256": "8dca425b67c24bc23f17f389d26f39abcc5ac833557036c2b07e9f0e4a2f2e5c",
+        "total": 38,
+        "passed": 38,
+        "failed": 0,
+        "start": "2026-09-20T10:02:11.1615090-07:00",
+        "finish": "2026-09-20T10:02:13.1756098-07:00"
+      },
+      {
+        "file": "pipes-after.trx",
+        "sha256": "a0ac07a4198635bbc28cc94f364cbe3de732d86ad8c22ea4e8b79ecc03923062",
+        "total": 2,
+        "passed": 2,
+        "failed": 0,
+        "start": "2026-09-20T09:56:39.1872168-07:00",
+        "finish": "2026-09-20T09:56:45.0364134-07:00"
+      },
+      {
+        "file": "pipes-before.trx",
+        "sha256": "3972f9da52cc99135df3c5a9eba5e3587ca5962e477631a1d8a931b503c24471",
+        "total": 2,
+        "passed": 0,
+        "failed": 2,
+        "start": "2026-09-20T09:55:16.9533424-07:00",
+        "finish": "2026-09-20T09:55:35.5403763-07:00"
+      }
+    ],
+    "asyncCoverage": [
+      {
+        "name": "TinyRustLM.TinyRustLmConversionTool.<ConvertCompositionAsync>d__27",
+        "line_rate": "0.958904109589041",
+        "branch_rate": "0.75",
+        "methods": []
+      },
+      {
+        "name": "TinyRustLM.TinyRustLmConversionTool.<DrainAfterTermination>d__44",
+        "line_rate": "0.8",
+        "branch_rate": "1",
+        "methods": []
+      },
+      {
+        "name": "TinyRustLM.TinyRustLmConversionTool.<ReadBoundedAsync>d__42",
+        "line_rate": "1",
+        "branch_rate": "1",
+        "methods": []
+      }
+    ],
+    "platform": "Windows .NET SDK 10.0.401 / net8.0; actual process/pipes, synthetic compositions; shared compilation disabled; outputs/TEMP confined to original owned canonical root.",
+    "coverageEvidence": [
+      {
+        "path": "results/3d0775f4-dbda-4769-b800-bf3adf2413bf/Michael_PLUTO_2026-09-20.09_59_51.cobertura.xml",
+        "bytes": 3647654,
+        "sha256": "fc78593864c4e5fa2f62ebeaf513daef25fe8dd296ca1fca70f0bfd0a2639102"
+      },
+      {
+        "path": "results/c0df8feb-4a72-42f2-b0cd-097089b159b1/Michael_PLUTO_2026-09-20.09_58_40.cobertura.xml",
+        "bytes": 1859096,
+        "sha256": "48e7b199b400ceff0d2008e64951b2882f5c9cb9da5021f11acb3a2e34f3c7c3"
+      },
+      {
+        "path": "results/Michael_PLUTO_2026-09-20_09_58_30/In/PLUTO/Michael_PLUTO_2026-09-20.09_58_40.cobertura.xml",
+        "bytes": 1859096,
+        "sha256": "48e7b199b400ceff0d2008e64951b2882f5c9cb9da5021f11acb3a2e34f3c7c3"
+      },
+      {
+        "path": "results/Michael_PLUTO_2026-09-20_09_59_40/In/PLUTO/Michael_PLUTO_2026-09-20.09_59_51.cobertura.xml",
+        "bytes": 3647654,
+        "sha256": "fc78593864c4e5fa2f62ebeaf513daef25fe8dd296ca1fca70f0bfd0a2639102"
+      }
+    ]
+  },
+  "repositories": [
+    {
+      "repository": "LMComposer.com",
+      "branch": "main",
+      "head": "618e081b510ad75411f2d7bec1d60a8e4f98cbbf",
+      "dirtyEntries": 0
+    },
+    {
+      "repository": "MiniModel.MiRust.com",
+      "branch": "master",
+      "head": "b437611c34ad4f80312016f4bf9aa1a08398d07a",
+      "dirtyEntries": 0
+    },
+    {
+      "repository": "MiniModel.org",
+      "branch": "master",
+      "head": "4b815cbb877a709e8d3060c2039c13e993c334eb",
+      "dirtyEntries": 0
+    },
+    {
+      "repository": "MiRust.com",
+      "branch": "master",
+      "head": "b9420a10feb0819ca6bbf89d92c9199ba89d7c86",
+      "dirtyEntries": 0
+    },
+    {
+      "repository": "Runtime.MiRust.com",
+      "branch": "master",
+      "head": "8623dcf5603ab419d02ffd0809e9ae987fb5b2a0",
+      "dirtyEntries": 15
+    },
+    {
+      "repository": "TinyRustLM.com",
+      "branch": "codex/model-acquisition-v2",
+      "head": "f4c286bcf9e8b8cf9130a1a899675f137e8b69c8",
+      "dirtyEntries": 41
+    },
+    {
+      "repository": "TinyRustLM.MiRust.com",
+      "branch": "master",
+      "head": "d17f77af652e9ac086482414a5bd0b6eb2250a50",
+      "dirtyEntries": 1
+    }
+  ],
+  "limits": [
+    "No fresh Linux/ARM64 execution or OS sandbox proof. The tests own and terminate their inherited-pipe children independently.",
+    "The wrapper cannot recover a detached descendant through an exited parent handle. No adoption or killing of unrelated processes is introduced.",
+    "The duration bound covers process/pipe observation. C70's synchronous filesystem-read and uncancelled terminal-reconciliation limits remain.",
+    "No real model acquisition, numerical agreement, qualified default, live seed, NuGet push, credential read or site deployment.",
+    "Policy-blocked paths and unrelated WIP remain untouched."
+  ],
+  "sourceFiles": [
+    {
+      "path": "dotnet/src/TinyRustLM.Conversion/TinyRustLmConversionTool.cs",
+      "bytes": 58567,
+      "sha256": "0b406af0effdf346a650105468a454892922e90dda8a3d22bc17c08b48bc9aa6"
+    },
+    {
+      "path": "dotnet/src/TinyRustLM.Conversion/TinyRustLM.Conversion.csproj",
+      "bytes": 3250,
+      "sha256": "0fe5178db67afbc86a28caa54e579b65a28ea50c7ce6b923f3e8b9e5e6d5eac7"
+    },
+    {
+      "path": "dotnet/tests/TinyRustLM.Core.Tests/ConversionToolTests.cs",
+      "bytes": 43557,
+      "sha256": "72e33c29dee3c28840b403cb8244489009d136f049b79d1bd4545981ca17567a"
+    },
+    {
+      "path": "dotnet/tools/TinyRustLM.ConversionFixtureTool/Program.cs",
+      "bytes": 18215,
+      "sha256": "6fff75d48b4fea5a63c02ecfa6970f0de75a896202338b2df7e9bc19e4bf8965"
+    },
+    {
+      "path": "docs/companion/README.md",
+      "bytes": 17765,
+      "sha256": "fa0f702fcdf121cd59cd99df11b395c21d7f98fb0586a18813fa255107050456"
+    },
+    {
+      "path": "docs/nuget/README.md",
+      "bytes": 14790,
+      "sha256": "c0971559723feeab9c50c7ebd194dd6ff18592931df1310acb5a5ef8308c83be"
+    },
+    {
+      "path": "docs/nuget/API_BOUNDARY.md",
+      "bytes": 7735,
+      "sha256": "fd3610cc7d12ccd98f057aaa45e3008148e59d5d8fef322b0e8b3551283e06c4"
+    },
+    {
+      "path": "docs/nuget/PACKAGE_SECURITY.md",
+      "bytes": 11810,
+      "sha256": "9e15deb52113118a007e1ee8bf95cfc847b9a5186dbf5fecbc6f69931effc892"
+    },
+    {
+      "path": "docs/ecosystem-cleanup-2026-09-12.md",
+      "bytes": 139913,
+      "sha256": "e9750708dc2783fe875d7133d6c37922b2f1b1416688b83bc74dc83c6ca4cc4e"
+    },
+    {
+      "path": "wiki/runtime-mirust/reports/ecosystem-experiment-lessons-2026-09-12.md",
+      "bytes": 169513,
+      "sha256": "b6f2caccaba4ed07d1b56436878a7ce4e56a47558facd02bca3665e5dc428521"
+    },
+    {
+      "path": "wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md",
+      "bytes": 60338,
+      "sha256": "de02d0b5b6dd0548f598e93658b969c161960840430cb6aa150e0ad2321124a5"
+    },
+    {
+      "path": ".uai/startup-packet.uai",
+      "bytes": 16741,
+      "sha256": "dfa47c096d88f47b5cba54077e514c4a746f5c5f5aabc12c8b7bb51d3e067ca7"
+    },
+    {
+      "path": ".uai/operations.uai",
+      "bytes": 25386,
+      "sha256": "7061513420c43f2f7e7766c3e43810dfdedcb155f81f1367cd1a43a85ba5b118"
+    },
+    {
+      "path": ".uai/short-term-memory.uai",
+      "bytes": 20349,
+      "sha256": "84e82c1940b6aa9c870b9ad90ec7af368136aab51edf02b3f5ba965df62fbf36"
+    },
+    {
+      "path": ".uai/long-term-memory.uai",
+      "bytes": 8884,
+      "sha256": "8d83defbabd3abef72f5b94487fd8b0cde15d3d3746fa1c35718d425e6d137f6"
+    }
+  ],
+  "secretScan": {
+    "status": "pass",
+    "findings": 0,
+    "scanned": 15,
+    "scopeComplete": false,
+    "scopeManifestSha256": "54bc3e2b15282e7843991bc053c1177b5cb9c19cacb568c776a27c152889cf7f",
+    "reportSha256": "9d0695783e909f16ee30e2e9377ebbd2e35db14f01cc3d44e2af7974dbbd232c"
+  },
+  "cleanup": {
+    "root": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\conversion-pipes\\tinyrustlm-operation-Oi1qw3",
+    "marker": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\conversion-pipes\\tinyrustlm-operation-Oi1qw3.owner.v2",
+    "status": "removed-and-verified-absent",
+    "files": 690,
+    "directories": 148,
+    "logicalBytes": 80654895,
+    "markerLogicalBytes": 65,
+    "physicalBytesRecovered": null,
+    "processCheck": "All owned exec handles terminal; fresh Win32_Process query found no matching dotnet/testhost/fixture/MSBuild/compiler process. Both inherited-pipe tests always terminate their own child and await the original conversion before disposal."
+  }
+}

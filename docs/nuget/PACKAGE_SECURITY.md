@@ -82,14 +82,20 @@ requires the selected RID assets and rejects unrelated authoring or training
 tools.
 
 The wrapper invokes the executable directly with a closed argument contract.
-It applies duration and output limits, bounds stdout and stderr, supports
-cancellation with owned process-tree termination, rejects reparse inputs,
+It applies duration and output limits through stdout/stderr EOF, propagates
+cancellation to pending pipe reads, requests active-process-tree termination
+on failure, observes all tasks before returning, rejects reparse inputs,
 validates expected source-lock and profile identities, parses strict summaries
 and terminal evidence, rejects extra or missing output files, recomputes the
 operation identity, and freshly hashes all six artifacts plus both component
 receipts. It invokes only `qwen3-composition`; no component-level managed
 success API exists. Complete structural conversion is still not model-quality,
 native-runtime, browser, P2P, or publication evidence.
+
+Process termination is not an OS sandbox: an already detached descendant cannot
+be recovered through its exited parent handle. The Windows inherited-pipe test
+owns and terminates its fixture child separately. This proves bounded observation,
+not containment of arbitrary executables.
 
 ## Public API Baselines
 

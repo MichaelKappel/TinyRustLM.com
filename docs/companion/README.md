@@ -139,6 +139,16 @@ check. Intent creation and read-only terminal reconciliation remain synchronous;
 reconciliation must finish verifying a committed result even after cancellation.
 The process-duration policy does not promise a deadline for this disk work.
 
+The process deadline and caller cancellation cover all three observations:
+process exit, stdout and stderr through EOF. A reader failure stops the active
+process tree; cancellation also reaches pending pipe reads. The owner observes
+all three tasks before returning and preserves a measured output-limit violation
+over a concurrent cancellation. A parent exit alone does not prove pipe EOF.
+The Windows inherited-pipe fixture tests this boundary with a separately owned
+child that the test always terminates. The wrapper is not an OS sandbox and
+cannot recover detached descendants through an already exited parent handle;
+it admits the registered converter, not arbitrary process-launching tools.
+
 `ReconcileTerminal` accepts only an intent-bound source operation in
 `Converting` or `VerifyingComposition`. It launches, adopts, retries, and kills
 nothing. An absent or nonterminal bounded root remains pending with no journal

@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
@@ -8,6 +9,156 @@ namespace TinyRustLM.Tests;
 
 public sealed class ConversionToolTests
 {
+    /// <summary>Bounds apply to accumulated bytes, including short reads and an exact-limit EOF.</summary>
+    [Theory]
+    [InlineData(0, 1)]
+    [InlineData(1, 1)]
+    [InlineData(4096, 4096)]
+    [InlineData(4097, 4096)]
+    public async Task BoundedOutputEnforcesExactByteLimit(int length, int limit)
+    {
+        var bytes = Enumerable.Range(0, length).Select(index => (byte)(index % 251)).ToArray();
+        using var stream = new ObservedAsyncReadStream(bytes, 7);
+        using var cancellation = new CancellationTokenSource();
+        if (length <= limit)
+        {
+            Assert.Equal(bytes, await TinyRustLmConversionTool.ReadBoundedAsync(stream, limit, cancellation.Token));
+        }
+        else
+        {
+            var error = await Assert.ThrowsAsync<TinyRustLmException>(() =>
+                TinyRustLmConversionTool.ReadBoundedAsync(stream, limit, cancellation.Token));
+            Assert.Equal("converter-output-limit", error.Code);
+        }
+        Assert.Equal(cancellation.Token, stream.LastToken);
+        Assert.InRange(stream.MaximumRequestedBytes, 1, 4096);
+        Assert.True(stream.CanRead);
+    }
+
+    /// <summary>Even streams ignoring their token cannot return late data or EOF after cancellation.</summary>
+    [Theory]
+    [InlineData(0)]
+    [InlineData(1)]
+    [InlineData(2)]
+    [InlineData(3)]
+    public async Task BoundedOutputRejectsLateReadAfterCancellation(int cancelOnRead)
+    {
+        using var cancellation = new CancellationTokenSource();
+        using var stream = new ObservedAsyncReadStream(new byte[5], 3, read =>
+        {
+            if (read == cancelOnRead) cancellation.Cancel();
+        });
+        if (cancelOnRead == 0) cancellation.Cancel();
+        var error = await Assert.ThrowsAnyAsync<OperationCanceledException>(() =>
+            TinyRustLmConversionTool.ReadBoundedAsync(stream, 10, cancellation.Token));
+        Assert.Equal(cancellation.Token, error.CancellationToken);
+        Assert.Equal(cancelOnRead, stream.Reads);
+        Assert.True(stream.CanRead);
+    }
+
+    /// <summary>Cancellation must reach the pending read itself, not only the next loop iteration.</summary>
+    [Fact]
+    public async Task BoundedOutputCancelsAnOutstandingRead()
+    {
+        using var cancellation = new CancellationTokenSource();
+        using var stream = new StalledReadStream();
+        var read = TinyRustLmConversionTool.ReadBoundedAsync(stream, 10, cancellation.Token);
+        await stream.Started.Task.WaitAsync(TimeSpan.FromSeconds(5));
+        cancellation.Cancel();
+        var error = await Assert.ThrowsAnyAsync<OperationCanceledException>(() => read.WaitAsync(TimeSpan.FromSeconds(5)));
+        Assert.Equal(cancellation.Token, error.CancellationToken);
+        Assert.True(stream.CanRead);
+    }
+
+    /// <summary>Partial output followed by an I/O fault is a fault, never a successful truncated body.</summary>
+    [Fact]
+    public async Task BoundedOutputPreservesReadFailure()
+    {
+        var failure = new IOException("fixture-output-read");
+        using var stream = new ObservedAsyncReadStream(new byte[5], 3, read =>
+        {
+            if (read == 2) throw failure;
+        });
+        Assert.Same(failure, await Assert.ThrowsAsync<IOException>(() =>
+            TinyRustLmConversionTool.ReadBoundedAsync(stream, 10, CancellationToken.None)));
+        Assert.Equal(2, stream.Reads);
+        Assert.True(stream.CanRead);
+    }
+
+    /// <summary>An exited converter cannot keep observation alive through inherited descendant pipes.</summary>
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public async Task ExitedConverterWithOpenPipesHonorsCallerAndDeadline(bool cancelCaller)
+    {
+        using var fixture = new ConversionFixture("held-output");
+        var policy = new TinyRustLmConversionPolicy(
+            TimeSpan.FromSeconds(cancelCaller ? 20 : 5), 65_536, 4096);
+        var tool = fixture.Tool(policy);
+        var intent = tool.CreateCompositionIntent(fixture.Request());
+        using var cancellation = new CancellationTokenSource();
+        var conversion = tool.ConvertCompositionAsync(intent, cancellation.Token);
+        Process? parent = null;
+        Process? child = null;
+        try
+        {
+            var control = Path.Combine(fixture.ModelSourceDirectory, "pipe-processes.json");
+            using var admission = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+            string? controlBytes = null;
+            while (controlBytes is null)
+            {
+                try
+                {
+                    controlBytes = await File.ReadAllTextAsync(control, admission.Token);
+                    using var probe = JsonDocument.Parse(controlBytes);
+                }
+                catch (Exception error) when (error is IOException or JsonException)
+                {
+                    controlBytes = null;
+                    await Task.Delay(20, admission.Token);
+                }
+            }
+            using var identities = JsonDocument.Parse(controlBytes);
+            parent = Process.GetProcessById(identities.RootElement.GetProperty("parentId").GetInt32());
+            child = Process.GetProcessById(identities.RootElement.GetProperty("childId").GetInt32());
+            Assert.Equal(intent.ConverterExecutablePath, parent.MainModule!.FileName);
+            Assert.Equal(intent.ConverterExecutablePath, child.MainModule!.FileName);
+            File.WriteAllText(Path.Combine(fixture.ModelSourceDirectory, "release-parent"), "exit");
+            await parent.WaitForExitAsync().WaitAsync(TimeSpan.FromSeconds(10));
+            Assert.False(child.HasExited);
+            Assert.False(conversion.IsCompleted);
+
+            if (cancelCaller)
+            {
+                cancellation.Cancel();
+                var error = await Assert.ThrowsAnyAsync<OperationCanceledException>(() =>
+                    conversion.WaitAsync(TimeSpan.FromSeconds(8)));
+                Assert.Equal(cancellation.Token, error.CancellationToken);
+            }
+            else
+            {
+                var error = await Assert.ThrowsAsync<TinyRustLmException>(() =>
+                    conversion.WaitAsync(TimeSpan.FromSeconds(8)));
+                Assert.Equal("converter-timeout", error.Code);
+            }
+            Assert.Equal("preserved\n", File.ReadAllText(Path.Combine(fixture.OutputRoot, "composition.attempt.json")));
+        }
+        finally
+        {
+            cancellation.Cancel();
+            // The test owns the descendant independently; production does not adopt orphan PIDs.
+            foreach (var ownedProcess in new[] { parent, child })
+            {
+                if (ownedProcess is null) continue;
+                if (!ownedProcess.HasExited) ownedProcess.Kill(entireProcessTree: true);
+                await ownedProcess.WaitForExitAsync();
+                ownedProcess.Dispose();
+            }
+            try { await conversion; }
+            catch (Exception error) when (error is OperationCanceledException or TinyRustLmException) { }
+        }
+    }
+
     /// <summary>Chunk boundaries and short reads must not change the standard SHA-256 identity.</summary>
     [Theory]
     [InlineData(0, 3, false)]
@@ -182,10 +333,12 @@ public sealed class ConversionToolTests
         Assert.Equal(expectedCode, error.Code);
     }
 
-    [Fact]
-    public async Task ConverterKillsOutputFloodAndTimeoutWithoutDeletingEvidence()
+    [Theory]
+    [InlineData("oversized")]
+    [InlineData("oversized-error")]
+    public async Task ConverterKillsOutputFloodAndTimeoutWithoutDeletingEvidence(string scenario)
     {
-        using var fixture = new ConversionFixture("oversized");
+        using var fixture = new ConversionFixture(scenario);
         var policy = new TinyRustLmConversionPolicy(TimeSpan.FromSeconds(10), 1024, 1024);
         var tool = fixture.Tool(policy);
         var error = await Assert.ThrowsAsync<TinyRustLmException>(() =>
@@ -627,6 +780,40 @@ public sealed class ConversionToolTests
         Assert.Equal(
             expectedInvalid,
             TinyRustLmConversionTool.IsInvalidOutputEntry((FileAttributes)rawAttributes));
+    }
+
+    /// <summary>Supplies short async reads, deliberately ignoring cancellation to test late-result rejection.</summary>
+    private sealed class ObservedAsyncReadStream(byte[] payload, int maximumRead, Action<int>? afterRead = null)
+        : MemoryStream(payload)
+    {
+        internal int Reads { get; private set; }
+        internal int MaximumRequestedBytes { get; private set; }
+        internal CancellationToken LastToken { get; private set; }
+
+        /// <summary>Records the supplied token and notifies the test after reading data or EOF.</summary>
+        public override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default)
+        {
+            LastToken = cancellationToken;
+            MaximumRequestedBytes = Math.Max(MaximumRequestedBytes, buffer.Length);
+            var count = base.Read(buffer.Span[..Math.Min(buffer.Length, maximumRead)]);
+            Reads++;
+            afterRead?.Invoke(Reads);
+            return ValueTask.FromResult(count);
+        }
+    }
+
+    /// <summary>A cancellable pending read supplies a deterministic liveness test without a socket.</summary>
+    private sealed class StalledReadStream : MemoryStream
+    {
+        internal TaskCompletionSource Started { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        /// <summary>Signals admission, then remains pending until the exact supplied token is cancelled.</summary>
+        public override async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default)
+        {
+            Started.TrySetResult();
+            await Task.Delay(Timeout.Infinite, cancellationToken);
+            return 0;
+        }
     }
 
     /// <summary>Supplies deterministic short reads and read-boundary cancellation without timing races.</summary>

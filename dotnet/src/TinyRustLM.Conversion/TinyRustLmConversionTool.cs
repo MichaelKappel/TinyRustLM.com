@@ -340,44 +340,56 @@ public sealed partial class TinyRustLmConversionTool
         cancellationToken.ThrowIfCancellationRequested();
         var stopwatch = Stopwatch.StartNew();
         using var process = StartProcess(startInfo);
-        var stdoutTask = ReadBoundedAsync(
-            process.StandardOutput.BaseStream,
-            intent.MaximumSummaryBytes,
-            process);
-        var stderrTask = ReadBoundedAsync(
-            process.StandardError.BaseStream,
-            intent.MaximumErrorBytes,
-            process);
-
         using var timeout = new CancellationTokenSource(
             TimeSpan.FromMilliseconds(intent.MaximumDurationMilliseconds));
         using var linked = CancellationTokenSource.CreateLinkedTokenSource(
             cancellationToken,
             timeout.Token);
-        try
-        {
-            await process.WaitForExitAsync(linked.Token).ConfigureAwait(false);
-        }
-        catch (OperationCanceledException)
-        {
-            TryKill(process);
-            await process.WaitForExitAsync(CancellationToken.None).ConfigureAwait(false);
-            await DrainAfterTermination(stdoutTask, stderrTask).ConfigureAwait(false);
-            cancellationToken.ThrowIfCancellationRequested();
-            throw new TinyRustLmException("converter-timeout");
-        }
+        var stdoutTask = ReadBoundedAsync(
+            process.StandardOutput.BaseStream,
+            intent.MaximumSummaryBytes,
+            linked.Token);
+        var stderrTask = ReadBoundedAsync(
+            process.StandardError.BaseStream,
+            intent.MaximumErrorBytes,
+            linked.Token);
+        var exitTask = process.WaitForExitAsync(linked.Token);
+        Task[] observations = [exitTask, stdoutTask, stderrTask];
 
         byte[] stdout;
         byte[] stderr;
         try
         {
-            await Task.WhenAll(stdoutTask, stderrTask).ConfigureAwait(false);
+            // Observe any failure immediately, even if another pipe or the process is still open.
+            var pending = observations.ToList();
+            while (pending.Count != 0)
+            {
+                var completed = await Task.WhenAny(pending).ConfigureAwait(false);
+                await completed.ConfigureAwait(false);
+                pending.Remove(completed);
+            }
             stdout = stdoutTask.Result;
             stderr = stderrTask.Result;
         }
-        catch (ConversionOutputLimitException)
+        catch (Exception error)
         {
-            throw new TinyRustLmException("converter-output-limit");
+            linked.Cancel();
+            TryKill(process);
+            await process.WaitForExitAsync(CancellationToken.None).ConfigureAwait(false);
+            await DrainAfterTermination(observations).ConfigureAwait(false);
+            // A measured output violation cannot become a cancellation that reconciles as success.
+            if (observations.Any(task => task.Exception?.Flatten().InnerExceptions
+                    .OfType<TinyRustLmException>()
+                    .Any(failure => failure.Code == "converter-output-limit") == true))
+            {
+                throw new TinyRustLmException("converter-output-limit");
+            }
+            if (error is OperationCanceledException)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                throw new TinyRustLmException("converter-timeout");
+            }
+            throw;
         }
 
         stopwatch.Stop();
@@ -879,24 +891,27 @@ public sealed partial class TinyRustLmConversionTool
         }
     }
 
-    private static async Task<byte[]> ReadBoundedAsync(
+    /// <summary>Collects one bounded pipe through EOF, stopping cancelled reads without owning the stream.</summary>
+    internal static async Task<byte[]> ReadBoundedAsync(
         Stream stream,
         int maximumBytes,
-        Process process)
+        CancellationToken cancellationToken)
     {
+        cancellationToken.ThrowIfCancellationRequested();
         using var output = new MemoryStream(Math.Min(maximumBytes, 16_384));
         var buffer = new byte[4_096];
         while (true)
         {
-            var count = await stream.ReadAsync(buffer).ConfigureAwait(false);
+            cancellationToken.ThrowIfCancellationRequested();
+            var count = await stream.ReadAsync(buffer.AsMemory(), cancellationToken).ConfigureAwait(false);
+            cancellationToken.ThrowIfCancellationRequested();
             if (count == 0)
             {
                 return output.ToArray();
             }
             if (output.Length + count > maximumBytes)
             {
-                TryKill(process);
-                throw new ConversionOutputLimitException();
+                throw new TinyRustLmException("converter-output-limit");
             }
             output.Write(buffer, 0, count);
         }
@@ -919,14 +934,16 @@ public sealed partial class TinyRustLmConversionTool
         }
     }
 
-    private static async Task DrainAfterTermination(params Task<byte[]>[] tasks)
+    /// <summary>Observes every stopped task before preserving the primary error; no task is abandoned.</summary>
+    private static async Task DrainAfterTermination(params Task[] tasks)
     {
         try
         {
             await Task.WhenAll(tasks).ConfigureAwait(false);
         }
-        catch (ConversionOutputLimitException)
+        catch (Exception)
         {
+            // The live owner selects the terminal error after every sibling has settled.
         }
     }
 
@@ -1415,5 +1432,4 @@ public sealed partial class TinyRustLmConversionTool
 
     private sealed record ArtifactIdentity(ulong ByteLength, string Sha256);
 
-    private sealed class ConversionOutputLimitException : Exception;
 }
