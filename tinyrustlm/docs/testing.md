@@ -96,6 +96,25 @@ output beneath canonical artifacts. Tests exercise the actual PowerShell and Bas
 Windows Bash execution requires a named WSL distribution in
 `TINYRUSTLM_FEED_TEST_WSL_DISTRIBUTION`.
 
+## Conversation with the current worker
+
+`e2e/conversation.spec.js` uses the real app, Advanced import, current catalog
+validation and real WASM with explicit synthetic weights. Set
+`TINYRUSTLM_BROWSER_RUNTIME_PRIVATE_COMPOSITION_ROOT` to the canonical D: directory
+holding the four exact tokenizer/template/sampling/prompt dependencies from the
+retained diagnostic composition. No real checkpoint weights are loaded. Without
+that input the tests report skips; they do not establish a working model.
+
+The Rust `browser_conversation_fixture` example uses the production SLM2 writer
+and emits only in-memory synthetic bytes to stdout. Its build output is owned
+and removed, and the frozen independent reference source is unchanged. Catalog
+responses are test-only and intercepted; no server seed or qualification is
+published. The checks cover catalog rejection, two completed turns, one renderer,
+local prompts and layout bounds at four viewport/interaction configurations.
+
+Active visual capture and the conversation test share `loadComposition`, which
+requires current `worker active` diagnostics. The old `loaded` label is rejected.
+
 ## Candidate selection checks
 
 The discovery and acquisition suites, together with metadata bounds, storage and

@@ -11,6 +11,39 @@ Keep useful findings and compact evidence identities in the owning canonical
 repository. Keep source history in Git and current model payloads only in
 `D:\LLMs\TinyRustLM`.
 
+## C82: exercise the actual import contract before interpreting browser conversation results
+
+- Question: can the unfinished conversation check exercise current SLM2 import,
+  real worker generation and one response renderer without rewriting frozen
+  reference source or weakening catalog membership?
+- Inputs: TinyRust parent `621380f6d4f76294dc65e3b89cbada51fbcdd08e`; original
+  pending test is 23,045 bytes, SHA-256
+  `0ab2b66136589a310cca5244c78550b3ad2d24c4e9a01a1967f27d7d8fd2ba1a`.
+  Four exact diagnostic dependencies are read in their canonical model store;
+  real checkpoint weights are not read.
+- Method: produce synthetic weights with the current Rust writer, parse with
+  the independent frozen JS reader, activate with current WASM, then use the
+  real Advanced file import against explicit test-only catalog and receipt
+  responses. No worker or response renderer is substituted.
+- Result: baseline failed at eager `verified`; subsequent corrections exposed
+  a closed picker, missing catalog membership, noncanonical receipt key order,
+  an obsolete active-state label and a hidden mode control. Each failure changed
+  the next setup or implementation action; no unchanged best-of-N retry.
+  Final browser 8/8, focused Node 40/40, separate capture 20/20, Rust 17/17 and
+  Clippy pass. Historical visual comparison retains fifteen differences.
+- Decision: one explicit synthetic writer example and one fixture owner; reuse
+  canonical path/read guards and the maintained visual import helper. Both
+  capture waits now recognize `worker active`, rejecting the stale label.
+- Uncertainty: private dependencies make the browser test opt-in; absent input
+  yields a declared skip, never qualification. Mobile is emulation. Synthetic
+  output proves neither useful conversation nor real model numerical parity.
+  Rust coverage is unmeasured; Node helper/capture line coverage is 90.97%/91.42%.
+- Reusable lesson: valid-looking local files cannot bypass current catalog
+  authority. A mocked readiness string can conceal a broken real capture path.
+  Use the production writer with explicit fixture values instead of editing an
+  immutable oracle's source text. Record all intermediate failures.
+- Evidence: `artifacts/ecosystem-cleanup-20260912/browser-conversation-current-review.json`.
+
 ## C81: one gate owner must control admission, output and truthful completion
 
 - Question: can the pending cross-platform UI gate avoid source sprawl and

@@ -5,6 +5,38 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C82: current conversation browser path and active capture, September 20
+
+The pending conversation test used an obsolete model input, waited for eager
+WASM readiness and rewrote frozen reference source to construct synthetic
+weights. Move its useful diagnostics and six-member binding into one fixture
+helper. A test-only Rust example now uses the production SLM2 writer, returning
+3,654,400 synthetic bytes through stdout without a model file or source copy.
+The helper checks the canonical dependency path and exact four-member identities;
+it never reads the diagnostic checkpoint's real weights.
+
+The browser follows Advanced import and current catalog/admission/receipt
+validation. Missing catalog membership must reject. Network interception supplies
+explicit test-only metadata; prompts remain local, while the obsolete blanket
+prohibition on MiniModel seed downloads is removed. The real worker renders two
+turns once each. This is synthetic UI/runtime evidence, not useful-model quality.
+
+The real run also found active visual capture still waiting for a `loaded`
+diagnostic. Both readiness and import now require the actual `worker active`
+state. The conversation test uses that maintained import helper, exercises
+visible controls and preserves all geometry assertions. No product HTML/CSS
+or visual styling changed.
+
+Final Edge coverage is 8/8 across desktop, narrow desktop, mobile emulation and
+reduced motion. The focused Node run is 40/40; the capture run is separately
+20/20, including two actual empty-state captures. Helper/capture line coverage
+is 90.97%/91.42%. Rust example and library checks are 2/2 and 15/15; Clippy
+passes. Rust coverage tooling is unavailable. Historical visual comparison
+still reports the same fifteen differences and is not called a match.
+Retained failure history and cleanup are in
+`artifacts/ecosystem-cleanup-20260912/browser-conversation-current-review.json`.
+No real checkpoint, qualification, seed, NuGet or deployment success is claimed.
+
 ## C81: one source-first UI verification owner, September 20
 
 PowerShell and Bash now translate options into one Node owner instead of

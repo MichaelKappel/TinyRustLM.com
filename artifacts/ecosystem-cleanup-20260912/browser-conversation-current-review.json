@@ -1,0 +1,237 @@
+{
+  "schema": "ecosystem.browser-conversation-current-review/1",
+  "reviewedUtc": "2026-09-20T20:58:51Z",
+  "sourceParent": "621380f6d4f76294dc65e3b89cbada51fbcdd08e",
+  "purpose": "Finish the pending current-contract conversation test, preserve independent reference source and fix active visual-capture readiness.",
+  "baselinePendingFile": {
+    "path": "tinyrustlm/e2e/conversation.spec.js",
+    "bytes": 23045,
+    "sha256": "0ab2b66136589a310cca5244c78550b3ad2d24c4e9a01a1967f27d7d8fd2ba1a"
+  },
+  "findings": [
+    "The pending conversation spec used obsolete model input, expected eager WASM download and rewrote frozen reference source in memory to synthesize weights.",
+    "Current local import requires exact current catalog membership and receipt bytes; fixture admission alone is insufficient.",
+    "Both maintained capture predicates still required a loaded diagnostic, while the active app emits worker active (...)."
+  ],
+  "implementation": [
+    "One helper validates the canonical model dependency root and exact four tokenizer/template/sampling/prompt identities from the retained v12 public result. Real checkpoint weights are never read.",
+    "The canonical Rust example uses the production SLM2 writer, emits only synthetic stdout bytes and exposes no model-file output option. Compiler output is owned and removed after terminal children; interruptions preserve ownership.",
+    "The frozen independent SLM2 reader parses the result. The current WASM independently activates all six members; this checks structural admission, not numerical agreement.",
+    "Test-only current catalog, peer feed, admission and canonical-order receipt responses are intercepted. All other external requests return fixture failures; no publication occurs.",
+    "The spec uses maintained loadComposition and waitForVisualReady, actual Advanced import, visible controls and the real worker; missing catalog membership rejects before worker creation.",
+    "Both capture predicates now require the current worker active diagnostic and reject the obsolete loaded label.",
+    "Preserve the existing two-turn, single-renderer and geometry checks. Check no prompt transmission or upload requests; remove the obsolete blanket prohibition on MiniModel model-byte hosting."
+  ],
+  "syntheticFixture": {
+    "modelId": "test-only/browser-conversation",
+    "qualityScope": "test-only/never-live/e2e/browser-conversation",
+    "syntheticModelBytes": 3654400,
+    "realModelWeightsRead": false,
+    "dependencyRoot": "D:\\LLMs\\TinyRustLM\\experiments\\TinyRustLM-vnext-private\\qwen3-composition-c1899de-908e73f-20260826-v12",
+    "dependencyIdentityRecord": "contracts/vnext/qwen3-real-composition-execution-result.v12.json",
+    "dependencies": [
+      "tokenizer.tokenizer2",
+      "template.template2",
+      "sampling.sampling2",
+      "prompt.prompt2"
+    ],
+    "outputRows": "Token zero and the immutable tokenizer's verified single token for A; output rows differ by sign. Output is not language-quality evidence.",
+    "bounds": {
+      "childTimeoutMs": 120000,
+      "buildDiagnosticMaximumBytes": 1048576,
+      "modelStdoutMaximumBytes": 4194304,
+      "maximumSequenceTokens": 128,
+      "maximumNewTokens": 8
+    },
+    "optionalInput": "TINYRUSTLM_BROWSER_RUNTIME_PRIVATE_COMPOSITION_ROOT; absent input produces declared skips, not a product pass.",
+    "sourceSnapshotsCreated": false,
+    "frozenOracleChanged": false
+  },
+  "causalHistory": [
+    {
+      "stage": "baseline",
+      "result": "fail",
+      "observation": "Actual desktop Edge timed out waiting for verified WASM; current startup remained waiting."
+    },
+    {
+      "stage": "current import attempt",
+      "result": "fail",
+      "observation": "An unconditional picker click closed the already-open picker; corrected the test to follow current visible state."
+    },
+    {
+      "stage": "catalog binding",
+      "result": "fail",
+      "observation": "Actual import rejected local composition absent from the verified catalog; supplied explicit test-only catalog and retained a negative test."
+    },
+    {
+      "stage": "receipt binding",
+      "result": "fail",
+      "observation": "Receipt hashing rejected noncanonical property order; constructed the same canonical field order required by the current consumer."
+    },
+    {
+      "stage": "active worker",
+      "result": "fail",
+      "observation": "The real worker activated, but obsolete loaded-label expectations failed; fixed both shared capture predicates."
+    },
+    {
+      "stage": "visible control",
+      "result": "fail",
+      "observation": "The old simpleModeButton was hidden; used the actual diagnosticsRailToggle."
+    },
+    {
+      "stage": "first corrected desktop",
+      "result": "pass",
+      "passed": 1,
+      "observation": "One two-turn case passed in 16.2 seconds."
+    },
+    {
+      "stage": "focused capture intermediate",
+      "result": "fail",
+      "passed": 18,
+      "failed": 1,
+      "observation": "The first corrected predicate passed but the second still required loaded; corrected both before final verification."
+    },
+    {
+      "stage": "final four-project browser",
+      "result": "pass",
+      "passed": 8,
+      "failed": 0,
+      "skipped": 0,
+      "observation": "Four catalog-rejection and four two-turn cases passed after the implementation fixes; no retries or best-of-N selection."
+    }
+  ],
+  "tests": {
+    "browser": {
+      "passed": 8,
+      "failed": 0,
+      "skipped": 0,
+      "elapsedApproximateSeconds": 72,
+      "browser": "Installed Microsoft Edge 153 via Playwright 1.61.1",
+      "projects": [
+        {
+          "name": "desktop",
+          "viewport": "1365x768"
+        },
+        {
+          "name": "narrow-desktop",
+          "viewport": "1024x768"
+        },
+        {
+          "name": "mobile",
+          "viewport": "390x844",
+          "boundary": "Desktop Edge mobile/touch emulation, not actual mobile hardware."
+        },
+        {
+          "name": "reduced-motion",
+          "viewport": "1365x768"
+        }
+      ],
+      "checks": [
+        "Current catalog rejection before worker creation",
+        "Actual WASM/worker response status, MIME and security headers",
+        "One worker and one response renderer",
+        "Two terminal completed turns",
+        "Prompt locality and absence of uploads/websockets",
+        "Conversation/composer geometry bounds"
+      ]
+    },
+    "focusedNode": {
+      "passed": 40,
+      "failed": 0,
+      "skipped": 0,
+      "files": [
+        "browser-conversation-fixture.test.js",
+        "browser-runtime-wasm-clean-cut-preregistration.test.js",
+        "capture-ui-lock.test.js",
+        "slm2-q8-weight-vectors.test.js"
+      ],
+      "helperCoverage": {
+        "linePercent": 90.97,
+        "branchPercent": 71.74,
+        "functionPercent": 95.24
+      }
+    },
+    "captureNode": {
+      "passed": 20,
+      "failed": 0,
+      "skipped": 0,
+      "includes": "Actual empty-state desktop/mobile Edge captures",
+      "coverage": {
+        "linePercent": 91.42,
+        "branchPercent": 88.41,
+        "functionPercent": 75.86
+      }
+    },
+    "rust": {
+      "examplePassed": 2,
+      "libraryPassed": 15,
+      "failed": 0,
+      "clippy": "pass",
+      "coverage": "Unmeasured: cargo-llvm-cov is unavailable; focused Rust assertions and independent reader/WASM activation are the closest evidence."
+    },
+    "managed": {
+      "passed": 38,
+      "failed": 0,
+      "skipped": 0,
+      "command": "dotnet test dotnet/tests/TinyRustLM.Package.Tests/TinyRustLM.Package.Tests.csproj -c Release --artifacts-path <owned>/build -p:UseSharedCompilation=false --logger trx;LogFileName=package.trx --results-directory <owned>/results --verbosity minimal",
+      "trx": {
+        "bytes": 61213,
+        "sha256": "e7435dbf6ff02b4ba1a1b60a94b22327f99dedff37a6b4d75194580fa898d938"
+      }
+    },
+    "coverageBoundary": "Separate capture coverage includes actual browser execution. Node cannot attribute all browser/VM callbacks. Coverage percentages do not establish numerical or language quality."
+  },
+  "visual": {
+    "productHtmlCssOrStylingChanged": false,
+    "currentGeometryChecks": "pass",
+    "historicalComparison": "fail",
+    "differences": 15,
+    "comparisonEvidence": {
+      "bytes": 1847,
+      "sha256": "08b357904843cfd7229a9e1f5a8733080424cd625621fb5b42c646a65cfe5133"
+    },
+    "boundary": "The existing historical baseline remains different; visual parity is not claimed."
+  },
+  "credentialNote": {
+    "memoryPath": ".uai/operations.uai",
+    "fileExistenceReconfirmed": true,
+    "keyContentsRead": false,
+    "packagePublished": false
+  },
+  "limits": [
+    "Synthetic weights and test-only metadata are never model qualification or public seed evidence.",
+    "No real checkpoint, fresh numerical parity, useful-model answer, Linux ARM64 consumer, NuGet publication or site deployment occurred.",
+    "Known blocked installer links still prevent complete source admission. All previously blocked deletions and their ancestors remain untouched.",
+    "All other pending source, package, synthetic-demo and blocked-retirement edits remain unstaged.",
+    "The full ecosystem goal remains active."
+  ],
+  "secretScan": {
+    "status": "fail",
+    "scannedArtifactCount": 15,
+    "secretFindingCount": 1,
+    "scopeComplete": false,
+    "report": {
+      "bytes": 7821,
+      "sha256": "7ba9bbfe60383489375ac88472e38905c63c102f709bd6d33bf105c73de2d7e9"
+    },
+    "finding": {
+      "code": "credential_url_userinfo",
+      "path": "tinyrustlm/tests/capture-ui-lock.test.js",
+      "review": "One literal dummy user/pass URL in a negative parseOptions assertion. Exact literal is already present in sourceParent, this test makes no network request, and the C82 diff does not change it. Retain the security regression case and raw scanner failure; do not claim a clean automated scan."
+    },
+    "remainingArtifacts": "Fourteen scanned files have no findings.",
+    "boundary": "Scan preceded final accounting fields in this receipt; NuGet key contents were never read."
+  },
+  "ownedOutput": {
+    "root": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\browser-conversation-current\\tinyrustlm-operation-QZk3VP",
+    "originalOwnershipVerified": true,
+    "files": 561,
+    "childDirectories": 146,
+    "logicalBytes": 103742261,
+    "externalMarkerBytes": 65,
+    "status": "removed",
+    "method": "Confirmed no matching live writer, verified original directory and external marker identities, inventoried exact bounded output, then removed using the canonical ownership helper. Root and marker absence confirmed after removal.",
+    "physicalReclaimedBytesMeasured": false,
+    "fixtureHelperOutput": "The separate browser-conversation-fixture parent is empty; child-owned builds were removed by their owner."
+  }
+}

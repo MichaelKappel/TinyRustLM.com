@@ -16,6 +16,15 @@ Authority order is current owner instructions, inspected current contracts and b
 
 ## Current evidence and its limits
 
+**C82 conversation/capture:** current Advanced import, catalog membership and
+real worker rendering now have eight passing Edge cases using explicitly
+synthetic weights. A test-only Rust example uses the existing writer; no frozen
+oracle rewriting or real checkpoint weight load. Active visual capture now
+recognizes `worker active`. Focused Node 40/40, separate capture 20/20, Rust
+17/17 and Clippy pass; historical visual differences remain fifteen. Read
+`browser-conversation-current-review.json`; these are not useful-model, live
+seed, NuGet or publication results.
+
 **C81 UI verification:** PowerShell and Bash now delegate to one source-first
 owner. The sole v2 report requires all twelve gates, requested acquisition
 checks and completed cleanup. Custom report paths are create-only; interrupted

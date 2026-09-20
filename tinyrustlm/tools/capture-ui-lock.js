@@ -109,7 +109,7 @@ async function waitForVisualReady(page) {
     const text = (id) => document.getElementById(id)?.textContent;
     const waiting = text("runtimeStatus") === "Choose a qualified composition" &&
       text("modelState") === "choose a model" && text("wasmState") === "waiting";
-    const ready = text("runtimeStatus") === "Ready" && text("modelState")?.startsWith("loaded") &&
+    const ready = text("runtimeStatus") === "Ready" && text("modelState")?.startsWith("worker active (") &&
       text("wasmState") === "verified";
     return document.readyState === "complete" && document.fonts.status === "loaded" &&
       document.querySelector(".left-sidebar") && document.querySelector(".main-workspace") &&
@@ -131,7 +131,7 @@ async function loadComposition(page, files) {
     const text = (id) => document.getElementById(id)?.textContent;
     const error = text("errorState");
     if (error && error !== "none") throw new Error("Composition import failed: " + error);
-    return text("runtimeStatus") === "Ready" && text("modelState")?.startsWith("loaded") &&
+    return text("runtimeStatus") === "Ready" && text("modelState")?.startsWith("worker active (") &&
       text("wasmState") === "verified";
   }, undefined, { timeout: 90000 });
 }

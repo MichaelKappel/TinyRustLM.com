@@ -236,7 +236,7 @@ for (const scenario of ["success", "action-failed", "launch-failed", "close-fail
 }
 
 /** Execute browser callbacks against minimal state, without pretending this is real model execution. */
-function fakePage({ failure = false, idleNoProgress = false, expanded = true } = {}) {
+function fakePage({ failure = false, idleNoProgress = false, expanded = true, importedState = "worker active (12 ms)" } = {}) {
   let messages = 0;
   const actions = [];
   const state = { readyState: "complete", fonts: { status: "loaded" },
@@ -252,7 +252,7 @@ function fakePage({ failure = false, idleNoProgress = false, expanded = true } =
       click: async () => { actions.push(selector); if (selector === "#importLocalModelButton") {
         const get = state.getElementById;
         state.getElementById = (id) => ({ ...get(id), textContent: { runtimeStatus: "Ready",
-          modelState: "loaded composition", wasmState: "verified", errorState: failure ? "failed" : "none" }[id] });
+          modelState: importedState, wasmState: "verified", errorState: failure ? "failed" : "none" }[id] });
       } },
       setInputFiles: async (files) => actions.push(files), fill: async (value) => actions.push(value),
       evaluate: async (fn) => fn({ requestSubmit: () => { if (!idleNoProgress) messages += 2; } }) }),
@@ -280,6 +280,9 @@ test("current startup and Advanced import use the seven supplied files without c
   }
   await assert.rejects(capture.loadComposition(fakePage({ failure: true }), []), /import failed/);
   await assert.rejects(capture.waitForVisualReady(fakePage({ failure: true })), /timed out/);
+  const obsolete = fakePage({ importedState: "loaded composition" });
+  await assert.rejects(capture.loadComposition(obsolete, []), /timed out/);
+  await assert.rejects(capture.waitForVisualReady(obsolete), /timed out/);
 });
 
 test("generation is bounded and only completed turns advance the selected mode", async () => {
