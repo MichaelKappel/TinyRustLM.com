@@ -11,6 +11,32 @@ Keep useful findings and compact evidence identities in the owning canonical
 repository. Keep source history in Git and current model payloads only in
 `D:\LLMs\TinyRustLM`.
 
+## C76: retire obsolete fault executors without erasing missing evidence
+
+- Question: are the retained SLM1/ADP1/ACG1 fixtures still current test inputs?
+- Inputs: TinyRust parent `2d1fb7f8011e8fe8ef764e103f73c22b1fb0316d`, twenty
+  unchanged fixture files, package fault tool/test and the required 24-fault plan.
+- Method: trace callers, compare exact file hashes and Git bytes, remove the
+  SLM1 offset/checksum executor and copied consumer for retired package APIs,
+  retain current format vectors, browser/host modules and all required fault IDs.
+- Result: 35 focused checks pass with one absent pinned-Chromium skip; six actual
+  Edge fault scenarios pass and remove their profiles. Local report remains
+  9/24 satisfied; browser report remains 6/24. Neither is a campaign pass.
+- Retirement: two obsolete source files removed, 35,010 logical bytes. Automatic
+  approval review rejected exact-file deletion of all twenty model files with
+  `blocked by policy`; those 148,390 bytes remain unchanged. No alternative API
+  or parent deletion is authorized. Physical recovered storage was not measured.
+- Uncertainty: no current package restore-drift or invalid-tensor-offset fault
+  result replaces the removed executors. Fourteen coverage checks pass; whole
+  owner coverage is 65.07% lines and 79.71% branches, excluding separate Edge work.
+- Decision: checkpoint the executable cleanup. Keep strict storage changes
+  uncommitted; its actual check fails on the retained twenty files. Preserve
+  unrelated work, prior blocked cohorts and all release/model requirements.
+- Lesson: retiring a stale executor removes unsupported behavior, not the need
+  for its evidence. A denied deletion is a retained payload, never cleanup success.
+- Evidence: `artifacts/ecosystem-cleanup-20260912/retired-model-fixture-review.json`
+  binds exact reviewed files, tests and the blocked operation.
+
 ## C75: closed release evidence does not need an executable publisher
 
 - Question: does the retired LMComposer identity still need its release tools?

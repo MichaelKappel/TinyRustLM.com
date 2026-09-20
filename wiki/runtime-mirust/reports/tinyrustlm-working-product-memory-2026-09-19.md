@@ -16,6 +16,15 @@ Authority order is current owner instructions, inspected current contracts and b
 
 ## Current evidence and its limits
 
+**C76 retired fault paths:** the SLM1 tensor-offset executor and obsolete
+copied-source package consumer are removed. All 35 focused tests and six actual
+Edge fault scenarios pass; one pinned-Chromium test is skipped. Required fault
+count remains 24 and incomplete cases remain blocking. Automatic review rejected
+deletion of the twenty reviewed model files; keep them and their parent untouched
+until that block is resolved. The strict storage check remains uncommitted and
+fails on that exact cohort. Read `retired-model-fixture-review.json`; no source,
+model, seed or publication gate passed.
+
 **C75 retired tooling:** LMComposer's closed-operation publisher and manifest
 builder are removed. All 19 repository checks pass with direct historical
 evidence verification; public files and blocked staging output are unchanged.

@@ -14,7 +14,6 @@ const {
   builtInExecutors,
   inspectFaultCampaignEvidence,
   loadFaultPlan,
-  packageFaultIds,
   parseArguments,
   planReceiptType,
   reportReceiptType,
@@ -68,7 +67,6 @@ test("validates exactly the 24 required fault policies", () => {
       "corrupt-model",
       "corrupted-piece",
       "disk-full",
-      "invalid-tensor-offset",
       "lane-process-death",
       "network-loss",
       "p2p-peer-disappearance",
@@ -142,6 +140,8 @@ test("executes portable local faults with independent domain evidence", (context
   assert.equal(result.report.cases.find((item) => item.faultId === "host-restart").satisfied, false);
   assert.equal(result.report.cases.find((item) =>
     item.faultId === "invalid-tensor-offset").satisfied, false);
+  assert.equal(result.report.cases.find((item) =>
+    item.faultId === "package-restore-drift").satisfied, false);
   assert.deepEqual(JSON.parse(fs.readFileSync(options.reportOutputPath, "utf8")), result.report);
   const inspection = inspectFaultCampaignEvidence(
     receipts);
@@ -358,8 +358,8 @@ test("parses only arguments owned by the selected fault runner", () => {
     "--report-output", "report.json",
     "--source-revision", sourceRevision
   ];
-  const local = parseArguments(["run-safe-local", ...common, "--slm-pack", "slm-pack"]);
-  assert.equal(Object.hasOwn(local, "slmPackPath"), true);
+  const local = parseArguments(["run-safe-local", ...common]);
+  assert.equal(Object.hasOwn(local, "slmPackPath"), false);
   assert.equal(Object.hasOwn(local, "chromiumPath"), false);
   assert.equal(Object.hasOwn(local, "profileParent"), false);
 
@@ -371,18 +371,15 @@ test("parses only arguments owned by the selected fault runner", () => {
   assert.equal(Object.hasOwn(browser, "slmPackPath"), false);
   assert.equal(Object.hasOwn(browser, "modelFixturePath"), false);
 
-  const packageFault = parseArguments([
+  assert.throws(() => parseArguments([
     "run-package", ...common, "--dotnet", "dotnet", "--package-source", "packages",
     "--model-fixture", "model.slm", "--composition-fixture", "composition.acg1",
     "--work-parent", "work"
-  ]);
-  assert.equal(Object.hasOwn(packageFault, "compositionFixturePath"), true);
-  assert.equal(Object.hasOwn(packageFault, "dotnetPath"), true);
-  assert.equal(Object.hasOwn(packageFault, "packageSource"), true);
-  assert.equal(Object.hasOwn(packageFault, "modelFixturePath"), true);
-  assert.equal(Object.hasOwn(packageFault, "workParent"), true);
-  assert.equal(Object.hasOwn(packageFault, "chromiumPath"), false);
-  assert.deepEqual(packageFaultIds, ["package-restore-drift"]);
+  ]), /fault command is unsupported/);
+  for (const flag of ["--slm-pack", "--model-fixture"]) {
+    assert.throws(() => parseArguments(["run-safe-local", ...common, flag, "retired"]),
+      /unknown run-safe-local fault argument/);
+  }
 
   const request = parseArguments([
     "request-host-restart",
@@ -417,4 +414,15 @@ test("parses only arguments owned by the selected fault runner", () => {
   assert.throws(() => parseArguments([
     "request-host-restart", ...common, "--request-output", "request.json"
   ]), /unknown request-host-restart fault argument.*report-output/i);
+});
+
+test("retired model and package entry points reject before writing evidence", (context) => {
+  const { options } = setup(context);
+  for (const name of ["slmPackPath", "modelFixturePath", "compositionFixturePath", "packageSource"]) {
+    assert.throws(() => runSafeLocalFaults({ ...options, [name]: "retired" }), /unknown fault option/);
+    assert.equal(fs.existsSync(options.evidenceRoot), false);
+  }
+  const api = require("../tools/campaign-fault-injection.js");
+  assert.equal(Object.hasOwn(api, "runPackageFaults"), false);
+  assert.equal(Object.hasOwn(api, "packageFaultIds"), false);
 });

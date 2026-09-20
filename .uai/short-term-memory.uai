@@ -1,9 +1,10 @@
 profile: tinyrustlm.short-term-memory.current.v1
-updated_utc: 2026-09-20T18:22:41Z
+updated_utc: 2026-09-20T18:50:19Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
 now:
+  retired_model_faults: C76 retires the obsolete SLM1 tensor-offset executor and copied-source package fault consumer; required faults stay 24. All 35 focused tests and six actual Edge scenarios pass, with one pinned-Chromium test skipped. Automatic review blocked deletion of twenty model files; preserve that exact cohort and its parent, and do not retry another API. The strict storage check fails on those files and remains uncommitted. Read retired-model-fixture-review.json; no model, package publication or source-authority pass.
   retired_release_tools: C75 retires LMComposer's two closed-operation commands and replaces historical tool execution with exact evidence checks. All 19 tests pass; all 21 retained public/history/blocked-stage files are unchanged. Read LMComposer.com artifacts/ecosystem-cleanup-20260912/closed-release-tool-retirement.json. Preserve blocked cleanup and continue the full goal; no release gate passed.
   catalog_unicode: C74 closes Unicode/BOM discrepancies across MiniModel and TinyRust. All 412/88 Node checks pass with four TinyRust Edge and fourteen MiniModel observations. Preserve exact text and code-unit limits; reject lone surrogates and BOMs. Read catalog-unicode-review.json for baseline failures and controlled visual comparison. Continue the full ecosystem goal; source/release/model/hosting blockers and unrelated WIP remain.
   minimodel_catalog: C73 committed and pushed bounded loading, cancellation and reviewed deployment-tool pins. All 86 focused checks pass; fourteen Edge observations include stalled stream closure/recovery and oversized rejection. Eight baseline captures match. Broader 117/121 is not a release pass: four checks stop at the existing source scan blocker. Read MiniModel.org artifacts/reports/catalog-lifetime-review-20260920.json. No publication or blocked deletion; preserve unrelated work.

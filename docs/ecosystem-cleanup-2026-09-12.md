@@ -5,6 +5,33 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C76: retire old model fault executors; payload removal blocked, September 20
+
+Removed the SLM1 tensor-offset/checksum execution and the package fault consumer
+that copied source and depended on retired TinyRustLM.Memory/ACG1 APIs. The two
+deleted source files total 35,010 logical bytes. The current consumer remains
+`eng/consumer-smoke`; current format vectors and generic browser/host fault checks
+remain. All 24 fault requirements are unchanged, including the two cases whose
+old executors are now absent.
+
+All 35 focused checks pass with one missing pinned-Chromium skip. Six separately
+executed Edge scenarios pass and remove their profiles. Local and browser reports
+remain blocked at 9/24 and 6/24 respectively. Fourteen coverage checks pass with
+65.07% whole-owner line coverage and 79.71% branch coverage; this excludes Edge.
+
+Automatic approval review rejected the exact-file PowerShell deletion of twenty
+reviewed model fixtures and sidecars as `blocked by policy`. All remain unchanged,
+totaling 148,390 logical bytes. Their strict Git-index check fails as expected;
+that test and ignore-policy change stay uncommitted pending physical retirement.
+Do not retry through another API, their parent, or an index-only deletion.
+The models README now documents current composition/storage/seed policy and the
+remaining blocked files. No physical storage recovery was measured.
+
+See `retired-model-fixture-review.json` and experiment lesson C76. The two old
+installer links still prevent the source-authority scan from completing. Prior
+blocked cohorts and unrelated UI/demo work remain untouched. No real model,
+public seed, NuGet publication or deployment is established.
+
 ## C75: retire LMComposer's closed release commands, September 20
 
 LMComposer's 622-line publisher admitted only its already-terminal v2 operation;

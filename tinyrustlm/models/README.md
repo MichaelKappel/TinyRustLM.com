@@ -1,130 +1,44 @@
-# TinyRustLM Model Artifacts
+# TinyRustLM model storage
 
-This directory contains deterministic test fixtures and, where explicitly
-identified, locally available research artifacts. It is not the production
-model catalog.
+Model payloads belong only under `D:\LLMs\TinyRustLM`, outside this source
+repository and Git. This directory is intended to contain guidance only.
 
-## Source-Control Rule
+Twenty retired SLM1/ADP1/ACG1 fixture files and sidecars currently remain here:
+automatic approval review rejected their exact-file deletion on September 20.
+They are not current runtime inputs or qualified models. Their identities and
+the blocked operation are recorded in
+[`retired-model-fixture-review.json`](../../artifacts/ecosystem-cleanup-20260912/retired-model-fixture-review.json).
+Do not retry their deletion through another API or a parent removal. The strict
+no-payload index check remains incomplete while these files are present; the
+older tracked-fixture exception is not permission to add or execute old models.
 
-Candidate, trained, converted, and product model payloads must live in an
-operator-controlled external content-addressed root. This includes `.slm`,
-SafeTensors, GGUF, ONNX, framework checkpoints, extracted raw tensors, and P2P
-piece bytes. Private campaign manifests and receipts reference them by
-absolute local path, byte count, and cryptographic identity.
+The sole current composition contains exactly:
 
-Only small deterministic fixtures needed to test binary parsing, quantization,
-tokenizers, runtime loading, malformed input, and failure behavior may be
-tracked. The source-control allowlist is enforced against the Git index and
-caps each `.slm` fixture at 64 KiB. A tracked fixture is never a qualifying
-campaign model.
+- `model.slm2`
+- `tokenizer.tokenizer2`
+- `template.template2`
+- `sampling.sampling2`
+- `prompt.prompt2`
+- `composition.acg2`
 
-## Evidence Classes
+Current format tests use canonical vector descriptions and test helpers to
+construct bounded data during execution. They do not require stored SLM1, ADP1
+or ACG1 payloads. The current .NET package consumer is
+[`eng/consumer-smoke`](../../eng/consumer-smoke/Program.cs).
 
-Model artifacts must be described by the evidence they actually have:
+MiniModel.org is authorized to provide initial server seeds for qualified current
+compositions. A necessary remote serving copy is a deployment artifact; it does
+not authorize duplicate local source or model trees. Prompts and inference remain
+local. Restore a usable installed composition or acquire a small qualified default;
+source import, conversion and manual peers remain Advanced.
 
-- `runtime-smoke-only`: loads or executes a bounded fixture path.
-- `structural-validation-only`: passes format and tensor checks.
-- `conversation-screened`: passes an initial raw-output screen.
-- `conversation-proven`: passes the current sealed conversation suite.
-- `task-specific-proven`: passes a declared specialist suite.
-- `full-assistant-quality`: passes the complete assistant-quality gate.
+Structural validation, fixture tests and package-consumer checks do not qualify a
+model for useful conversation or prove a live seed. No qualified default or public
+seed is established by removing old fixtures. The unchanged rejected Qwen3-0.6B
+checkpoint remains diagnostic ancestry only.
 
-Aliases, filenames, popularity, model size, parameter count, and successful
-conversion do not raise the claim level.
-
-## Campaign Admission
-
-A v2 dogfood model entry binds:
-
-- external `.slm` path, byte count, and SHA-256;
-- manifest path;
-- source-review path;
-- current quality-evidence path;
-- immutable source model ID and revision;
-- `.slm.acg1` path, URL, size, and SHA-256;
-- base model ID and composition ID;
-- active graph SHA-256;
-- route, KV, and position policy identities;
-- graph member count;
-- evidence-supported quality claim.
-
-The 20 campaign entries must have 20 distinct `.slm` SHA-256 values. Relabeled
-bytes and smoke fixtures are rejected.
-
-## Immutable Specialization
-
-TinyRustLM specialization is represented by an immutable ACG1 composition
-graph activated by Rust before evaluation and browser generation. The same
-composition identity must appear in:
-
-- model qualification evidence;
-- the private campaign manifest;
-- runtime diagnostics;
-- browser execution evidence;
-- the final browser receipt.
-
-The browser does not infer or mutate adapter stacks, combine parent models, or
-assemble a new artifact from mutable route metadata. A specialist that needs
-different weights or behavior must be converted, qualified, and identified as
-a distinct immutable artifact or graph.
-
-## External Model Layout
-
-A practical external layout is:
-
-```text
-<external-model-root>/
-  <model-id>/
-    source/
-    review/
-    converted/
-      model.slm
-      model.slm.manifest
-      model.slm.acg1
-    evaluation/
-    receipts/
-```
-
-The external root is not a public model-byte server. MiniModel catalog metadata
-may identify direct peers, but project websites must not proxy `.slm` bytes.
-
-## Qualification
-
-From the repository root:
-
-```powershell
-npm --prefix tinyrustlm run qualify:models -- `
-  --inventory <candidate-inventory.json> `
-  --source-root <external-model-root> `
-  --output-root <qualification-output-root> `
-  --evidence-root <evidence-root> `
-  --indices <comma-separated-candidate-indices>
-```
-
-The current runner requires `q8_0` and current assistant-quality cases. It
-preserves rejected and errored attempts as immutable evidence. A candidate must
-pass source review, conversion, native runtime execution, semantic evaluation,
-and composition activation before it can parent a browser receipt.
-
-## Fixture Use
-
-Fixtures are appropriate for:
-
-- malformed header and tensor-bound tests;
-- tokenizer and quantization fixtures;
-- deterministic one-token runtime checks;
-- WASM ABI checks;
-- receipt and manifest parser tests;
-- profile, network, and failure-path unit tests.
-
-Fixtures are not appropriate for:
-
-- the 20 qualified model count;
-- the 50 clean-browser count;
-- live MemoryEndpoints continuity;
-- external P2P proof;
-- catalog announcement;
-- public release claims.
-
-When a fixture test passes, record it as local or fixture evidence and keep all
-live campaign counters unchanged.
+Keep the active payload and bounded work required for its candidate replacement.
+After validating and activating the replacement, retire the superseded bytes.
+Retain compact identities, results and lessons, with source history in Git.
+See [current product guidance](../../wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md)
+for the outstanding model, browser and publication gates.

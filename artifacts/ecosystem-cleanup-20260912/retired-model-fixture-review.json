@@ -1,0 +1,235 @@
+{
+  "schema": "ecosystem.retired-model-fixture-review/1",
+  "sourceParent": "2d1fb7f8011e8fe8ef764e103f73c22b1fb0316d",
+  "status": "executable-retired-model-file-retirement-blocked",
+  "purpose": "Retire SLM1/ADP1/ACG1 payloads and the obsolete copied-source package fault consumer while preserving current format and generic fault checks.",
+  "reviewedFiles": [
+    {
+      "path": "tinyrustlm/models/tiny-test-model-bpe.slm",
+      "bytes": 20544,
+      "sha256": "31b27903c1588a1f246281def8027094c0d3862635fa7d3761aa1327471f3e82"
+    },
+    {
+      "path": "tinyrustlm/models/tiny-test-model-bpe.slm.manifest",
+      "bytes": 788,
+      "sha256": "c2926f1fe06ef40361e2547720a408f5da8a4daaa64d267b5b06b00790b4ea2f"
+    },
+    {
+      "path": "tinyrustlm/models/tiny-test-model-q4-self.adp1",
+      "bytes": 20224,
+      "sha256": "9bd044b950e0ced7b8c9785d0eceb0e175b91861d1c845267bc0d690a0cc9c56"
+    },
+    {
+      "path": "tinyrustlm/models/tiny-test-model-q4-self.adp1.manifest",
+      "bytes": 2026,
+      "sha256": "2060583f1243b373c8e3aefeca5efd763f09979e679249b9c087c1ec3dff1880"
+    },
+    {
+      "path": "tinyrustlm/models/tiny-test-model-q4.slm",
+      "bytes": 6592,
+      "sha256": "4004e2152f0b6382c6043a15084de6dc4ae6ae6b6c5ba43abde8812ed0174cf6"
+    },
+    {
+      "path": "tinyrustlm/models/tiny-test-model-q4.slm.manifest",
+      "bytes": 788,
+      "sha256": "6dfed5f780f98c88187506f60635549a7c8526abc543d01a7e13ba308b0fbb03"
+    },
+    {
+      "path": "tinyrustlm/models/tiny-test-model-q5.slm",
+      "bytes": 7296,
+      "sha256": "bc8a913ee80ae34efe8a5e8055988e9137840a22c53bcbead5edbfd99131c9b8"
+    },
+    {
+      "path": "tinyrustlm/models/tiny-test-model-q5.slm.manifest",
+      "bytes": 788,
+      "sha256": "d13710debd1c1299571d323724ac42f8dde0a5c52a44847857ffd6acff6c7129"
+    },
+    {
+      "path": "tinyrustlm/models/tiny-test-model-q8-self.adp1",
+      "bytes": 20224,
+      "sha256": "7b4e998efeac9b9d7bb6f909fc99bc17ca81a905d5c19fa0970a8229bf67e5e8"
+    },
+    {
+      "path": "tinyrustlm/models/tiny-test-model-q8-self.adp1.manifest",
+      "bytes": 2026,
+      "sha256": "5680fd9a8676b818bce3b90175ae75b574acfe380b0b374a27ed46ea2c714aeb"
+    },
+    {
+      "path": "tinyrustlm/models/tiny-test-model-q8.slm",
+      "bytes": 8832,
+      "sha256": "6af985853325eaa6d3eaaa8aadd3511da9596eb542fb2d03a9bc9dc1f4377adf"
+    },
+    {
+      "path": "tinyrustlm/models/tiny-test-model-q8.slm.manifest",
+      "bytes": 788,
+      "sha256": "11372101742f4f3946b006efb978951880bba0467ceb3b7d759aac73ad80bb61"
+    },
+    {
+      "path": "tinyrustlm/models/tiny-test-model-self.adp1",
+      "bytes": 20224,
+      "sha256": "dbeeb5875d00958179600c1cb353ca1fab7604f3d755a5da905bfff7f45b8ba8"
+    },
+    {
+      "path": "tinyrustlm/models/tiny-test-model-self.adp1.manifest",
+      "bytes": 2004,
+      "sha256": "78d72c47c6423f4e16e194dbb7f56f055071962ff611cc8c12e971c4c0fb75d0"
+    },
+    {
+      "path": "tinyrustlm/models/tiny-test-model-tied.slm",
+      "bytes": 11968,
+      "sha256": "9d68dc80cd2ccc2366344b92a497629af1d693350f92b3b0ee383d4b30e08b7c"
+    },
+    {
+      "path": "tinyrustlm/models/tiny-test-model-tied.slm.manifest",
+      "bytes": 786,
+      "sha256": "ad66e977c9bc595aad2014388078ff3c97a4706fcafc6610cf67c369be149a4a"
+    },
+    {
+      "path": "tinyrustlm/models/tiny-test-model.base-composition-authority.v1.json",
+      "bytes": 843,
+      "sha256": "9beedc5cbdc4410adc6c2fd02d445981db705280d145db299cb6ef71e0f188ec"
+    },
+    {
+      "path": "tinyrustlm/models/tiny-test-model.base.acg1",
+      "bytes": 512,
+      "sha256": "1e3f267ff1ad5d076d7d1e6594f2e5e0fe7451e9055fe03f538ef756301d782f"
+    },
+    {
+      "path": "tinyrustlm/models/tiny-test-model.slm",
+      "bytes": 20352,
+      "sha256": "17d79ee766578729d2b69090547e819e011d76115519514e19ac3754de610a1a"
+    },
+    {
+      "path": "tinyrustlm/models/tiny-test-model.slm.manifest",
+      "bytes": 785,
+      "sha256": "eb8b37ed1fe417203812ba23665cc61a7682eb305c7d3dd8a9dd9b88c01a4562"
+    },
+    {
+      "path": "tinyrustlm/tools/campaign-package-fault-scenarios.js",
+      "bytes": 30217,
+      "sha256": "f7a1d1b1387911163b903fb3959d438ca53520961ff11ebc82aad31bd2da4244"
+    },
+    {
+      "path": "tinyrustlm/tests/campaign-package-fault-injection.test.js",
+      "bytes": 4793,
+      "sha256": "990e59848c601ee28c87ef2fbac96d8af3096ecbc66572243d31c5b1941fb15b"
+    }
+  ],
+  "logicalBytes": 183400,
+  "modelBytes": 148390,
+  "physicalRecoveredBytes": null,
+  "validationBeforeRetirement": "Exact canonical contained ordinary files; SHA-256 and size agree with inventory, HEAD bytes equal with CRLF-only normalization for text.",
+  "lessons": [
+    "Keep fault IDs and incomplete results when retiring an obsolete executor. Removal of SLM1 tensor-offset execution does not satisfy invalid-tensor-offset.",
+    "The package fault executor depended on retired TinyRustLM.Memory and SLM1/ACG1 APIs, and copied consumer source into scratch. Current package consumption belongs in eng/consumer-smoke.",
+    "Preserve locked-restore/content-hash-drift testing as an unmet requirement until a current-format executor proves it. A skipped retired-package test is not proof.",
+    "Binary fixture parsing, conversation usefulness, package execution and actual public publication are separate claims. Keep current negative format cases generated by the canonical test helpers."
+  ],
+  "baselineTests": {
+    "total": 21,
+    "passed": 19,
+    "failed": 0,
+    "skipped": 2,
+    "skips": [
+      "Pinned Chromium executable unavailable",
+      "Retired package set unavailable"
+    ]
+  },
+  "preservation": {
+    "unchangedFiles": 24,
+    "blockedModelFiles": 20,
+    "retainedBrowserAndHostFiles": 4,
+    "planHash": "df72e7fef77b0eb2746ad1c5d811b9af13b69985fc9d8327b809c4d11157ba68",
+    "removedSourceFiles": 2,
+    "publicUiEditsInSelectedChange": 0
+  },
+  "remaining": [
+    "Two installer links still prevent complete source-authority enumeration.",
+    "No qualified default, fresh real numerical parity, useful browser inference, public seed or NuGet publication is established."
+  ],
+  "reviewedUtc": "2026-09-20T18:50:19Z",
+  "removed": [
+    {
+      "path": "tinyrustlm/tools/campaign-package-fault-scenarios.js",
+      "bytes": 30217,
+      "sha256": "f7a1d1b1387911163b903fb3959d438ca53520961ff11ebc82aad31bd2da4244"
+    },
+    {
+      "path": "tinyrustlm/tests/campaign-package-fault-injection.test.js",
+      "bytes": 4793,
+      "sha256": "990e59848c601ee28c87ef2fbac96d8af3096ecbc66572243d31c5b1941fb15b"
+    }
+  ],
+  "logicalRemovedBytes": 35010,
+  "blockedRetirement": {
+    "files": 20,
+    "logicalBytes": 148390,
+    "reason": "Automatic approval review rejected the exact-file PowerShell Remove-Item command: blocked by policy. Command did not execute.",
+    "retryBoundary": "Preserve all twenty reviewed model files and their directory; no alternate API, parent removal or Git-only deletion.",
+    "strictPolicy": "No-payload index assertion and ignore-file changes remain uncommitted pending actual retirement. They are not a passed gate."
+  },
+  "tests": {
+    "focused": {
+      "passed": 35,
+      "failed": 0,
+      "skipped": 1,
+      "skipReason": "Pinned Playwright Chromium executable absent; browser declaration and rejection checks passed.",
+      "command": "node --test --test-concurrency=1 campaign-fault-injection, campaign-browser-fault-injection, campaign-host-restart-fault-injection, production-slm2-clean-cut, slm2-runtime-vectors and slm2-q8-weight-vectors tests"
+    },
+    "faultReport": {
+      "required": 24,
+      "satisfied": 9,
+      "incomplete": 15,
+      "status": "blocked",
+      "invalidTensorOffset": "incomplete",
+      "packageRestoreDrift": "incomplete"
+    },
+    "actualEdge": {
+      "passed": 6,
+      "failed": 0,
+      "profileCleanup": "all profiles absent",
+      "report": {
+        "satisfied": 6,
+        "incomplete": 18,
+        "status": "blocked"
+      },
+      "scope": "Six browser fault mechanics only; no actual model or public evidence."
+    },
+    "coverage": {
+      "passed": 14,
+      "failed": 0,
+      "runnerLinePercent": 65.07,
+      "runnerBranchPercent": 79.71,
+      "runnerFunctionPercent": 75,
+      "limitation": "Whole-module coverage is below 75%; changed CLI rejection, option admission and missing-executor branches are exercised. Actual Edge invocation was separate and not included in this coverage run."
+    },
+    "strictStorage": {
+      "passed": 1,
+      "failed": 1,
+      "reason": "All 20 reviewed retired files remain in the Git index after blocked physical deletion.",
+      "committed": false
+    },
+    "managedMemory": {
+      "passed": 38,
+      "failed": 0,
+      "skipped": 0
+    }
+  },
+  "secretScan": {
+    "status": "pass",
+    "files": 11,
+    "findings": 0,
+    "scopeManifestSha256": "c372a65f752c45360c761a11d2de36c22ef1a319dff0c6222dc5d3d5c1100f6e",
+    "scope": "Eleven selected files before final receipt test/cleanup summaries; credentials were not read.",
+    "initialFailure": "First invocation used invalid path-shaped labels and did not await the result; corrected labels and awaited result in a fresh evidence path."
+  },
+  "temporaryOutput": {
+    "files": 158,
+    "directories": 57,
+    "logicalBytes": 5693800,
+    "markerBytes": 65,
+    "rootAbsent": true,
+    "markerAbsent": true,
+    "physicalRecoveredBytes": null
+  }
+}

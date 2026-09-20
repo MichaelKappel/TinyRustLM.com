@@ -1,5 +1,5 @@
 profile: tinyrustlm.operations.current.v1
-updated_utc: 2026-09-20T18:22:41Z
+updated_utc: 2026-09-20T18:50:19Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
@@ -10,6 +10,7 @@ historical_checkpoint:
   boundary: These August 28 source/test counts are historical. They do not describe current implementation or establish real-model qualification or deployment.
 
 current_state:
+  retired_model_faults: C76 removes the SLM1 offset executor and obsolete copied-source package fault consumer. All 35 focused checks and six actual Edge scenarios pass, with one pinned-Chromium skip. Twenty model files remain after automatic policy rejection; their exact identities are in retired-model-fixture-review.json. Preserve them and their parent; no alternative deletion route. The strict storage test fails on that cohort and stays uncommitted. Required faults remain 24 and incomplete cases remain blocking; no key read or publication.
   retired_release_tools: C75 removes 798 lines of LMComposer closed-operation tooling, retaining Git source history and immutable manifests/receipts. All 19 checks pass; eight public files and eight policy-blocked stage files remain unchanged. See that repository's closed-release-tool-retirement.json. The two installer links still block source scanning; no blocked deletion, credential use or publication.
   catalog_unicode: C74 repairs supplementary Unicode rejection and BOM stripping in TinyRust; both catalog validators reject lone surrogates. All 412 TinyRust/88 MiniModel checks pass, plus four Edge chooser/stream checks and fourteen MiniModel observations. Read catalog-unicode-review.json. Controlled old/current captures match despite a recorded select-border paint variation; no styles or admission gates changed. No key read or publication.
   minimodel_catalog: C73 bounds streamed metadata and verification observation by one ten-second deadline; cancellation stops stale work and sibling requests. All 86 focused checks pass with fourteen Edge observations and eight exact baseline matches. MiniModel commits 81f0b4c/1042253 are pushed; read its catalog-lifetime-review-20260920.json. Broader 117/121 retains four failures at the policy-blocked installer links. No gate bypass, key read or publication.

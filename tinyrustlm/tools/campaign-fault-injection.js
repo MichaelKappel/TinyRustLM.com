@@ -17,11 +17,6 @@ const {
   runBrowserFaultScenario
 } = require("./campaign-browser-fault-scenarios.js");
 const {
-  packageFaultIds,
-  runPackageFaultScenario,
-  validatePackageFaultInputs
-} = require("./campaign-package-fault-scenarios.js");
-const {
   captureHostBootEvidence,
   createHostRestartApprovalRequest,
   hostRestartToolVersion,
@@ -374,22 +369,6 @@ function faultToolIdentity(evidenceClass) {
       sha256(fs.readFileSync(dependencyLockPath)),
       sha256(fs.readFileSync(playwrightManifestPath))
     ]);
-    return Object.freeze({
-      toolNames,
-      toolVersions,
-      toolBinaryHashes,
-      identityHash: sha256(canonicalJson({ toolNames, toolVersions, toolBinaryHashes }))
-    });
-  }
-  if (evidenceClass === "package") {
-    const packageToolPath = require.resolve("./campaign-package-fault-scenarios.js");
-    const packageToolHash = sha256(fs.readFileSync(packageToolPath));
-    const toolNames = Object.freeze([
-      "tinyrustlm-campaign-fault-injection",
-      "tinyrustlm-package-fault-scenarios"
-    ]);
-    const toolVersions = Object.freeze([faultToolVersion, "2"]);
-    const toolBinaryHashes = Object.freeze([faultToolHash, packageToolHash]);
     return Object.freeze({
       toolNames,
       toolVersions,
@@ -758,72 +737,11 @@ function executeTruncatedModel() {
   });
 }
 
-function simpleSlmChecksum(bytes) {
-  const mask = (1n << 64n) - 1n;
-  let accumulator = 0x9e3779b97f4a7c15n;
-  for (let index = 0; index < bytes.length; index += 1) {
-    const value = index >= 100 && index < 108 ? 0 : bytes[index];
-    accumulator ^= (BigInt(value) + (BigInt(index) << 1n)) & mask;
-    accumulator = ((accumulator << 7n) | (accumulator >> 57n)) & mask;
-    accumulator = (accumulator * 0x100000001b3n) & mask;
-  }
-  return accumulator;
-}
-
 function regularFile(filePath, maximumBytes = Number.MAX_SAFE_INTEGER) {
   if (typeof filePath !== "string" || filePath.length === 0) return false;
   const stat = fs.lstatSync(path.resolve(filePath), { throwIfNoEntry: false });
   return Boolean(stat?.isFile() && !stat.isSymbolicLink() && stat.size > 0 &&
     stat.size <= maximumBytes);
-}
-
-function executeInvalidTensorOffset(options) {
-  invariant(regularFile(options.slmPackPath, 128 * 1024 * 1024),
-    "native SLM validator is unavailable");
-  invariant(regularFile(options.modelFixturePath, 64 * 1024 * 1024),
-    "native model fault fixture is unavailable");
-  return withTemporaryRoot("tinyrustlm-fault-tensor-offset-", (root) => {
-    const validBytes = fs.readFileSync(options.modelFixturePath);
-    invariant(validBytes.length >= 108, "native model fault fixture is too short");
-    const invalidBytes = Buffer.from(validBytes);
-    const directoryOffset = Number(invalidBytes.readBigUInt64LE(80));
-    const tensorOffsetField = directoryOffset + 32;
-    invariant(Number.isSafeInteger(directoryOffset) && tensorOffsetField + 8 <= invalidBytes.length,
-      "native model fault fixture tensor directory is invalid");
-    invalidBytes.writeBigUInt64LE(0xffffffffffffffc0n, tensorOffsetField);
-    invalidBytes.fill(0, 100, 108);
-    invalidBytes.writeBigUInt64LE(simpleSlmChecksum(invalidBytes), 100);
-    const invalidPath = path.join(root, "invalid-offset.slm");
-    atomicReplace(invalidPath, invalidBytes);
-    const rejected = childProcess.spawnSync(path.resolve(options.slmPackPath),
-      ["validate", invalidPath], {
-        encoding: "utf8",
-        windowsHide: true,
-        timeout: 30_000,
-        maxBuffer: 64 * 1024
-      });
-    invariant(!rejected.error && rejected.signal === null && rejected.status !== 0 &&
-      /tensor payload escapes the file|offset overflow/iu.test(rejected.stderr),
-    "native validator did not reject the overflowing tensor offset");
-    const accepted = childProcess.spawnSync(path.resolve(options.slmPackPath),
-      ["validate", path.resolve(options.modelFixturePath)], {
-        encoding: "utf8",
-        windowsHide: true,
-        timeout: 30_000,
-        maxBuffer: 64 * 1024
-      });
-    invariant(!accepted.error && accepted.signal === null && accepted.status === 0,
-      "new conversion structural validation did not pass");
-    return observation([
-      "offset-overflow-rejected", "no-out-of-bounds-read",
-      "new-conversion-structural-pass"
-    ], {
-      invalidArtifact: hashFileSync(invalidPath),
-      validArtifact: hashFileSync(options.modelFixturePath),
-      nativeValidator: hashFileSync(options.slmPackPath),
-      rejectionDiagnostic: sha256(rejected.stderr)
-    }, { nativeProcessExecuted: true, rejectedExitCode: rejected.status });
-  });
 }
 
 function executeNetworkLoss() {
@@ -1123,7 +1041,6 @@ const builtInExecutors = Object.freeze({
   "disk-full": executeDiskFull,
   "corrupt-model": executeCorruptModel,
   "truncated-model": executeTruncatedModel,
-  "invalid-tensor-offset": executeInvalidTensorOffset,
   "network-loss": executeNetworkLoss,
   "p2p-peer-disappearance": executePeerDisappearance,
   "corrupted-piece": executeCorruptedPiece,
@@ -1134,17 +1051,6 @@ const browserExecutors = Object.freeze(Object.fromEntries(browserFaultIds.map((f
   faultId,
   (options) => runBrowserFaultScenario(faultId, options)
 ])));
-
-const packageExecutors = Object.freeze(Object.fromEntries(packageFaultIds.map((faultId) => [
-  faultId,
-  (options) => runPackageFaultScenario(faultId, options)
-])));
-
-function executorAvailable(faultId, options) {
-  if (faultId !== "invalid-tensor-offset") return true;
-  return regularFile(options.slmPackPath, 128 * 1024 * 1024) &&
-    regularFile(options.modelFixturePath, 64 * 1024 * 1024);
-}
 
 function persistFaultDomainReceipt(store, options, plan, planReceipt, fault,
   observed, passed, toolIdentity, prerequisiteReceipts = []) {
@@ -1649,8 +1555,7 @@ function inspectFaultCampaignEvidence(receipts, planPath) {
 function runSafeLocalFaults(options) {
   invariant(isPlainObject(options), "fault injection options are invalid");
   const allowed = new Set([
-    "campaignId", "evidenceRoot", "planPath", "reportOutputPath", "sourceRevision",
-    "slmPackPath", "modelFixturePath"
+    "campaignId", "evidenceRoot", "planPath", "reportOutputPath", "sourceRevision"
   ]);
   for (const key of Object.keys(options)) invariant(allowed.has(key), `unknown fault option: ${key}`);
   const campaignId = String(options.campaignId || "");
@@ -1671,18 +1576,18 @@ function runSafeLocalFaults(options) {
   const unavailableLocalFaultIds = [];
   const executionOptions = Object.freeze({
     campaignId,
-    sourceRevision,
-    slmPackPath: options.slmPackPath ? path.resolve(options.slmPackPath) : null,
-    modelFixturePath: options.modelFixturePath ? path.resolve(options.modelFixturePath) : null
+    sourceRevision
   });
   for (const fault of plan.value.faults) {
-    if (!Object.hasOwn(builtInExecutors, fault.faultId)) continue;
-    invariant(fault.requiredEvidenceClass === "local" && fault.externalPrerequisites.length === 0,
-      `built-in fault ${fault.faultId} is not a safe local fault`);
-    if (!executorAvailable(fault.faultId, executionOptions)) {
-      unavailableLocalFaultIds.push(fault.faultId);
+    if (!Object.hasOwn(builtInExecutors, fault.faultId)) {
+      // Missing current executors remain required and explicitly incomplete.
+      if (fault.requiredEvidenceClass === "local" && fault.externalPrerequisites.length === 0) {
+        unavailableLocalFaultIds.push(fault.faultId);
+      }
       continue;
     }
+    invariant(fault.requiredEvidenceClass === "local" && fault.externalPrerequisites.length === 0,
+      `built-in fault ${fault.faultId} is not a safe local fault`);
     attempts.push(executeFault(store, executionOptions, plan, planReceipt, fault,
       builtInExecutors, "local"));
   }
@@ -1754,58 +1659,6 @@ function runBrowserFaults(options) {
   });
 }
 
-function runPackageFaults(options) {
-  invariant(isPlainObject(options), "package fault injection options are invalid");
-  const allowed = new Set([
-    "campaignId", "compositionFixturePath", "dotnetPath", "evidenceRoot", "modelFixturePath", "packageSource",
-    "planPath", "reportOutputPath", "sourceRevision", "workParent"
-  ]);
-  for (const key of Object.keys(options)) {
-    invariant(allowed.has(key), `unknown package fault option: ${key}`);
-  }
-  const campaignId = String(options.campaignId || "");
-  const sourceRevision = String(options.sourceRevision || "");
-  invariant(safeCampaignIdPattern.test(campaignId), "package fault campaign ID is invalid");
-  invariant(sourceRevision.length >= 7 && sourceRevision.length <= 256,
-    "package fault source revision is invalid");
-  invariant(typeof options.reportOutputPath === "string" && options.reportOutputPath.length > 0,
-    "package fault report output path is required");
-  const executionOptions = Object.freeze({
-    campaignId,
-    compositionFixturePath: path.resolve(options.compositionFixturePath),
-    dotnetPath: path.resolve(options.dotnetPath),
-    modelFixturePath: path.resolve(options.modelFixturePath),
-    packageSource: path.resolve(options.packageSource),
-    sourceRevision,
-    workParent: path.resolve(options.workParent)
-  });
-  validatePackageFaultInputs(executionOptions);
-  fs.mkdirSync(executionOptions.workParent, { recursive: true });
-  const plan = loadFaultPlan(options.planPath);
-  const store = new CampaignEvidenceStore(options.evidenceRoot);
-  const rebuilt = store.rebuild();
-  invariant(rebuilt.quarantined.length === 0 &&
-    fs.readdirSync(store.quarantinePath, { withFileTypes: true }).every((entry) => !entry.isFile()),
-  "package fault evidence store contains quarantined files");
-  const planReceipt = persistFaultPlanReceipt(store, { campaignId, sourceRevision }, plan);
-  const attempts = [];
-  for (const fault of plan.value.faults) {
-    if (!Object.hasOwn(packageExecutors, fault.faultId)) continue;
-    attempts.push(executeFault(store, executionOptions, plan, planReceipt, fault,
-      packageExecutors, "package"));
-  }
-  const result = persistFaultReport(store, {
-    campaignId,
-    sourceRevision,
-    reportOutputPath: path.resolve(options.reportOutputPath)
-  }, plan, planReceipt);
-  return Object.freeze({
-    plan,
-    planReceipt,
-    attempts: Object.freeze(attempts),
-    ...result
-  });
-}
 
 function requestHostRestartFault(options) {
   invariant(isPlainObject(options), "host restart request options are invalid");
@@ -2007,22 +1860,20 @@ function verifyHostRestartFault(options) {
 function parseArguments(argv) {
   const command = argv[0];
   const commands = new Set([
-    "run-safe-local", "run-browser", "run-package", "request-host-restart",
+    "run-safe-local", "run-browser", "request-host-restart",
     "prepare-host-restart", "verify-host-restart"
   ]);
   invariant(commands.has(command), "fault command is unsupported");
   const commonArguments = ["--campaign-id", "--evidence-root", "--plan", "--source-revision"];
   const commandArguments = command === "run-browser"
     ? ["--chromium", "--profile-parent", "--report-output"]
-    : command === "run-package"
-      ? ["--composition-fixture", "--dotnet", "--package-source", "--model-fixture", "--work-parent", "--report-output"]
-      : command === "run-safe-local"
-        ? ["--slm-pack", "--model-fixture", "--report-output"]
-        : command === "request-host-restart"
-          ? ["--request-output"]
-          : command === "prepare-host-restart"
-            ? ["--approval-request-id", "--checkpoint-output", "--request"]
-            : ["--checkpoint", "--report-output"];
+    : command === "run-safe-local"
+      ? ["--report-output"]
+      : command === "request-host-restart"
+        ? ["--request-output"]
+        : command === "prepare-host-restart"
+          ? ["--approval-request-id", "--checkpoint-output", "--request"]
+          : ["--checkpoint", "--report-output"];
   const allowedArguments = new Set([...commonArguments, ...commandArguments]);
   const values = new Map();
   for (let index = 1; index < argv.length; index += 2) {
@@ -2036,18 +1887,13 @@ function parseArguments(argv) {
   for (const name of ["--campaign-id", "--evidence-root", "--source-revision"]) {
     invariant(values.has(name), `missing fault argument: ${name}`);
   }
-  if (new Set(["run-safe-local", "run-browser", "run-package", "verify-host-restart"])
+  if (new Set(["run-safe-local", "run-browser", "verify-host-restart"])
     .has(command)) {
     invariant(values.has("--report-output"), "missing fault argument: --report-output");
   }
   if (command === "run-browser") {
     for (const name of ["--chromium", "--profile-parent"]) {
       invariant(values.has(name), `missing browser fault argument: ${name}`);
-    }
-  }
-  if (command === "run-package") {
-    for (const name of ["--composition-fixture", "--dotnet", "--package-source", "--model-fixture", "--work-parent"]) {
-      invariant(values.has(name), `missing package fault argument: ${name}`);
     }
   }
   if (command === "request-host-restart") {
@@ -2076,24 +1922,13 @@ function parseArguments(argv) {
   if (command === "run-browser") {
     parsed.chromiumPath = path.resolve(values.get("--chromium"));
     parsed.profileParent = path.resolve(values.get("--profile-parent"));
-  } else if (command === "run-package") {
-    parsed.compositionFixturePath = path.resolve(values.get("--composition-fixture"));
-    parsed.dotnetPath = path.resolve(values.get("--dotnet"));
-    parsed.packageSource = path.resolve(values.get("--package-source"));
-    parsed.modelFixturePath = path.resolve(values.get("--model-fixture"));
-    parsed.workParent = path.resolve(values.get("--work-parent"));
-  } else if (command === "run-safe-local") {
-    if (values.has("--slm-pack")) parsed.slmPackPath = path.resolve(values.get("--slm-pack"));
-    if (values.has("--model-fixture")) {
-      parsed.modelFixturePath = path.resolve(values.get("--model-fixture"));
-    }
   } else if (command === "request-host-restart") {
     parsed.requestOutputPath = path.resolve(values.get("--request-output"));
   } else if (command === "prepare-host-restart") {
     parsed.approvalRequestId = values.get("--approval-request-id");
     parsed.checkpointOutputPath = path.resolve(values.get("--checkpoint-output"));
     parsed.requestPath = path.resolve(values.get("--request"));
-  } else {
+  } else if (command === "verify-host-restart") {
     parsed.checkpointPath = path.resolve(values.get("--checkpoint"));
   }
   return Object.freeze(parsed);
@@ -2123,9 +1958,8 @@ if (require.main === module) {
       })}\n`);
     } else {
       const result = command === "run-browser" ? runBrowserFaults(options) :
-        command === "run-package" ? runPackageFaults(options) :
-          command === "verify-host-restart" ? verifyHostRestartFault(options) :
-            runSafeLocalFaults(options);
+        command === "verify-host-restart" ? verifyHostRestartFault(options) :
+          runSafeLocalFaults(options);
       process.stdout.write(`${JSON.stringify({
         planReceiptId: result.planReceipt.receiptId,
         attemptedFaultCount: result.attempts.length,
@@ -2151,7 +1985,6 @@ module.exports = Object.freeze({
   inspectFaultCampaignEvidence,
   loadFaultPlan,
   parseArguments,
-  packageFaultIds,
   planReceiptType,
   planSchema,
   reportReceiptType,
@@ -2160,7 +1993,6 @@ module.exports = Object.freeze({
   requestHostRestartFault,
   requiredFaultIds,
   runBrowserFaults,
-  runPackageFaults,
   runSafeLocalFaults,
   verifyHostRestartFault
 });
