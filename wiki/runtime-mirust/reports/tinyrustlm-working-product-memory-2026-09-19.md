@@ -16,12 +16,23 @@ Authority order is current owner instructions, inspected current contracts and b
 
 ## Current evidence and its limits
 
+**C84 enrollment recovery:** the UI now retains the original claim key/body in
+private session memory and reuses issued credentials after restore failure.
+Claim and reconnect share cancellation ownership through activation; authority
+changes and clear reject late results. All 73 Node, 38 managed and 25 Edge checks
+pass, with three existing skips and matching desktop/mobile screenshot pairs.
+The scoped scanner flagged one manually reviewed dummy unit-test invitation;
+its raw result remains failed. Read `enrollment-recovery-review.json` for
+tests, exact screenshot comparison and setup failures. Recovery is explicit and
+does not survive reload. General memory/outbox lifetimes and live evidence remain
+open; no model, seed, NuGet publication or deployment follows.
+
 **C83 enrollment lifetime:** the client now bounds discovery plus claim/reconnect
 with one cancellable deadline and checks streamed response bytes before retention.
 All 64 affected Node checks and five Edge cases pass, with three explicit skips;
 desktop/mobile screenshots match exactly. Read `enrollment-response-lifetime-review.json`.
-No live service or publication proof; UI claim-key recovery and other memory
-request lifetimes remain unresolved.
+No live service or publication proof; C84 addresses UI claim-key recovery while
+other memory request lifetimes remain unresolved.
 
 **C82 conversation/capture:** current Advanced import, catalog membership and
 real worker rendering now have eight passing Edge cases using explicitly

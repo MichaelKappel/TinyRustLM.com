@@ -11,6 +11,35 @@ Keep useful findings and compact evidence identities in the owning canonical
 repository. Keep source history in Git and current model payloads only in
 `D:\LLMs\TinyRustLM`.
 
+## C84: a recoverable service contract needs a UI that preserves claim identity
+
+- **Question:** Can a user recover an enrollment whose server response was lost?
+- **Inputs/method:** Parent `b500163eebc33ae0512c040c9839a3be3f7bf857`, real Edge
+  UI and loopback enrollment service; commit a claim, discard the response, then
+  retry through the same controls. Isolated ownership tests cover concurrent
+  calls, cancellation, mismatched bodies, restore failures and stale completion.
+- **Result:** The baseline browser sent no recovery request after the first
+  response was lost. Session-owned recovery preserves the original key/body,
+  and a failed restore reuses issued credentials without another claim.
+  All 73 Node, 38 managed and 25 Edge checks pass, with three existing skips;
+  enrollment-module line/branch coverage is 91.84%/82.92%. Screenshot pairs match.
+  Three browser setup runs retained collapsed-control/startup-race failures
+  before tests used the visible chooser link after its readiness assertion.
+  The scanner's one dummy invitation-URL finding remains a raw failed scan,
+  manually classified as test data; no scanner rule or useful test was removed.
+- **Decision:** Retain a single private pending attempt through reconnect and
+  activation. Only explicit user actions retry; clear/authority changes discard
+  recovery. Check cancellation after every await before committing local state.
+- **Uncertainty:** Cancellation cannot undo remote persistence. Session-only
+  recovery is lost on reload. General memory transfer and outbox state have
+  separate lifetimes and authority risks; fixture evidence is not a live claim.
+- **Reusable lesson:** Transport idempotency alone is insufficient if the UI
+  generates a fresh identity or erases the original input before recovery.
+  Busy ownership must span dependent activation, and an old finally must not
+  unlock a newer operation. Browser tests must open the actual collapsed/mobile
+  controls; forced clicks would hide a test setup defect.
+- **Evidence:** `artifacts/ecosystem-cleanup-20260912/enrollment-recovery-review.json`.
+
 ## C83: response limits must apply before buffering and across every awaited stage
 
 - **Question:** Can enrollment remain pending or buffer an oversized response

@@ -169,8 +169,20 @@ budget covers discovery and its claim/reconnect request together; constructor
 `timeoutMilliseconds` accepts integers in 1..120000. `discover`, `request`,
 `claim` and `reconnect` accept an optional `signal` in their options. Cancellation
 and timeout are typed errors, never evidence that a server-side POST was undone.
-The client does not retry automatically. Explicit recovery must retain the
-same idempotency key; the current UI does not yet retain that key across clicks.
+The client does not retry automatically. The UI retains one pending claim's
+invitation, requested name and idempotency key in private session memory. Use
+Create Agent again after a lost response to retry that exact claim. Once a claim
+returns credentials, retry only restores that agent; it does not issue another
+claim POST. Changing the pending name or invitation is rejected. Clear Web
+Memory explicitly abandons recovery; it cannot undo a committed server claim.
+
+Reconnect similarly retains a failed attempt's token for an explicit same-name
+retry with the now-empty token input. Claim and reconnect share one busy state.
+Service/authority changes, toggling web memory, workspace-key input, workspace
+connection, clear and page exit cancel enrollment and discard recovery state.
+Late results cannot activate or overwrite enrollment status. Recovery does not
+survive reload and is never stored in localStorage, sessionStorage or IndexedDB.
+The general outbox, pull, submit and search lifetimes remain separate work.
 
 Streamed JSON is limited to one MiB and 4,096 chunks before retention. Unit checks
 cover absent/false length headers, exact limits, split Unicode, stalled reads,

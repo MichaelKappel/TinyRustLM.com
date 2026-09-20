@@ -1,5 +1,5 @@
 profile: tinyrustlm.startup-packet.current.v1
-updated_utc: 2026-09-20T21:16:38Z
+updated_utc: 2026-09-20T21:38:01Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
@@ -10,7 +10,8 @@ startup_steps:
   - Preserve immutable failed operations and all campaign counters.
 
 current_truth:
-  enrollment_lifetime: C83 bounds enrollment discovery plus claim/reconnect with one cancellable deadline and streamed byte/chunk limits. All 64 affected Node and five Edge cases pass, with three existing skips; line/branch coverage is 88.66%/75.14%. Desktop/mobile screenshots match exactly. Read enrollment-response-lifetime-review.json. UI claim-key recovery, other memory requests and live/release gates remain open; no credential read or publication.
+  enrollment_recovery: C84 retains one original claim and issued credentials in private session memory for explicit recovery, with cancellation through activation. All 73 Node, 38 managed and 25 Edge checks pass; three existing skips remain and screenshot pairs match. Read enrollment-recovery-review.json, including one raw scanner finding manually classified as a dummy test URL. General memory/outbox, model and release gates remain open; no key read or publication.
+  enrollment_lifetime: C83 bounds enrollment discovery plus claim/reconnect with one cancellable deadline and streamed byte/chunk limits. All 64 affected Node and five Edge cases pass, with three existing skips; line/branch coverage is 88.66%/75.14%. Desktop/mobile screenshots match exactly. Read enrollment-response-lifetime-review.json. C84 adds UI recovery; other memory requests and live/release gates remain open.
   browser_conversation: C82 replaces obsolete conversation setup and frozen-source rewriting with one test-only fixture using the production SLM2 writer. Current catalog rejection and real WASM two-turn behavior pass in all four Edge projects (8/8). Both capture predicates now require worker active. Node 40/40, separate capture 20/20 and Rust 17/17 pass; helper/capture line coverage is 90.97%/91.42%. See browser-conversation-current-review.json. Fifteen historical visual differences, real-model and release gates remain; no key read or publication.
   ui_verification_owner: C81 replaces duplicated shell orchestration with verify-ui.js and current v2 reports. Source admission precedes work; custom evidence is create-only and interrupted output retains ownership. All 75 affected checks pass; owner line coverage is 99.06%. Actual PowerShell execution stops at the known source block before scratch. Read ui-verification-owner-review.json; model, seed, NuGet and release gates remain open.
   browser_contract_gate: C80 redirects focused browser/UI gates to current six-member admission, installation, client and worker suites; 230 UI and 41 integration checks pass, plus actual Edge worker lifecycle in two deleted profiles. The obsolete npm command is removed. Automatic review blocked eight-file retirement; exact paths/hashes are in browser-contract-gate-review.json. Leave that cohort unchanged; no alternate deletion route. Standard discovery and campaign requirements remain; source/model/publication gates are open.

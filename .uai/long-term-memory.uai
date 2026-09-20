@@ -1,5 +1,5 @@
 profile: tinyrustlm.long-term-memory.current.v1
-updated_utc: 2026-09-20T21:16:38Z
+updated_utc: 2026-09-20T21:38:01Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
@@ -13,8 +13,8 @@ pointers:
     authority: reviewed_guidance
     review_state: reviewed_for_routing_and_identity
     status: current
-    last_reviewed_utc: 2026-09-20T21:16:38Z
-    sha256: 36f797173806c2e5594ddea63208e10a6c0832e8996a5ed1bc20e48e2e6c0eeb
+    last_reviewed_utc: 2026-09-20T21:38:01Z
+    sha256: f9e7e619810b2f27537bd0265aab40d9e42ffc1a59cd5bc92709533a4f3a4d01
   - id: report-decisions
     path: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
     label: September report decisions
@@ -36,21 +36,21 @@ pointers:
   - id: experiment-lessons
     path: wiki/runtime-mirust/reports/ecosystem-experiment-lessons-2026-09-12.md
     label: Retained experiment lessons
-    summary: Open for C21-C83 observations, exact evidence, uncertainty and blocked retirement.
+    summary: Open for C21-C84 observations, exact evidence, uncertainty and blocked retirement.
     authority: reviewed_bounded_historical_evidence
     review_state: reviewed_for_routing_and_identity
     status: active_growing_review
-    last_reviewed_utc: 2026-09-20T21:16:38Z
-    sha256: cdda90bd16806bf670007e7e997edf7a2f89e96777117f5f34d0c4bb6b65366c
+    last_reviewed_utc: 2026-09-20T21:38:01Z
+    sha256: c85c76c900ccc6cd6174324ed4ea55199fb47fba6485d254a054cb1ed530144e
   - id: cleanup-progress
     path: docs/ecosystem-cleanup-2026-09-12.md
     label: Ecosystem cleanup progress
-    summary: Open for ecosystem cleanup through C83 enrollment lifetime, C82 conversation/capture and C81 shared UI verification. Earlier cleanup, package, storage, conversion and catalog evidence remains indexed. Model and hosting limits remain.
+    summary: Open for ecosystem cleanup through C84 enrollment recovery, C83 request lifetime and C82 conversation/capture. Earlier package, storage, conversion and catalog evidence remains indexed. Model and hosting limits remain.
     authority: owner_authorized_progress_record
     review_state: reviewed_for_routing_and_identity
     status: current
-    last_reviewed_utc: 2026-09-20T21:16:38Z
-    sha256: a50db50020ab2efd61664b0dbe2017947c80b9e8a306bc6875faa25102895f64
+    last_reviewed_utc: 2026-09-20T21:38:01Z
+    sha256: f6db05c9592e961acf7e0745439f870bb6b777a97661085657e2f19410733bae
   - id: source-lock
     path: contracts/vnext/qwen3-0.6b-base-source-lock.v2.json
     label: Current diagnostic source identity

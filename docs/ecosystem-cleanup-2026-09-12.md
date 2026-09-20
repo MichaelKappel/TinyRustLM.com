@@ -5,6 +5,36 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C84: recover enrollment using the original claim, September 20
+
+The UI cleared its invitation and generated a new idempotency key per click.
+An actual Edge regression first committed the claim in the loopback service,
+discarded its response, then proved that the second click sent no recovery.
+Enrollment now retains one exact invitation/name/key in private session memory.
+Explicit retry uses the original claim; after credentials return it retries
+restore without another claim POST. A changed pending body is rejected.
+
+Claim and reconnect share one operation owner through activation. Failed
+reconnects retain the token for an explicit same-name retry. Clear, page exit,
+authority changes and switching to workspace access discard recovery and abort
+in-flight enrollment. Late credentials and failures cannot replace that state.
+No secret or retry key is written to browser persistence. Existing controls,
+styling and server contract remain; the error status explains explicit recovery.
+
+All 73 affected Node checks, 38 managed checks and 25 Edge cases pass; three
+existing desktop-only skips remain. Enrollment-module line/branch coverage is
+91.84%/82.92%. Paired desktop/mobile screenshot bytes and recorded fields match.
+The scoped secret scan reports one dummy invitation query in the unit fixture;
+the raw scan remains failed, with the reserved-domain literal manually reviewed
+as test data. This does not establish a release secret-scan pass.
+
+Verification is recorded in `enrollment-recovery-review.json`. The separate
+outbox/pull/submit/search lifetime and authority handling still need review.
+Abort does not undo a server claim, and recovery cannot survive page reload.
+The registered source scan still reports the two blocked C28 installer links;
+no blocked deletion, real model, live memory, seed, NuGet push or deployment is
+claimed. Other repositories and existing unrelated work remain untouched.
+
 ## C83: finite enrollment responses and request ownership, September 20
 
 The enrollment client checked response size only after `arrayBuffer()` and had

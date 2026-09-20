@@ -7,6 +7,163 @@ const test = require("node:test");
 const enrollment = require("../app/memory-endpoints-enrollment.js");
 
 const serviceBaseUrl = "https://memoryendpoints.example";
+
+/** Exercise recovery independently of HTTP framing and the browser DOM. */
+function recoveryFixture(overrides = {}) {
+  const claims = [];
+  const restores = [];
+  let keys = 0;
+  const credentials = { canonicalAgentName: "agent-one", agentToken: "test-only-agent-token-0123456789" };
+  const client = { baseUrl: serviceBaseUrl,
+    async claim(input) { claims.push(input); return credentials; },
+    async reconnect(input) { restores.push(input); return { canonicalAgentName: input.canonicalAgentName, workspaceId: "workspace-one" }; },
+    ...overrides };
+  const flow = new enrollment.MemoryEndpointsEnrollmentFlow({ client,
+    createIdempotencyKey: () => `test-claim-${++keys}` });
+  return { flow, claims, restores, credentials };
+}
+
+const recoveryInput = Object.freeze({ invitationUrl: `${serviceBaseUrl}/enroll?token=test-only-invitation`, agreedAgentName: "agent-one" });
+
+test("enrollment flow validates dependencies and claim input before requesting a key or network", async () => {
+  for (const options of [{}, { client: {} }, { client: { claim() {}, reconnect() {} } }]) {
+    assert.throws(() => new enrollment.MemoryEndpointsEnrollmentFlow(options), { code: "invalid_enrollment_flow" });
+  }
+  const { flow, claims } = recoveryFixture();
+  await assert.rejects(flow.claim({ ...recoveryInput, agreedAgentName: "wrong name" }), { code: "invalid_identity" });
+  await assert.rejects(flow.claim({ ...recoveryInput, invitationUrl: "https://elsewhere.example/invitation" }), { code: "invalid_invitation_url" });
+  assert.equal(claims.length, 0);
+  await flow.claim(recoveryInput);
+  assert.equal(claims[0].idempotencyKey, "test-claim-1");
+});
+
+test("enrollment flow rejects changed pending claim bodies and does not create another key", async () => {
+  const calls = [];
+  const fixture = recoveryFixture({ async claim(input) { calls.push(input); throw new Error("lost"); } });
+  await assert.rejects(fixture.flow.claim(recoveryInput), /lost/);
+  for (const changes of [{ agreedAgentName: "other" }, { invitationUrl: `${serviceBaseUrl}/enroll?token=different-test-invitation` }]) {
+    await assert.rejects(fixture.flow.claim({ ...recoveryInput, ...changes }), { code: "pending_claim_mismatch" });
+  }
+  await assert.rejects(fixture.flow.claim(recoveryInput), /lost/);
+  assert.equal(calls.length, 2);
+  assert.equal(calls[0].idempotencyKey, calls[1].idempotencyKey);
+  fixture.flow.cancel();
+  await assert.rejects(fixture.flow.claim(recoveryInput), /lost/);
+  assert.notEqual(calls[2].idempotencyKey, calls[0].idempotencyKey);
+});
+
+test("enrollment flow retains only the same reconnect identity after a failed restore", async () => {
+  let count = 0;
+  const fixture = recoveryFixture({ async reconnect(input) {
+    fixture.restores.push(input);
+    if (++count === 1) throw new Error("lost restore");
+    return { canonicalAgentName: input.canonicalAgentName, workspaceId: "workspace-one" };
+  } });
+  for (const agentToken of ["", "short", "a".repeat(4097), "a".repeat(24) + " space"]) {
+    await assert.rejects(fixture.flow.reconnect({ canonicalAgentName: "agent-one", agentToken }), { code: "invalid_agent_token" });
+  }
+  await assert.rejects(fixture.flow.reconnect(fixture.credentials), /lost restore/);
+  await assert.rejects(fixture.flow.claim(recoveryInput), { code: "pending_claim_mismatch" });
+  await assert.rejects(fixture.flow.reconnect({ canonicalAgentName: "other" }), { code: "invalid_agent_token" });
+  await fixture.flow.reconnect({ canonicalAgentName: "agent-one" });
+  assert.equal(fixture.restores[1].agentToken, fixture.credentials.agentToken);
+  assert.equal(fixture.claims.length, 0);
+  await assert.rejects(fixture.flow.reconnect({ canonicalAgentName: "agent-one" }), { code: "invalid_agent_token" });
+});
+
+test("enrollment flow prevents concurrent actions and an old finally cannot release a newer action", async () => {
+  const finishes = [];
+  const fixture = recoveryFixture({ claim: () => new Promise(resolve => finishes.push(resolve)) });
+  const first = fixture.flow.claim(recoveryInput);
+  assert.equal(fixture.flow.busy, true);
+  await assert.rejects(fixture.flow.claim(recoveryInput), { code: "enrollment_busy" });
+  await assert.rejects(fixture.flow.reconnect(fixture.credentials), { code: "enrollment_busy" });
+  fixture.flow.cancel();
+  const second = fixture.flow.claim(recoveryInput);
+  finishes[0](fixture.credentials);
+  await assert.rejects(first, { code: "enrollment_cancelled" });
+  assert.equal(fixture.flow.busy, true);
+  finishes[1](fixture.credentials);
+  await second;
+  assert.equal(fixture.flow.busy, false);
+});
+
+test("enrollment flow never activates a cancelled restore or surfaces a stale failure", async () => {
+  for (const fail of [false, true]) {
+    let finish;
+    let ready = false;
+    const fixture = recoveryFixture({ reconnect: () => new Promise((resolve, reject) => {
+      finish = () => fail ? reject(new Error("stale failure")) : resolve({ workspaceId: "old" });
+    }) });
+    const pending = fixture.flow.reconnect({ ...fixture.credentials, onReady: () => { ready = true; } });
+    fixture.flow.cancel();
+    finish();
+    await assert.rejects(pending, { code: "enrollment_cancelled" });
+    assert.equal(ready, false);
+  }
+});
+
+test("enrollment flow holds busy through activation and propagates its cancellation signal", async () => {
+  let entered;
+  const started = new Promise(resolve => { entered = resolve; });
+  let finish;
+  let signal;
+  const fixture = recoveryFixture();
+  const pending = fixture.flow.claim({ ...recoveryInput,
+    onCredentials: value => assert.equal(value, fixture.credentials),
+    onReady: (_session, value) => { signal = value; entered(); return new Promise(resolve => { finish = resolve; }); } });
+  await started;
+  assert.equal(fixture.flow.busy, true);
+  fixture.flow.cancel();
+  assert.equal(signal.aborted, true);
+  finish();
+  await assert.rejects(pending, { code: "enrollment_cancelled" });
+  await assert.rejects(fixture.flow.claim({ agreedAgentName: "agent-one" }), { code: "invalid_invitation_url" });
+});
+
+test("enrollment flow retries a lost response with the original claim identity", async () => {
+  const calls = [];
+  const fixture = recoveryFixture({ async claim(input) {
+    calls.push(input);
+    if (calls.length === 1) throw new Error("lost response");
+    return fixture.credentials;
+  } });
+  await assert.rejects(fixture.flow.claim(recoveryInput), /lost response/);
+  await fixture.flow.claim({ agreedAgentName: recoveryInput.agreedAgentName });
+  assert.equal(calls.length, 2);
+  assert.equal(calls[0].idempotencyKey, calls[1].idempotencyKey);
+  assert.equal(calls[1].invitationUrl, recoveryInput.invitationUrl);
+  assert.equal(fixture.restores.length, 1);
+});
+
+test("enrollment flow retains issued credentials after restore failure without claiming again", async () => {
+  let restores = 0;
+  const fixture = recoveryFixture({ async reconnect() {
+    if (++restores === 1) throw new Error("restore failed");
+    return { workspaceId: "workspace-one" };
+  } });
+  await assert.rejects(fixture.flow.claim(recoveryInput), /restore failed/);
+  let ready;
+  await fixture.flow.claim({ agreedAgentName: recoveryInput.agreedAgentName,
+    onReady: session => { ready = session; } });
+  assert.equal(fixture.claims.length, 1);
+  assert.equal(restores, 2);
+  assert.equal(ready.agentToken, fixture.credentials.agentToken);
+});
+
+test("enrollment flow cancels stale completion and releases its pending secret state", async () => {
+  let finish;
+  let ready = false;
+  const fixture = recoveryFixture({ claim: () => new Promise(resolve => { finish = resolve; }) });
+  const pending = fixture.flow.claim({ ...recoveryInput, onReady: () => { ready = true; } });
+  fixture.flow.cancel();
+  finish(fixture.credentials);
+  await assert.rejects(pending, { code: "enrollment_cancelled" });
+  assert.equal(ready, false);
+  assert.equal(fixture.restores.length, 0);
+  assert.equal(fixture.flow.busy, false);
+  await assert.rejects(fixture.flow.claim({ agreedAgentName: recoveryInput.agreedAgentName }), { code: "invalid_invitation_url" });
+});
 const routes = Object.freeze({
   createCompany: "/api/matm/test/companies/create",
   issueInvitation: "/api/matm/test/enrollment/issue",

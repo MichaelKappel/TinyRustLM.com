@@ -1,0 +1,210 @@
+{
+  "schema": "ecosystem.enrollment-recovery-review/1",
+  "reviewedUtc": "2026-09-20T21:43:45Z",
+  "sourceParent": "b500163eebc33ae0512c040c9839a3be3f7bf857",
+  "purpose": "Preserve original enrollment claim identity across lost responses and prevent stale enrollment activation.",
+  "previousGoalTurn": "no progress: credential-location confirmation only; revalidated current state and advanced the next safe implementation.",
+  "repositoryInventory": {
+    "root": "E:\\Source\\Rust",
+    "repositories": 7,
+    "newRepositories": 0,
+    "activeIntake": "TinyRustLM Content and Improvement are placeholder-only",
+    "otherWork": "No other repository changed. Existing TinyRustLM, Runtime and developer-portal work preserved."
+  },
+  "baseline": {
+    "unit": {
+      "passed": 0,
+      "failed": 3,
+      "reason": "New recovery-owner tests fail because the prior source has no flow owner."
+    },
+    "browser": {
+      "passed": 0,
+      "failed": 1,
+      "reason": "Real Edge sends only one claim: the server persisted it, the response was discarded, and the second Create Agent click cannot recover the cleared invitation."
+    }
+  },
+  "implementation": {
+    "owner": "MemoryEndpointsEnrollmentFlow inside the existing enrollment module",
+    "identity": "One normalized invitation, requested name and key per pending claim. Changed bodies are rejected until explicit clear.",
+    "recovery": "Explicit Create Agent retry preserves original body/key. Returned credentials are retained through restore/activation failure so retry does not claim again.",
+    "reconnect": "Explicit same-name retry uses session-retained credentials after the input is cleared. A provided new token explicitly selects that reconnect identity.",
+    "lifetime": "One exclusive abort controller spans flow and application activation; underlying client retains C83 per-operation deadlines. Both buttons share busy state. Stale completions and finally blocks cannot change a newer owner.",
+    "discard": "Clear, page exit, web-memory toggle, authority input/change, workspace-key input and explicit workspace connection cancel and drop recovery.",
+    "storage": "Private fields only; no localStorage, sessionStorage or IndexedDB recovery persistence.",
+    "ui": "Existing layout and controls retained; claim failure status explains explicit recovery. Both shells regenerated with exact asset hashes.",
+    "unchanged": "No schema, model, dependency, NuGet package version or deployment change."
+  },
+  "tests": {
+    "node": {
+      "passed": 73,
+      "failed": 0,
+      "skipped": 0,
+      "linePercent": 91.84,
+      "branchPercent": 82.92,
+      "functionPercent": 97.87,
+      "coverageScope": "Enrollment module; browser app.js behavior exercised through actual UI, no whole-app coverage claim."
+    },
+    "managed": {
+      "passed": 38,
+      "failed": 0,
+      "skipped": 0,
+      "configuration": "Release net8.0 package/memory gates",
+      "finalReport": {
+        "path": "results/package-final.trx",
+        "bytes": 60529,
+        "sha256": "f572aee04c72176d098f27d1cd90f8c8a5bf67967a07d3072a55d65bb459bb7d"
+      }
+    },
+    "browser": {
+      "passed": 25,
+      "failed": 0,
+      "skipped": 3,
+      "retries": 0,
+      "projects": [
+        "desktop",
+        "narrow-desktop",
+        "mobile",
+        "reduced-motion"
+      ],
+      "scope": "Loopback fixture service and real Edge. Includes persisted/lost claim response, changed-name refusal, failed restore, explicit reconnect recovery, credential nonpersistence, four cancellation paths, C83 real Fetch bounds and existing desktop two-profile continuity."
+    },
+    "navigationFollowup": {
+      "passed": 10,
+      "failed": 0
+    },
+    "captures": {
+      "beforePassed": 1,
+      "afterPassed": 1,
+      "pairs": [
+        {
+          "viewport": "desktop",
+          "beforeSha256": "cda885d7f1b918dc57d6a8b234df3fe5cb7b08964d936f0dcb6f1517150e608e",
+          "afterSha256": "cda885d7f1b918dc57d6a8b234df3fe5cb7b08964d936f0dcb6f1517150e608e",
+          "bytesEqual": true,
+          "signatureEqual": true,
+          "pageErrors": [],
+          "browser": "153.0.4234.48"
+        },
+        {
+          "viewport": "mobile",
+          "beforeSha256": "16aea953736a095a5eade3a8b435172a2243435a353009001bd746c3e9762d51",
+          "afterSha256": "16aea953736a095a5eade3a8b435172a2243435a353009001bd746c3e9762d51",
+          "bytesEqual": true,
+          "signatureEqual": true,
+          "pageErrors": [],
+          "browser": "153.0.4234.48"
+        }
+      ],
+      "historicalBaseline": "Existing C63/C82 fifteen differences remain. Matching new pairs do not erase historical differences."
+    }
+  },
+  "failedSetup": [
+    {
+      "passed": 17,
+      "failed": 8,
+      "skipped": 3,
+      "reason": "New tests did not open collapsed workspace access or mobile Advanced controls."
+    },
+    {
+      "passed": 15,
+      "failed": 10,
+      "skipped": 3,
+      "reason": "Visible mobile/narrow toolbar was occluded by the initial chooser."
+    },
+    {
+      "passed": 1,
+      "failed": 1,
+      "notRun": 8,
+      "reason": "Early visibility sampling raced asynchronous initial chooser presentation; max-failures stopped the run."
+    },
+    "Final tests wait for the visible chooser Advanced link and open existing disclosures; no forced click or product styling change.",
+    "Initial source scan failed Git ownership; configured seven exact safe directories in the child process, then obtained the known two-link incomplete-scan result. A prematurely set Git config count caused a failed first inventory, corrected before recording inventory."
+  ],
+  "sourceAuthority": {
+    "status": "source_authority_scan_incomplete",
+    "unreadable": [
+      "artifacts/verification/qwen3-environment-install/tinyrustlm-operation-C3ZUt9/install-temp/TmP6xn2evdh-b",
+      "artifacts/verification/qwen3-environment-install/tinyrustlm-operation-C3ZUt9/install-temp/TmPeq63_hr7-b"
+    ],
+    "blockedRemovalRetried": false
+  },
+  "secretScan": {
+    "status": "fail",
+    "scannedArtifactCount": 14,
+    "secretFindingCount": 1,
+    "finding": "credential_url_query",
+    "source": "tinyrustlm/tests/memory-endpoints-enrollment.test.js",
+    "review": "Reserved memoryendpoints.example URL contains an explicitly test-only invitation query. No real credential. Keep regression and raw scanner failure; do not weaken scanner or claim a passing release scan.",
+    "report": {
+      "path": "scan-report.json",
+      "bytes": 7410,
+      "sha256": "2813b79071a2968206f9e96df4633a4ad33a7eb17be43b8efdce320bf23e7cf3"
+    },
+    "scopeComplete": false,
+    "nugetKeyRead": false,
+    "finalCheckpointScan": {
+      "status": "fail",
+      "scannedArtifactCount": 15,
+      "secretFindingCount": 1,
+      "sameTestOnlyFinding": true,
+      "report": {
+        "path": "scan-final-report.json",
+        "bytes": 7827,
+        "sha256": "c54f57c14655dc78dcf9fe22184d24af7333f0b8a582ec51d0d94ae2cf0eda38"
+      },
+      "boundary": "Final fifteen-file scan preceded only this receipt's scan/retirement accounting update."
+    }
+  },
+  "sourceFiles": [
+    {
+      "path": "tinyrustlm/app/app.js",
+      "bytes": 467509,
+      "sha256": "f3f0e6641cd308eaf53691283ec7b6463efd238a1080e1f9373fd21e3c7be324"
+    },
+    {
+      "path": "tinyrustlm/app/memory-endpoints-enrollment.js",
+      "bytes": 24465,
+      "sha256": "67da0b07efeddb8ca53b03f832f1f91c9d9bfdd316845adf8e1b2f8b4da0a76f"
+    },
+    {
+      "path": "tinyrustlm/app/index.html",
+      "bytes": 48604,
+      "sha256": "b7df213b4545e2e980a21dcf2535f2c3b323d7a75195df6e784ff667ca10f595"
+    },
+    {
+      "path": "tinyrustlm/index.html",
+      "bytes": 48684,
+      "sha256": "8d59787101b78c85c02143d4c4a70e61ec3a150b1736673e1ddaf375d9aa5f77"
+    },
+    {
+      "path": "tinyrustlm/tests/memory-endpoints-enrollment.test.js",
+      "bytes": 27491,
+      "sha256": "521d33759d636c53c69a6b0e28595e4157acb6e3f5a41798964c55db343393dc"
+    },
+    {
+      "path": "tinyrustlm/e2e/memory-endpoints-enrollment.spec.js",
+      "bytes": 43613,
+      "sha256": "9cd154242eca87741ac074aefc15f0dcd485f6cf9ee3cd6c1f06843e292d6939"
+    }
+  ],
+  "limits": [
+    "Cancellation does not undo a persisted server claim.",
+    "Recovery intentionally ends on reload or explicit clear; users must retain displayed agent credentials.",
+    "General memory outbox/pull/submit/search requests still require lifetime and authority review; this checkpoint does not fix those operations.",
+    "No real model qualification, live MemoryEndpoints operation, seed, actual ARM64 consumer proof, NuGet push or site deployment.",
+    "Blocked deletion cohorts and unrelated source changes remain untouched."
+  ],
+  "ownedOutput": {
+    "root": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\enrollment-recovery\\tinyrustlm-operation-CkVylI",
+    "files": 217,
+    "childDirectories": 84,
+    "logicalBytes": 12356500,
+    "externalMarkerBytes": 65,
+    "originalOwnershipVerified": true,
+    "status": "removed",
+    "rootAbsent": true,
+    "externalMarkerAbsent": true,
+    "method": "After all command sessions completed and no matching live writers remained, verified original ownership, inventoried bounded contained output, removed through the existing ownership helper and verified root/marker absence.",
+    "physicalReclaimedBytesMeasured": false
+  }
+}

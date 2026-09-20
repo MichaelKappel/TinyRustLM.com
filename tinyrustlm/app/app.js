@@ -423,8 +423,8 @@
       agentId: "tinyrustlm-agent",
       authHeader: memoryEndpointsDefaultAuthHeader,
       connectionMode: "workspace",
-      enrollmentClient: null,
-      enrollmentClientBaseUrl: "",
+      enrollmentFlow: null,
+      enrollmentFlowBaseUrl: "",
       searchTier: "all",
       bearerToken: "",
       connected: false,
@@ -8410,8 +8410,7 @@
       storageGet(uiStorageKeys.memoryEndpointsAuthHeader, memoryEndpointsDefaultAuthHeader)
     );
     state.memoryEndpoints.connectionMode = "workspace";
-    state.memoryEndpoints.enrollmentClient = null;
-    state.memoryEndpoints.enrollmentClientBaseUrl = "";
+    cancelMemoryEndpointsEnrollment();
     state.memoryEndpoints.searchTier = memoryEndpointsNormalizeSearchTier(
       storageGet(uiStorageKeys.memoryEndpointsSearchTier, "all")
     );
@@ -8526,7 +8525,8 @@
     return error instanceof Error ? error : new Error(text);
   }
 
-  function memoryEndpointsEnrollmentClient() {
+  /** Bind session-only enrollment recovery to the currently selected service. */
+  function memoryEndpointsEnrollmentFlow() {
     if (!memoryEndpointsEnrollmentApi) {
       throw new Error("MemoryEndpoints agent enrollment support is unavailable");
     }
@@ -8535,26 +8535,45 @@
       { required: true }
     );
     if (
-      !state.memoryEndpoints.enrollmentClient ||
-      state.memoryEndpoints.enrollmentClientBaseUrl !== baseUrl
+      !state.memoryEndpoints.enrollmentFlow ||
+      state.memoryEndpoints.enrollmentFlowBaseUrl !== baseUrl
     ) {
-      state.memoryEndpoints.enrollmentClient =
-        new memoryEndpointsEnrollmentApi.MemoryEndpointsEnrollmentClient({ baseUrl });
-      state.memoryEndpoints.enrollmentClientBaseUrl = baseUrl;
+      cancelMemoryEndpointsEnrollment();
+      state.memoryEndpoints.enrollmentFlow = new memoryEndpointsEnrollmentApi.MemoryEndpointsEnrollmentFlow({
+        client: new memoryEndpointsEnrollmentApi.MemoryEndpointsEnrollmentClient({ baseUrl }),
+        createIdempotencyKey: () => memoryEndpointsIdempotencyKey("tinyrustlm-agent-claim")
+      });
+      state.memoryEndpoints.enrollmentFlowBaseUrl = baseUrl;
     }
     state.memoryEndpoints.baseUrl = baseUrl;
-    return state.memoryEndpoints.enrollmentClient;
+    return state.memoryEndpoints.enrollmentFlow;
   }
 
-  async function activateMemoryEndpointsAgentSession(canonicalAgentName, agentToken) {
-    const client = memoryEndpointsEnrollmentClient();
-    const reconnect = await client.reconnect({ canonicalAgentName, agentToken });
+  /** Clear recovery on explicit authority changes; late results retain an aborted signal. */
+  function cancelMemoryEndpointsEnrollment() {
+    if (state.memoryEndpoints.enrollmentFlow) state.memoryEndpoints.enrollmentFlow.cancel();
+    state.memoryEndpoints.enrollmentFlow = null;
+    state.memoryEndpoints.enrollmentFlowBaseUrl = "";
+    syncMemoryEndpointsEnrollmentButtons();
+  }
+
+  /** Claim and reconnect are exclusive, including restore and activation. */
+  function syncMemoryEndpointsEnrollmentButtons() {
+    const busy = Boolean(state.memoryEndpoints.enrollmentFlow && state.memoryEndpoints.enrollmentFlow.busy);
+    for (const button of [el.memoryEndpointsClaimButton, el.memoryEndpointsReconnectButton]) {
+      if (button) button.disabled = busy;
+    }
+  }
+
+  /** Apply a validated restore only while its initiating enrollment operation still owns the session. */
+  async function activateMemoryEndpointsAgentSession(reconnect, signal) {
+    signal.throwIfAborted();
     state.memoryEndpoints.enabled = true;
     state.memoryEndpoints.connectionMode = "agent";
     state.memoryEndpoints.workspaceId = reconnect.workspaceId;
     state.memoryEndpoints.agentId = reconnect.canonicalAgentName;
     state.memoryEndpoints.authHeader = memoryEndpointsDefaultAuthHeader;
-    state.memoryEndpoints.bearerToken = agentToken;
+    state.memoryEndpoints.bearerToken = reconnect.agentToken;
     state.memoryEndpoints.connected = true;
     invalidateMemoryEndpointsRetrieval(true);
     if (el.memoryEndpointsEnabled) {
@@ -8563,6 +8582,7 @@
     persistMemoryEndpointsSettings();
     syncMemoryEndpointsControls();
     const drain = await drainMemoryEndpointsOutbox();
+    signal.throwIfAborted();
     if (drain.lastError) {
       state.memoryEndpoints.connected = false;
       throw new Error(drain.lastError);
@@ -8574,6 +8594,7 @@
     return reconnect;
   }
 
+  /** A second explicit click recovers the original claim without persisting its invitation or key. */
   async function claimMemoryEndpointsEnrollment() {
     const invitationUrl = el.memoryEndpointsEnrollmentUrl
       ? el.memoryEndpointsEnrollmentUrl.value.trim()
@@ -8587,32 +8608,34 @@
     if (el.memoryEndpointsEnrollmentUrl) {
       el.memoryEndpointsEnrollmentUrl.value = "";
     }
-    if (!invitationUrl) {
-      throw new Error("One-time agent URL is required");
-    }
-    const client = memoryEndpointsEnrollmentClient();
+    const flow = memoryEndpointsEnrollmentFlow();
     setMemoryEndpointsStatus("claiming one-time agent URL", false);
-    const claim = await client.claim({
+    await flow.claim({
       invitationUrl,
       agreedAgentName,
-      idempotencyKey: memoryEndpointsIdempotencyKey("tinyrustlm-agent-claim")
+      onCredentials(claim) {
+        if (el.memoryEndpointsCanonicalAgentName) {
+          el.memoryEndpointsCanonicalAgentName.value = claim.canonicalAgentName;
+        }
+        if (el.memoryEndpointsAgentToken) {
+          el.memoryEndpointsAgentToken.value = claim.agentToken;
+        }
+        if (el.memoryEndpointsIssuedCredentials) {
+          el.memoryEndpointsIssuedCredentials.hidden = false;
+        }
+        if (el.memoryEndpointsReconnectName) {
+          el.memoryEndpointsReconnectName.value = claim.canonicalAgentName;
+        }
+      },
+      async onReady(session, signal) {
+        await activateMemoryEndpointsAgentSession(session, signal);
+        signal.throwIfAborted();
+        setMemoryEndpointsStatus("agent created; keep the displayed name and token", false);
+      }
     });
-    if (el.memoryEndpointsCanonicalAgentName) {
-      el.memoryEndpointsCanonicalAgentName.value = claim.canonicalAgentName;
-    }
-    if (el.memoryEndpointsAgentToken) {
-      el.memoryEndpointsAgentToken.value = claim.agentToken;
-    }
-    if (el.memoryEndpointsIssuedCredentials) {
-      el.memoryEndpointsIssuedCredentials.hidden = false;
-    }
-    if (el.memoryEndpointsReconnectName) {
-      el.memoryEndpointsReconnectName.value = claim.canonicalAgentName;
-    }
-    await activateMemoryEndpointsAgentSession(claim.canonicalAgentName, claim.agentToken);
-    setMemoryEndpointsStatus("agent created; keep the displayed name and token", false);
   }
 
+  /** Keep failed reconnect credentials in session memory for an explicit same-name retry. */
   async function reconnectMemoryEndpointsAgent() {
     const canonicalAgentName = memoryEndpointsNormalizeIdentifier(
       el.memoryEndpointsReconnectName ? el.memoryEndpointsReconnectName.value : "",
@@ -8626,11 +8649,9 @@
     if (el.memoryEndpointsReconnectToken) {
       el.memoryEndpointsReconnectToken.value = "";
     }
-    if (!agentToken) {
-      throw new Error("Agent token is required");
-    }
     setMemoryEndpointsStatus("restoring agent memory", false);
-    await activateMemoryEndpointsAgentSession(canonicalAgentName, agentToken);
+    await memoryEndpointsEnrollmentFlow().reconnect({ canonicalAgentName, agentToken,
+      onReady: activateMemoryEndpointsAgentSession });
   }
 
   async function copyMemoryEndpointsIssuedCredentials() {
@@ -8649,6 +8670,7 @@
   }
 
   function clearMemoryEndpointsSessionSecrets() {
+    cancelMemoryEndpointsEnrollment();
     state.memoryEndpoints.bearerToken = "";
     for (const input of [
       el.memoryEndpointsEnrollmentUrl,
@@ -11384,6 +11406,7 @@ if (view.matches.length) {
 
   if (el.memoryEndpointsEnabled) {
     el.memoryEndpointsEnabled.addEventListener("change", function () {
+      cancelMemoryEndpointsEnrollment();
       try {
         readMemoryEndpointsSettings();
         state.memoryEndpoints.connected = false;
@@ -11403,7 +11426,9 @@ if (view.matches.length) {
     if (!input) {
       return;
     }
+    input.addEventListener("input", cancelMemoryEndpointsEnrollment);
     input.addEventListener("change", function () {
+      cancelMemoryEndpointsEnrollment();
       try {
         readMemoryEndpointsSettings();
         state.memoryEndpoints.connected = false;
@@ -11416,6 +11441,7 @@ if (view.matches.length) {
 
   if (el.memoryEndpointsToken) {
     el.memoryEndpointsToken.addEventListener("input", function () {
+      cancelMemoryEndpointsEnrollment();
       state.memoryEndpoints.bearerToken = el.memoryEndpointsToken.value.trim();
       state.memoryEndpoints.connected = false;
       setMemoryEndpointsStatus(
@@ -11427,25 +11453,27 @@ if (view.matches.length) {
 
   if (el.memoryEndpointsClaimButton) {
     el.memoryEndpointsClaimButton.addEventListener("click", function () {
-      el.memoryEndpointsClaimButton.disabled = true;
       claimMemoryEndpointsEnrollment().catch((error) => {
+        if (error.code === "enrollment_cancelled") return;
         state.memoryEndpoints.connected = false;
-        setMemoryEndpointsStatus(errorMessage(error), true);
+        setMemoryEndpointsStatus(`${errorMessage(error)}; use Create Agent again to retry this claim`, true);
       }).finally(() => {
-        el.memoryEndpointsClaimButton.disabled = false;
+        syncMemoryEndpointsEnrollmentButtons();
       });
+      syncMemoryEndpointsEnrollmentButtons();
     });
   }
 
   if (el.memoryEndpointsReconnectButton) {
     el.memoryEndpointsReconnectButton.addEventListener("click", function () {
-      el.memoryEndpointsReconnectButton.disabled = true;
       reconnectMemoryEndpointsAgent().catch((error) => {
+        if (error.code === "enrollment_cancelled") return;
         state.memoryEndpoints.connected = false;
         setMemoryEndpointsStatus(errorMessage(error), true);
       }).finally(() => {
-        el.memoryEndpointsReconnectButton.disabled = false;
+        syncMemoryEndpointsEnrollmentButtons();
       });
+      syncMemoryEndpointsEnrollmentButtons();
     });
   }
 
@@ -11459,6 +11487,7 @@ if (view.matches.length) {
 
   if (el.memoryEndpointsConnectButton) {
     el.memoryEndpointsConnectButton.addEventListener("click", function () {
+      cancelMemoryEndpointsEnrollment();
       connectMemoryEndpoints().catch((error) => {
         state.memoryEndpoints.connected = false;
         setMemoryEndpointsStatus(errorMessage(error), true);

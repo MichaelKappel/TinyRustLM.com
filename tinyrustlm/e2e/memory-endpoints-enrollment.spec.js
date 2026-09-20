@@ -25,6 +25,142 @@ const TEST_ONLY_SCOPE =
   "test-only/never-live/e2e/memory-endpoints-enrollment";
 const RESOLVED_MEMBER_LENGTHS = Object.freeze([8704, 7459, 1403, 65800, 512]);
 
+test("enrollment UI recovers a lost claim and a failed restore without a new identity", async ({ page, context }) => {
+  const service = createMemoryEndpointsEnrollmentFixture();
+  let company;
+  const claims = [];
+  let restoreCalls = 0;
+  try {
+    await service.listen();
+    company = await service.createCompany("test-only-enrollment-recovery");
+    const invitation = await service.issueInvitation(company.companyId);
+    const applicationOrigin = test.info().project.use.baseURL;
+    await context.route("**/*", route => {
+      const origin = new URL(route.request().url()).origin;
+      return origin === applicationOrigin || origin === service.baseUrl ? route.continue()
+        : route.fulfill({ status: 503, body: "External services are unavailable in this test" });
+    });
+    await context.route(`${service.baseUrl}/api/matm/test/enrollment/claim`, async route => {
+      claims.push({ key: route.request().headers()["idempotency-key"], body: route.request().postData() });
+      const response = await route.fetch(); // The fixture has committed before the response is lost.
+      if (claims.length === 1) await route.abort("failed");
+      else await route.fulfill({ response });
+    });
+    await context.route(`${service.baseUrl}/api/matm/test/enrollment/reconnect`, async route => {
+      restoreCalls += 1;
+      if (restoreCalls === 1 || restoreCalls === 3) await route.abort("failed");
+      else await route.continue();
+    });
+    await page.goto("/", { waitUntil: "load" });
+    await expect(page.locator("#simpleOpenAdvancedDiscoveryButton")).toBeVisible();
+    await openMemorySettings(page);
+    await page.locator("#memoryEndpointsBaseUrl").fill(service.baseUrl);
+    await page.locator("#memoryEndpointsEnrollmentUrl").fill(invitation.invitationUrl);
+    await page.locator("#memoryEndpointsRequestedAgentName").fill("test-recovery-agent");
+    const claim = page.locator("#memoryEndpointsClaimButton");
+    await claim.click();
+    await expect(page.locator("#memoryEndpointsStatus")).toContainText("request failed");
+    await expect(claim).toBeEnabled();
+    await expect(page.locator("#memoryEndpointsEnrollmentUrl")).toHaveValue("");
+    expect(await browserStorageContains(page, [invitation.invitationUrl, claims[0].key])).toEqual([]);
+    await page.locator("#memoryEndpointsRequestedAgentName").fill("another-agent");
+    await claim.click();
+    await expect(page.locator("#memoryEndpointsStatus")).toContainText("original agent claim");
+    expect(claims.length).toBe(1);
+    await page.locator("#memoryEndpointsRequestedAgentName").fill("test-recovery-agent");
+    await claim.click();
+    await expect.poll(() => claims.length).toBe(2);
+    await expect.poll(() => restoreCalls).toBe(1);
+    await expect(claim).toBeEnabled();
+    expect(claims[1]).toEqual(claims[0]);
+    const agentToken = await page.locator("#memoryEndpointsAgentToken").inputValue();
+    expect(agentToken.length).toBeGreaterThan(24);
+    await claim.click();
+    await expect(page.locator("#memoryEndpointsStatus")).toContainText("agent created");
+    expect(claims.length).toBe(2);
+    expect(restoreCalls).toBe(2);
+    expect(await browserStorageContains(page, [invitation.invitationUrl, agentToken])).toEqual([]);
+    await page.locator("#memoryEndpointsReconnectToken").fill(agentToken);
+    await page.locator("#memoryEndpointsReconnectButton").click();
+    await expect(page.locator("#memoryEndpointsStatus")).toContainText("request failed");
+    await expect(page.locator("#memoryEndpointsReconnectButton")).toBeEnabled();
+    await expect(page.locator("#memoryEndpointsReconnectToken")).toHaveValue("");
+    await page.locator("#memoryEndpointsReconnectButton").click();
+    await expect(page.locator("#memoryEndpointsStatus")).toContainText("agent memory restored");
+    expect(restoreCalls).toBe(4);
+    expect(claims.length).toBe(2);
+  } finally {
+    if (company) { await service.closeCompany(company.companyId); await service.deleteCompany(company.companyId); }
+    await service.close();
+  }
+});
+
+for (const cancellation of ["clear", "service", "disabled", "workspace-key"]) {
+  test(`enrollment UI ignores late credentials after ${cancellation}`, async ({ page, context }) => {
+    const service = createMemoryEndpointsEnrollmentFixture();
+    let company;
+    let release;
+    let intercepted;
+    let delivered;
+    const claimed = new Promise(resolve => { intercepted = resolve; });
+    const delivery = new Promise(resolve => { delivered = resolve; });
+    const errors = [];
+    page.on("pageerror", error => errors.push(error.message));
+    try {
+      await service.listen();
+      company = await service.createCompany("test-only-enrollment-cancellation");
+      const invitation = await service.issueInvitation(company.companyId);
+      const applicationOrigin = test.info().project.use.baseURL;
+      await context.route("**/*", route => {
+        const origin = new URL(route.request().url()).origin;
+        return origin === applicationOrigin || origin === service.baseUrl ? route.continue()
+          : route.fulfill({ status: 503, body: "External services are unavailable in this test" });
+      });
+      await context.route(`${service.baseUrl}/api/matm/test/enrollment/claim`, async route => {
+        const response = await route.fetch();
+        await new Promise(resolve => { release = resolve; intercepted(); });
+        await route.fulfill({ response });
+        delivered();
+      });
+      await page.goto("/", { waitUntil: "load" });
+      await expect(page.locator("#simpleOpenAdvancedDiscoveryButton")).toBeVisible();
+      await openMemorySettings(page);
+      await page.locator("#memoryEndpointsEnabled").check();
+      await page.locator("#memoryEndpointsBaseUrl").fill(service.baseUrl);
+      await page.locator("#memoryEndpointsEnrollmentUrl").fill(invitation.invitationUrl);
+      await page.locator("#memoryEndpointsRequestedAgentName").fill("test-cancel-agent");
+      await page.locator("#memoryEndpointsClaimButton").click();
+      await claimed;
+      await expect(page.locator("#memoryEndpointsClaimButton")).toBeDisabled();
+      await expect(page.locator("#memoryEndpointsReconnectButton")).toBeDisabled();
+      if (cancellation === "clear") await page.locator("#memoryEndpointsClearButton").click();
+      if (cancellation === "disabled") await page.locator("#memoryEndpointsEnabled").uncheck();
+      if (cancellation === "service") {
+        await page.locator("#memoryEndpointsBaseUrl").fill("https://memoryendpoints.example");
+        await page.locator("#memoryEndpointsBaseUrl").blur();
+      }
+      if (cancellation === "workspace-key") {
+        await page.locator(".memory-endpoints-workspace-access > summary").click();
+        await page.locator("#memoryEndpointsToken").fill("test-only-workspace-key");
+      }
+      const status = await page.locator("#memoryEndpointsStatus").textContent();
+      release();
+      await delivery;
+      await expect(page.locator("#memoryEndpointsClaimButton")).toBeEnabled();
+      await expect(page.locator("#memoryEndpointsReconnectButton")).toBeEnabled();
+      await expect(page.locator("#memoryEndpointsAgentToken")).toHaveValue("");
+      await expect(page.locator("#memoryEndpointsIssuedCredentials")).toBeHidden();
+      await expect(page.locator("#memoryEndpointsStatus")).toHaveText(status);
+      expect(await browserStorageContains(page, [invitation.invitationUrl])).toEqual([]);
+      expect(errors).toEqual([]);
+    } finally {
+      if (release) release();
+      if (company) { await service.closeCompany(company.companyId); await service.deleteCompany(company.companyId); }
+      await service.close();
+    }
+  });
+}
+
 test("enrollment bounds real Fetch streams and closes cancelled requests", async ({ page, context }) => {
   const applicationOrigin = test.info().project.use.baseURL;
   const closed = [];
@@ -571,7 +707,13 @@ async function installSyntheticRuntimeWorker(context, fixture) {
 
 /** Reveal existing Advanced memory controls on the selected browser page. */
 async function openMemorySettings(page) {
-  await page.locator("#sidebarAdvancedToolsButton").click();
+  if (await page.locator("#simpleOpenAdvancedDiscoveryButton").isVisible()) {
+    await page.locator("#simpleOpenAdvancedDiscoveryButton").click();
+  } else if (await page.locator("#mobileAdvancedButton").isVisible()) {
+    await page.locator("#mobileAdvancedButton").click();
+  } else {
+    await page.locator("#sidebarAdvancedToolsButton").click();
+  }
   const drawer = page.locator('details[data-panel-key="dashboard-model-source"]');
   if (!(await drawer.evaluate((element) => element.open))) {
     await drawer.locator("summary").click();

@@ -462,8 +462,120 @@
     }
   }
 
+  /** Own one browser-session enrollment attempt; no credentials or retry keys are persisted. */
+  class MemoryEndpointsEnrollmentFlow {
+    #client;
+    #createKey;
+    #pending = null;
+    #controller = null;
+
+    /** Bind a client and key factory without starting discovery or generating a claim key. */
+    constructor({ client, createIdempotencyKey }) {
+      if (!client || typeof client.claim !== "function" || typeof client.reconnect !== "function" ||
+          typeof createIdempotencyKey !== "function") {
+        throw enrollmentError("invalid_enrollment_flow", "Enrollment recovery support is unavailable");
+      }
+      this.#client = client;
+      this.#createKey = createIdempotencyKey;
+    }
+
+    /** Both claim and reconnect controls share the same exclusive operation. */
+    get busy() { return this.#controller !== null; }
+
+    /** Discard session-only recovery on disconnect, authority changes or page exit. */
+    cancel() {
+      if (this.#controller) this.#controller.abort();
+      this.#controller = null;
+      this.#pending = null;
+    }
+
+    /** Reject obsolete completions before any credential or application-state mutation. */
+    #check(signal) {
+      if (signal.aborted) throw enrollmentError("enrollment_cancelled", "Enrollment was cancelled");
+    }
+
+    /** Serialize user actions and keep cancellation ownership through the activation callback. */
+    async #run(action) {
+      if (this.busy) throw enrollmentError("enrollment_busy", "Enrollment is already in progress");
+      const controller = new AbortController();
+      this.#controller = controller;
+      try {
+        await action(controller.signal);
+        this.#check(controller.signal);
+      } catch (error) {
+        this.#check(controller.signal);
+        throw error;
+      } finally {
+        if (this.#controller === controller) this.#controller = null;
+      }
+    }
+
+    /** Retry explicitly with the exact original body/key; reuse credentials once claim succeeded. */
+    async claim(settings) {
+      return this.#run(async signal => {
+        const name = normalizeIdentifier(settings.agreedAgentName, "Agent name", 96);
+        const pending = this.#pending;
+        if (pending) {
+          if (pending.kind !== "claim" || pending.agreedAgentName !== name ||
+              (settings.invitationUrl && normalizeInvitationUrl(settings.invitationUrl, this.#client.baseUrl) !== pending.invitationUrl)) {
+            throw enrollmentError("pending_claim_mismatch", "Retry the original agent claim or clear web memory settings before starting another");
+          }
+        } else {
+          this.#pending = {
+            kind: "claim",
+            invitationUrl: normalizeInvitationUrl(settings.invitationUrl, this.#client.baseUrl),
+            agreedAgentName: name,
+            idempotencyKey: normalizeIdempotencyKey(this.#createKey()),
+            credentials: null
+          };
+        }
+        const attempt = this.#pending;
+        if (!attempt.credentials) {
+          const credentials = await this.#client.claim({ invitationUrl: attempt.invitationUrl,
+            agreedAgentName: attempt.agreedAgentName, idempotencyKey: attempt.idempotencyKey, signal });
+          this.#check(signal);
+          attempt.credentials = credentials;
+        }
+        if (settings.onCredentials) settings.onCredentials(attempt.credentials);
+        this.#check(signal);
+        await this.#restore(attempt.credentials, settings.onReady, signal);
+        this.#check(signal);
+        this.#pending = null;
+      });
+    }
+
+    /** An explicit reconnect switches identity; a blank token retries that same pending reconnect. */
+    async reconnect(settings) {
+      return this.#run(async signal => {
+        const canonicalAgentName = normalizeIdentifier(settings.canonicalAgentName, "Canonical agent name", 96);
+        const agentToken = String(settings.agentToken || "").trim();
+        if (agentToken) {
+          if (agentToken.length < 24 || agentToken.length > 4096 || /\s/.test(agentToken)) {
+            throw enrollmentError("invalid_agent_token", "Agent token is invalid");
+          }
+          this.#pending = { kind: "reconnect", credentials: { canonicalAgentName, agentToken } };
+        } else if (!this.#pending || this.#pending.kind !== "reconnect" ||
+                   this.#pending.credentials.canonicalAgentName !== canonicalAgentName) {
+          throw enrollmentError("invalid_agent_token", "Agent token is required");
+        }
+        await this.#restore(this.#pending.credentials, settings.onReady, signal);
+        this.#check(signal);
+        this.#pending = null;
+      });
+    }
+
+    /** Keep the caller's activation in the operation and check ownership on both sides of its await. */
+    async #restore(credentials, onReady, signal) {
+      const restored = await this.#client.reconnect({ ...credentials, signal });
+      this.#check(signal);
+      if (onReady) await onReady(Object.freeze({ ...restored, agentToken: credentials.agentToken }), signal);
+      this.#check(signal);
+    }
+  }
+
   return Object.freeze({
     MemoryEndpointsEnrollmentClient,
+    MemoryEndpointsEnrollmentFlow,
     MemoryEndpointsEnrollmentError,
     contractSchema,
     connectorContractPath,
