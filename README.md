@@ -36,10 +36,11 @@ The following evidence is complete for its exact bound bytes:
 - the current fifteen-symbol native ABI and canonical managed SDK surface.
 
 These results do not prove a real production model, model quality, a complete
-real-source conversion, production acquisition, a public peer, a deployed
-browser conversation, or package publication. The next path must preregister
-and implement restart-safe private Companion transport, then prove exact
-source/native/browser numerical parity and untouched quality before promotion.
+real-source companion acquisition, a public peer, a deployed browser conversation,
+or package publication. Private companion transport, operation execution and
+browser integration exist with local fixture coverage. Real numerical parity,
+useful model qualification, initial seed availability and release admission
+remain open; see [current progress](docs/ecosystem-cleanup-2026-09-12.md).
 
 Campaign counters remain:
 
@@ -64,9 +65,12 @@ Public reachability and configured connector code are not substitutes for a
 fresh authenticated meeting or user-plugin lifecycle receipt, so the live
 campaign counter remains unchanged.
 
-Model acquisition is P2P-first, with explicit reviewed local conversion when
-no exact qualified peer composition is available. Project sites receive no prompts
-or model bytes.
+The basic path restores a usable installed composition or automatically obtains
+a small qualified default from MiniModel.org. MiniModel.org is authorized to serve
+the initial model seeds through the admitted composition-transfer contract.
+Prompts and inference remain local. Source import, conversion and manual peer
+configuration belong under Advanced; the basic path does not require a companion.
+No qualified default or proven live initial seed is established.
 
 ## Sole Architecture
 
@@ -100,10 +104,12 @@ private Companion source branch reaches `Available` only from its six verified
 artifact identities. The deterministic process fixture proves orchestration,
 not a real complete-command pass.
 
-The production source target remains the immutable `Qwen/Qwen3-0.6B` revision
-recorded in the architecture contracts. Source selection is not quality
-promotion. F32 remains the numerical conversion oracle, and the first compact
-candidate is the explicitly specified mixed-Q8 SLM2 profile. Q4, Q5, ternary,
+The companion's pinned diagnostic source is `Qwen/Qwen3-0.6B` at revision
+`c1899de289a04d12100db370d81485cdf75e47ca`. The unchanged checkpoint is rejected
+for product quality; renaming or requantizing it cannot make it a default.
+It may diagnose runtime correctness. Any new derivative needs its own approved
+training and qualification. The current weight profile is mixed-Q8 SLM2, with
+separate source and reconstructed-weight numerical comparisons. Q4, Q5, ternary,
 one-bit, TurboQuant-like, TurboVec-like, and compressed-KV profiles remain
 experiments until their own contracts and quality evidence exist.
 
@@ -111,20 +117,28 @@ experiments until their own contracts and quality evidence exist.
 
 The release is not complete until the browser performs this exact journey:
 
-1. The user selects a supported model.
-2. The browser asks the local companion for the exact composition identity.
-3. A current verified direct peer is preferred when one genuinely exists.
-4. Otherwise the companion acquires the pinned upstream source and performs
-   reviewed deterministic local conversion.
-5. The browser streams, hashes, validates, persists, and transactionally
+1. The user opens the app; it verifies and restores a usable installed model.
+2. With an empty usable cache, the browser discovers a small qualified default
+   through MiniModel.org and obtains it from the initial server seed.
+3. The catalog, signed listing, qualification and browser admission bind the
+   same exact composition. Transfer verifies bytes rather than trusting availability
+   claims. No default is promoted while those dependencies are absent.
+4. The browser streams, hashes, validates, persists, and transactionally
    activates the exact composition.
-6. Rust WebAssembly performs genuine local inference.
-7. A useful multi-turn conversation renders each raw assistant answer once.
+5. Rust WebAssembly performs genuine local inference.
+6. A useful multi-turn conversation renders each raw assistant answer once.
+
+The current startup implementation limits automatic seed acquisition to 768 MiB
+and suppresses it after cache failure or intervening user activity. This is an
+implementation bound, not a measured device capability or a qualified model size.
+Advanced retains explicit local import, source conversion and manual peer controls.
+Companion pairing is required only for its selected Advanced operations.
 
 A `.txt`, JSON request, PowerShell file, shell script, conversion request, or
 fixture response is never a substitute for the requested working-model action.
-Model bytes and prompts must not pass through a TinyRustLM, MiniModel, or other
-project-hosted website.
+MiniModel.org's authorized model downloads do not host inference or receive chat
+prompts. TinyRustLM.com publishes the app/runtime, not model payloads. No automatic
+conversion, synthetic answer or instruction handoff replaces a missing default.
 
 ## Repository Layout
 
@@ -145,9 +159,13 @@ project-hosted website.
 - `wiki/runtime-mirust/` retains durable project memory and historical evidence
   without making old behavior executable.
 
-Large model files, raw private outputs, browser profiles, training data,
-credentials, and generated evidence stay outside Git on operator-owned `E:` or
-`C:` storage. Project work must never write them to `D:`.
+Developer model payloads belong only under `D:\LLMs\TinyRustLM`, outside Git.
+TinyRustLM source belongs only under `E:\Source\Rust\TinyRustLM.com`; bounded
+temporary build/test output belongs in its artifacts directory. Keep compact
+identities and lessons, retire superseded payloads after validated replacement,
+and leave `X:\LLMS` alone. Credentials stay outside source and public evidence.
+End-user browser storage and the companion's local application-data storage are
+separate from these developer paths. Previously blocked cleanup remains pending.
 
 ## Build And Test
 

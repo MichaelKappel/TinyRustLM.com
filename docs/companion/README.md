@@ -15,8 +15,7 @@ compatibility route, migration path, or fallback executable.
 ## Sole Responsibility
 
 The companion coordinates local operations that a browser cannot safely or
-portably own. The current implementation boundary is intentionally narrower
-than the eventual product:
+portably own. The current source boundary is:
 
 1. accept one explicit attempt for the exact built-in Qwen3 source closure;
 2. bind source acquisition, converter, worker, roots, and resource policies in
@@ -24,13 +23,25 @@ than the eventual product:
 3. invoke only the canonical `tinyrustlm-convert` executable;
 4. journal interruption-safe progress without exposing secrets or prompts;
 5. independently reverify and stream all six composition members; and
-6. refuse operation availability unless every identity and evidence edge
-   closes.
+6. expose bounded start, status, and stop operations for a companion-owned
+   direct seed only after the exact source operation is `Available`.
 
-Direct-peer import remains a required product capability, but it has no field,
-state, or executable route in the current operation contract. It returns only
-after a complete six-member importer, peer proof, and receipt authority are
-implemented and verified. Hosting and public reachability are separate gates.
+Browser direct-peer import is intentionally not a companion acquisition route.
+The compact chooser admits a qualified catalog and peer announcement, then the
+browser fetches the exact six members directly from the peer into its own
+verified store. The companion does not proxy those bytes. Its acquisition
+request remains source-only; its direct-seed routes can expose an exact
+locally converted composition after browser installation. Seed readiness on
+loopback or a local interface is not discovery, a MiniModel announcement,
+external reachability, or live P2P evidence.
+
+MiniModel.org is authorized to serve the initial model seeds directly to browsers.
+The basic app restores a usable installed composition or obtains a small qualified
+default through that seed; it does not require the companion. Source acquisition,
+conversion and manual peer controls are Advanced operations. The pinned unchanged
+`Qwen/Qwen3-0.6B@c1899de289a04d12100db370d81485cdf75e47ca` is rejected for product
+quality and remains diagnostic-only. `Available` is a structural operation state,
+not qualification, catalog admission or permission to make that model the default.
 
 Rust remains authoritative for model structure, conversion, Tokenizer2,
 Template2, Sampling2, Prompt2, ACG2, fixed-piece admission, and runtime
@@ -153,23 +164,23 @@ state and carry no CORS or session proof.
 The source-controlled browser capability client implements the matching `/4`
 memory-only pairing, exact lost-response recovery, authenticated sequencing,
 rotation, revocation, attempt-bound deterministic operation identity,
-source-only projection, cancellation, and artifact-chunk verification
-contracts. The browser independently admits only the same exact built-in
-Qwen3 repository, revision, source-lock, composition-profile, and byte-ceiling
-values as the managed contract. It stores no
-pairing/session key and is included in web source inventory, but it is not
-loaded by the product UI.
+source-only projection, cancellation, artifact-chunk verification, and
+direct-seed start/status/stop contracts. The product UI loads this client and
+the companion composition installer. The browser independently admits only the
+same exact built-in Qwen3 repository, revision, source-lock,
+composition-profile, and byte-ceiling values as the managed contract and does
+not persist a pairing or session key.
 
-The private operation service and artifact-transfer owner now implement the
+The private operation service and artifact-transfer owner implement the
 public-safe projection boundary and source-composition transfer below the
 listener. Transfer accepts only a journaled source operation in `Available`,
 reopens its exact persisted conversion intent, independently re-inspects the
 terminal composition, closes all six journal/member/path identities, and
 serves fixed 4 MiB chunks. It hashes the complete member before transfer,
 checks every open and bounded read, rehashes after the final chunk, and emits
-only public metadata and bytes. Private paths never enter a response. Peer
-artifact resolution remains absent until a separately verified six-member
-importer owns its path and receipt authority.
+only public metadata and bytes. Private paths never enter a response. The
+listener dispatches create/read/cancel operation routes, artifact chunks, and
+direct-seed start/status/stop routes to the injected production services.
 
 The private `TinyRustLM.CompanionHost` executable accepts no arguments. It
 derives one `TinyRustLM.Companion` directory below the current user's local
@@ -179,35 +190,47 @@ single-use `TRLC1` pairing code. It emits only closed public-safe startup codes
 on failure. This executable remains private and is not an installation or
 release artifact.
 
-This implementation is not yet a companion release. It does not discover or
-fetch peers, download model source, recover a completed conversion from an
-absent or nonterminal root, dispatch the implemented operation service through
-the listener, load the capability client in the product UI, install a service,
-or expose an installation archive. A pending root has no authenticated
-orphan-process ownership or safe relaunch protocol yet, so it remains visibly
-pending rather than guessed, adopted, or retried. No real source has been
-passed through the coordinator. The deep acquisition gate remains explicitly
-unavailable until those production owners and their registered evidence exist.
+This implementation is not yet a companion release. It does not provide an
+installation archive or service installer, discover public peers, publish a
+MiniModel announcement, prove an externally reachable seed, or authorize an
+arbitrary source. A pending root has no authenticated orphan-process ownership
+or safe relaunch protocol, so it remains visibly pending rather than guessed,
+adopted, or retried. No authorized real-source execution receipt has passed
+through this coordinator. Deterministic fixtures and local process tests do
+not close the package, model, browser, network, deployment, or public-readback
+gates.
 
 ## Browser Boundary
 
-The browser must use the one closed loopback capability contract now owned by
-the private listener. Pairing requires explicit user action and binds the exact
+The browser uses the one closed loopback capability contract owned by the
+private listener. Pairing requires explicit user action and binds the exact
 allowed web origin, ephemeral session, operation identity, and bounded route
 set. Unknown routes, fields, versions, identities, and operations fail closed.
-The strict browser client exists in source but is deliberately disconnected;
-the current product must remain truthfully unavailable instead of probing,
-retaining a key, selecting an alternate transport, or creating a queued
-operation that no production executor can advance.
+
+The basic UI restores an eligible installed composition or automatically acquires
+a small qualified MiniModel seed. If neither is available, it stays unavailable
+rather than starting conversion. In Advanced, a selected catalog entry matching
+the supported immutable source may request the companion's one-time code, create
+one source operation, poll its typed projection, verify admission and all six
+artifact streams, and install the admitted composition into browser storage.
+The runtime still requires independent qualification before useful-model claims.
+
+After a converted composition is installed, the browser may request one
+companion-owned direct seed bound to that exact operation. Start-response loss,
+reconnect, cancellation, stop, and bounded lifecycle limits are represented as
+typed states; the browser does not issue a second start to guess success. A
+ready local seed still carries no public availability or qualification claim.
 
 The browser must never receive an instruction file in place of a model action.
-Selecting Get model performs verified P2P acquisition when available and
-otherwise starts reviewed local source conversion. It does not download a text
-file, JSON request, PowerShell file, shell script, or conversion kit.
+Selecting an admitted seed/peer model performs verified acquisition. Explicit
+Advanced source conversion uses the paired companion. Neither route downloads a
+text file, JSON request, PowerShell file, shell script, or conversion kit as a
+substitute for acquiring the composition.
 
-Model bytes and prompts never pass through a TinyRustLM, MiniModel, or other
-project-hosted website. The first release must not silently change router,
-firewall, startup-service, or sharing state.
+MiniModel.org may serve model bytes; TinyRustLM.com remains the app/runtime host.
+Prompts and inference stay local. Model downloading does not authorize uploading
+chat or indefinite background seeding. The first release must not silently change
+router, firewall, startup-service, or sharing state.
 
 ## Required Release Evidence
 
@@ -232,18 +255,19 @@ response, or an HTTP success does not satisfy the release gate.
 
 ## Current Claim Boundary
 
-No production companion artifact is published. The private listener and host
-pass local real-TCP and managed gates only. The browser client, operation
-service, cancellation journal, and source artifact-transfer owner pass local
-source and deterministic tests but are not product-connected or release
-evidence. No real acquisition executor, P2P lane with current outside proof,
-or qualified real TinyRustLM model exists. MemoryEndpoints is authorized and
-strongly recommended for portable cross-device continuity; no authenticated
-live lifecycle receipt exists. Campaign counters remain 0/20 models, 0/50
-clean browser rounds, 0/25 live memory rounds, 0/40 externally proven lanes,
-and 0/20 catalog announcements.
+No production companion artifact is published. The private listener, host,
+operation runtime, browser client, browser installer, and direct-seed runtime
+are connected in source and have local deterministic coverage only; that is
+not package, real-model, browser-round, public-network, deployment, or release
+evidence. No authorized real acquisition receipt, P2P lane with current outside
+proof, catalog announcement, or qualified real TinyRustLM model exists.
+MemoryEndpoints is authorized and strongly recommended for portable
+cross-device continuity; no authenticated live lifecycle receipt exists.
+Campaign counters remain 0/20 models, 0/50 clean browser rounds, 0/25 live
+memory rounds, 0/40 externally proven lanes, and 0/20 catalog announcements.
 
-The authoritative next work is the clean SLM2 companion implementation and its
-complete browser-local vertical-slice evidence. This document must be updated
-with the exact version, release date, last-published time, artifact identities,
-and public readback only after those facts exist.
+The authoritative next work is an authorized real-source vertical slice,
+qualified composition evidence, clean browser execution, package custody,
+outside-network seed verification, publication, and independent public
+readback. This document must be updated with exact artifact and publication
+identities only after those facts exist.

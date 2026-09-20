@@ -16,6 +16,14 @@ Authority order is current owner instructions, inspected current contracts and b
 
 ## Current evidence and its limits
 
+**C61 current entry guidance:** the root/browser READMEs, browser architecture and
+companion guide now agree with MiniModel initial seeding, Advanced-only conversion,
+diagnostic-only rejected ancestry and canonical developer storage. Existing source
+already implements the described startup route. All 156 affected Node checks, 38
+package/memory checks and twelve Edge fixture checks pass. No runtime or public
+deployment changed; see `current-product-guidance-review.json` in cleanup artifacts.
+The unrelated demo link remains unstaged and previously blocked retirements remain.
+
 **C60 companion socket ownership:** cancelled/failed connection setup now disposes
 its owned socket before rethrow; success transfers ownership to the stream. Eight
 real IPv4/IPv6 socket cases and the complete 228-test companion suite pass without

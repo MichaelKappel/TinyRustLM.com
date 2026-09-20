@@ -1,9 +1,11 @@
 # TinyRustLM Browser Application
 
 TinyRustLM is a prelaunch browser-local chat application. Inference runs in a
-dedicated Web Worker through one Rust/WebAssembly runtime. Project sites serve
-the application and public metadata; they do not receive prompts, responses,
-source tensors, model members, or composition bytes.
+dedicated Web Worker through one Rust/WebAssembly runtime. TinyRustLM.com serves
+the app, runtime and public metadata. MiniModel.org is authorized to serve initial
+model seeds. Prompts and inference remain local; hosting model downloads does not
+authorize remote chat processing. No qualified default or live initial seed is
+established by the current source and fixture tests.
 
 There is one product and one production runtime path. `SLM2`, `Tokenizer2`,
 `Template2`, `Sampling2`, `Prompt2`, and `ACG2` are technical format
@@ -37,7 +39,7 @@ The registered clean-cut contract is
 `tests/production-slm2-clean-cut.test.js` keeps every registered obsolete
 executable path absent and rejects superseded tokens in active source.
 
-## Local Composition Import
+## Advanced Local Composition Import
 
 The local picker accepts exactly one canonical composition admission record
 and the six exact members named by that record:
@@ -59,13 +61,22 @@ admitted graph identity.
 The admission record is evidence, not model content. Structural activation is
 not a conversational-quality claim.
 
-## P2P Or Local Conversion
+## Automatic Startup And Advanced Acquisition
 
-The intended `Get model` command has one result: a verified composition ready
-for chat. It must import an exact currently qualified MiniModel peer
-composition when available; otherwise the explicitly paired companion must
-acquire a pinned reviewed public source, convert it locally, independently
-inspect it, and return all six members plus the canonical admission.
+Startup verifies and restores a usable installed composition first. If the cache
+is empty, it can automatically obtain a small qualified default through the
+authorized initial MiniModel.org seed. The current implementation chooses the smallest
+eligible composition at or below 768 MiB whose first verified projected peer is
+`https://minimodel.org/`; catalog projection ranks that origin first. All catalog,
+signature, qualification, admission and six-member integrity checks still apply.
+Cache errors or intervening user activity suppress automatic acquisition.
+
+Hugging Face discovery, local import, conversion and manual peer/IP controls stay
+under Advanced. A missing default does not trigger local conversion or companion
+installation in the basic flow. The explicitly paired companion may acquire only
+its pinned source, convert it locally, independently inspect it and return all six
+members. Its unchanged Qwen3-0.6B source is rejected for product quality and remains
+diagnostic-only; structural conversion cannot turn it into a qualified default.
 
 The browser never downloads instruction text, request JSON, shell scripts,
 PowerShell scripts, conversion kits, import kits, or serving helpers. It also
@@ -106,14 +117,19 @@ all maintained copies stay current and noncontradictory.
 
 ## Privacy And Network Boundary
 
-The browser application may contact only explicitly admitted static,
-catalog, direct-peer, loopback companion, or MemoryEndpoints origins for the
-operation the user requested. Project origins cannot receive model members,
-composition bytes, prompts, responses, credentials, or implicit telemetry.
+The browser application contacts only admitted app, catalog, seed/peer, paired
+loopback companion or explicitly enabled MemoryEndpoints origins for the current
+operation. MiniModel.org may serve current public model payloads. Chat prompts and
+inference stay local; a model download does not authorize chat upload, background
+seeding, account enrollment or credential disclosure. The separately consenting
+MemoryEndpoints plugin retains its own scoped memory-transfer boundary.
 
-Public deployment contains the WASM runtime and application assets only.
-`deploy/web-deployment-manifest.v2.json` rejects model-member publication and
-retires stale public model routes.
+According to the source release ledger, `0.4.1` is the last published site
+release. The `0.5.0` source surfaces are prepared and pending live publication
+verification; this tree does not claim a `0.5.0` deployment or public readback.
+The published-site manifest permits only the WASM runtime and application
+assets. `deploy/web-deployment-manifest.v2.json` rejects model-member
+publication and retires stale public model routes.
 
 ## Local Development
 
@@ -132,11 +148,15 @@ The complete local quality gate is:
 .\tools\vs\Test-TinyRustLM.ps1
 ```
 
-Add a real Chromium deployment smoke in a new evidence root with:
+Run a real Chromium local web-release smoke in a new evidence root with:
 
 ```powershell
 .\tools\vs\Test-TinyRustLM.ps1 -BrowserSmoke
 ```
+
+This materializes release metadata, serves the site on an owned loopback
+listener, and records local Chromium evidence. It does not deploy the site,
+contact the public origin, or prove public HTTPS readback.
 
 Focused browser-runtime checks:
 

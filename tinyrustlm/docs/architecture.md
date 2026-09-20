@@ -10,9 +10,21 @@ generations and not authorization for compatibility paths.
 The browser site publishes application code, the import-free WebAssembly
 runtime, and public metadata. It does not host model bytes, receive prompts,
 run remote inference, or proxy source-model downloads. Model bytes are selected
-locally or, after the companion contract is completed and independently
-verified, transferred directly from a consenting peer or converted locally
-from an immutable public source revision.
+locally, transferred directly from a consenting peer, or converted locally
+from an immutable public source revision by the authenticated companion.
+MiniModel.org is explicitly authorized to serve initial model seeds; its seed
+and catalog roles are separate from TinyRustLM.com's app/runtime publication.
+The browser obtains exact composition bytes directly from the admitted seed or
+peer. Prompts and inference remain local. Older metadata-only restrictions on
+MiniModel.org are superseded by the owner's seed-hosting requirement.
+
+The current browser source restores a usable installed composition, or attempts
+automatic acquisition of a small qualified default from MiniModel.org. The compact
+chooser retains explicit model selection. Source discovery, import, conversion,
+custom catalog/peer settings and diagnostics belong under Advanced. The basic path
+does not fall back to companion conversion. No qualified default or proven live
+initial seed is established; source behavior and synthetic fixtures are separate
+from product readiness.
 
 ## Sole Composition
 
@@ -101,12 +113,24 @@ commits the composition atomically, and exposes only typed bounded state. The
 top window never interprets model tensors, owns no KV cache, and cannot invoke
 an arbitrary WASM export.
 
+The browser creates a fresh worker when the admitted composition or runtime
+policy changes; operation-ID advancement alone cannot change initialization
+limits. Model preparation and generation are mutually exclusive. A pending
+turn or answer blocks model selection, and pending acquisition or activation
+blocks a new turn. Failure cleanup remains bound to its own worker.
+
 Generation begins from one canonical Prompt2 request. Token IDs and decoded raw
 output remain the authoritative private result. Repeated token text is valid
 content and is not message duplication. Each generation has one message ID and
 one terminal result. Cancellation is a real runtime command; a protocol,
 identity, ABI, or transfer failure terminates the worker instead of retrying or
 falling back.
+
+Qualification is checked before the turn, at each generation step, and before
+accepting completed output. A one-second timer also rechecks while asynchronous
+work is pending and terminates that worker on expiry. Browser scheduling can
+delay timer delivery, so step and result checks remain mandatory. Expired or
+superseded work is a failed turn, never a successful response.
 
 See `tinyrustlm/docs/browser-runtime.md` and
 `docs/architecture/browser-runtime-verification.md` for the implemented
@@ -131,35 +155,61 @@ replay-rejection, cleanup, and deletion evidence exists.
 
 ## Acquisition And Companion Boundary
 
-The intended completed product route is deterministic:
+The implemented browser routes are:
 
-1. use an exact currently qualified composition from a verified consenting
-   peer when one is available;
-2. otherwise acquire the pinned public source and convert it locally;
-3. independently inspect all six members and the qualification binding;
-4. stream the admitted composition into the browser worker;
-5. activate only after every identity and bound agrees.
+1. reopen an exact admitted composition already installed in the browser when
+   its stored identities still verify;
+2. with an empty usable cache, choose the smallest qualified composition at or
+   below 768 MiB whose first projected peer is `https://minimodel.org/`. Current
+   catalog projection ranks that seed first after signature and identity checks;
+3. fetch its six members directly from the seed using the canonical
+   root-origin authority and derived protocol routes, while independently
+   binding catalog, admission, qualification receipt, graph, length, and
+   digest identities;
+4. preserve explicit selection of other qualified peers. Local import, source
+   discovery/conversion and manual peer settings require Advanced; companion
+   operations additionally require explicit one-time loopback pairing;
+5. stream the selected route through the bounded browser composition store,
+   verify the complete six-member closure, commit it atomically, and activate
+   it through the worker; and
+6. after a companion conversion is installed, request a companion-owned local
+   direct seed for that exact available operation. Local seed readiness is not
+   a catalog announcement, public reachability proof, or qualified peer claim.
 
 A downloaded TXT, README, script, request file, or JSON handoff is not model
-acquisition. Project-hosted model bytes and remote inference are forbidden.
-The current implemented Companion operation is deliberately source-only until
-a complete six-member peer importer has its own verified identity and receipt
-authority. Unimplemented peer discovery is not represented by request fields,
-states, or optimistic status text.
+acquisition. MiniModel.org may host the initial seeds; inference stays local.
+The browser's direct-P2P installer is separate from the companion acquisition
+operation: seed/peer bytes travel directly into browser-owned storage without
+transiting the companion or TinyRustLM.com. The companion operation
+remains deliberately source-only and cannot accept an arbitrary model, URL, or
+filesystem path.
 
-The managed companion now defines the exact source-only
+Cache verification or activation failure suppresses automatic replacement; user
+activity can also suppress bootstrap. No eligible seed leaves an honest unavailable
+state. The automatic 768 MiB ceiling is a source limit, not evidence of browser
+memory, speed or model quality. The companion's pinned unchanged Qwen3-0.6B revision
+`c1899de289a04d12100db370d81485cdf75e47ca` is rejected for product quality and may
+serve only diagnostic work, or separately approved new-derivative training.
+
+The managed companion defines the exact source-only
 `tinyrustlm.companion.acquire.v2` request,
 `tinyrustlm.companion.operation.v3` journal record, six-member artifact set,
 and `tinyrustlm.companion.loopback-capability/4` cryptographic protocol. The
 source intent and receipt bind one canonical nine-file payload-inventory
 identity derived from the pinned lock; arbitrary digest-shaped acquisition
-claims reject. The matching browser codec independently admits the same exact
-Qwen3 source constants, is source-controlled but remains disconnected from the
-product UI, and the listener truthfully rejects operation routes until an
-exclusive source worker owns acquisition and conversion. Earlier one-file and
-peer-placeholder routes are not supported alternate paths. Until the complete
-operation owner is connected and independently proven, manual selection of all
-six admitted members remains the only browser activation route.
+claims reject. The product UI loads the matching browser capability client,
+independently admits the same exact source constants, polls the one operation,
+and streams the six verified artifacts without trusting the companion's
+digest claims. The host connects the operation, artifact-chunk, cancellation,
+and direct-seed services to the bounded listener. Earlier one-file,
+request-download, script-handoff, and peer-placeholder routes are not supported
+alternate paths.
+
+These statements describe implemented source and local deterministic test
+surfaces. They do not establish an installable companion package, a qualified
+real model, a live catalog entry, a publicly reachable peer, a completed
+browser round, deployed `0.5.0` bytes, or public HTTPS readback. Those claims
+remain withheld until their separate evidence gates close.
 
 ## Evidence And Promotion
 
@@ -179,7 +229,7 @@ The proof chain is intentionally separated:
 6. real-browser WASM parity;
 7. no-cheat behavioral qualification;
 8. genuine clean-profile multi-turn browser chat;
-9. direct P2P or local-conversion acquisition proof;
+9. exact seed/peer installation and, where claimed, Advanced local-conversion proof;
 10. committed release, deployment, and HTTPS readback.
 
 Passing one stage proves no later stage. Current campaign counters remain

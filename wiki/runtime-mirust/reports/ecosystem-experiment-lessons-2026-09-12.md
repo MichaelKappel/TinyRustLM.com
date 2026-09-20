@@ -11,6 +11,33 @@ Keep useful findings and compact evidence identities in the owning canonical
 repository. Keep source history in Git and current model payloads only in
 `D:\LLMs\TinyRustLM`.
 
+## C61: current entry guides must agree with owner requirements and executable routes
+
+Question: would an engineer following the main product guides reconstruct the
+current first-run behavior? At parent `90f7587fa5235e5d0b97c12dbd06dd3691661c06`,
+the root/browser READMEs and architecture/companion drafts still described forbidden
+server seeds and a mandatory conversion fallback; the root also prohibited D: model
+storage and called the rejected Qwen ancestry a production target. Source inspection
+of `boot`, `chooseBootstrapModelRoute`, `requestSimpleModelAcquisition` and catalog
+projection contradicted that guidance. The seed already sorts first; a suspected
+multi-peer priority defect was disproved by inspecting the actual comparator.
+
+Method: reconcile those four guides against source, current owner instructions,
+the release ledger and bounded tests. Result: 156 existing Node checks, 38 managed
+package/memory checks and twelve Edge fixture checks pass. No runtime change was
+needed. Integrate the reviewed companion/architecture draft facts without claiming
+live execution, and leave the unrelated demo link unstaged. Preserve the old reader
+and test because their deletion is already policy-blocked; a new cleanup pass does
+not authorize retrying that operation.
+
+Decision: use the entry guides for current product instructions and the progress
+record for unresolved proof. Reusable lesson: a correct startup implementation can
+still be undermined by stale top-level instructions; verify claimed prerequisites
+against actual dispatch before adding code. These are documentation and fixture
+results, not model quality, current hosting topology, public publication or storage
+recovery. Exact sources, results and owned-output cleanup are in
+`current-product-guidance-review.json` in the cleanup artifacts.
+
 ## C60: connection ownership includes cancellation and test tools belong to the build
 
 Question: does every failed source connection relinquish its allocated socket?

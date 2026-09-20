@@ -5,6 +5,31 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C61: reconcile current product instructions with startup and owner authority, September 20
+
+The root/browser READMEs, browser architecture and companion guide still forbade
+MiniModel seed hosting, required conversion in the basic flow, and in the root
+README prohibited the owner's canonical D: model location. The source already
+implements eligible cache restoration, small MiniModel bootstrap, seed-first peer
+projection and Advanced-only conversion. The four entry guides now describe that
+implemented boundary, the diagnostic-only rejected Qwen checkpoint, canonical
+developer storage and the distinction between local tests and public availability.
+Reviewed companion/architecture draft improvements are integrated; the unrelated
+interview-demo runbook link remains an uncommitted part of the browser README.
+
+All 156 affected existing Node checks and 38 package/memory checks pass. Twelve
+Edge checks across desktop, narrow desktop, mobile viewport and reduced motion
+verify automatic fixture-seed acquisition/cancellation, Advanced-only controls and
+chooser behavior. No new behavioral code or test gate was introduced, and no UI
+asset changed. These tests support the described source behavior, not a real model,
+live seed, physical mobile result or new deployment. Details and identities are in
+`artifacts/ecosystem-cleanup-20260912/current-product-guidance-review.json`.
+
+The old announcement reader and test were rechecked against their existing pending
+retirement record. Automatic review had already blocked their removal; neither was
+modified or removed. The seven-repository inventory remains unchanged. Source
+cleanup, real model/seed qualification, ARM64 and public release gates remain open.
+
 ## C60: release cancelled connection sockets and bind current test tools, September 20
 
 The companion's source transport disposed failed connection sockets only for

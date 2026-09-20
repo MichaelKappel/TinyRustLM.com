@@ -1,0 +1,327 @@
+{
+  "schema": "tinyrustlm.ecosystem_cleanup.current_product_guidance_review.v1",
+  "checkpoint": "C61",
+  "recorded_at_utc": "2026-09-20T13:14:51Z",
+  "base_commit": "90f7587fa5235e5d0b97c12dbd06dd3691661c06",
+  "previous_goal_turn": "progress: C60 source/test changes committed and pushed with 228 companion and six memory checks",
+  "scope": "Reconcile the root/browser READMEs, browser architecture and companion guide with inspected existing startup behavior and current owner requirements.",
+  "findings": [
+    {
+      "defect": "Current entry guides prohibited MiniModel model-byte serving.",
+      "correction": "MiniModel.org is authorized to serve initial current seeds; TinyRustLM.com serves app/runtime. Prompts and inference stay local."
+    },
+    {
+      "defect": "Guides required model selection, companion pairing or conversion in the beginner path.",
+      "correction": "Usable cached model first; automatic small qualified MiniModel seed when cache is empty; conversion and technical controls remain Advanced. Cache failures/user activity can suppress bootstrap."
+    },
+    {
+      "defect": "Root README named rejected Qwen ancestry as the production target and prohibited developer writes to D:.",
+      "correction": "Exact unchanged Qwen3-0.6B revision is diagnostic-only; no renaming/requantization qualification. Developer payloads belong under D:\\LLMs\\TinyRustLM, source remains canonical on E:, X:\\LLMS is untouched."
+    },
+    {
+      "defect": "Committed companion/architecture descriptions lagged the connected runtime.",
+      "correction": "Integrated reviewed draft descriptions of current operation/listener/client/store/seed wiring while keeping real execution and publication claims unproven."
+    }
+  ],
+  "inspected_behavior": {
+    "boot": "Read-only bounded cache check, catalog reconciliation, exact activation, then eligible seed bootstrap only when no cache error/user suppression and mode is simple.",
+    "bootstrap": "Smallest qualified projected composition <= 768 MiB with first peer exactly https://minimodel.org/.",
+    "peer_order": "Existing projectEntry comparator already ranks the authorized seed first; suspected multi-peer ordering defect was disproved. No runtime edit needed.",
+    "conversion": "requestSimpleModelAcquisition rejects supported local conversion outside Advanced before pairing or source execution.",
+    "publication": "Local release ledger's latest recorded publication is 0.4.1. Source surfaces 0.5.0 are not a fresh live readback."
+  },
+  "tests": {
+    "node": {
+      "command": "node --test tinyrustlm/tests/app_test.js tinyrustlm/tests/model-acquisition.test.js tinyrustlm/tests/model-acquisition-boundary-regression.test.js tinyrustlm/tests/minimodel-catalog-v1.test.js tinyrustlm/tests/direct-peer-url-authority.test.js tinyrustlm/tests/production-slm2-clean-cut.test.js tinyrustlm/tests/static-shell-parity.test.js",
+      "passed": 156,
+      "failed": 0,
+      "skipped": 0,
+      "reported_duration_ms": 276.2017
+    },
+    "managed": {
+      "command": "dotnet test dotnet/tests/TinyRustLM.Package.Tests/TinyRustLM.Package.Tests.csproj --configuration Release --no-build --no-restore --verbosity minimal",
+      "passed": 38,
+      "failed": 0,
+      "skipped": 0,
+      "boundary": "Existing compiled test assembly reads current documentation; no new managed build or package release claim."
+    },
+    "memory_final": {
+      "filter": "FullyQualifiedName~UaixMemoryConsolidationTests",
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0,
+      "boundary": "Subset of the 38 managed tests, repeated after pointer/hash updates."
+    },
+    "edge": {
+      "command": "TINYRUSTLM_PLAYWRIGHT_CHANNEL=msedge; node node_modules/@playwright/test/cli.js test --workers=1 --retries=0 --forbid-only --reporter=line --output=<owned>/browser --grep 'bootstrap starts|Chat hides|opens automatically' e2e/model-chooser.spec.js",
+      "engine": "Microsoft Edge 153.0.4234.48",
+      "passed": 12,
+      "failed": 0,
+      "skipped": 0,
+      "duration_seconds": 33.6,
+      "projects": [
+        "desktop 1365x768",
+        "narrow-desktop 1024x768",
+        "mobile 390x844 desktop emulation",
+        "reduced-motion 1365x768"
+      ],
+      "observations": [
+        "Seed acquisition begins without chooser click and cancels",
+        "Chat hides source conversion and manual peers until Advanced",
+        "Chooser opens automatically and closes explicitly with technical controls hidden"
+      ],
+      "boundary": "Synthetic catalog/admission/network fixtures and real Edge; not useful model, external seed, physical mobile or screenshot-parity evidence."
+    },
+    "diff_check": "passed",
+    "coverage": "No executable source or tests added/changed by this checkpoint; no new code coverage claim."
+  },
+  "source_scan": {
+    "initial_result": "source_authority_git_identity_invalid",
+    "initial_cause": "Test process trusted only TinyRustLM's canonical repository. The ecosystem verifier also invokes Git in the other six canonical repositories.",
+    "corrected_setup": "Seven process-local safe.directory entries for the discovered canonical roots; no global config changes.",
+    "final_result": "source_authority_scan_incomplete",
+    "exit_code": 1,
+    "unreadable": [
+      "artifacts/verification/qwen3-environment-install/tinyrustlm-operation-C3ZUt9/install-temp/TmP6xn2evdh-b",
+      "artifacts/verification/qwen3-environment-install/tinyrustlm-operation-C3ZUt9/install-temp/TmPeq63_hr7-b"
+    ]
+  },
+  "retirement_review": {
+    "manifest": "artifacts/ecosystem-cleanup-20260912/pending-file-retirements.json",
+    "unchanged_files": [
+      {
+        "path": "tinyrustlm/app/minimodel-announcement.js",
+        "bytes": 10161,
+        "sha256": "f7ebe6213e285a39e23759fc924b63683ba2052cab6fb0a6386d857cce9343e5"
+      },
+      {
+        "path": "tinyrustlm/tests/minimodel-announcement.test.js",
+        "bytes": 7292,
+        "sha256": "e292d2582e5fe72c717fc9f35068410ae97780593bbb1c3fcb9f4825c5c5dfd6"
+      }
+    ],
+    "disposition": "Both exact hashes match the prior policy-blocked retirement inventory. No removal retried, file edited or ancestor deleted."
+  },
+  "preservation": {
+    "integrated_existing_drafts": [
+      "docs/companion/README.md",
+      "tinyrustlm/docs/architecture.md"
+    ],
+    "browser_readme": "Selected current guidance hunks staged; the three-line interview-demo runbook link remains unchanged in the worktree and unstaged. No source copy/worktree created.",
+    "other_uncommitted_entries": 28,
+    "other_repositories": "Seven canonical repositories rediscovered; six other repositories unchanged. Runtime retains 15 pre-existing edits, developer portal one."
+  },
+  "source_inputs": [
+    {
+      "path": ".uai/long-term-memory.uai",
+      "bytes": 8956,
+      "sha256": "12aff3f1d278768b93a29f601f8b386e309b6256a0fb55885e02d12a5d01d547"
+    },
+    {
+      "path": ".uai/operations.uai",
+      "bytes": 20720,
+      "sha256": "787409176ed01ba542bc715529a8e33bda2f8de4d9d3c60ddc09c1a7e16aa5d6"
+    },
+    {
+      "path": ".uai/short-term-memory.uai",
+      "bytes": 15843,
+      "sha256": "82e8641d4e7754319427b6f04f6ee194a5945d53c8491d948f94b6f9e49bb758"
+    },
+    {
+      "path": ".uai/startup-packet.uai",
+      "bytes": 12465,
+      "sha256": "8c79ba9e363d70fc99aabf0f78d88363cfd7feee25e372bc107832ccf3bf76a0"
+    },
+    {
+      "path": "README.md",
+      "bytes": 16872,
+      "sha256": "190066a1a89703f37fdbf5d9118974727e7f74d22560e6389ce780c0d5ceb1da"
+    },
+    {
+      "path": "docs/companion/README.md",
+      "bytes": 16449,
+      "sha256": "ba040e028a8d87b51653f1500bcd30b066081724c9a8274b06baab8021c8370e"
+    },
+    {
+      "path": "docs/ecosystem-cleanup-2026-09-12.md",
+      "bytes": 118595,
+      "sha256": "3019dbb4655fe537abd4c2aa1ede8f0c1eb1cf34a27c9cb9fe33991a3c334169"
+    },
+    {
+      "path": "tinyrustlm/README.md",
+      "bytes": 8727,
+      "sha256": "f3d0015dad041021ab0ac17ca7bec0ce5a63288a2fb8b118705a39607ef84487"
+    },
+    {
+      "path": "tinyrustlm/docs/architecture.md",
+      "bytes": 13422,
+      "sha256": "98db24ea42918dd7b475cae65ef1d5b7b0ed294d27bf966976ce8e363c32548e"
+    },
+    {
+      "path": "wiki/runtime-mirust/reports/ecosystem-experiment-lessons-2026-09-12.md",
+      "bytes": 149682,
+      "sha256": "70f367dd0b4f9e0399925741739ed9541f40fe3fd40f817162da77278bf5982e"
+    },
+    {
+      "path": "wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md",
+      "bytes": 53979,
+      "sha256": "6751e98c232c82c8db15fce96f9522422ce3ac6fe629d7f85ed0310b22940c6c"
+    }
+  ],
+  "inspected_input_identities": [
+    {
+      "path": "tinyrustlm/app/app.js",
+      "bytes": 465748,
+      "sha256": "d639ceb5a84703205a3c360f806296f51dda04c7ae0aa7c58b1cf8e6bc8093c7"
+    },
+    {
+      "path": "tinyrustlm/app/minimodel-catalog-v1.js",
+      "bytes": 74274,
+      "sha256": "4868dba65b57197b68de6f3e74987602b9728c5fa0cf28ca05ec2a3166c35333"
+    },
+    {
+      "path": "tinyrustlm/release/site-release-ledger.v1.json",
+      "bytes": 12932,
+      "sha256": "9b02fa419d7f5b23c672713389cd71da2570bab96544292dda9edafdec4a19b4"
+    },
+    {
+      "path": "tinyrustlm/tests/app_test.js",
+      "bytes": 7619,
+      "sha256": "f687d5ed0061195cd53aa9ce397b5406f893edcc77ba77a1bdefcda01319d40b"
+    },
+    {
+      "path": "tinyrustlm/tests/model-acquisition.test.js",
+      "bytes": 133417,
+      "sha256": "6dfc85eb10dfea4619a8e60e91ca8c39e80d3aaba8471d84623100d26438f365"
+    },
+    {
+      "path": "tinyrustlm/tests/model-acquisition-boundary-regression.test.js",
+      "bytes": 58516,
+      "sha256": "8b5700062cfa781dd95d0e0324bc130ffaefe41253b55e00bfb47e4e0abad216"
+    },
+    {
+      "path": "tinyrustlm/tests/minimodel-catalog-v1.test.js",
+      "bytes": 26710,
+      "sha256": "26f2790c6ad3c1d9d83a6b37369d69999b8ee74eaba4c9c5d6b09444b9776f51"
+    },
+    {
+      "path": "tinyrustlm/tests/direct-peer-url-authority.test.js",
+      "bytes": 6239,
+      "sha256": "88ab9003d1c864996b58d2f3d21ba95a3781a72aaded0fbe90a3ec15142b8698"
+    },
+    {
+      "path": "tinyrustlm/tests/production-slm2-clean-cut.test.js",
+      "bytes": 10130,
+      "sha256": "f45c529153568ed2cfbb3862f80bb21b1aa3aabf53f798dc09bfa022a4653d1d"
+    },
+    {
+      "path": "tinyrustlm/tests/static-shell-parity.test.js",
+      "bytes": 5127,
+      "sha256": "c20d60933c2f75bc60a243b2603545c26823a4aafdef4304c87e8e2bc634c89d"
+    },
+    {
+      "path": "tinyrustlm/e2e/model-chooser.spec.js",
+      "bytes": 82920,
+      "sha256": "45de47d6aba377f76e8d3bafc01de721b319300a6f9af69371b6b3bdebcb5e8e"
+    },
+    {
+      "path": "tinyrustlm/playwright.config.js",
+      "bytes": 2855,
+      "sha256": "26c7fdbcf0d5977a8eeae721d4bc84d393ffe3c07ce5fbb25b675e237fad0934"
+    },
+    {
+      "path": "dotnet/tests/TinyRustLM.Package.Tests/bin/Release/net8.0/TinyRustLM.Package.Tests.dll",
+      "bytes": 69120,
+      "sha256": "502f25bb5a97386b3613c06372003a9d8d2853a7d4edb435fe4695b9287912bf"
+    }
+  ],
+  "evidence_output_identities": [
+    {
+      "path": "edge.log",
+      "bytes": 5914,
+      "sha256": "90a9b5c554c5ea4a4634f1da4f5a125f9e27c59373d458c31ce17192e709f851"
+    },
+    {
+      "path": "memory-final.log",
+      "bytes": 966,
+      "sha256": "8c52bb7b10d7cfab3cbeaf96180c7cc69328952334ff92ab161b0a4465ecb200"
+    },
+    {
+      "path": "node.log",
+      "bytes": 25956,
+      "sha256": "0c744ef41a31343f699a08ce791acf3b9e8815c8e4f901c295b296a81bf0d950"
+    },
+    {
+      "path": "package.log",
+      "bytes": 958,
+      "sha256": "ffc46a68e2f42d0d0eee73c772369d9af3f8f0032104a075e614ab55ab879ada"
+    },
+    {
+      "path": "source-scan-canonical-repositories.log",
+      "bytes": 1336,
+      "sha256": "3640be4224625f75a8053b88f61b8daf8fa7f81fa6767e9cacc0b716f974a8b2"
+    },
+    {
+      "path": "source-scan.log",
+      "bytes": 816,
+      "sha256": "212f4f8847dc6fde18d985b93382725d905cb088c07e0dbc587922090b630aff"
+    },
+    {
+      "path": "temp/cv_debug.log",
+      "bytes": 492,
+      "sha256": "5b2ff810e25c32b5018c03c3ad73cc2a51812e2cbdbaecd8dc2c4b941966aefb"
+    },
+    {
+      "path": "temp/Microsoft.NET.Workload_31492_20260920_061647_011.log",
+      "bytes": 1393,
+      "sha256": "a0371e002514a714a2c031942a4e1d4cf33a12c66bd5db560977379a9f3a4059"
+    },
+    {
+      "path": "temp/Microsoft.NET.Workload_7504_20260920_061238_126.log",
+      "bytes": 1330,
+      "sha256": "05fda3f41cb4e458e514d459e53b83cf0a9ae2788b1f009a3eb13738a25bd10e"
+    },
+    {
+      "path": "temp/Microsoft.NET.Workload_7504_20260920_061239_462.log",
+      "bytes": 2488,
+      "sha256": "3a34c0222066b5b0ce4fdea8713872ef0c5d14f6bb4e13bd78e488cec7eac02a"
+    },
+    {
+      "path": "temp/Microsoft.NET.Workload_7504_20260920_061239_462_4654124f06a3b97be3fb6c48229426a8-x64_AdminInstall.log",
+      "bytes": 87560,
+      "sha256": "7d9465c8f63f8c5b9c0919b8b24a3c46cb3b2b5cd414d73f52ed2cbab80cdf2b"
+    },
+    {
+      "path": "results/memory-final.trx",
+      "bytes": 10762,
+      "sha256": "b7f288b45f3943961e1216cc833f4806cdc15a520df080dd6cbcc3352cc674fa"
+    },
+    {
+      "path": "results/package.trx",
+      "bytes": 56729,
+      "sha256": "c8b4abc2cd5497b93a636fb3ec021543ba5e375d3f9915fca344ead16790bfd3"
+    }
+  ],
+  "cleanup": {
+    "root": "artifacts/tests/current-product-guidance/tinyrustlm-operation-G36Y0k",
+    "absence_verified": true,
+    "files_removed": 33,
+    "directories_below_root": 25,
+    "logical_bytes_removed": 2328782,
+    "physical_storage_recovered": "not measured",
+    "method": "Existing canonical owned-directory identity/marker verification and bounded ordinary-tree cleanup; unrelated blocked paths excluded."
+  },
+  "limits": [
+    "No behavior, UI assets, schemas, dependencies or package versions changed",
+    "No new tests, bypassed acceptance gate, rejected deletion retry or material model execution",
+    "No NuGet credential contents read, package push, production deployment or live external readback",
+    "Documentation describes existing behavior and owner requirements, not fulfilled product qualification"
+  ],
+  "remaining": [
+    "Qualified default and useful local/browser inference",
+    "Complete source cleanup, including policy-blocked retirements",
+    "Proven live MiniModel seed and coherent publication",
+    "ARM64 execution and full NuGet release admission",
+    "Remaining ecosystem cleanup and official owner acceptance"
+  ]
+}
