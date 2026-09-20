@@ -5,6 +5,28 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C75: retire LMComposer's closed release commands, September 20
+
+LMComposer's 622-line publisher admitted only its already-terminal v2 operation;
+the 176-line builder only recreated that historical manifest. Both are removed
+from active source. Their 30,828 logical file bytes remain recoverable through
+Git history; physical storage recovery was not measured. No replacement
+publisher, source copy or compatibility command was added.
+
+All 19 current repository checks pass. Tests now verify exact historical
+manifests, both terminal receipts, the independent readback and every public
+member against its recorded Git blob. All eight current public files remain
+byte-exact. The former 21-test suite passed; the new retirement assertion failed
+before removal. Tests for deleted executable behavior were replaced with direct
+evidence checks, preserving v1 failure and v2 success as distinct outcomes.
+
+The eight previously policy-blocked staging files remain untouched. The current
+source-authority scan still fails on the same two installer links; no bypass or
+blocked deletion was attempted. No credentials, model execution or publication
+were involved. This advances obsolete-code cleanup, not release readiness.
+Exact evidence is in LMComposer's
+`artifacts/ecosystem-cleanup-20260912/closed-release-tool-retirement.json`.
+
 ## C74: preserve catalog Unicode without repairing identity bytes, September 20
 
 Cross-project execution found that MiniModel accepted supplementary Unicode

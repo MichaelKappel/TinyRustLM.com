@@ -16,6 +16,12 @@ Authority order is current owner instructions, inspected current contracts and b
 
 ## Current evidence and its limits
 
+**C75 retired tooling:** LMComposer's closed-operation publisher and manifest
+builder are removed. All 19 repository checks pass with direct historical
+evidence verification; public files and blocked staging output are unchanged.
+Read its `closed-release-tool-retirement.json`. No credentials, live readback
+or publication were involved; the full ecosystem and product gates remain open.
+
 **C74 catalog Unicode:** TinyRust's canonical reader preserves literal Unicode
 scalar pairs and rejects BOM-prefixed streams. Both catalog validators reject
 lone surrogates, including direct schema input; MiniModel checks parsed keys and

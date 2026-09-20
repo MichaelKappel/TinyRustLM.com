@@ -11,6 +11,25 @@ Keep useful findings and compact evidence identities in the owning canonical
 repository. Keep source history in Git and current model payloads only in
 `D:\LLMs\TinyRustLM`.
 
+## C75: closed release evidence does not need an executable publisher
+
+- Question: does the retired LMComposer identity still need its release tools?
+- Inputs: LMComposer parent `618e081b510ad75411f2d7bec1d60a8e4f98cbbf`, the two
+  terminal operations, their manifests, receipts and exact historical Git blobs.
+- Method: inspect call sites and operation admission; run the 21-test baseline;
+  replace tool-string assertions and closed generator execution with direct
+  evidence checks, then remove the two tools and rerun the repository suite.
+- Result: the retirement assertion failed before removal; all 19 current tests
+  pass afterward. All eight public files and five historical records retain
+  exact bytes. Two obsolete tools totaling 30,828 logical bytes were removed.
+- Uncertainty: there is no new public readback or host-capability result.
+  Physical storage recovery is unmeasured; blocked staging output remains.
+- Decision: keep read-only evidence verification and Git history. A future
+  changed release needs its own reviewed operation and actual host evidence.
+- Reusable lesson: testing the presence of a terminal-only publisher preserves
+  dead code. Bind retained results directly to source and artifact identities.
+- Evidence: `E:\Source\Rust\LMComposer.com\artifacts\ecosystem-cleanup-20260912\closed-release-tool-retirement.json`.
+
 ## C74: scalar Unicode and byte identity need independent boundary tests
 
 - Question: do both catalog implementations accept the same Unicode and preserve
