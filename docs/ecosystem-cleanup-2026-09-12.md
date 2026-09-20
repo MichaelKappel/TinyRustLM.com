@@ -5,6 +5,28 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C56: distinguish publishable versions from superseded versions, September 20
+
+Both readiness owners now admit complete, consistent current-format feed reports
+before deciding whether publication is needed. Already-published versions with a
+newer release are blocked explicitly; missing versions can continue through the
+existing release checks. Invalid or contradictory reports remain unknown.
+Trusted Publishing now matches the official feed rather than a domain substring.
+The previous implementation accepted a lookalike URL and treated both generic
+failed and invalid reports as ready when a key was present.
+
+All 86 focused checks pass, including 35 decision cases per implementation and
+six complete local-feed scenarios each through PowerShell and native WSL Bash.
+The 38 managed package checks pass. Fixtures were synthetic and all HTTP requests
+were GETs; no real key was read and no package was pushed. Owned output was removed.
+The first test attempt had two harness failures (Windows command-line length and
+Python quoting); both were corrected without changing product expectations.
+
+The pushed C55 GitHub run completed with nine jobs rejected before any steps ran;
+it supplies no hosted validation. Linux native/consumer execution, three-RID
+release admission, the existing source scan and real product gates remain open.
+See `artifacts/ecosystem-cleanup-20260912/nuget-readiness-review.json`.
+
 ## C55: execute the Windows package consumer without copied source, September 19
 
 Both consumer entry points now use one canonical project and Node runner. Exact

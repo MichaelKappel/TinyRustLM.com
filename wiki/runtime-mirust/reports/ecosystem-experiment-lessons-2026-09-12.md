@@ -11,6 +11,20 @@ Keep useful findings and compact evidence identities in the owning canonical
 repository. Keep source history in Git and current model payloads only in
 `D:\LLMs\TinyRustLM`.
 
+## C56: freshness failure does not always mean a missing release
+
+Question: does every failed freshness report permit a new push? No: an existing
+declared version can be superseded, or the report can be invalid. Both readiness
+owners now require complete consistent observations and block superseded versions;
+Trusted Publishing admits the exact official feed instead of a matching domain
+substring. Thirty-five cases per owner and twelve complete local-feed executions
+pass (86 Node checks), plus 38 managed checks. An initial overlong Windows command
+and a Python quoting error were test-harness failures; stdin fixed the former.
+Lesson: test the final readiness decision as well as the underlying feed query.
+Evidence: `nuget-readiness-review.json` in the cleanup artifact directory. These
+synthetic GET-only checks used no real key and do not prove publication or Linux
+SDK execution. Hosted jobs that never execute are not failed product tests.
+
 ## C55: run the actual package path before claiming release readiness
 
 Question: can the current SDK pack and run without copied source? The canonical

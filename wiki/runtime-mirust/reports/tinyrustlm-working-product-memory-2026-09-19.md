@@ -16,6 +16,14 @@ Authority order is current owner instructions, inspected current contracts and b
 
 ## Current evidence and its limits
 
+**C56 NuGet readiness:** both owners distinguish missing, current, superseded and
+unknown feed observations, bind exact package/version reports and restrict Trusted
+Publishing to the official feed. All 86 focused checks and 38 managed checks pass;
+full PowerShell and native WSL Bash commands used synthetic local feeds. No key
+was read and no package was published. C55's hosted CI jobs were rejected before
+execution; Linux native and complete release gates remain unproven. See
+`artifacts/ecosystem-cleanup-20260912/nuget-readiness-review.json`.
+
 **C55 Windows NuGet preparation:** the canonical consumer project replaces both
 source-copy workflows; mutable build/cache output is owned under artifacts and
 retired. Native/converter/seed Windows path parsing and missing P2P metadata are

@@ -84,10 +84,42 @@ $ExpectedPackageIds = @(
 function Test-NuGetOrgSource {
     param([string]$Source)
 
+    # Trusted Publishing belongs to the official v3 feed, not a matching substring.
     $candidate = $Source.Trim().ToLowerInvariant()
-    return $candidate -eq "nuget.org" `
-        -or $candidate -match '(^|[./:-])nuget\.org($|[/:.-])' `
-        -or $candidate -match '(^|[./:-])api\.nuget\.org($|[/:.-])'
+    return $candidate -in @("nuget.org", "https://api.nuget.org/v3/index.json")
+}
+
+function Get-RemoteFeedState {
+    param($Report, [string]$StepStatus, [string]$Version, [string[]]$PackageIds)
+
+    # Admit complete current-format observations before distinguishing absence from stale versions.
+    try {
+        if ($null -eq $Report -or $Report.schema -cne "tinyrustlm.nuget.feed_current.v0" -or
+            $Report.package_version -cne $Version -or $Report.allow_newer -isnot [bool] -or $Report.allow_newer) { return "unknown" }
+        $rows = @($Report.packages)
+        $expected = @($PackageIds | Sort-Object) -join "`n"
+        if ((@($Report.package_ids | Sort-Object) -join "`n") -cne $expected -or
+            (@($rows | ForEach-Object { $_.package_id } | Sort-Object) -join "`n") -cne $expected -or
+            $Report.package_count -ne $PackageIds.Count) { return "unknown" }
+        $missing = 0
+        $stale = 0
+        foreach ($row in $rows) {
+            if ($row.declared_version -cne $Version -or $row.declared_version_present -isnot [bool] -or
+                $row.declared_version_is_latest_reported -isnot [bool]) { return "unknown" }
+            if (-not $row.declared_version_present) {
+                if ($row.declared_version_is_latest_reported) { return "unknown" }
+                $missing++
+            }
+            elseif (-not $row.declared_version_is_latest_reported) { $stale++ }
+        }
+        $expectedStatus = if ($missing -eq 0 -and $stale -eq 0) { "pass" } else { "fail" }
+        if ($Report.status -cne $expectedStatus -or $StepStatus -cne $expectedStatus -or
+            $Report.missing_declared_version_count -ne $missing -or $Report.not_latest_count -ne ($missing + $stale)) { return "unknown" }
+        if ($stale -gt 0) { return "newer_version" }
+        if ($missing -gt 0) { return "missing" }
+        return "current"
+    }
+    catch { return "unknown" }
 }
 
 function Read-ReportStatus {
@@ -276,6 +308,8 @@ if (-not $packageGraphMatch) {
 }
 $remoteCurrentStep = $steps | Where-Object { $_.name -eq "remote_feed_current" } | Select-Object -First 1
 $remoteHashStep = $steps | Where-Object { $_.name -eq "remote_feed_hashes" } | Select-Object -First 1
+$remoteFeedState = Get-RemoteFeedState -Report (Read-JsonReport -Path $RemoteFeedCurrentReport) `
+    -StepStatus $remoteCurrentStep.status -Version $PackageVersion -PackageIds $ExpectedPackageIds
 $apiKeyPresent = -not [string]::IsNullOrWhiteSpace($ApiKey)
 $trustedPublishingRequested = $AuthMode -eq "trusted_publishing"
 $trustedPublishingSupported = $trustedPublishingRequested -and (Test-NuGetOrgSource -Source $NuGetSource)
@@ -287,7 +321,7 @@ if ($localStepFailures.Count -gt 0) {
     $blockers.Add("Local package, audit, publish-plan, or package-folder feed verification failed.")
     $nextActions.Add("Run eng\verify-package.ps1, then rerun this readiness audit.")
 }
-elseif ($remoteCurrentStep.status -ne "pass" -and [string]::IsNullOrWhiteSpace($remoteCurrentStep.report_status)) {
+elseif ($remoteFeedState -eq "unknown") {
     $status = "blocked_feed_status_unknown"
     $blockers.Add("The configured NuGet feed could not be queried for current package versions.")
     $nextActions.Add("Check NuGet feed connectivity and rerun the readiness audit.")
@@ -297,7 +331,12 @@ elseif ($trustedPublishingRequested -and -not $trustedPublishingSupported) {
     $blockers.Add("Trusted Publishing auth mode is only supported for NuGet.org sources.")
     $nextActions.Add("Use -AuthMode api_key for private feeds, or change -NuGetSource to a NuGet.org v3 source with a configured Trusted Publishing policy.")
 }
-elseif ($remoteCurrentStep.report_status -eq "pass") {
+elseif ($remoteFeedState -eq "newer_version") {
+    $status = "blocked_remote_newer_version"
+    $blockers.Add("The declared version is already published and a newer version exists for at least one package.")
+    $nextActions.Add("Reconcile the source version with the published feed before preparing a new release; duplicate pushes cannot make an older version current.")
+}
+elseif ($remoteFeedState -eq "current") {
     if ($remoteHashStep.status -eq "pass" -and $remoteHashStep.report_status -eq "pass") {
         $status = "published_current"
         $nextActions.Add("Keep scheduled feed-current monitoring enabled for the authoritative feed.")
@@ -361,6 +400,7 @@ $report = [ordered]@{
     local_feed_hash_symbol_mismatch_count = Get-JsonIntValue -Object $localFeedHashSummary -Name "symbol_hash_mismatch_count"
     local_feed_hash_symbol_byte_count_mismatch_count = Get-JsonIntValue -Object $localFeedHashSummary -Name "symbol_byte_count_mismatch_count"
     remote_feed_current_report_path = $RemoteFeedCurrentReport
+    remote_feed_state = $remoteFeedState
     remote_feed_hash_report_path = $RemoteFeedHashReport
     blockers = $blockers.ToArray()
     next_actions = $nextActions.ToArray()

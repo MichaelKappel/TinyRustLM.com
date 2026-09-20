@@ -1,5 +1,5 @@
 profile: tinyrustlm.operations.current.v1
-updated_utc: 2026-09-20T11:16:12Z
+updated_utc: 2026-09-20T11:31:27Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
@@ -10,6 +10,8 @@ historical_checkpoint:
   boundary: These August 28 source/test counts are historical. They do not describe current implementation or establish real-model qualification or deployment.
 
 current_state:
+  nuget_readiness: C56 admits complete current-format feed reports, blocks superseded versions and rejects lookalike Trusted Publishing URLs. Both owners pass 35 decision cases and six full local-feed scenarios each; 86 Node and 38 managed checks pass. No real key read or package pushed. See artifacts/ecosystem-cleanup-20260912/nuget-readiness-review.json.
+  hosted_ci: C55 run 35507539470 completed with all nine jobs rejected before any steps executed. Operator action on the GitHub account is required; inspect the run annotations. Do not treat this as product-test failure or hosted release evidence, and do not retry unchanged jobs until that external condition changes.
   nuget_development: C55 replaces copied-source consumers with one canonical project and owned output, fixes three Windows build path expressions and required P2P metadata. Rust 169, managed 86 plus 38, and focused Node 15 checks pass; actual Windows package audit and consumer pass. See artifacts/ecosystem-cleanup-20260912/nuget-consumer-build-review.json. Linux and clean three-RID release/publication gates remain open; no package pushed.
   nuget_owner_requirement: Keep publication current at https://www.nuget.org/profiles/Michael.Kappel; include feed freshness, eligible package updates and public payload readback in every SDK release checkpoint.
   nuget_evidence: artifacts/ecosystem-cleanup-20260912/nuget-publication-current-review.json

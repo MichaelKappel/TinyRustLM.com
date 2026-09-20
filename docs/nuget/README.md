@@ -198,12 +198,27 @@ HTTP 404. Authentication failures, rate limits, outages, disconnects and malform
 indexes abort the lookup. The readiness audit clears its prior observation first,
 so these failures become `blocked_feed_status_unknown`, not permission to push.
 
+Readiness also requires a complete, consistent feed report for the exact package
+IDs and version. If the declared version is already present but superseded for
+any package, it returns `blocked_remote_newer_version`; a duplicate push cannot
+make that version current. Missing versions remain eligible for normal release
+checks. Trusted Publishing accepts only the official v3 feed URL or the existing
+`nuget.org` alias, never lookalike hosts, user-info URLs or query-string matches.
+`remote_feed_state` distinguishes `current`, `missing`, `newer_version` and
+`unknown` in the readiness report.
+
 Run the feed-failure regression checks with
 `node --test tinyrustlm/tests/verify-feed-current.test.js`. They require PowerShell
 and Python 3 on PATH. On Windows, an installed WSL Python may be selected explicitly
 with `TINYRUSTLM_FEED_TEST_WSL_DISTRIBUTION`; no particular distribution or local
 source path is built into the tests. The tests use loopback HTTP and owned temporary
 reports, without contacting NuGet or publishing packages.
+
+Readiness regression checks are in
+`tinyrustlm/tests/audit-nuget-release-readiness.test.js`. They exercise both
+decision implementations and full PowerShell/Bash commands with synthetic local
+feeds. Native Bash integration runs on Unix or explicitly selected WSL; ordinary
+Windows execution reports that integration as skipped.
 
 Only `TinyRustLM.Abstractions`, `TinyRustLM.Core`, and `TinyRustLM.P2P`, plus
 their matching symbol packages, may enter the public publish plan. Optional or

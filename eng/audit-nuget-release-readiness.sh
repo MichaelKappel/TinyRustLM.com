@@ -100,7 +100,6 @@ export REMOTE_CURRENT_STATUS REMOTE_CURRENT_ERROR REMOTE_HASH_STATUS REMOTE_HASH
 READINESS_STATUS="$(python3 <<'PY'
 import json
 import os
-import re
 from datetime import datetime, timezone
 
 
@@ -137,12 +136,40 @@ def step(name, status, report_path, error):
 
 
 def is_nuget_org_source(source):
+    """Bind Trusted Publishing to the official feed, not a matching substring."""
     candidate = source.strip().lower()
-    return (
-        candidate == "nuget.org"
-        or re.search(r"(^|[./:-])nuget\.org($|[/:.-])", candidate) is not None
-        or re.search(r"(^|[./:-])api\.nuget\.org($|[/:.-])", candidate) is not None
-    )
+    return candidate in ("nuget.org", "https://api.nuget.org/v3/index.json")
+
+
+def remote_feed_state(report, step_status, version, package_ids):
+    """Admit a complete observation before distinguishing absence from stale versions."""
+    try:
+        if (report.get("schema") != "tinyrustlm.nuget.feed_current.v0"
+                or report.get("package_version") != version or report.get("allow_newer") is not False):
+            return "unknown"
+        rows = report["packages"]
+        if (sorted(report["package_ids"]) != sorted(package_ids)
+                or sorted(row["package_id"] for row in rows) != sorted(package_ids)
+                or report["package_count"] != len(package_ids)):
+            return "unknown"
+        missing = stale = 0
+        for row in rows:
+            if (row["declared_version"] != version or type(row["declared_version_present"]) is not bool
+                    or type(row["declared_version_is_latest_reported"]) is not bool):
+                return "unknown"
+            if not row["declared_version_present"]:
+                if row["declared_version_is_latest_reported"]:
+                    return "unknown"
+                missing += 1
+            elif not row["declared_version_is_latest_reported"]:
+                stale += 1
+        expected_status = "pass" if missing == stale == 0 else "fail"
+        if (report["status"] != expected_status or step_status != expected_status
+                or report["missing_declared_version_count"] != missing or report["not_latest_count"] != missing + stale):
+            return "unknown"
+        return "newer_version" if stale else "missing" if missing else "current"
+    except (AttributeError, KeyError, TypeError, ValueError):
+        return "unknown"
 
 
 steps = [
@@ -182,6 +209,8 @@ if not package_graph_match:
     })
 remote_current = next(item for item in steps if item["name"] == "remote_feed_current")
 remote_hash = next(item for item in steps if item["name"] == "remote_feed_hashes")
+remote_state = remote_feed_state(read_report(os.environ["REMOTE_FEED_CURRENT_REPORT"]),
+    remote_current["status"], os.environ["PACKAGE_VERSION"], expected_package_ids)
 api_key_present = os.environ["API_KEY_PRESENT"] == "true"
 auth_mode = os.environ["AUTH_MODE"]
 trusted_publishing_requested = auth_mode == "trusted_publishing"
@@ -193,7 +222,7 @@ if local_failures:
     status = "blocked_local_verification"
     blockers.append("Local package, audit, publish-plan, or package-folder feed verification failed.")
     next_actions.append("Run eng/verify-package.sh, then rerun this readiness audit.")
-elif remote_current["status"] != "pass" and not remote_current["report_status"]:
+elif remote_state == "unknown":
     status = "blocked_feed_status_unknown"
     blockers.append("The configured NuGet feed could not be queried for current package versions.")
     next_actions.append("Check NuGet feed connectivity and rerun the readiness audit.")
@@ -201,7 +230,11 @@ elif trusted_publishing_requested and not trusted_publishing_supported:
     status = "blocked_trusted_publishing_unsupported"
     blockers.append("Trusted Publishing auth mode is only supported for NuGet.org sources.")
     next_actions.append("Use AUTH_MODE=api_key for private feeds, or change NUGET_SOURCE to a NuGet.org v3 source with a configured Trusted Publishing policy.")
-elif remote_current["report_status"] == "pass":
+elif remote_state == "newer_version":
+    status = "blocked_remote_newer_version"
+    blockers.append("The declared version is already published and a newer version exists for at least one package.")
+    next_actions.append("Reconcile the source version with the published feed before preparing a new release; duplicate pushes cannot make an older version current.")
+elif remote_state == "current":
     if remote_hash["status"] == "pass" and remote_hash["report_status"] == "pass":
         status = "published_current"
         next_actions.append("Keep scheduled feed-current monitoring enabled for the authoritative feed.")
@@ -260,6 +293,7 @@ report = {
     "local_feed_hash_symbol_mismatch_count": int(local_feed_hashes.get("symbol_hash_mismatch_count") or 0),
     "local_feed_hash_symbol_byte_count_mismatch_count": int(local_feed_hashes.get("symbol_byte_count_mismatch_count") or 0),
     "remote_feed_current_report_path": os.environ["REMOTE_FEED_CURRENT_REPORT"],
+    "remote_feed_state": remote_state,
     "remote_feed_hash_report_path": os.environ["REMOTE_FEED_HASH_REPORT"],
     "blockers": blockers,
     "next_actions": next_actions,

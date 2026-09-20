@@ -1,0 +1,158 @@
+{
+  "schema": "tinyrustlm.ecosystem.nuget_readiness_review.v1",
+  "checkpoint": "C56",
+  "recorded_utc": "2026-09-20T11:31:27Z",
+  "source_parent": "abd5dbeb56bec15073e4a7e89f430fb71cefd69c",
+  "scope": "NuGet release-readiness decisions in both current shell owners; no SDK/native implementation or package publication.",
+  "findings": [
+    "Existing C54 feed queries already abort unknown HTTP/transport/JSON failures; no repeated fix is claimed.",
+    "Prior readiness conflated all completed non-pass freshness outcomes with a missing release, including superseded versions and invalid reports.",
+    "Prior Trusted Publishing domain-substring check admitted a lookalike HTTPS host."
+  ],
+  "baseline_reproduction": {
+    "method": "Extract the exact prior PowerShell source from Git in memory and execute its existing source matcher and readiness decision block with controlled inputs; no copied source files.",
+    "lookalike_source": "https://api.nuget.org.attacker.invalid/v3/index.json",
+    "lookalike_admitted": true,
+    "controlled_decisions": [
+      {
+        "report_status": "fail",
+        "readiness": "ready_to_publish"
+      },
+      {
+        "report_status": "invalid",
+        "readiness": "ready_to_publish"
+      }
+    ],
+    "boundary": "The fail status alone also covers legitimate absence; the new implementation uses complete per-package observations to distinguish it."
+  },
+  "changes": [
+    "Admit the current feed report schema, exact version and IDs, boolean observations, counts, status and step outcome consistently.",
+    "Classify current, missing, newer_version or unknown; block an existing superseded version with blocked_remote_newer_version.",
+    "Allow Trusted Publishing only for https://api.nuget.org/v3/index.json or the existing nuget.org alias; preserve api_key mode for other feeds.",
+    "Expose remote_feed_state in readiness output; keep existing package audit, identity and publication requirements."
+  ],
+  "verification": {
+    "node": {
+      "passed": 86,
+      "failed": 0,
+      "skipped": 0,
+      "execution": "79 checks in the decision/PowerShell suite, then seven checks in the full Bash integration run.",
+      "decision_cases_per_owner": 35,
+      "full_local_feed_cases_per_owner": 6,
+      "full_scenarios": [
+        "missing",
+        "missing without key",
+        "superseded",
+        "mixed missing and superseded",
+        "HTTP 503",
+        "current with matching bytes"
+      ],
+      "powershell": "Windows PowerShell; actual canonical command and child scripts",
+      "bash": "Native Bash and Python 3 in explicitly selected installed OSM-Ubuntu; actual canonical scripts on the mounted canonical source",
+      "commands": [
+        "node --test tinyrustlm/tests/audit-nuget-release-readiness.test.js",
+        "node --test --test-name-pattern='full Bash' tinyrustlm/tests/audit-nuget-release-readiness.test.js"
+      ],
+      "environment": "TINYRUSTLM_FEED_TEST_WSL_DISTRIBUTION=OSM-Ubuntu",
+      "limit": "Native Bash integration declares a skip on ordinary Windows without an explicitly selected WSL distribution. Decision checks require PowerShell and Python. No native Rust or packaged Linux .NET consumer was run."
+    },
+    "managed": {
+      "command": "dotnet test dotnet/tests/TinyRustLM.Package.Tests/TinyRustLM.Package.Tests.csproj --configuration Release --no-restore --verbosity minimal",
+      "passed": 38,
+      "failed": 0,
+      "skipped": 0,
+      "memory_recheck_after_guidance": {
+        "passed": 6,
+        "failed": 0,
+        "skipped": 0
+      }
+    },
+    "bash_syntax": "bash -n passes for the changed canonical script.",
+    "coverage": "No line-coverage percentage is claimed for PowerShell/Bash. Closest evidence is 35 decision cases per owner, including each added function parameter, and six full-command scenarios per owner.",
+    "initial_failures": "First focused attempt passed all six full PowerShell cases but failed two harness arms: Windows command-line length and Python string quoting. JSON input moved to stdin and quoting corrected; product assertions were retained.",
+    "transport": "Loopback fixtures only; all observed requests were GET. Synthetic byte files and synthetic audit records are test inputs, not release evidence.",
+    "secrets": "The real NuGet key file was not read. Synthetic-key absence from readiness reports was asserted.",
+    "cleanup": "Every operation-owned fixture/report tree removed through canonical ownership checks; artifacts/tests/nuget-readiness has no remaining child directories.",
+    "storage": "Logical bytes removed and physical storage recovery were not measured."
+  },
+  "hosted_ci": {
+    "head_sha": "abd5dbeb56bec15073e4a7e89f430fb71cefd69c",
+    "run_id": 35507539470,
+    "url": "https://github.com/MichaelKappel/TinyRustLM.com/actions/runs/35507539470",
+    "status": "completed",
+    "conclusion": "failure",
+    "jobs": 9,
+    "executed_steps": 0,
+    "interpretation": "Jobs rejected before execution; inspect account/run annotations for operator action. No hosted source-test or release-validation result follows. No unchanged retry or account mutation performed."
+  },
+  "publication": {
+    "packages_pushed": 0,
+    "real_key_read": false,
+    "remaining": [
+      "Linux x64/arm64 native and packaged-consumer verification",
+      "Complete three-RID release checks",
+      "Source-authority admission with existing blocked installer links unresolved",
+      "Publishing workflow/default-branch reconciliation",
+      "Credential validity and scope",
+      "Eligible publication and public byte readback"
+    ]
+  },
+  "unrelated_worktree_entries_preserved": 30,
+  "inputs": [
+    {
+      "path": "eng/audit-nuget-release-readiness.ps1",
+      "bytes": 17559,
+      "sha256": "166334e04f075451909389b81180e78de3141ef3c743d85c39cffdf3d650ad75"
+    },
+    {
+      "path": "eng/audit-nuget-release-readiness.sh",
+      "bytes": 15855,
+      "sha256": "ef71e3dc65dd680edb8ad6dc811af160c0ec4520d20fe2be3730a78d0eaaac9f"
+    },
+    {
+      "path": "tinyrustlm/tests/audit-nuget-release-readiness.test.js",
+      "bytes": 20046,
+      "sha256": "acc4db5d1881b27b6420b3be2aa3a8f78a8ec198e4a2b4ebdd20aad45d51d791"
+    },
+    {
+      "path": "docs/nuget/README.md",
+      "bytes": 13170,
+      "sha256": "4526c2c5922d42575706e4da802623257a2ba5e90c5891982e8eb679c323330b"
+    },
+    {
+      "path": "docs/ecosystem-cleanup-2026-09-12.md",
+      "bytes": 109556,
+      "sha256": "ce17917342f18ba4c82d9921be57ae6453bd96ad87bfa49acfba56c1b29ce40a"
+    },
+    {
+      "path": "wiki/runtime-mirust/reports/ecosystem-experiment-lessons-2026-09-12.md",
+      "bytes": 140237,
+      "sha256": "ee2b27c2820ff8c7efc07d9fe2b33d6907e79c0ab3e6d230fe4994f0fc7dc5f9"
+    },
+    {
+      "path": "wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md",
+      "bytes": 50691,
+      "sha256": "8bfa50a003c7b7138eaec16a0460116d6d8a7eb021ec3343011d172c75b017ad"
+    },
+    {
+      "path": ".uai/operations.uai",
+      "bytes": 18300,
+      "sha256": "1b86d8eb2cbcf15b57de48990ad69d58b68ee5a134e7d621724bc4f2bec20e25"
+    },
+    {
+      "path": ".uai/startup-packet.uai",
+      "bytes": 10417,
+      "sha256": "0bd852226babd526682e6e2a1defd86e775d87ca9d0ede8bf74713ccbea554f1"
+    },
+    {
+      "path": ".uai/short-term-memory.uai",
+      "bytes": 14223,
+      "sha256": "c691506a7b8b8198cafd2c5f2404b0d74879551ac4bcf7378f11ecf924ab4cbb"
+    },
+    {
+      "path": ".uai/long-term-memory.uai",
+      "bytes": 8896,
+      "sha256": "b17bcf0da4efb602f5629bf4a36683b66d33a0e030597f9a5bdd3fea86a0f9ae"
+    }
+  ]
+}
