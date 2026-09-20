@@ -16,6 +16,14 @@ Authority order is current owner instructions, inspected current contracts and b
 
 ## Current evidence and its limits
 
+**C85 outbox destination:** current v3 browser/SDK entries and local receipts bind
+origin and exact submit route, workspace and actor. Old unbound rows are
+quarantined; status reads cannot reset another sender. Authority edits discard
+credentials and late replies are ignored. Browser/default SDK requests reject
+redirects. Read `outbox-destination-review.json` for current test counts, shared
+serialization, loopback sockets and paired visual evidence. General HTTP bounds,
+pull/search scope and product/release gates remain open.
+
 **C84 enrollment recovery:** the UI now retains the original claim key/body in
 private session memory and reuses issued credentials after restore failure.
 Claim and reconnect share cancellation ownership through activation; authority

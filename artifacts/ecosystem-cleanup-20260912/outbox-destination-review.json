@@ -1,0 +1,378 @@
+{
+  "schema": "ecosystem.outbox-destination-review/1",
+  "reviewedUtc": "2026-09-20T22:19:18Z",
+  "sourceParent": "342a2a16f8be25eb600747c0dccbcada663ac8f3",
+  "purpose": "Keep queued browser and SDK memory bound to its original destination and identity.",
+  "previousGoalTurn": "No progress: the credential-location confirmation verified an existing note. Current worktree revalidated and the next safe implementation completed.",
+  "repositoryInventory": [
+    {
+      "name": "LMComposer.com",
+      "branch": "main",
+      "head": "6cbb67c59d2f0a3ef22f736d7b515570746c0e3b",
+      "status": 0
+    },
+    {
+      "name": "MiniModel.MiRust.com",
+      "branch": "master",
+      "head": "b437611c34ad4f80312016f4bf9aa1a08398d07a",
+      "status": 0
+    },
+    {
+      "name": "MiniModel.org",
+      "branch": "master",
+      "head": "015d36818f339a9194f2e09591254f954b71ea96",
+      "status": 0
+    },
+    {
+      "name": "MiRust.com",
+      "branch": "master",
+      "head": "b9420a10feb0819ca6bbf89d92c9199ba89d7c86",
+      "status": 0
+    },
+    {
+      "name": "Runtime.MiRust.com",
+      "branch": "master",
+      "head": "8623dcf5603ab419d02ffd0809e9ae987fb5b2a0",
+      "status": 15
+    },
+    {
+      "name": "TinyRustLM.com",
+      "branch": "codex/model-acquisition-v2",
+      "head": "342a2a16f8be25eb600747c0dccbcada663ac8f3",
+      "status": 29
+    },
+    {
+      "name": "TinyRustLM.MiRust.com",
+      "branch": "master",
+      "head": "d17f77af652e9ac086482414a5bd0b6eb2250a50",
+      "status": 1
+    }
+  ],
+  "activeIntake": "TinyRustLM Content and Improvement are placeholder-only.",
+  "baseline": {
+    "node": {
+      "failed": 1,
+      "reason": "Recorded baseline preparation accepted an entry with no destination."
+    },
+    "managed": {
+      "passed": 0,
+      "failed": 1,
+      "reason": "The original SDK sent a prepared entry through another service with matching workspace and actor.",
+      "report": {
+        "path": "results/baseline-origin.trx",
+        "bytes": 4611,
+        "sha256": "5a2c8920c8c7da8a8b29afc9c9c74158c16a92b7ac13f232ea4858e0423f1f59"
+      }
+    }
+  },
+  "implementation": {
+    "contract": "Sole current outbox_entry.v3 and local_receipt.v3 require canonical serviceOrigin and exact submitUrl, including mounted/relay paths. Both JS and .NET validate the shared serialized fixture. Server payload/digest/idempotency contract is unchanged.",
+    "recovery": "Outbox status reads validate/quarantine but never reset sends. Elected sender recovers and drains only matching destination/workspace/actor rows; no unbound-version migration or sender.",
+    "session": "Authority edits drop credentials. Captured request identity rejects late completions and prevents sending later rows under edited settings.",
+    "redirects": "Browser Fetch uses redirect:error and credentials:omit. Default SDK HttpClientHandler disables redirects; injected clients must supply the same policy.",
+    "routeReview": "Origin-only intermediate implementation was expanded before commit after inspection found existing relative relay paths and multiple services on one host.",
+    "ui": "Existing controls/layout retained; both shells regenerated with exact asset hashes."
+  },
+  "tests": {
+    "node": {
+      "passed": 77,
+      "failed": 0,
+      "skipped": 0
+    },
+    "managed": {
+      "focusedPassed": 67,
+      "packagePassed": 38,
+      "failed": 0,
+      "skipped": 0,
+      "configuration": "Release net8.0; existing projects and dependencies",
+      "coverageGap": "Existing managed project has no coverage instrumentation; no percentage claimed."
+    },
+    "browser": {
+      "passed": 29,
+      "failed": 0,
+      "skipped": 3,
+      "retries": 0,
+      "projects": [
+        "desktop",
+        "narrow-desktop",
+        "mobile",
+        "reduced-motion"
+      ],
+      "scope": "Actual Edge, fixture service, production IndexedDB and UI. Foreign hosts/routes/workspaces/actors stay pending, old unbound rows quarantine, foreign sending state is unchanged, relative relay works, late successful save after authority change remains retryable without reactivating credentials. Existing enrollment/continuity cases remain.",
+      "additionalCoverageRunPassed": 4
+    },
+    "coverage": {
+      "method": "Combine final Node V8 and four actual Edge runs. For each nonblank/noncomment added source line from git diff, use the innermost V8 range at its first nonwhitespace offset; any observed execution covers that line. Not whole-module or branch coverage.",
+      "files": [
+        {
+          "file": "tinyrustlm/app/app.js",
+          "changedLines": 95,
+          "coveredLines": 84,
+          "percent": 88.42,
+          "missed": [
+            8155,
+            8999,
+            9012,
+            9065,
+            9082,
+            9083,
+            9128,
+            11473,
+            11558,
+            11577,
+            11586
+          ]
+        },
+        {
+          "file": "tinyrustlm/app/memory-endpoints-sync.js",
+          "changedLines": 83,
+          "coveredLines": 83,
+          "percent": 100,
+          "missed": []
+        }
+      ]
+    },
+    "sharedFixture": "docs/nuget/memoryendpoints-outbox-v3.example.json validated and compared against independently prepared entries in both implementations.",
+    "redirect": "Real loopback TCP source returns 307; default SDK rejects it and target listener observes no connection.",
+    "visual": {
+      "beforePassed": 1,
+      "afterPassed": 1,
+      "pairs": [
+        {
+          "viewport": "desktop",
+          "beforeSha256": "cda885d7f1b918dc57d6a8b234df3fe5cb7b08964d936f0dcb6f1517150e608e",
+          "afterSha256": "cda885d7f1b918dc57d6a8b234df3fe5cb7b08964d936f0dcb6f1517150e608e",
+          "bytesEqual": true,
+          "signatureEqual": true,
+          "pageErrors": [],
+          "browser": "153.0.4234.48"
+        },
+        {
+          "viewport": "mobile",
+          "beforeSha256": "16aea953736a095a5eade3a8b435172a2243435a353009001bd746c3e9762d51",
+          "afterSha256": "16aea953736a095a5eade3a8b435172a2243435a353009001bd746c3e9762d51",
+          "bytesEqual": true,
+          "signatureEqual": true,
+          "pageErrors": [],
+          "browser": "153.0.4234.48"
+        }
+      ],
+      "limitation": "Same-slice desktop/mobile empty-state comparison; fifteen historical visual differences remain unresolved."
+    }
+  },
+  "failedSetup": [
+    {
+      "kind": "test_compilation",
+      "reason": "Initial nullable negative origin fixture used nonnullable parameter and triggered xUnit1012. Corrected annotation; no product behavior changed."
+    },
+    {
+      "kind": "command_setup",
+      "reason": "A Node -e fixture-generation attempt lost quoting through Windows PowerShell. No fixture was generated; stdin script succeeded."
+    }
+  ],
+  "secretScan": {
+    "rawStatus": "fail",
+    "rawFindingCount": 2,
+    "scopeFiles": 20,
+    "scopeComplete": false,
+    "findings": [
+      {
+        "path": "tinyrustlm/tests/memory-endpoints-sync.test.js",
+        "codes": [
+          "bearer_credential"
+        ],
+        "classification": "manually reviewed existing dummy bearer literals in test cases, including rejection tests; no real credential"
+      },
+      {
+        "path": "dotnet/tests/TinyRustLM.Core.Tests/MemoryEndpointsClientTests.cs",
+        "codes": [
+          "bearer_credential"
+        ],
+        "classification": "manually reviewed existing dummy bearer literals in test cases, including rejection tests; no real credential"
+      }
+    ],
+    "handling": "Raw failure retained. Scanner and tests unchanged for these findings. NuGet credential file was not opened. This is not a release secret-scan pass.",
+    "finalScopeVerification": {
+      "files": 21,
+      "rawStatus": "fail",
+      "rawFindingCount": 2,
+      "reason": "Same two manually reviewed pre-existing dummy test bearer strings; receipt added no finding."
+    }
+  },
+  "sourceAuthority": {
+    "status": "source_authority_scan_incomplete",
+    "reason": "Known two C28 installer links; no blocked deletion retried.",
+    "freshRun": "CLI exited 1; same exact two registered C28 paths remain unreadable."
+  },
+  "sourceFiles": [
+    {
+      "path": "dotnet/src/TinyRustLM.MemoryEndpoints/MemoryEndpointsSync.cs",
+      "bytes": 34951,
+      "sha256": "d5c9af1497667d9f749f01bfb5d2bd7a036eb83fa31e9175ed14c73409958a63"
+    },
+    {
+      "path": "dotnet/src/TinyRustLM.MemoryEndpoints/TinyRustLmMemoryEndpointsClient.cs",
+      "bytes": 57457,
+      "sha256": "afeb800afcd4af4e31e178f8bc1a0e15051c6a35ccc7cf387663997dcb99e0e2"
+    },
+    {
+      "path": "dotnet/tests/TinyRustLM.Core.Tests/MemoryEndpointsClientTests.cs",
+      "bytes": 25709,
+      "sha256": "4a87e6b5130985d5137ff3a5d8486b74f1432572fba58ce42f5b97518cbce307"
+    },
+    {
+      "path": "dotnet/tests/TinyRustLM.Core.Tests/MemoryEndpointsSyncTests.cs",
+      "bytes": 10223,
+      "sha256": "5765aee7e940aaab44f6a34592e60011ffa2a5bee6c22c3f885a4f026d515d22"
+    },
+    {
+      "path": "dotnet/tests/TinyRustLM.Core.Tests/TinyRustLM.Core.Tests.csproj",
+      "bytes": 2264,
+      "sha256": "79310d4290028ddd9599d7e2649c0d229c6c471089bada8a500ed3ca7cece9bd"
+    },
+    {
+      "path": "tinyrustlm/app/app.js",
+      "bytes": 471050,
+      "sha256": "087565d5baa8f9b5a4bc657ba5494dafc73967400b2958ff038966f0906c01a9"
+    },
+    {
+      "path": "tinyrustlm/app/memory-endpoints-sync.js",
+      "bytes": 126160,
+      "sha256": "39e17ed92b116fec7a14274224374b34bb2a109cfd9fdbdcbfd18917b6543d0d"
+    },
+    {
+      "path": "tinyrustlm/app/index.html",
+      "bytes": 48604,
+      "sha256": "1e1e7c810404bdeeb5adfa46595d11d1e09a04ce0f4016dca521a80c3d748df6"
+    },
+    {
+      "path": "tinyrustlm/index.html",
+      "bytes": 48684,
+      "sha256": "9232b97e2193e01b3eed8e2e0ba3bb44e42c3a180fe3ca54fbcec0e0786d2c81"
+    },
+    {
+      "path": "tinyrustlm/e2e/memory-endpoints-enrollment.spec.js",
+      "bytes": 52025,
+      "sha256": "6318611833d30b9eba66e895e27ab2dbde2489d87f83ac895e8d4f419d20fdf6"
+    },
+    {
+      "path": "tinyrustlm/tests/memory-endpoints-sync.test.js",
+      "bytes": 26928,
+      "sha256": "0136a427e6cecc1e62a1c012f0ef54050c9a15d795acbdafa3caf76c6647cc31"
+    },
+    {
+      "path": "docs/nuget/MEMORY_ENDPOINTS_CONNECTOR.md",
+      "bytes": 20059,
+      "sha256": "86d8670ca6c31543b18a7c1ec34db06be462bfe06568a5fc85d5598493cf94d8"
+    },
+    {
+      "path": "docs/nuget/memoryendpoints-outbox-v3.example.json",
+      "bytes": 1944,
+      "sha256": "0418f90fb8aa54769ef369698ae3702c40c220fe9ed2dd9a2f2b1e984979a138"
+    },
+    {
+      "path": ".uai/operations.uai",
+      "bytes": 32043,
+      "sha256": "2adce084a1ccd664c648bb9372aa63ab0b878d2c5ba2ba4c7a0a36c0cf3de772"
+    },
+    {
+      "path": ".uai/short-term-memory.uai",
+      "bytes": 26889,
+      "sha256": "51af1ffc8951b2e87a2a1628624063050be8af2f1bf48807fe908037021e43cc"
+    },
+    {
+      "path": ".uai/startup-packet.uai",
+      "bytes": 23341,
+      "sha256": "bd95768851ef50fca8ace2b6892e7eb67f0cdce9bd914c1985e0a383eea488ce"
+    },
+    {
+      "path": ".uai/long-term-memory.uai",
+      "bytes": 8798,
+      "sha256": "ecfd93102d80660a9ed7a653dbbab4c42e6d7b3b9dc26be002a4a0bb5b16e612"
+    },
+    {
+      "path": "docs/ecosystem-cleanup-2026-09-12.md",
+      "bytes": 163495,
+      "sha256": "278c6ce3960c8953a23b44785791afdf1c56c3720b82424561b28ef1e0686da9"
+    },
+    {
+      "path": "wiki/runtime-mirust/reports/ecosystem-experiment-lessons-2026-09-12.md",
+      "bytes": 195378,
+      "sha256": "54c2d9e162228b5d32e0278a1c094c61bdf2c3f9df34855fe8b8ff611527efff"
+    },
+    {
+      "path": "wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md",
+      "bytes": 68583,
+      "sha256": "4870b6cfa52a01c0eab7cc10b26a03214e16756fbd79d4b5721e0b78e8ae97b8"
+    }
+  ],
+  "resultIdentities": [
+    {
+      "path": "results/baseline-origin.trx",
+      "bytes": 4611,
+      "sha256": "5a2c8920c8c7da8a8b29afc9c9c74158c16a92b7ac13f232ea4858e0423f1f59"
+    },
+    {
+      "path": "results/memory-origin-final.trx",
+      "bytes": 80530,
+      "sha256": "039334ef99eca6d50ec5c40bf0af748692437047e03630be2ad6c24f44503810"
+    },
+    {
+      "path": "results/memory-destination.trx",
+      "bytes": 99342,
+      "sha256": "123465e9971c80035fae66573c18dee2884c71d49ca3d1bc9ce182c93fbc1acf"
+    },
+    {
+      "path": "results/memory-final.trx",
+      "bytes": 100849,
+      "sha256": "5f11ffe89bf3604ec3c01faa4afc13eaeacf9e01989888e39714b61978eac606"
+    },
+    {
+      "path": "results/memory-closed.trx",
+      "bytes": 103951,
+      "sha256": "db9397517bbf619b46f9220463195804d9d99658d84747588cedf49d3101f106"
+    },
+    {
+      "path": "results/package.trx",
+      "bytes": 60909,
+      "sha256": "d9ce506aeb967548df74831c13212b2e1cbce45a2bb06f74e95cb54b842a9c4e"
+    },
+    {
+      "path": "node-closed.txt",
+      "bytes": 38864,
+      "sha256": "f6a2f5e8ccbd07b65ad531f12a1dfd365c0eaebba9bde1b72f3b5fbea21c0ca7"
+    },
+    {
+      "path": "browser-closed.txt",
+      "bytes": 11560,
+      "sha256": "55dbc8c8f49e625577471981ed9b924ba8c8b2785aa954755cd61615febddb10"
+    },
+    {
+      "path": "scan-report.json",
+      "bytes": 9917,
+      "sha256": "3ba6c7111d2b4165540feb9ec705066cd95fb666df2e9b7f9e870ad826b167f5"
+    }
+  ],
+  "limits": [
+    "General browser GET/POST response readers still lack deadlines and streaming bounds; malformed JSON handling also needs review.",
+    "Pull snapshots remain workspace-keyed; search packing and complete async authority ownership still need review.",
+    "Destination binding is not cryptographic authentication of local storage. No protection is claimed against a malicious browser owner rewriting both entry and receipt.",
+    "In-flight requests are not actively aborted by this change; cancellation cannot undo remote persistence.",
+    "No real-model qualification, live MemoryEndpoints operation, seed, ARM64 release consumer evidence, NuGet publication or site deployment.",
+    "Previously blocked deletion cohorts and unrelated work preserved."
+  ],
+  "ownedOutput": {
+    "root": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\memory-request-ownership\\tinyrustlm-operation-G0KWzl",
+    "files": 532,
+    "childDirectories": 151,
+    "logicalBytes": 48485166,
+    "externalMarkerBytes": 65,
+    "originalOwnershipVerified": true,
+    "physicalReclaimedBytesMeasured": false,
+    "status": "removed",
+    "rootAbsent": true,
+    "externalMarkerAbsent": true,
+    "method": "After all command sessions completed and no matching writers remained, verified original ownership and bounded containment, inventoried output, removed through the existing owner helper, and verified root/marker absence."
+  },
+  "resultRetention": "Raw operation output retired after extracting these identities, outcomes and lessons. No executable source snapshot or historical model retained."
+}

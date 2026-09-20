@@ -440,7 +440,8 @@
       coordinator: null,
       pendingCount: 0,
       quarantineCount: 0,
-      drainPromise: null
+      drainPromise: null,
+      drainAuthority: null
     },
     localConnectApprovalMode: "ask",
     localConnectFullControlAcknowledged: false,
@@ -8151,7 +8152,7 @@
           return;
         }
         memoryEndpointsOutboxStore()
-          .then((store) => store.recoverPending(Date.now()))
+          .then((store) => store.readPending(Date.now()))
           .then((recovery) => {
             state.memoryEndpoints.pendingCount = recovery.pending.length;
             if (recovery.pending.length > 0) {
@@ -8187,7 +8188,7 @@
     try {
       memoryEndpointsDeviceId();
       const store = await memoryEndpointsOutboxStore();
-      const recovery = await store.recoverPending(Date.now());
+      const recovery = await store.readPending(Date.now());
       state.memoryEndpoints.pendingCount = recovery.pending.length;
       state.memoryEndpoints.quarantineCount = recovery.quarantined.length;
       if (recovery.quarantined.length > 0) {
@@ -8684,14 +8685,55 @@
     }
   }
 
+  /** Editing authority drops credentials instead of carrying an old key into a new service or identity. */
+  function invalidateMemoryEndpointsAuthorization() {
+    clearMemoryEndpointsSessionSecrets();
+    state.memoryEndpoints.connected = false;
+    if (state.memoryEndpoints.connectionMode === "agent") state.memoryEndpoints.workspaceId = "";
+    state.memoryEndpoints.connectionMode = "workspace";
+    if (el.memoryEndpointsIssuedCredentials) el.memoryEndpointsIssuedCredentials.hidden = true;
+    if (el.memoryEndpointsCanonicalAgentName) el.memoryEndpointsCanonicalAgentName.value = "";
+    invalidateMemoryEndpointsRetrieval(true);
+  }
+
+  /** Capture runtime authority before asynchronous work; never persist its session credential. */
+  function memoryEndpointsRequestAuthority() {
+    const submitUrl = new URL(memoryEndpointsUrl(memoryEndpointsSubmitPath), window.location.href);
+    return Object.freeze({
+      baseUrl: state.memoryEndpoints.baseUrl,
+      serviceOrigin: requireMemoryEndpointsSync().requireServiceOrigin(submitUrl.origin),
+      submitUrl: submitUrl.href,
+      workspaceId: state.memoryEndpoints.workspaceId,
+      actorAgentId: state.memoryEndpoints.agentId,
+      authHeader: state.memoryEndpoints.authHeader,
+      bearerToken: state.memoryEndpoints.bearerToken
+    });
+  }
+
+  /** Refuse a queued request or completion after any part of its authorization changes. */
+  function requireMemoryEndpointsAuthority(authority) {
+    const current = state.memoryEndpoints;
+    if (!current.enabled || current.baseUrl !== authority.baseUrl ||
+        current.workspaceId !== authority.workspaceId || current.agentId !== authority.actorAgentId ||
+        current.authHeader !== authority.authHeader || current.bearerToken !== authority.bearerToken) {
+      const error = new Error("Web memory connection changed; connect before retrying");
+      error.code = "memory_authority_changed";
+      throw error;
+    }
+  }
+
   async function memoryEndpointsPost(path, payload, idempotencyPrefix, options = {}) {
     readMemoryEndpointsSettings({ requireEnabled: true, requireAuth: true });
+    const authority = options.authority || memoryEndpointsRequestAuthority();
+    requireMemoryEndpointsAuthority(authority);
     const idempotencyKey = options.idempotencyKey || memoryEndpointsIdempotencyKey(idempotencyPrefix);
     let response = null;
     try {
       response = await fetch(memoryEndpointsUrl(path), {
         method: "POST",
         cache: "no-store",
+        credentials: "omit",
+        redirect: "error",
         headers: {
           ...memoryEndpointsAuthHeaders(),
           "Content-Type": "application/json",
@@ -8703,6 +8745,7 @@
       throw memoryEndpointsBrowserFetchError(error);
     }
     const responseText = await response.text();
+    requireMemoryEndpointsAuthority(authority);
     if (!response.ok) {
       throw new Error(`MemoryEndpoints request failed with HTTP ${response.status}`);
     }
@@ -8716,8 +8759,10 @@
     }
   }
 
-  async function memoryEndpointsGet(path, query) {
+  async function memoryEndpointsGet(path, query, authority) {
     readMemoryEndpointsSettings({ requireEnabled: true, requireAuth: true });
+    authority = authority || memoryEndpointsRequestAuthority();
+    requireMemoryEndpointsAuthority(authority);
     const url = new URL(memoryEndpointsUrl(path), window.location.href);
     for (const [key, value] of Object.entries(query || {})) {
       if (value === null || value === undefined || value === "") {
@@ -8730,12 +8775,15 @@
       response = await fetch(url.toString(), {
         method: "GET",
         cache: "no-store",
+        credentials: "omit",
+        redirect: "error",
         headers: memoryEndpointsAuthHeaders()
       });
     } catch (error) {
       throw memoryEndpointsBrowserFetchError(error);
     }
     const responseText = await response.text();
+    requireMemoryEndpointsAuthority(authority);
     if (!response.ok) {
       throw new Error(`MemoryEndpoints request failed with HTTP ${response.status}`);
     }
@@ -8749,22 +8797,23 @@
     }
   }
 
-  async function pullMemoryEndpointsSnapshot() {
+  async function pullMemoryEndpointsSnapshot(authority) {
     const sync = requireMemoryEndpointsSync();
     const response = await memoryEndpointsGet(memoryEndpointsListPath, {
-      workspaceId: state.memoryEndpoints.workspaceId,
-      agentId: state.memoryEndpoints.agentId,
-      actorAgentId: state.memoryEndpoints.agentId,
-      actor_agent_id: state.memoryEndpoints.agentId,
+      workspaceId: authority.workspaceId,
+      agentId: authority.actorAgentId,
+      actorAgentId: authority.actorAgentId,
+      actor_agent_id: authority.actorAgentId,
       scope: memoryEndpointsTinyRustLmScope,
       scopeId: memoryEndpointsTinyRustLmScopeId,
       limit: 10000
-    });
+    }, authority);
     const snapshot = sync.normalizeMemoryEventsPull(response, {
-      workspaceId: state.memoryEndpoints.workspaceId,
+      workspaceId: authority.workspaceId,
       pulledAtUnixMs: Date.now()
     });
     const store = await memoryEndpointsOutboxStore();
+    requireMemoryEndpointsAuthority(authority);
     await store.commitPullSnapshot(snapshot);
     return snapshot;
   }
@@ -8773,7 +8822,9 @@
     if (el.memoryEndpointsEnabled) {
       el.memoryEndpointsEnabled.checked = true;
     }
+    state.memoryEndpoints.connectionMode = "workspace";
     readMemoryEndpointsSettings({ requireAuth: true });
+    const authority = memoryEndpointsRequestAuthority();
     state.memoryEndpoints.enabled = true;
     state.memoryEndpoints.connectionMode = "workspace";
     persistMemoryEndpointsSettings();
@@ -8790,6 +8841,7 @@
     );
     state.memoryEndpoints.connected = true;
     const drain = await drainMemoryEndpointsOutbox();
+    requireMemoryEndpointsAuthority(authority);
     setMemoryEndpointsStatus(
       drain.pending > 0 ? memoryEndpointsPendingStatus(drain.pending) : "web memory connected",
       false
@@ -8827,7 +8879,7 @@
     return Array.from(references);
   }
 
-  async function buildMemoryEndpointsRecord(scope) {
+  async function buildMemoryEndpointsRecord(scope, authority) {
     const memoryTier = scope === "long_term" ? "long_term" : "short_term";
     const memoryType = memoryTier === "long_term" ? "handoff" : "status";
     const tierTag = memoryTier.replace("_", "-");
@@ -8855,8 +8907,8 @@
       responseSummary ? `assistant_response_summary=${responseSummary}` : "assistant_response_summary=none yet"
     ].filter(Boolean).join("\n"), "MemoryEndpoints memory summary", { maxChars: 4000 });
     return {
-      workspaceId: state.memoryEndpoints.workspaceId,
-      actorAgentId: state.memoryEndpoints.agentId,
+      workspaceId: authority.workspaceId,
+      actorAgentId: authority.actorAgentId,
       kind: "tinyrustlm.memory_endpoints.memory_record.v1",
       version: 1,
       scope: memoryEndpointsTinyRustLmScope,
@@ -8942,28 +8994,29 @@
   }
 
   async function drainMemoryEndpointsOutbox() {
+    const authority = memoryEndpointsRequestAuthority();
     if (state.memoryEndpoints.drainPromise) {
+      requireMemoryEndpointsAuthority(state.memoryEndpoints.drainAuthority);
       return state.memoryEndpoints.drainPromise;
     }
     const leaderRun = async () => {
       const sync = requireMemoryEndpointsSync();
       const store = await memoryEndpointsOutboxStore();
-      let recovery = await store.recoverPending(Date.now());
+      requireMemoryEndpointsAuthority(authority);
+      let recovery = await store.recoverPending(Date.now(), authority);
       const synchronizedEventIds = [];
       let lastError = "";
-      if (!state.memoryEndpoints.enabled || !state.memoryEndpoints.bearerToken) {
-        state.memoryEndpoints.pendingCount = recovery.pending.length;
-        return { pending: recovery.pending.length, synchronizedEventIds, eventIds: synchronizedEventIds, lastError };
-      }
       try {
-        await pullMemoryEndpointsSnapshot();
+        await pullMemoryEndpointsSnapshot(authority);
       } catch (error) {
+        requireMemoryEndpointsAuthority(authority);
         lastError = `pull failed: ${errorMessage(error)}`;
         state.memoryEndpoints.pendingCount = recovery.pending.length;
         return { pending: recovery.pending.length, synchronizedEventIds, eventIds: synchronizedEventIds, lastError };
       }
 
       for (let entry of recovery.pending) {
+        requireMemoryEndpointsAuthority(authority);
         try {
           if (entry.state === "saved_locally") {
             entry = await store.transition(entry.eventId, (current) => sync.markQueued(current, Date.now()));
@@ -8976,7 +9029,7 @@
             memoryEndpointsSubmitPath,
             entry.payload,
             "tinyrustlm-save-memory",
-            { idempotencyKey: entry.idempotencyKey }
+            { idempotencyKey: entry.idempotencyKey, authority }
           );
           const verifiedAtUnixMs = Date.now();
           const receipt = memoryEndpointsAuthoritativeReceipt(entry, response, verifiedAtUnixMs);
@@ -8995,7 +9048,8 @@
         }
       }
 
-      recovery = await store.recoverPending(Date.now());
+      recovery = await store.readPending(Date.now(), authority);
+      requireMemoryEndpointsAuthority(authority);
       state.memoryEndpoints.pendingCount = recovery.pending.length;
       state.memoryEndpoints.quarantineCount += recovery.quarantined.length;
       return {
@@ -9008,7 +9062,7 @@
     const run = async () => {
       const store = await memoryEndpointsOutboxStore();
       if (!state.memoryEndpoints.enabled || !state.memoryEndpoints.bearerToken) {
-        const recovery = await store.recoverPending(Date.now());
+        const recovery = await store.readPending(Date.now());
         state.memoryEndpoints.pendingCount = recovery.pending.length;
         return {
           pending: recovery.pending.length,
@@ -9019,13 +9073,14 @@
         };
       }
       const election = await memoryEndpointsCoordinator().runAsLeader(
-        state.memoryEndpoints.workspaceId,
+        authority.workspaceId,
         leaderRun
       );
       if (election.acquired) {
         return { ...election.value, leader: true };
       }
-      const recovery = await store.recoverPending(Date.now());
+      const recovery = await store.readPending(Date.now(), authority);
+      requireMemoryEndpointsAuthority(authority);
       state.memoryEndpoints.pendingCount = recovery.pending.length;
       return {
         pending: recovery.pending.length,
@@ -9035,33 +9090,42 @@
         leader: false
       };
     };
+    state.memoryEndpoints.drainAuthority = authority;
     state.memoryEndpoints.drainPromise = run().finally(() => {
       state.memoryEndpoints.drainPromise = null;
+      state.memoryEndpoints.drainAuthority = null;
     });
     return state.memoryEndpoints.drainPromise;
   }
 
   async function saveMemoryEndpoints(scope) {
     readMemoryEndpointsSettings({ requireEnabled: true, requireIdentity: true });
+    const authority = memoryEndpointsRequestAuthority();
     const sync = requireMemoryEndpointsSync();
     const store = await memoryEndpointsOutboxStore();
-    const record = await buildMemoryEndpointsRecord(scope);
+    const record = await buildMemoryEndpointsRecord(scope, authority);
     const memoryTier = record.tinyrustlmMemoryTier || "short_term";
     const now = Date.now();
     const prepared = await sync.prepareOutboxEntry(record, {
+      serviceOrigin: authority.serviceOrigin,
+      submitUrl: authority.submitUrl,
       eventId: memoryEndpointsStableId("event"),
       deviceId: memoryEndpointsDeviceId(),
       committedAtUnixMs: now
     });
+    requireMemoryEndpointsAuthority(authority);
     await store.putPrepared(prepared);
+    requireMemoryEndpointsAuthority(authority);
     setMemoryEndpointsStatus(`${memoryTier.replace("_", "-")} web memory saved locally`, false);
     const queued = await store.transition(prepared.eventId, (entry) => sync.markQueued(entry, Date.now()));
+    requireMemoryEndpointsAuthority(authority);
     state.memoryEndpoints.pendingCount += 1;
     setMemoryEndpointsStatus(`${memoryTier.replace("_", "-")} web memory queued; saved locally`, false);
     if (!state.memoryEndpoints.bearerToken) {
       return queued.localReceipt;
     }
     const drain = await drainMemoryEndpointsOutbox();
+    requireMemoryEndpointsAuthority(authority);
     if (drain.synchronizedEventIds.includes(queued.eventId)) {
       state.memoryEndpoints.connected = true;
       setMemoryEndpointsStatus(`${memoryTier.replace("_", "-")} web memory synchronized`, false);
@@ -11406,7 +11470,7 @@ if (view.matches.length) {
 
   if (el.memoryEndpointsEnabled) {
     el.memoryEndpointsEnabled.addEventListener("change", function () {
-      cancelMemoryEndpointsEnrollment();
+      invalidateMemoryEndpointsAuthorization();
       try {
         readMemoryEndpointsSettings();
         state.memoryEndpoints.connected = false;
@@ -11426,9 +11490,9 @@ if (view.matches.length) {
     if (!input) {
       return;
     }
-    input.addEventListener("input", cancelMemoryEndpointsEnrollment);
+    input.addEventListener("input", invalidateMemoryEndpointsAuthorization);
     input.addEventListener("change", function () {
-      cancelMemoryEndpointsEnrollment();
+      invalidateMemoryEndpointsAuthorization();
       try {
         readMemoryEndpointsSettings();
         state.memoryEndpoints.connected = false;
@@ -11441,8 +11505,10 @@ if (view.matches.length) {
 
   if (el.memoryEndpointsToken) {
     el.memoryEndpointsToken.addEventListener("input", function () {
-      cancelMemoryEndpointsEnrollment();
-      state.memoryEndpoints.bearerToken = el.memoryEndpointsToken.value.trim();
+      const token = el.memoryEndpointsToken.value.trim();
+      invalidateMemoryEndpointsAuthorization();
+      el.memoryEndpointsToken.value = token;
+      state.memoryEndpoints.bearerToken = token;
       state.memoryEndpoints.connected = false;
       setMemoryEndpointsStatus(
         state.memoryEndpoints.bearerToken ? "workspace key entered for this session" : "workspace key not stored",
@@ -11489,6 +11555,7 @@ if (view.matches.length) {
     el.memoryEndpointsConnectButton.addEventListener("click", function () {
       cancelMemoryEndpointsEnrollment();
       connectMemoryEndpoints().catch((error) => {
+        if (error.code === "memory_authority_changed") return;
         state.memoryEndpoints.connected = false;
         setMemoryEndpointsStatus(errorMessage(error), true);
       });
@@ -11498,6 +11565,7 @@ if (view.matches.length) {
   if (el.memoryEndpointsSaveShortTermButton) {
     el.memoryEndpointsSaveShortTermButton.addEventListener("click", function () {
       saveMemoryEndpoints("short_term").catch((error) => {
+        if (error.code === "memory_authority_changed") return;
         setMemoryEndpointsStatus(errorMessage(error), true);
       });
     });
@@ -11506,6 +11574,7 @@ if (view.matches.length) {
   if (el.memoryEndpointsSaveLongTermButton) {
     el.memoryEndpointsSaveLongTermButton.addEventListener("click", function () {
       saveMemoryEndpoints("long_term").catch((error) => {
+        if (error.code === "memory_authority_changed") return;
         setMemoryEndpointsStatus(errorMessage(error), true);
       });
     });
@@ -11514,6 +11583,7 @@ if (view.matches.length) {
   if (el.memoryEndpointsSearchButton) {
     el.memoryEndpointsSearchButton.addEventListener("click", function () {
       searchMemoryEndpoints().catch((error) => {
+        if (error.code === "memory_authority_changed") return;
         setMemoryEndpointsStatus(errorMessage(error), true);
       });
     });

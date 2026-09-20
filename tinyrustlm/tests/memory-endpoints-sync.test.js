@@ -116,6 +116,8 @@ test("distributed sync capability negotiation fails closed until complete author
 
 test("equal logical payloads share the Rust and .NET fingerprint", async () => {
   const first = await sync.prepareOutboxEntry(payload(), {
+    serviceOrigin: "https://memory.example",
+    submitUrl: "https://memory.example/save",
     eventId: "event-0123456789abcdef",
     deviceId: "device-browser-a",
     committedAtUnixMs: 1_720_000_000_000
@@ -124,6 +126,8 @@ test("equal logical payloads share the Rust and .NET fingerprint", async () => {
   reorderedPayload.uaiReferences.reverse();
   reorderedPayload.tags.reverse();
   const second = await sync.prepareOutboxEntry(reorderedPayload, {
+    serviceOrigin: "https://memory.example",
+    submitUrl: "https://memory.example/save",
     eventId: "event-0123456789abcdef",
     deviceId: "device-browser-a",
     committedAtUnixMs: 1_720_000_000_000
@@ -136,8 +140,8 @@ test("equal logical payloads share the Rust and .NET fingerprint", async () => {
   );
   assert.equal(first.idempotencyKey, second.idempotencyKey);
   assert.match(first.idempotencyKey, /^tinyrustlm-memory-v2-/);
-  assert.equal(first.version, 2);
-  assert.equal(first.localReceipt.version, 2);
+  assert.equal(first.version, 3);
+  assert.equal(first.localReceipt.version, 3);
   assert.deepEqual(first.payload, second.payload);
   assert.equal(Object.hasOwn(first.payload, "actorAgentId"), true);
   assert.equal(Object.hasOwn(first.payload, "summary"), true);
@@ -147,8 +151,57 @@ test("equal logical payloads share the Rust and .NET fingerprint", async () => {
   assert.equal(first.localReceipt.eventId, first.eventId);
 });
 
+test("outbox preparation requires and retains the original service origin", async () => {
+  const options = { eventId: "event-origin-binding", deviceId: "device-browser-a", committedAtUnixMs: 1_720_000_000_000 };
+  await assert.rejects(sync.prepareOutboxEntry(payload(), options), /service origin/i);
+  const entry = await sync.prepareOutboxEntry(payload(), { ...options, serviceOrigin: "https://memory.example", submitUrl: "https://memory.example/save" });
+  assert.equal(entry.serviceOrigin, "https://memory.example");
+  assert.equal(entry.localReceipt.serviceOrigin, entry.serviceOrigin);
+  assert.equal(entry.version, 3);
+  const altered = structuredClone(entry);
+  altered.submitUrl = "https://memory.example/another-save";
+  await assert.rejects(sync.validateOutboxEntry(altered), /local receipt/i);
+});
+
+test("outbox authority matches origin, workspace and actor independently", async () => {
+  const entry = await sync.prepareOutboxEntry(payload(), { serviceOrigin: "https://memory.example", submitUrl: "https://memory.example/save", eventId: "event-origin", deviceId: "device-one", committedAtUnixMs: 1_720_000_000_000 });
+  const authority = { serviceOrigin: entry.serviceOrigin, submitUrl: entry.submitUrl, workspaceId: entry.payload.workspaceId, actorAgentId: entry.payload.actorAgentId };
+  assert.equal(sync.outboxBelongsTo(entry, authority), true);
+  for (const changes of [{ serviceOrigin: "https://another.example", submitUrl: "https://another.example/save" }, { submitUrl: "https://memory.example/another-save" }, { workspaceId: "other-workspace" }, { actorAgentId: "other-actor" }]) {
+    assert.equal(sync.outboxBelongsTo(entry, { ...authority, ...changes }), false);
+  }
+  for (const changes of [{ serviceOrigin: "not-an-origin" }, { workspaceId: "bad space" }, { actorAgentId: "bad space" }]) {
+    assert.throws(() => sync.outboxBelongsTo(entry, { ...authority, ...changes }));
+  }
+  const unbound = structuredClone(entry);
+  unbound.kind = "tinyrustlm.memory_endpoints.outbox_entry.v2";
+  unbound.version = 2;
+  delete unbound.serviceOrigin;
+  await assert.rejects(sync.validateOutboxEntry(unbound), /missing|unsupported/i);
+});
+
+test("outbox origins reject paths, credentials, noncanonical URLs and external HTTP", () => {
+  for (const value of ["https://memory.example", "https://memory.example:8443", "http://127.0.0.1:1234", "http://localhost", "http://[::1]:1234", "https://xn--bcher-kva.example"]) {
+    assert.equal(sync.requireServiceOrigin(value), value);
+  }
+  for (const value of [null, "", "http://memory.example", "file:///tmp", "https://memory.example/", "https://memory.example/path", "https://memory.example?x=1", "https://memory.example#part", "https://user@memory.example", "HTTPS://MEMORY.EXAMPLE", "https://memory.example:443", "https://bücher.example"]) {
+    assert.throws(() => sync.requireServiceOrigin(value), /service origin/i);
+  }
+});
+
+test("outbox submit routes retain relay paths and reject ambiguous destinations", () => {
+  for (const value of ["https://memory.example/", "https://memory.example/save", "https://memory.example/api/memoryendpoints/api/matm/memory-events/submit"]) {
+    assert.equal(sync.requireSubmitUrl(value, "https://memory.example"), value);
+  }
+  for (const value of [null, "not-url", "https://memory.example", "https://other.example/save", "https://memory.example/save?", "https://memory.example/save#", "https://memory.example/save?x=1", "https://memory.example/save#part", "https://user@memory.example/save", "https://memory.example/a/../save"]) {
+    assert.throws(() => sync.requireSubmitUrl(value, "https://memory.example"), /submit URL/i);
+  }
+});
+
 test("retry identity is immutable and synchronization requires a matching receipt", async () => {
   let entry = await sync.prepareOutboxEntry(payload(), {
+    serviceOrigin: "https://memory.example",
+    submitUrl: "https://memory.example/save",
     eventId: "event-0123456789abcdef",
     deviceId: "device-browser-a",
     committedAtUnixMs: 1_720_000_000_000
@@ -199,11 +252,15 @@ test("retry identity is immutable and synchronization requires a matching receip
 
 test("persisted rows reject credential fields and payload mutation", async () => {
   const entry = await sync.prepareOutboxEntry(payload(), {
+    serviceOrigin: "https://memory.example",
+    submitUrl: "https://memory.example/save",
     eventId: "event-0123456789abcdef",
     deviceId: "device-browser-a",
     committedAtUnixMs: 1_720_000_000_000
   });
   const json = await sync.serializeOutboxEntry(entry);
+  const shared = fs.readFileSync(path.join(__dirname, "../../docs/nuget/memoryendpoints-outbox-v3.example.json"), "utf8");
+  assert.deepEqual(await sync.deserializeOutboxEntry(shared), entry);
 
   assert.doesNotMatch(json, /bearerToken|authorization|workspaceKey/i);
   assert.deepEqual(await sync.deserializeOutboxEntry(json), entry);

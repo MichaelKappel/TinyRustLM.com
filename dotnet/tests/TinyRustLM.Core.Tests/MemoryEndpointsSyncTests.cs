@@ -5,6 +5,68 @@ namespace TinyRustLM.Tests;
 
 public sealed class MemoryEndpointsSyncTests
 {
+    [Theory]
+    [InlineData("https://memory.example/")]
+    [InlineData("https://memory.example/save")]
+    [InlineData("https://memory.example/api/memoryendpoints/api/matm/memory-events/submit")]
+    public void SubmitUrlRetainsCanonicalRelayPaths(string value) =>
+        Assert.Equal(value, MemoryEndpointsSyncContract.RequireSubmitUrl(value, "https://memory.example"));
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("not-url")]
+    [InlineData("https://memory.example")]
+    [InlineData("https://other.example/save")]
+    [InlineData("https://memory.example/save?")]
+    [InlineData("https://memory.example/save#")]
+    [InlineData("https://memory.example/save?x=1")]
+    [InlineData("https://memory.example/save#part")]
+    [InlineData("https://user@memory.example/save")]
+    [InlineData("https://memory.example/a/../save")]
+    public void SubmitUrlRejectsAmbiguousDestinations(string? value) =>
+        Assert.Throws<InvalidOperationException>(() => MemoryEndpointsSyncContract.RequireSubmitUrl(value!, "https://memory.example"));
+
+    [Theory]
+    [InlineData("https://memory.example")]
+    [InlineData("https://memory.example:8443")]
+    [InlineData("http://127.0.0.1:1234")]
+    [InlineData("http://localhost")]
+    [InlineData("http://[::1]:1234")]
+    [InlineData("https://xn--bcher-kva.example")]
+    public void ServiceOriginAdmitsOnlyCanonicalValues(string value) =>
+        Assert.Equal(value, MemoryEndpointsSyncContract.RequireServiceOrigin(value));
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("http://memory.example")]
+    [InlineData("file:///tmp")]
+    [InlineData("https://memory.example/")]
+    [InlineData("https://memory.example/path")]
+    [InlineData("https://memory.example?x=1")]
+    [InlineData("https://memory.example#part")]
+    [InlineData("https://user@memory.example")]
+    [InlineData("HTTPS://MEMORY.EXAMPLE")]
+    [InlineData("https://memory.example:443")]
+    [InlineData("https://bücher.example")]
+    public void ServiceOriginRejectsAmbiguousOrUnsafeValues(string? value) =>
+        Assert.Throws<InvalidOperationException>(() => MemoryEndpointsSyncContract.RequireServiceOrigin(value!));
+
+    [Fact]
+    public void ReceiptRetainsDestinationAndUnboundVersionsAreRejected()
+    {
+        var entry = MemoryEndpointsSyncContract.PrepareOutboxEntry(Record(), "workspace-demo", "tinyrustlm-agent",
+            "event-origin", "device-one", 1_720_000_000_000, "https://memory.example", "https://memory.example/save");
+        Assert.Equal(entry.ServiceOrigin, entry.LocalReceipt.ServiceOrigin);
+        Assert.Equal(entry.SubmitUrl, entry.LocalReceipt.SubmitUrl);
+        Assert.Throws<InvalidOperationException>(() => MemoryEndpointsSyncContract.ValidateOutboxEntry(
+            entry with { SubmitUrl = "https://memory.example/another-save" }));
+        Assert.Throws<InvalidOperationException>(() => MemoryEndpointsSyncContract.ValidateOutboxEntry(
+            entry with { ServiceOrigin = "https://another.example" }));
+        Assert.Throws<InvalidOperationException>(() => MemoryEndpointsSyncContract.ValidateOutboxEntry(
+            entry with { Kind = "tinyrustlm.memory_endpoints.outbox_entry.v2", Version = 2 }));
+    }
+
     [Fact]
     public void EqualLogicalPayloadsShareTheRustFingerprintVector()
     {
@@ -14,7 +76,7 @@ public sealed class MemoryEndpointsSyncTests
             "tinyrustlm-agent",
             "event-0123456789abcdef",
             "device-browser-a",
-            1_720_000_000_000);
+            1_720_000_000_000, "https://memory.example", "https://memory.example/save");
         var reordered = Record() with
         {
             UaiReferences = Record().UaiReferences!.Reverse().ToArray(),
@@ -26,7 +88,7 @@ public sealed class MemoryEndpointsSyncTests
             "tinyrustlm-agent",
             "event-0123456789abcdef",
             "device-browser-a",
-            1_720_000_000_000);
+            1_720_000_000_000, "https://memory.example", "https://memory.example/save");
 
         Assert.Equal(first.PayloadSha256, second.PayloadSha256);
         Assert.Equal(
@@ -34,8 +96,8 @@ public sealed class MemoryEndpointsSyncTests
             first.PayloadSha256);
         Assert.Equal(first.IdempotencyKey, second.IdempotencyKey);
         Assert.StartsWith("tinyrustlm-memory-v2-", first.IdempotencyKey, StringComparison.Ordinal);
-        Assert.Equal(2U, first.Version);
-        Assert.Equal(2U, first.LocalReceipt.Version);
+        Assert.Equal(3U, first.Version);
+        Assert.Equal(3U, first.LocalReceipt.Version);
         Assert.Equal(MemoryEndpointsOutboxState.SavedLocally, first.State);
         Assert.Equal(first.EventId, first.LocalReceipt.EventId);
         Assert.Equal(first.PayloadSha256, first.LocalReceipt.PayloadSha256);
@@ -50,7 +112,7 @@ public sealed class MemoryEndpointsSyncTests
             "tinyrustlm-agent",
             "event-0123456789abcdef",
             "device-browser-a",
-            1_720_000_000_000);
+            1_720_000_000_000, "https://memory.example", "https://memory.example/save");
         var originalKey = entry.IdempotencyKey;
 
         entry = entry.MarkQueued(1_720_000_000_010)
@@ -83,8 +145,11 @@ public sealed class MemoryEndpointsSyncTests
             "tinyrustlm-agent",
             "event-0123456789abcdef",
             "device-browser-a",
-            1_720_000_000_000);
+            1_720_000_000_000, "https://memory.example", "https://memory.example/save");
         var json = MemoryEndpointsSyncContract.SerializeOutboxEntry(entry);
+        var shared = MemoryEndpointsSyncContract.DeserializeOutboxEntry(File.ReadAllText(
+            Path.Combine(AppContext.BaseDirectory, "fixtures", "memoryendpoints-outbox-v3.example.json")));
+        Assert.Equal(json, MemoryEndpointsSyncContract.SerializeOutboxEntry(shared));
 
         Assert.DoesNotContain("bearerToken", json, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("authorization", json, StringComparison.OrdinalIgnoreCase);

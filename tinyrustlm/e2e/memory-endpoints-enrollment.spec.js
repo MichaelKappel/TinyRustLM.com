@@ -25,6 +25,140 @@ const TEST_ONLY_SCOPE =
   "test-only/never-live/e2e/memory-endpoints-enrollment";
 const RESOLVED_MEMBER_LENGTHS = Object.freeze([8704, 7459, 1403, 65800, 512]);
 
+test("outbox sends only its original service, workspace and actor and quarantines unbound rows", async ({ page, context }) => {
+  const service = createMemoryEndpointsEnrollmentFixture();
+  let company;
+  let releaseSubmit;
+  try {
+    await service.listen();
+    company = await service.createCompany("test-only-outbox-destination");
+    const invitation = await service.issueInvitation(company.companyId);
+    const applicationOrigin = test.info().project.use.baseURL;
+    await context.route("**/*", route => {
+      const origin = new URL(route.request().url()).origin;
+      return origin === applicationOrigin || origin === service.baseUrl ? route.continue()
+        : route.fulfill({ status: 503, body: "External services are unavailable in this test" });
+    });
+    await page.coverage.startJSCoverage({ resetOnNavigation: false });
+    await page.goto("/", { waitUntil: "load" });
+    await expect(page.locator("#simpleOpenAdvancedDiscoveryButton")).toBeVisible();
+    const before = await page.evaluate(async ({ serviceOrigin, workspaceId }) => {
+      const sync = window.TinyRustLMMemorySync;
+      const store = new sync.MemoryEndpointsOutboxStore();
+      const database = await store.open();
+      const now = Date.now() - 5000;
+      const payload = {
+        workspaceId, actorAgentId: "test-outbox-agent", kind: sync.MEMORY_RECORD_KIND, version: 1,
+        scope: "project", scopeId: "tinyrustlm.com", memoryType: "handoff", subject: "Outbox destination",
+        title: "Outbox destination", summary: "Public fixture memory for the original service.",
+        source: "TinyRustLM MemoryEndpoints connector", confidence: 0.8,
+        uaiReferences: [".uai/long-term-memory.uai"],
+        tags: ["tinyrustlm", "memoryendpoints", "long-term", "scope:tinyrustlm.com"],
+        tinyrustlmMemoryTier: "long_term", sourceSha256: null
+      };
+      for (const [eventId, origin, changes] of [
+        ["event-matching", serviceOrigin, {}],
+        ["event-other-service", "https://another-memory.example", {}],
+        ["event-other-route", serviceOrigin, {}],
+        ["event-other-workspace", serviceOrigin, { workspaceId: "other-workspace" }],
+        ["event-other-actor", serviceOrigin, { actorAgentId: "other-actor" }],
+        ["event-unbound", serviceOrigin, {}]
+      ]) {
+        let entry = await sync.prepareOutboxEntry({ ...payload, ...changes }, {
+          serviceOrigin: origin, eventId, deviceId: "test-browser-device", committedAtUnixMs: now,
+          submitUrl: `${origin}${eventId === "event-other-route" ? "/another-service" : ""}/api/matm/memory-events/submit`
+        });
+        if (eventId === "event-unbound") {
+          entry.kind = "tinyrustlm.memory_endpoints.outbox_entry.v2"; entry.version = 2;
+          entry.localReceipt.kind = "tinyrustlm.memory_endpoints.local_receipt.v2"; entry.localReceipt.version = 2;
+          delete entry.serviceOrigin; delete entry.localReceipt.serviceOrigin;
+          await new Promise((resolve, reject) => {
+            const tx = database.transaction("outbox", "readwrite"); tx.objectStore("outbox").put(entry);
+            tx.oncomplete = resolve; tx.onabort = () => reject(tx.error);
+          });
+        } else {
+          if (eventId === "event-matching" || eventId === "event-other-service") {
+            entry = await sync.beginSend(await sync.markQueued(entry, now + 1), now + 2);
+          }
+          await store.putPrepared(entry);
+        }
+      }
+      // A read for status must never reset a different tab's in-flight operation.
+      const pending = await store.readPending(Date.now());
+      const unrelated = await store.get("event-other-service");
+      return { pending: pending.pending.length, quarantined: pending.quarantined.length,
+        unrelatedState: unrelated.state, attempts: unrelated.retry.attemptCount };
+    }, { serviceOrigin: service.baseUrl, workspaceId: company.workspaceId });
+    expect(before).toEqual({ pending: 5, quarantined: 1, unrelatedState: "sending", attempts: 1 });
+    await openMemorySettings(page);
+    await page.locator("#memoryEndpointsBaseUrl").fill(service.baseUrl);
+    await page.locator("#memoryEndpointsEnrollmentUrl").fill(invitation.invitationUrl);
+    await page.locator("#memoryEndpointsRequestedAgentName").fill("test-outbox-agent");
+    await page.locator("#memoryEndpointsClaimButton").click();
+    await expect(page.locator("#memoryEndpointsStatus")).toContainText("agent created");
+    expect(service.snapshot().eventCount).toBe(1);
+    const after = await page.evaluate(async () => {
+      const store = new window.TinyRustLMMemorySync.MemoryEndpointsOutboxStore();
+      const current = await store.get("event-matching");
+      const unrelated = await store.get("event-other-service");
+      const pending = await store.readPending(Date.now());
+      const quarantine = await store.listQuarantine();
+      return { current: current.state, pending: pending.pending.map(row => row.eventId).sort(),
+        unrelatedState: unrelated.state, attempts: unrelated.retry.attemptCount,
+        quarantined: quarantine.length, quarantineHasPayload: quarantine.some(row => "payload" in row) };
+    });
+    expect(after).toEqual({ current: "synchronized", pending: ["event-other-actor", "event-other-route", "event-other-service", "event-other-workspace"],
+      unrelatedState: "sending", attempts: 1, quarantined: 1, quarantineHasPayload: false });
+
+    // The existing relative relay remains usable; a late submit response cannot revive its discarded session.
+    const agentToken = await page.locator("#memoryEndpointsAgentToken").inputValue();
+    let markSubmitted;
+    const submitted = new Promise(resolve => { markSubmitted = resolve; });
+    await context.route(`${applicationOrigin}/api/memoryendpoints/api/matm/**`, async route => {
+      expect(route.request().headers().authorization).toBe(`Bearer ${agentToken}`);
+      const url = new URL(route.request().url());
+      const remotePath = url.pathname.slice("/api/memoryendpoints".length);
+      if (remotePath === "/api/matm/agents/register") {
+        await route.fulfill({ status: 200, contentType: "application/json", body: '{"ok":true}' });
+        return;
+      }
+      const response = await route.fetch({ url: `${service.baseUrl}${remotePath}${url.search}`, maxRedirects: 0 });
+      if (remotePath === "/api/matm/memory-events/submit") {
+        await new Promise(resolve => { releaseSubmit = resolve; markSubmitted(); });
+      }
+      await route.fulfill({ response });
+    });
+    await page.locator("#memoryEndpointsBaseUrl").fill("/api/memoryendpoints");
+    await page.locator(".memory-endpoints-workspace-access > summary").click();
+    await page.locator("#memoryEndpointsWorkspaceId").fill(company.workspaceId);
+    await page.locator("#memoryEndpointsAgentId").fill("test-outbox-agent");
+    await page.locator("#memoryEndpointsToken").fill(agentToken);
+    await page.locator("#memoryEndpointsConnectButton").click();
+    await expect(page.locator("#memoryEndpointsStatus")).toHaveText("web memory connected");
+    await page.locator("#memoryEndpointsSaveShortTermButton").click();
+    await submitted;
+    await page.locator("#memoryEndpointsBaseUrl").fill("https://another-memory.example");
+    const changedStatus = await page.locator("#memoryEndpointsStatus").textContent();
+    releaseSubmit();
+    await expect.poll(() => page.evaluate(async () => {
+      const store = new window.TinyRustLMMemorySync.MemoryEndpointsOutboxStore();
+      const rows = await store.readPending(Date.now());
+      return rows.pending.some(row => row.submitUrl.includes("/api/memoryendpoints/") && row.state === "retry_pending");
+    })).toBe(true);
+    await expect(page.locator("#memoryEndpointsStatus")).toHaveText(changedStatus);
+    await expect(page.locator("#memoryEndpointsAgentToken")).toHaveValue("");
+    await expect(page.locator("#memoryEndpointsToken")).toHaveValue("");
+    const coverage = await page.coverage.stopJSCoverage();
+    fs.writeFileSync(test.info().outputPath("outbox-coverage.json"), JSON.stringify(coverage
+      .filter(entry => /\/(memory-endpoints-sync|app)\.js(?:\?|$)/.test(entry.url))
+      .map(entry => ({ url: entry.url, functions: entry.functions }))));
+  } finally {
+    if (releaseSubmit) releaseSubmit();
+    if (company) { await service.closeCompany(company.companyId); await service.deleteCompany(company.companyId); }
+    await service.close();
+  }
+});
+
 test("enrollment UI recovers a lost claim and a failed restore without a new identity", async ({ page, context }) => {
   const service = createMemoryEndpointsEnrollmentFixture();
   let company;

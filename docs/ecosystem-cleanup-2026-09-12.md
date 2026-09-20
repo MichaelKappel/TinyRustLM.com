@@ -5,6 +5,33 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C85: send queued memory only to its original destination, September 20
+
+The baseline SDK sent a queued record to a different host when workspace/actor
+IDs matched. Browser draining selected unrelated identities and status reads
+reset every interrupted send. Current outbox entries and local receipts are now
+v3, binding canonical origin and exact submit URL, including relay paths. Both
+producers/readers verify a shared serialized fixture. The server payload,
+digest and idempotency contract remain unchanged. Unbound old rows are
+hash-quarantined without a migration or sender.
+
+Only the elected matching sender recovers interrupted sends. Authority edits
+discard credentials and invalidate late completions. Browser requests and the
+SDK's default HTTP client reject redirects; supplied clients must disable them.
+Edge checks cover other hosts/routes/workspaces/actors, foreign sending state,
+relative relay use and a late successful reply after changing the service.
+
+Focused Node, managed, real Edge and paired visual checks are recorded in
+`artifacts/ecosystem-cleanup-20260912/outbox-destination-review.json`.
+V8 covers the changed sync/application lines; managed instrumentation is absent
+from the existing test project. Real loopback sockets verify redirect refusal.
+No visual design was changed. Other repositories and unrelated work are intact.
+
+Older browser GET/POST readers still need response bounds, and pull snapshots
+and search completion need further authority review. The source gate's blocked
+installer links, prior blocked deletions, real-model qualification, public seed
+and NuGet/release gates remain open. No public operation occurred.
+
 ## C84: recover enrollment using the original claim, September 20
 
 The UI cleared its invitation and generated a new idempotency key per click.

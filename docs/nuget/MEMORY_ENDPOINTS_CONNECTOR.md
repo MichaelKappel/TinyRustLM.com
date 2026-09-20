@@ -62,13 +62,17 @@ controls. A plugin session cannot impersonate an ecosystem coordination agent.
 
 TinyRustLM uses a credential-free IndexedDB outbox for opt-in hosted-memory writes.
 
-- A local transaction stores the stable event ID, canonical payload SHA-256, stable idempotency key, retry state, scope, and local receipt before the UI reports `saved locally`.
+- A local transaction stores the service origin, exact absolute submit URL (including relay paths), stable event ID, canonical payload SHA-256, stable idempotency key, retry state, scope, and local receipt before the UI reports `saved locally`. The receipt binds the same destination. Queue draining requires matching destination, workspace and actor; changing a configured service never retargets pending entries.
 - Workspace keys remain session-only and are never serialized into outbox, receipt, quarantine, checkpoint, remote-head, localStorage, Web Lock, or BroadcastChannel records.
-- Browser restart recovers queued work. Interrupted sends become bounded retries with the original event ID, body, hash, and idempotency key.
+- Browser restart inspects queued work without resetting another tab's sending state. Only the elected sender recovers matching interrupted sends, preserving the original destination, event ID, body, hash, and idempotency key.
 - A workspace-scoped Web Lock elects one sending tab. Other tabs remain followers and refresh from a body-free BroadcastChannel completion notice.
 - Reconnect always pulls authoritative revisions before pushing queued work. A write becomes `synchronized` only after a matching durable receipt proves the expected logical memory and public-safe body hash.
 - Corrupt local rows are hash-quarantined and are not sent.
-- The current technical identities are `memory_record.v1`, `outbox_entry.v2`, `local_receipt.v2`, submit-payload digest domain `v2`, and idempotency prefix `tinyrustlm-memory-v2`. Browser persistence uses a fresh `tinyrustlm-memory-endpoints` database. Earlier prelaunch rows have no reader, alias, migration, or fallback path and must not be relabeled as current evidence.
+- The current technical identities are `memory_record.v1`, `outbox_entry.v3`, `local_receipt.v3`, submit-payload digest domain `v2`, and idempotency prefix `tinyrustlm-memory-v2`. The submit payload and server idempotency contract are unchanged. The shared example is `memoryendpoints-outbox-v3.example.json`; both current producers and readers verify it. Browser persistence remains in `tinyrustlm-memory-endpoints`. Unbound earlier rows are hash-quarantined, with no alias, migration, relabeling or fallback sender.
+- Browser authority edits discard session credentials and invalidate pending request completions. Browser protected requests reject redirects. The SDK's default HTTP client also rejects redirects; callers supplying an `HttpClient` must disable automatic redirects in its handler.
+- .NET `PrepareMemoryOutboxEntry` binds the configured save route automatically. Lower-level `PrepareOutboxEntry` callers must supply `serviceOrigin` and `submitUrl`; `SendOutboxEntryAsync` rejects a mismatching route before transport. Browser `readPending` inspects without resetting sends; `recoverPending` requires the elected sender's explicit authority.
+
+These controls do not bound the older browser GET/POST response readers or establish live service behavior. Pull-snapshot storage and search completion ownership still require separate review.
 
 The shared Rust, .NET, and browser local engine also defines exact-parent revisions, explicit sibling conflicts, normalized-body deduplication, tombstones, device epochs and revocation, stale-index reporting, monotonic checkpoints, and conservative compaction. The deployed hosted v1 adapter uses one exact parent and a server-assigned revision ID; it records stale-parent, tombstone, and device decisions explicitly instead of silently applying last-write-wins. Hard forget returns a durable rejected receipt because the advertised retention policy does not support it.
 

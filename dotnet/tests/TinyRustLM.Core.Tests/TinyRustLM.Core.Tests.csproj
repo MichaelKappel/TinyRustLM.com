@@ -34,5 +34,8 @@
     <None Include="..\..\..\docs\nuget\memoryendpoints-distributed-sync-capabilities-v1.example.json"
           Link="fixtures\memoryendpoints-distributed-sync-capabilities-v1.example.json"
           CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\..\docs\nuget\memoryendpoints-outbox-v3.example.json"
+          Link="fixtures\memoryendpoints-outbox-v3.example.json"
+          CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

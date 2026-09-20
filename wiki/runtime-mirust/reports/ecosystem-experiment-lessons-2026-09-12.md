@@ -11,6 +11,29 @@ Keep useful findings and compact evidence identities in the owning canonical
 repository. Keep source history in Git and current model payloads only in
 `D:\LLMs\TinyRustLM`.
 
+## C85: a queue needs destination identity as well as content identity
+
+- **Question:** Can a queued record be sent to a different service or identity?
+- **Inputs/method:** Parent `342a2a16f8be25eb600747c0dccbcada663ac8f3`,
+  identical workspace/actor on different SDK hosts, actual Edge IndexedDB with
+  distinct hosts/routes/workspaces/actors, a late relay response, shared v3
+  serialization and real loopback redirect sockets.
+- **Result:** The baseline SDK sent the foreign-service entry. V3 binds origin
+  and exact submit URL in entry and receipt. Status reads preserve sends; only
+  the elected matching sender recovers them. Node, managed and Edge checks pass;
+  paired screenshots match. The receipt gives exact counts and coverage scope.
+- **Decision:** Bind destination before committing local bytes and preserve it
+  through retries. Reject unbound old rows rather than assigning the currently
+  selected service. Compare exact routes so mounted services stay distinct.
+- **Uncertainty:** Cancellation cannot undo remote persistence. General HTTP
+  readers remain unbounded; pull/search ownership needs further review. Supplied
+  SDK HTTP clients own redirect policy. Managed coverage is uninstrumented;
+  fixture evidence does not establish live service or model/release behavior.
+- **Reusable lesson:** Content hashes do not identify a destination. A status
+  read must not take over another tab's send. Carry authority through awaits
+  and change all current producers and consumers together.
+- **Evidence:** `artifacts/ecosystem-cleanup-20260912/outbox-destination-review.json`.
+
 ## C84: a recoverable service contract needs a UI that preserves claim identity
 
 - **Question:** Can a user recover an enrollment whose server response was lost?

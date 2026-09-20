@@ -43,6 +43,8 @@ public sealed record MemoryEndpointsRetryState(
 public sealed record MemoryEndpointsLocalReceipt(
     string Kind,
     uint Version,
+    string ServiceOrigin,
+    string SubmitUrl,
     string EventId,
     string PayloadSha256,
     string DeviceId,
@@ -135,6 +137,8 @@ public sealed record MemoryEndpointsSubmitPayload(
 public sealed record MemoryEndpointsOutboxEntry(
     string Kind,
     uint Version,
+    string ServiceOrigin,
+    string SubmitUrl,
     string EventId,
     string DeviceId,
     string IdempotencyKey,
@@ -294,10 +298,10 @@ public sealed record MemoryEndpointsOutboxEntry(
 public static class MemoryEndpointsSyncContract
 {
     /// <summary>Stable persisted outbox-entry schema kind.</summary>
-    public const string OutboxEntryKind = "tinyrustlm.memory_endpoints.outbox_entry.v2";
+    public const string OutboxEntryKind = "tinyrustlm.memory_endpoints.outbox_entry.v3";
 
     /// <summary>Stable local-commit receipt schema kind.</summary>
-    public const string LocalReceiptKind = "tinyrustlm.memory_endpoints.local_receipt.v2";
+    public const string LocalReceiptKind = "tinyrustlm.memory_endpoints.local_receipt.v3";
 
     /// <summary>Stable authoritative hosted receipt schema kind.</summary>
     public const string AuthoritativeReceiptKind = "tinyrustlm.memory_endpoints.authoritative_receipt.v1";
@@ -318,9 +322,13 @@ public static class MemoryEndpointsSyncContract
         string agentId,
         string eventId,
         string deviceId,
-        long committedAtUnixMs)
+        long committedAtUnixMs,
+        string serviceOrigin,
+        string submitUrl)
     {
         ArgumentNullException.ThrowIfNull(record);
+        RequireServiceOrigin(serviceOrigin);
+        RequireSubmitUrl(submitUrl, serviceOrigin);
         ValidateMemoryRecord(record);
         ValidateIdentifier("workspace ID", workspaceId, 128);
         ValidateIdentifier("agent ID", agentId, 96);
@@ -336,7 +344,9 @@ public static class MemoryEndpointsSyncContract
         var idempotencyKey = CreateIdempotencyKey(eventId, payloadSha256);
         return new MemoryEndpointsOutboxEntry(
             OutboxEntryKind,
-            2,
+            3,
+            serviceOrigin,
+            submitUrl,
             eventId,
             deviceId,
             idempotencyKey,
@@ -347,7 +357,9 @@ public static class MemoryEndpointsSyncContract
             MemoryEndpointsRetryState.Empty,
             new MemoryEndpointsLocalReceipt(
                 LocalReceiptKind,
-                2,
+                3,
+                serviceOrigin,
+                submitUrl,
                 eventId,
                 payloadSha256,
                 deviceId,
@@ -356,6 +368,38 @@ public static class MemoryEndpointsSyncContract
             null,
             committedAtUnixMs,
             committedAtUnixMs);
+    }
+
+    /// <summary>Requires a canonical credential-free HTTPS origin, allowing HTTP only for loopback fixtures.</summary>
+    public static string RequireServiceOrigin(string value)
+    {
+        if (!Uri.TryCreate(value, UriKind.Absolute, out var uri))
+        {
+            throw new InvalidOperationException("MemoryEndpoints service origin is invalid.");
+        }
+        var host = uri.IdnHost.ToLowerInvariant().Trim('[', ']');
+        var loopback = host is "127.0.0.1" or "localhost" or "::1";
+        var canonical = $"{uri.Scheme}://{(host.Contains(':') ? $"[{host}]" : host)}" +
+            (uri.IsDefaultPort ? string.Empty : $":{uri.Port}");
+        if ((uri.Scheme != Uri.UriSchemeHttps && !(uri.Scheme == Uri.UriSchemeHttp && loopback)) ||
+            value != canonical || uri.UserInfo.Length != 0)
+        {
+            throw new InvalidOperationException("MemoryEndpoints service origin must be canonical HTTPS or loopback HTTP.");
+        }
+        return value;
+    }
+
+    /// <summary>Binds the exact canonical submit route, including a relay path, without credentials or query data.</summary>
+    public static string RequireSubmitUrl(string value, string serviceOrigin)
+    {
+        RequireServiceOrigin(serviceOrigin);
+        if (!Uri.TryCreate(value, UriKind.Absolute, out var uri) || value != uri.AbsoluteUri ||
+            uri.GetLeftPart(UriPartial.Authority) != serviceOrigin || uri.UserInfo.Length != 0 ||
+            uri.Query.Length != 0 || uri.Fragment.Length != 0)
+        {
+            throw new InvalidOperationException("MemoryEndpoints submit URL must be canonical and belong to its service origin.");
+        }
+        return value;
     }
 
     /// <summary>Creates the normalized public submit payload used by direct and queued writes.</summary>
@@ -442,12 +486,14 @@ public static class MemoryEndpointsSyncContract
     public static void ValidateOutboxEntry(MemoryEndpointsOutboxEntry entry)
     {
         ArgumentNullException.ThrowIfNull(entry);
-        if (entry.Kind != OutboxEntryKind || entry.Version != 2)
+        if (entry.Kind != OutboxEntryKind || entry.Version != 3)
         {
             throw new InvalidOperationException("Unsupported MemoryEndpoints outbox kind or version.");
         }
         ValidateIdentifier("event ID", entry.EventId, 64);
         ValidateIdentifier("device ID", entry.DeviceId, 96);
+        RequireServiceOrigin(entry.ServiceOrigin);
+        RequireSubmitUrl(entry.SubmitUrl, entry.ServiceOrigin);
         ValidateSubmitPayload(entry.Payload);
         var normalizedHash = ComputePayloadSha256(entry.Payload);
         if (entry.PayloadSha256 != normalizedHash)
@@ -463,7 +509,9 @@ public static class MemoryEndpointsSyncContract
             throw new InvalidOperationException("MemoryEndpoints outbox scope does not match payload tier.");
         }
         if (entry.LocalReceipt.Kind != LocalReceiptKind ||
-            entry.LocalReceipt.Version != 2 ||
+            entry.LocalReceipt.Version != 3 ||
+            entry.LocalReceipt.ServiceOrigin != entry.ServiceOrigin ||
+            entry.LocalReceipt.SubmitUrl != entry.SubmitUrl ||
             entry.LocalReceipt.EventId != entry.EventId ||
             entry.LocalReceipt.PayloadSha256 != entry.PayloadSha256 ||
             entry.LocalReceipt.DeviceId != entry.DeviceId ||

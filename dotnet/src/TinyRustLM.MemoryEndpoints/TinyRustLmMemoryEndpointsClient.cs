@@ -456,7 +456,8 @@ public sealed class TinyRustLmMemoryEndpointsClient
     public TinyRustLmMemoryEndpointsClient(MemoryEndpointsClientOptions options, HttpClient? httpClient = null)
     {
         _options = options ?? throw new ArgumentNullException(nameof(options));
-        _httpClient = httpClient ?? new HttpClient();
+        // Supplied clients own their handler policy and must also disable redirects for protected memory requests.
+        _httpClient = httpClient ?? new HttpClient(new HttpClientHandler { AllowAutoRedirect = false });
     }
 
     /// <summary>Prepares a credential-free durable outbox entry bound to this client identity.</summary>
@@ -471,7 +472,9 @@ public sealed class TinyRustLmMemoryEndpointsClient
             _options.AgentId,
             eventId,
             deviceId,
-            committedAtUnixMs);
+            committedAtUnixMs,
+            MemoryEndpointsSyncContract.RequireServiceOrigin(_options.Routes.SaveMemory.GetLeftPart(UriPartial.Authority)),
+            _options.Routes.SaveMemory.AbsoluteUri);
 
     /// <summary>Sends one validated prepared outbox entry with its original idempotency key.</summary>
     public Task<JsonElement> SendOutboxEntryAsync(
@@ -485,7 +488,9 @@ public sealed class TinyRustLmMemoryEndpointsClient
             throw new InvalidOperationException(
                 "A prepared MemoryEndpoints entry must be in sending state before transport.");
         }
-        if (entry.Payload.WorkspaceId != _options.WorkspaceId ||
+        if (entry.ServiceOrigin != MemoryEndpointsSyncContract.RequireServiceOrigin(_options.Routes.SaveMemory.GetLeftPart(UriPartial.Authority)) ||
+            entry.SubmitUrl != _options.Routes.SaveMemory.AbsoluteUri ||
+            entry.Payload.WorkspaceId != _options.WorkspaceId ||
             entry.Payload.ActorAgentId != _options.AgentId)
         {
             throw new InvalidOperationException(

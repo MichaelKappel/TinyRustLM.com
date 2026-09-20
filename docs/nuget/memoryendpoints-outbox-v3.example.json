@@ -1,0 +1,59 @@
+{
+  "kind": "tinyrustlm.memory_endpoints.outbox_entry.v3",
+  "version": 3,
+  "serviceOrigin": "https://memory.example",
+  "submitUrl": "https://memory.example/save",
+  "eventId": "event-0123456789abcdef",
+  "deviceId": "device-browser-a",
+  "idempotencyKey": "tinyrustlm-memory-v2-event-0123456789abcdef-ffa9fb1d3b729902d8a62621",
+  "payloadSha256": "ffa9fb1d3b729902d8a62621ce08d627b7042aaad89f5d8ca51a6257f3e305aa",
+  "payload": {
+    "workspaceId": "workspace-demo",
+    "actorAgentId": "tinyrustlm-agent",
+    "kind": "tinyrustlm.memory_endpoints.memory_record.v1",
+    "version": 1,
+    "scope": "project",
+    "scopeId": "tinyrustlm.com",
+    "memoryType": "handoff",
+    "subject": "Durable sync design",
+    "title": "Durable sync design",
+    "summary": "Public-safe durable memory for the offline synchronization contract.",
+    "source": "TinyRustLM MemoryEndpoints connector",
+    "confidence": 0.8,
+    "uaiReferences": [
+      ".uai/long-term-memory.uai",
+      "wiki/runtime-mirust/reports/sync.md"
+    ],
+    "tags": [
+      "long-term",
+      "memoryendpoints",
+      "offline",
+      "scope:tinyrustlm.com",
+      "tinyrustlm"
+    ],
+    "tinyrustlmMemoryTier": "long_term",
+    "sourceSha256": null
+  },
+  "scope": "long_term",
+  "state": "saved_locally",
+  "retry": {
+    "attemptCount": 0,
+    "lastAttemptAtUnixMs": null,
+    "nextAttemptAtUnixMs": null,
+    "lastErrorCode": null
+  },
+  "localReceipt": {
+    "kind": "tinyrustlm.memory_endpoints.local_receipt.v3",
+    "version": 3,
+    "serviceOrigin": "https://memory.example",
+    "submitUrl": "https://memory.example/save",
+    "eventId": "event-0123456789abcdef",
+    "payloadSha256": "ffa9fb1d3b729902d8a62621ce08d627b7042aaad89f5d8ca51a6257f3e305aa",
+    "deviceId": "device-browser-a",
+    "committedAtUnixMs": 1720000000000
+  },
+  "authoritativeReceipt": null,
+  "quarantineReason": null,
+  "createdAtUnixMs": 1720000000000,
+  "updatedAtUnixMs": 1720000000000
+}

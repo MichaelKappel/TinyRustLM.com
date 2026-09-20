@@ -1,4 +1,6 @@
 using System.Net;
+using System.Net.Sockets;
+using System.Text;
 using System.Text.Json;
 using Xunit;
 
@@ -6,6 +8,60 @@ namespace TinyRustLM.Tests;
 
 public sealed class MemoryEndpointsClientTests
 {
+    [Fact]
+    public async Task DefaultClientRejectsRedirectBeforeContactingItsTarget()
+    {
+        using var source = new TcpListener(IPAddress.Loopback, 0);
+        using var target = new TcpListener(IPAddress.Loopback, 0);
+        source.Start();
+        target.Start();
+        using var deadline = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+        var root = new Uri($"http://127.0.0.1:{((IPEndPoint)source.LocalEndpoint).Port}");
+        var destination = $"http://127.0.0.1:{((IPEndPoint)target.LocalEndpoint).Port}/collect";
+        var client = new TinyRustLmMemoryEndpointsClient(new MemoryEndpointsClientOptions(
+            "workspace-demo", "test-only-workspace-key", MemoryEndpointsRoutes.FromBaseUri(root),
+            authHeaderMode: MemoryEndpointsAuthHeaderMode.XMemoryEndpointsKey));
+        var responseTask = RedirectOnceAsync(source, destination, deadline.Token);
+        var error = await Assert.ThrowsAsync<HttpRequestException>(() =>
+            client.ReadInboxAsync(deadline.Token));
+        Assert.Equal(HttpStatusCode.TemporaryRedirect, error.StatusCode);
+        await responseTask;
+        Assert.False(target.Pending());
+    }
+
+    /// <summary>Answer one actual loopback request with a redirect without reading or retaining its credential.</summary>
+    private static async Task RedirectOnceAsync(TcpListener source, string destination, CancellationToken cancellationToken)
+    {
+        using var socket = await source.AcceptTcpClientAsync(cancellationToken);
+        await using var stream = socket.GetStream();
+        using var reader = new StreamReader(stream, Encoding.ASCII, leaveOpen: true);
+        while (!string.IsNullOrEmpty(await reader.ReadLineAsync(cancellationToken))) { }
+        var response = Encoding.ASCII.GetBytes(
+            $"HTTP/1.1 307 Temporary Redirect\r\nLocation: {destination}\r\nContent-Length: 0\r\nConnection: close\r\n\r\n");
+        await stream.WriteAsync(response, cancellationToken);
+    }
+
+    [Theory]
+    [InlineData("https://another-memory.example/save")]
+    [InlineData("https://memory.example/another-service/save")]
+    public async Task PreparedOutboxCannotBeSentToAnotherServiceWithMatchingWorkspaceAndAgent(string destination)
+    {
+        var handler = new RecordingHandler();
+        using var httpClient = new HttpClient(handler);
+        var options = Options("test-only-workspace-key");
+        var first = new TinyRustLmMemoryEndpointsClient(options, httpClient);
+        var entry = first.PrepareMemoryOutboxEntry(
+            TinyRustLmMemoryEndpointRecord.ShortTerm("Service-bound entry", "Public fixture memory for the original service."),
+            "event-origin-binding", "device-browser-a", 1_720_000_000_000)
+            .MarkQueued(1_720_000_000_010).BeginSend(1_720_000_000_020);
+        var second = new TinyRustLmMemoryEndpointsClient(new MemoryEndpointsClientOptions(
+            options.WorkspaceId, "test-only-workspace-key",
+            options.Routes with { SaveMemory = new Uri(destination) }, options.AgentId), httpClient);
+
+        await Assert.ThrowsAsync<InvalidOperationException>(() => second.SendOutboxEntryAsync(entry));
+        Assert.Empty(handler.Requests);
+    }
+
     [Fact]
     public async Task PreparedOutboxSendUsesOriginalIdempotencyKeyAndPayload()
     {

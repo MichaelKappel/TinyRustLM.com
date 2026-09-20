@@ -18,8 +18,8 @@
     throw new Error("TinyRustLM distributed-sync v1 transport must load before memory sync");
   }
 
-  const OUTBOX_ENTRY_KIND = "tinyrustlm.memory_endpoints.outbox_entry.v2";
-  const LOCAL_RECEIPT_KIND = "tinyrustlm.memory_endpoints.local_receipt.v2";
+  const OUTBOX_ENTRY_KIND = "tinyrustlm.memory_endpoints.outbox_entry.v3";
+  const LOCAL_RECEIPT_KIND = "tinyrustlm.memory_endpoints.local_receipt.v3";
   const AUTHORITATIVE_RECEIPT_KIND = "tinyrustlm.memory_endpoints.authoritative_receipt.v1";
   const CHECKPOINT_KIND = "tinyrustlm.memory_endpoints.checkpoint.v1";
   const REMOTE_HEAD_KIND = "tinyrustlm.memory_endpoints.remote_head.v1";
@@ -77,6 +77,8 @@
     "uaiReferences", "tags", "tinyrustlmMemoryTier", "sourceSha256"
   ]);
   const OUTBOX_KEYS = new Set([
+    "serviceOrigin",
+    "submitUrl",
     "kind", "version", "eventId", "deviceId", "idempotencyKey", "payloadSha256", "payload",
     "scope", "state", "retry", "localReceipt", "authoritativeReceipt", "quarantineReason",
     "createdAtUnixMs", "updatedAtUnixMs"
@@ -85,6 +87,8 @@
     "attemptCount", "lastAttemptAtUnixMs", "nextAttemptAtUnixMs", "lastErrorCode"
   ]);
   const LOCAL_RECEIPT_KEYS = new Set([
+    "serviceOrigin",
+    "submitUrl",
     "kind", "version", "eventId", "payloadSha256", "deviceId", "committedAtUnixMs"
   ]);
   const AUTHORITATIVE_RECEIPT_KEYS = new Set([
@@ -1366,8 +1370,48 @@
     }
   }
 
+  /** Require a canonical credential-free HTTPS origin, permitting HTTP only for loopback fixtures. */
+  function requireServiceOrigin(value) {
+    let url;
+    try { url = new URL(value); } catch (_error) { throw new Error("MemoryEndpoints service origin is invalid"); }
+    const loopback = ["127.0.0.1", "localhost", "[::1]"].includes(url.hostname);
+    if (typeof value !== "string" || value !== url.origin || url.username || url.password ||
+        (url.protocol !== "https:" && !(url.protocol === "http:" && loopback))) {
+      throw new Error("MemoryEndpoints service origin must be canonical HTTPS or loopback HTTP");
+    }
+    return value;
+  }
+
+  /** Bind the exact canonical submit route, including a relay path, without credentials or query data. */
+  function requireSubmitUrl(value, serviceOrigin) {
+    requireServiceOrigin(serviceOrigin);
+    let url;
+    try { url = new URL(value); } catch (_error) { throw new Error("MemoryEndpoints submit URL is invalid"); }
+    if (typeof value !== "string" || value !== url.href || url.origin !== serviceOrigin ||
+        url.username || url.password || value.includes("?") || value.includes("#")) {
+      throw new Error("MemoryEndpoints submit URL must be canonical and belong to its service origin");
+    }
+    return value;
+  }
+
+  /** Match an already validated entry to the selected service, workspace and actor before transport. */
+  function outboxBelongsTo(entry, authority) {
+    requirePlainObject(authority, "outbox authority");
+    requireServiceOrigin(authority.serviceOrigin);
+    requireSubmitUrl(authority.submitUrl, authority.serviceOrigin);
+    validateIdentifier("workspaceId", authority.workspaceId, 128);
+    validateIdentifier("actorAgentId", authority.actorAgentId, 96);
+    return entry.serviceOrigin === authority.serviceOrigin &&
+      entry.submitUrl === authority.submitUrl &&
+      entry.payload.workspaceId === authority.workspaceId &&
+      entry.payload.actorAgentId === authority.actorAgentId;
+  }
+
+  /** Prepare one current destination-bound local entry without changing the server's submit payload. */
   async function prepareOutboxEntry(payload, options) {
     requirePlainObject(options, "outbox options");
+    const serviceOrigin = requireServiceOrigin(options.serviceOrigin);
+    const submitUrl = requireSubmitUrl(options.submitUrl, serviceOrigin);
     validateIdentifier("eventId", options.eventId, 64);
     validateIdentifier("deviceId", options.deviceId, 96);
     requireUnixMilliseconds("committedAtUnixMs", options.committedAtUnixMs);
@@ -1376,7 +1420,9 @@
     const idempotencyKey = createIdempotencyKey(options.eventId, payloadSha256);
     return {
       kind: OUTBOX_ENTRY_KIND,
-      version: 2,
+      version: 3,
+      serviceOrigin,
+      submitUrl,
       eventId: options.eventId,
       deviceId: options.deviceId,
       idempotencyKey,
@@ -1392,7 +1438,9 @@
       },
       localReceipt: {
         kind: LOCAL_RECEIPT_KIND,
-        version: 2,
+        version: 3,
+        serviceOrigin,
+        submitUrl,
         eventId: options.eventId,
         payloadSha256,
         deviceId: options.deviceId,
@@ -1490,11 +1538,13 @@
   async function validateOutboxEntry(input) {
     assertExactKeys(input, OUTBOX_KEYS, OUTBOX_KEYS, "MemoryEndpoints outbox entry");
     const entry = clone(input);
-    if (entry.kind !== OUTBOX_ENTRY_KIND || entry.version !== 2) {
+    if (entry.kind !== OUTBOX_ENTRY_KIND || entry.version !== 3) {
       throw new Error("unsupported MemoryEndpoints outbox kind or version");
     }
     validateIdentifier("eventId", entry.eventId, 64);
     validateIdentifier("deviceId", entry.deviceId, 96);
+    requireServiceOrigin(entry.serviceOrigin);
+    requireSubmitUrl(entry.submitUrl, entry.serviceOrigin);
     validateSubmitPayload(entry.payload);
     if (!isSha256(entry.payloadSha256)) {
       throw new Error("MemoryEndpoints payload fingerprint is invalid");
@@ -1515,7 +1565,9 @@
     validateRetry(entry);
     assertExactKeys(entry.localReceipt, LOCAL_RECEIPT_KEYS, LOCAL_RECEIPT_KEYS, "MemoryEndpoints local receipt");
     if (
-      entry.localReceipt.kind !== LOCAL_RECEIPT_KIND || entry.localReceipt.version !== 2 ||
+      entry.localReceipt.kind !== LOCAL_RECEIPT_KIND || entry.localReceipt.version !== 3 ||
+      entry.localReceipt.serviceOrigin !== entry.serviceOrigin ||
+      entry.localReceipt.submitUrl !== entry.submitUrl ||
       entry.localReceipt.eventId !== entry.eventId ||
       entry.localReceipt.payloadSha256 !== entry.payloadSha256 ||
       entry.localReceipt.deviceId !== entry.deviceId ||
@@ -2097,18 +2149,25 @@
       return rows.map((row, index) => ({ key: keys[index], row }));
     }
 
-    async recoverPending(nowUnixMs = this.now()) {
+    /** Inspect validated rows without changing another tab's in-flight sending state. */
+    async readPending(nowUnixMs = this.now(), authority = null) {
       requireUnixMilliseconds("recovery time", nowUnixMs);
+      if (authority) {
+        requirePlainObject(authority, "outbox authority");
+        authority = Object.freeze({ serviceOrigin: authority.serviceOrigin,
+          submitUrl: authority.submitUrl,
+          workspaceId: authority.workspaceId, actorAgentId: authority.actorAgentId });
+        requireServiceOrigin(authority.serviceOrigin);
+        requireSubmitUrl(authority.submitUrl, authority.serviceOrigin);
+        validateIdentifier("workspaceId", authority.workspaceId, 128);
+        validateIdentifier("actorAgentId", authority.actorAgentId, 96);
+      }
       const pending = [];
       const quarantined = [];
       for (const item of await this.rawRows()) {
         try {
-          let entry = await validateOutboxEntry(item.row);
-          if (entry.state === "sending") {
-            entry = await scheduleRetry(entry, "interrupted_send", nowUnixMs, nowUnixMs);
-            entry = await this.compareAndSwap(item.row, entry);
-          }
-          if (PENDING_STATES.has(entry.state)) {
+          const entry = await validateOutboxEntry(item.row);
+          if (PENDING_STATES.has(entry.state) && (!authority || outboxBelongsTo(entry, authority))) {
             pending.push(entry);
           }
         } catch (_error) {
@@ -2118,6 +2177,24 @@
       pending.sort((left, right) =>
         left.createdAtUnixMs - right.createdAtUnixMs || compareUtf8(left.eventId, right.eventId));
       return { pending, quarantined };
+    }
+
+    /** Only the selected authority's elected sender may recover its interrupted sends. */
+    async recoverPending(nowUnixMs, authority) {
+      requireUnixMilliseconds("recovery time", nowUnixMs);
+      requirePlainObject(authority, "outbox authority");
+      requireServiceOrigin(authority.serviceOrigin);
+      requireSubmitUrl(authority.submitUrl, authority.serviceOrigin);
+      validateIdentifier("workspaceId", authority.workspaceId, 128);
+      validateIdentifier("actorAgentId", authority.actorAgentId, 96);
+      const recovery = await this.readPending(nowUnixMs, authority);
+      const pending = [];
+      for (const entry of recovery.pending) {
+        pending.push(entry.state === "sending"
+          ? await this.compareAndSwap(entry, await scheduleRetry(entry, "interrupted_send", nowUnixMs, nowUnixMs))
+          : entry);
+      }
+      return { pending, quarantined: recovery.quarantined };
     }
 
     async quarantineRaw(primaryKey, row, detectedAtUnixMs) {
@@ -2897,6 +2974,9 @@
     MemoryEndpointsOutboxStore,
     MemoryEndpointsSyncCoordinator,
     prepareOutboxEntry,
+    requireServiceOrigin,
+    requireSubmitUrl,
+    outboxBelongsTo,
     computePayloadSha256,
     validateOutboxEntry,
     validateAuthoritativeReceipt,
