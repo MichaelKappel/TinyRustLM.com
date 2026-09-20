@@ -1,0 +1,315 @@
+{
+  "schema": "tinyrustlm.ecosystem_cleanup.browser_memory_contract_review.v1",
+  "checkpoint": "C62",
+  "recorded_at_utc": "2026-09-20T13:40:11Z",
+  "base_commit": "5ce5b60b993c2b4ca5606fbfe8fa72d37784221c",
+  "previous_goal_turn": "no progress toward broader goal: credential-location confirmation only; resumed pending browser integration work",
+  "scope": "Complete the pending MemoryEndpoints browser continuity test against the current Advanced import, catalog admission and worker contracts; preserve unrelated drafts.",
+  "sources": [
+    {
+      "path": "tinyrustlm/e2e/memory-endpoints-enrollment.spec.js",
+      "sha256": "abb4812cee3f3355baf135faedbe215bc2ea3af5174148d42fc455352a39b714"
+    },
+    {
+      "path": "tinyrustlm/e2e/helpers/memory-endpoints-enrollment-fixture.js",
+      "sha256": "9e49e68795a2df8756d2c0141fbe4a8bcde91b3b6aab759d7db88f40430bce87"
+    },
+    {
+      "path": "tinyrustlm/tests/memory-endpoints-enrollment-fixture.test.js",
+      "sha256": "db470b3bdd44fe79b974610d20f91491654ecbddcf77e3f3c05b2f33bccbea65"
+    }
+  ],
+  "findings": [
+    "Retired simple local-import selector and eager-WASM expectation prevented reaching memory behavior.",
+    "Manual import requires an exact current catalog entry and independently fetched hash-bound admission/receipt; synthetic fixtures now satisfy the unchanged validators.",
+    "Selected fixture model identity must be owner/model; installed receipt must use canonical field order.",
+    "Persistent contexts must honor the configured browser channel. Only inference is doubled; unrelated worker URLs are forwarded.",
+    "Deep reporter-derived Windows profiles repeatedly produced model-composition-store-storage; short owned canonical profile paths completed the same scenario. No universal path-limit claim.",
+    "Local service submit fields are actorAgentId and summary. Retired alias, another actor and another workspace are rejected before storage."
+  ],
+  "tests": {
+    "node": {
+      "command": "node --test --experimental-test-coverage --test-coverage-include=e2e/helpers/memory-endpoints-enrollment-fixture.js tests/memory-endpoints-enrollment.test.js tests/memory-endpoints-enrollment-fixture.test.js tests/memory-endpoints-sync.test.js tests/memory-endpoints-portable-memory-policy.test.js tests/memory-endpoints-distributed-sync-authority.test.js tests/memory-endpoints-contract-audit.test.js tests/canonical-operation-scratch_test.js",
+      "inventory_existence_verified": true,
+      "passed": 42,
+      "failed": 0,
+      "skipped": 0,
+      "duration_ms": 304.8896,
+      "new_http_cases": 5,
+      "fixture_coverage": {
+        "line_percent": 82.43,
+        "branch_percent": 64.76,
+        "function_percent": 94.12
+      }
+    },
+    "browser": {
+      "command": "TINYRUSTLM_PLAYWRIGHT_CHANNEL=msedge; node node_modules/@playwright/test/cli.js test e2e/memory-endpoints-enrollment.spec.js --project=desktop --workers=1 --retries=0 --forbid-only --reporter=line --output=<owned>/consent",
+      "version": "153.0.4234.48",
+      "viewport": {
+        "width": 1365,
+        "height": 768
+      },
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "duration_seconds": 4.5,
+      "assertions": [
+        "Advanced import and current catalog admission",
+        "No hosted memory event before explicit save; saving once does not authorize later automatic upload",
+        "Short and long tiers saved explicitly",
+        "First profile physically removed before creating second",
+        "Fresh-profile reconnect and both marker search results",
+        "One-time invitation replay rejected without secret in error",
+        "Invitation/token absent from inspected local/session/IndexedDB stores and UTF-8/UTF-16LE scans of both closed profiles",
+        "Both owned profiles removed and local company/agents/events deleted"
+      ]
+    },
+    "managed": {
+      "command": "dotnet test dotnet/tests/TinyRustLM.Package.Tests/TinyRustLM.Package.Tests.csproj --configuration Release --no-build --no-restore --verbosity minimal",
+      "passed": 38,
+      "failed": 0,
+      "skipped": 0,
+      "duration_ms": 179,
+      "note": "Includes six memory-consolidation checks; existing package test binary, unchanged test source."
+    }
+  },
+  "intermediate_outcomes": [
+    {
+      "logs": [
+        "baseline.log"
+      ],
+      "result": "failed: expected eager verified runtime, observed waiting"
+    },
+    {
+      "logs": [
+        "current.log"
+      ],
+      "result": "failed: unconditional chooser toggle hid Advanced entry"
+    },
+    {
+      "logs": [
+        "chooser.log"
+      ],
+      "result": "failed: expected Ready with authority-free fixture; current source requires catalog admission"
+    },
+    {
+      "logs": [
+        "catalog.log"
+      ],
+      "result": "failed: fixture source repository was not owner/model"
+    },
+    {
+      "logs": [
+        "admitted.log",
+        "diagnostic.log"
+      ],
+      "result": "failed before Ready; early assertion did not expose cause"
+    },
+    {
+      "logs": [
+        "import-diagnostic.log"
+      ],
+      "result": "failed: model-composition-store-storage"
+    },
+    {
+      "logs": [
+        "worker.log"
+      ],
+      "result": "failed: model-composition-store-qualification-receipt; canonical key ordering corrected"
+    },
+    {
+      "logs": [
+        "canonical-receipt.log"
+      ],
+      "result": "failed: model-composition-store-storage; worker scope correction alone did not solve storage"
+    },
+    {
+      "logs": [
+        "short-profile.log"
+      ],
+      "result": "passed full browser scenario after short owned profile path"
+    },
+    {
+      "logs": [
+        "consent.log"
+      ],
+      "result": "passed with added no-automatic-upload assertions"
+    },
+    {
+      "logs": [
+        "fixture-unit.log"
+      ],
+      "result": "five teardown failures: server closed before company cleanup"
+    },
+    {
+      "logs": [
+        "fixture-unit-fixed.log"
+      ],
+      "result": "five passed after ordered cleanup"
+    },
+    {
+      "logs": [
+        "memory-node.log"
+      ],
+      "result": "35 passed, but misspelled scratch filename was silently unmatched; no scratch coverage claimed"
+    },
+    {
+      "logs": [
+        "node-final.log"
+      ],
+      "result": "42 passed after checking exact seven-file test inventory"
+    }
+  ],
+  "retained_log_identities": [
+    {
+      "Name": "admitted.log",
+      "Bytes": 6560,
+      "Sha256": "35b8c7cf46955dc73812feedbc916f3f805cbc4e80968ad879c100b9aa24b69b"
+    },
+    {
+      "Name": "baseline.log",
+      "Bytes": 6436,
+      "Sha256": "ed37ad65d2e1c0db964b565d24a4df148995db44dd60c8869d6d604d3f452726"
+    },
+    {
+      "Name": "canonical-receipt.log",
+      "Bytes": 6740,
+      "Sha256": "0595d0f745f7455371e1254d26d956826ba05f722c92db692b5eb8233f78952a"
+    },
+    {
+      "Name": "catalog.log",
+      "Bytes": 5656,
+      "Sha256": "5a2c7ce644f516696ff4b7e0e00466ed3d81ba318630d5da962c1e7b449da2f7"
+    },
+    {
+      "Name": "chooser.log",
+      "Bytes": 6554,
+      "Sha256": "03c5a46c3fb5786abe2e231bee2ec08844693b4949fc35ab9a9b4edfeccc376f"
+    },
+    {
+      "Name": "consent.log",
+      "Bytes": 1548,
+      "Sha256": "e8f950883a4ab73d2ff715300ddcf3be0b876ef89745460425f5e07ff71ae82e"
+    },
+    {
+      "Name": "current.log",
+      "Bytes": 7378,
+      "Sha256": "f4af793c32b278decf7230bd0ca463b7053d59a349273065863390116f147be3"
+    },
+    {
+      "Name": "cv_debug.log",
+      "Bytes": 984,
+      "Sha256": "780218da4ed2d1aeb28b6a0c946c7fa843e5cfd0f864fbd637c38ad941a855ba"
+    },
+    {
+      "Name": "diagnostic.log",
+      "Bytes": 6194,
+      "Sha256": "49c917f32672d848cc046da1bffc210b88cf6945fa679506cbd036b5e50c6371"
+    },
+    {
+      "Name": "fixture-unit-fixed.log",
+      "Bytes": 944,
+      "Sha256": "6e2a658079820889e242654f587119aa29a22b542819e6cce633f2897b2d068d"
+    },
+    {
+      "Name": "fixture-unit.log",
+      "Bytes": 4626,
+      "Sha256": "b4e4636c65d102b4a5dfc75a67b98854d4d8af91a64b9f57fa15d6735836d2ad"
+    },
+    {
+      "Name": "import-diagnostic.log",
+      "Bytes": 6740,
+      "Sha256": "f1dcd9388ee45faaeda7bcdadb242f8aa47efafaa601102f2aae0e5bb9c282a7"
+    },
+    {
+      "Name": "memory-node.log",
+      "Bytes": 27728,
+      "Sha256": "bb2ecad2f8c427478f4cfc49ce0d1ab3befe26d9443380a9c4502a7e71545f7b"
+    },
+    {
+      "Name": "node-final.log",
+      "Bytes": 10068,
+      "Sha256": "86f5cc8c75ed10dd9bc1f2d098965bb71fd3d804439d1f2d86a5c0d99b811519"
+    },
+    {
+      "Name": "short-profile.log",
+      "Bytes": 1548,
+      "Sha256": "fc2c945efb51a1c17b6e5ad60979520158e31da9b96ee29366fc7c87566e5056"
+    },
+    {
+      "Name": "worker.log",
+      "Bytes": 6702,
+      "Sha256": "c4241d6d2e6ec053716ddddad9149d6bed53d3b6c73605c2ac8452bc371d1d81"
+    },
+    {
+      "name": "package-memory.log",
+      "bytes": 690,
+      "sha256": "c77ba4b7ae2c079b2852a06c2414f7d30acdc95b63da56f88fb1e9c902f43507"
+    }
+  ],
+  "cleanup": {
+    "operation_root": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\browser-memory-contract\\tinyrustlm-operation-zCx37r",
+    "profile_parent": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\browser-memory-profiles",
+    "profiles_remaining": 0,
+    "output_removal_status": "removed and verified absent",
+    "measured_storage_recovery_bytes": null,
+    "removed_files": 70,
+    "removed_directories": 38,
+    "removed_logical_bytes": 4537134
+  },
+  "source_authority": {
+    "status": "source_authority_scan_incomplete",
+    "unreadable": [
+      "artifacts/verification/qwen3-environment-install/tinyrustlm-operation-C3ZUt9/install-temp/TmP6xn2evdh-b",
+      "artifacts/verification/qwen3-environment-install/tinyrustlm-operation-C3ZUt9/install-temp/TmPeq63_hr7-b"
+    ],
+    "action": "Previously blocked paths left untouched; no material model or publication execution"
+  },
+  "limits": [
+    "Synthetic inference, synthetic catalog qualification and local HTTP fixture only",
+    "No real model, live MemoryEndpoints operation, campaign increment, NuGet publication or deployment",
+    "Other conversation test drafts, model/default/seed, ARM64 and release gates remain incomplete"
+  ],
+  "repositories": [
+    {
+      "repository": "LMComposer.com",
+      "branch": "main",
+      "head": "618e081b510ad75411f2d7bec1d60a8e4f98cbbf"
+    },
+    {
+      "repository": "MiniModel.MiRust.com",
+      "branch": "master",
+      "head": "b437611c34ad4f80312016f4bf9aa1a08398d07a"
+    },
+    {
+      "repository": "MiniModel.org",
+      "branch": "master",
+      "head": "4b815cbb877a709e8d3060c2039c13e993c334eb"
+    },
+    {
+      "repository": "MiRust.com",
+      "branch": "master",
+      "head": "b9420a10feb0819ca6bbf89d92c9199ba89d7c86"
+    },
+    {
+      "repository": "Runtime.MiRust.com",
+      "branch": "master",
+      "head": "8623dcf5603ab419d02ffd0809e9ae987fb5b2a0"
+    },
+    {
+      "repository": "TinyRustLM.com",
+      "branch": "codex/model-acquisition-v2",
+      "head": "5ce5b60b993c2b4ca5606fbfe8fa72d37784221c"
+    },
+    {
+      "repository": "TinyRustLM.MiRust.com",
+      "branch": "master",
+      "head": "d17f77af652e9ac086482414a5bd0b6eb2250a50"
+    }
+  ],
+  "validation": {
+    "syntax_checks": "three changed JavaScript files passed node --check",
+    "diff_hygiene": "git diff --check passed",
+    "visual_impact": "No product assets changed; no redesign or broader visual-parity claim."
+  }
+}

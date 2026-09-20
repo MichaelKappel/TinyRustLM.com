@@ -5,6 +5,35 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C62: restore current browser memory-continuity coverage, September 20
+
+The pending MemoryEndpoints browser test still used the retired simple import
+control, eager runtime startup and an admission without current catalog authority.
+It now uses Advanced import with locally intercepted, hash-bound synthetic catalog
+and receipt documents. Its inference double speaks the current worker protocol and
+intercepts only the inference worker; actual browser storage and user memory code
+run normally. The local service fixture now consumes `actorAgentId` and `summary`,
+rejecting the retired submit alias. Existing useful uncommitted test work is integrated.
+
+Desktop Edge 153.0.4234.48 passes the complete two-profile scenario: explicit
+enrollment, two local turns, opt-in short/long memory saves, profile removal,
+fresh-profile restore/search, consumed invitation rejection, and local company
+cleanup. Turns alone produce no hosted events. Test credentials are absent from
+inspected browser stores and closed profile files. Both owned profiles are removed.
+This uses synthetic inference and a loopback service; it proves no model quality,
+live MemoryEndpoints capability or campaign milestone.
+
+All 42 affected Node checks pass, including five new actual HTTP boundary cases and
+the seven canonical scratch tests. The service fixture has 82.43% line, 64.76%
+branch and 94.12% function coverage. Failed intermediate harness runs and their
+corrections are retained compactly in
+`artifacts/ecosystem-cleanup-20260912/browser-memory-contract-review.json`.
+Deep reporter-derived Windows profile paths failed storage; a short owned canonical
+profile path completed the same scenario. Profile/output ownership replaces the
+old system-temp prefix deletion. No product UI/runtime, package version or public
+deployment changed. Other conversation-test drafts and all broader release/model,
+hosting and previously blocked retirement work remain open.
+
 ## C61: reconcile current product instructions with startup and owner authority, September 20
 
 The root/browser READMEs, browser architecture and companion guide still forbade

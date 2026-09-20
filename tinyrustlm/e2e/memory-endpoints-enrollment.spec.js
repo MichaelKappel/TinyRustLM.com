@@ -2,29 +2,36 @@
 
 const fs = require("node:fs");
 const crypto = require("node:crypto");
-const os = require("node:os");
 const path = require("node:path");
 const { chromium, test, expect } = require("@playwright/test");
+const admissionAuthority = require("../app/browser-model-admission.js");
+const catalogAuthority = require("../app/minimodel-catalog-v1.js");
+const runtimeManifest = require(
+  "../browser-runtime/tinyrustlm-browser-runtime.wasm.manifest.json"
+);
+const acg2Reference = require("../tools/acg2-reference.js");
+const {
+  createOwnedTemporaryDirectory,
+  removeOwnedTemporaryDirectory
+} = require("../tools/canonical-operation-scratch.js");
 const {
   createMemoryEndpointsEnrollmentFixture
 } = require("./helpers/memory-endpoints-enrollment-fixture.js");
 
-function removeOwnedRoot(root) {
-  const resolved = path.resolve(root);
-  const temporaryRoot = path.resolve(os.tmpdir());
-  if (!resolved.startsWith(`${temporaryRoot}${path.sep}`) ||
-      !path.basename(resolved).startsWith("tinyrustlm-memory-profile-")) {
-    throw new Error("Refusing to remove a directory outside the owned memory-profile root");
-  }
-  fs.rmSync(resolved, { recursive: true, force: true, maxRetries: 20, retryDelay: 100 });
-}
+const TEST_ONLY_MODEL_ID =
+  "test-only/never-live-memory-endpoints-enrollment-composition";
+const TEST_ONLY_SCOPE =
+  "test-only/never-live/e2e/memory-endpoints-enrollment";
+const RESOLVED_MEMBER_LENGTHS = Object.freeze([8704, 7459, 1403, 65800, 512]);
 
+/** Scan a closed owned profile for the supplied test credentials without reporting their values. */
 function secretOccurrences(root, secrets) {
   const needles = secrets.flatMap((secret) => [
     { secret, encoding: "utf8", bytes: Buffer.from(secret, "utf8") },
     { secret, encoding: "utf16le", bytes: Buffer.from(secret, "utf16le") }
   ]);
   const matches = [];
+  // Visit ordinary files under this profile; report only relative paths and encodings.
   const visit = (directory) => {
     if (!fs.existsSync(directory)) return;
     for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
@@ -49,6 +56,468 @@ function secretOccurrences(root, secrets) {
   return matches;
 }
 
+/** Hash fixture bytes or canonical text using the same UTF-8 interpretation as the browser. */
+function sha256(bytes) {
+  return crypto.createHash("sha256").update(bytes).digest("hex");
+}
+
+/** Domain-separate deterministic identities for the named synthetic fixture input. */
+function identity(label) {
+  return sha256(Buffer.from(`test-only:${label}`, "utf8"));
+}
+
+/** Fill exactly byteLength bytes with a deterministic pattern for this test-only member label. */
+function syntheticBytes(label, byteLength) {
+  const bytes = Buffer.allocUnsafe(byteLength);
+  const seed = Buffer.from(`SYNTHETIC TEST ONLY NEVER LIVE:${label}`, "utf8");
+  for (let index = 0; index < bytes.length; index += 1) {
+    bytes[index] = (seed[index % seed.length] + index * 31 + (index >>> 5)) & 0xff;
+  }
+  return bytes;
+}
+
+/** Build explicitly synthetic member identities for memory UI tests with an injected worker. */
+function createConversationCompositionFixture() {
+  const memberBuffers = Object.fromEntries(
+    admissionAuthority.artifactSpecs.slice(0, 5).map((spec, index) => [
+      spec.fileName,
+      syntheticBytes(
+        `memory-endpoints:${spec.fileName}`,
+        RESOLVED_MEMBER_LENGTHS[index]
+      )
+    ])
+  );
+  const graphMembers = acg2Reference.MEMBER_PROFILES.map((profile, index) => {
+    const bytes = memberBuffers[admissionAuthority.artifactSpecs[index].fileName];
+    return {
+      ordinal: profile.ordinal,
+      role: profile.role,
+      format: profile.format,
+      artifactBytes: bytes.byteLength,
+      artifactSha256: sha256(bytes),
+      formatProfileSha256: profile.profileSha256
+    };
+  });
+  const compositionBytes = acg2Reference.writeGraph(graphMembers);
+  const graph = acg2Reference.parseGraph(compositionBytes);
+  memberBuffers[admissionAuthority.artifactSpecs[5].fileName] = compositionBytes;
+  const artifacts = admissionAuthority.artifactSpecs.map((spec) => ({
+    role: spec.role,
+    format: spec.format,
+    fileName: spec.fileName,
+    byteCount: memberBuffers[spec.fileName].byteLength,
+    sha256: sha256(memberBuffers[spec.fileName]),
+    formatProfileSha256: spec.profileSha256
+  }));
+  const composition = Object.freeze({
+    graphIdentitySha256: graph.graphIdentitySha256,
+    memberTableSha256: graph.memberTableSha256,
+    resolvedMemberBytes: graph.resolvedMemberBytes
+  });
+  const residentDependencyBytes = artifacts.slice(1, 5)
+    .reduce((total, artifact) => total + artifact.byteCount, 0);
+  const admissionText = admissionAuthority.serializeAdmission({
+    schema: admissionAuthority.schema,
+    modelId: TEST_ONLY_MODEL_ID,
+    operationId: identity("memory-endpoints-operation"),
+    artifacts,
+    composition,
+    qualification: {
+      receiptId: `sha256:${identity("memory-endpoints-receipt")}`,
+      sourceEvidenceSha256: identity("memory-endpoints-source"),
+      structuralEvidenceSha256: identity("memory-endpoints-structure"),
+      numericalEvidenceSha256: identity("memory-endpoints-numerical"),
+      qualityEvidenceSha256: identity("memory-endpoints-quality"),
+      evalCasesSha256: identity("memory-endpoints-evals"),
+      qualityClaim: "task-specific-qualified",
+      qualityScope: TEST_ONLY_SCOPE
+    },
+    runtime: {
+      workerProtocol: runtimeManifest.workerProtocol,
+      wasmByteCount: runtimeManifest.byteCount,
+      wasmSha256: runtimeManifest.sha256,
+      policy: {
+        maximumModelBytes: artifacts[0].byteCount,
+        maximumSequenceTokens: 128,
+        maximumKvBytes: 1024 * 1024,
+        maximumScratchBytes: 1024 * 1024,
+        maximumResolvedMemberBytes: composition.resolvedMemberBytes,
+        maximumResidentDependencyBytes: residentDependencyBytes,
+        maximumRequestBytes: 1_054_848,
+        maximumLinearMemoryBytes: runtimeManifest.maximumMemoryBytes
+      },
+      defaultSampling: {
+        temperatureMillionths: 0,
+        topK: 1,
+        topPMillionths: 1_000_000,
+        repetitionPenaltyMillionths: 1_000_000,
+        repetitionWindow: 0,
+        maximumNewTokens: 8
+      }
+    }
+  });
+  const files = artifacts.map((artifact) => ({
+    name: artifact.fileName,
+    mimeType: "application/octet-stream",
+    buffer: memberBuffers[artifact.fileName]
+  }));
+  files.push({
+    name: "test-only.browser-composition-admission.json",
+    mimeType: "application/json",
+    buffer: Buffer.from(admissionText, "utf8")
+  });
+  const compositionArtifact = artifacts[5];
+  return Object.freeze({
+    admissionText,
+    files: Object.freeze(files),
+    activeComposition: Object.freeze({
+      artifactBytes: compositionArtifact.byteCount,
+      artifactSha256: compositionArtifact.sha256,
+      graphIdentitySha256: composition.graphIdentitySha256,
+      memberTableSha256: composition.memberTableSha256
+    }),
+    modelBytes: artifacts[0].byteCount
+  });
+}
+
+/** Supply current, hash-bound test authority; never contact the public catalog or seed. */
+async function routeConversationCatalog(context, fixture) {
+  const admission = admissionAuthority.parseAdmissionText(fixture.admissionText);
+  const now = Math.floor(Date.now() / 1000) * 1000;
+  const utc = (offset) => new Date(now + offset).toISOString().replace(".000Z", "Z");
+  const prefix = "/test-only/memory-enrollment";
+  const compositionId = `sha256:${admission.composition.graphIdentitySha256}`;
+  const receipt = {
+    schema: catalogAuthority.QUALIFICATION_RECEIPT_SCHEMA,
+    receiptId: admission.qualification.receiptId,
+    modelId: admission.modelId,
+    operationId: admission.operationId,
+    compositionId,
+    sourceEvidenceSha256: admission.qualification.sourceEvidenceSha256,
+    structuralEvidenceSha256: admission.qualification.structuralEvidenceSha256,
+    numericalEvidenceSha256: admission.qualification.numericalEvidenceSha256,
+    qualityEvidenceSha256: admission.qualification.qualityEvidenceSha256,
+    evalCasesSha256: admission.qualification.evalCasesSha256,
+    qualityClaim: admission.qualification.qualityClaim,
+    qualityScope: admission.qualification.qualityScope,
+    numericalStatus: "passed",
+    browserStatus: "passed",
+    qualityStatus: "qualified",
+    issuedAtUtc: utc(-120_000)
+  };
+  const receiptText = `${JSON.stringify(receipt)}\n`;
+  const catalog = {
+    schema: catalogAuthority.CATALOG_SCHEMA,
+    catalog_id: "test-only/memory-enrollment",
+    revision: 1,
+    generated_at_utc: utc(-60_000),
+    valid_until_utc: utc(3_600_000),
+    project_server_serves_model_bytes: false,
+    project_server_proxies_model_bytes: false,
+    project_server_runs_inference: false,
+    qualification_policy: "exact-current-evidence-required",
+    qualification_receipt_schema: catalogAuthority.QUALIFICATION_RECEIPT_SCHEMA,
+    browser_admission_schema: admissionAuthority.schema,
+    peer_verification_keys: [],
+    revoked_qualification_receipt_ids: [],
+    supersessions: [],
+    entries: [{
+      entry_id: "test-only/memory-enrollment",
+      display_name: "TEST ONLY memory conversation fixture",
+      description: "Synthetic memory UI test; never a qualified model or live evidence.",
+      source: {
+        repository: admission.modelId,
+        revision: identity("memory-source-revision").slice(0, 40),
+        source_lock_sha256: `sha256:${identity("memory-source-lock")}`
+      },
+      license: { route: `${prefix}/license.txt`, review_status: "reviewed" },
+      composition: {
+        composition_id: compositionId,
+        member_count: admission.artifacts.length,
+        members: admission.artifacts.map((artifact) => ({
+          name: artifact.fileName,
+          bytes: artifact.byteCount,
+          sha256: `sha256:${artifact.sha256}`,
+          schema: `test-only/${artifact.format}`
+        }))
+      },
+      browser_admission: {
+        route: `${prefix}/admission.json`,
+        bytes: Buffer.byteLength(fixture.admissionText),
+        sha256: `sha256:${sha256(fixture.admissionText)}`
+      },
+      profiles: {
+        conversion: "test-only/memory-ui",
+        quantization: "test-only/memory-ui",
+        runtime: "test-only/memory-ui"
+      },
+      qualification: {
+        status: "qualified",
+        receipt_id: receipt.receiptId,
+        receipt_route: `${prefix}/receipt.json`,
+        receipt_bytes: Buffer.byteLength(receiptText),
+        receipt_sha256: `sha256:${sha256(receiptText)}`,
+        numerical_status: "passed",
+        browser_status: "passed",
+        quality_status: "qualified"
+      },
+      peer_announcement_ids: []
+    }]
+  };
+  catalogAuthority.validateCatalog(catalog);
+  const documents = new Map([
+    [catalogAuthority.CATALOG_URL, `${JSON.stringify(catalog)}\n`],
+    [catalogAuthority.PEER_FEED_URL, `${JSON.stringify({
+      schema: catalogAuthority.PEER_SCHEMA,
+      feed_id: "test-only/memory-enrollment",
+      revision: 1,
+      generated_at_utc: catalog.generated_at_utc,
+      valid_until_utc: catalog.valid_until_utc,
+      project_server_serves_model_bytes: false,
+      project_server_proxies_model_bytes: false,
+      announcements: []
+    })}\n`],
+    [`https://minimodel.org${prefix}/admission.json`, fixture.admissionText],
+    [`https://minimodel.org${prefix}/receipt.json`, receiptText]
+  ]);
+  await context.route("https://minimodel.org/**", async (route) => {
+    const body = documents.get(route.request().url());
+    expect(route.request().method()).toBe("GET");
+    expect(body, "Only known local fixture metadata may be requested").toBeDefined();
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      headers: { "Access-Control-Allow-Origin": "*" },
+      body
+    });
+  });
+}
+
+/** Replace only inference for the supplied composition; other browser workers remain native. */
+async function installSyntheticRuntimeWorker(context, fixture) {
+  await context.addInitScript(({ activeComposition, modelBytes }) => {
+    const NativeWorker = window.Worker;
+    const protocolSchema = "tinyrustlm.model-runtime-worker/1";
+    const eventIdDomain = "tinyrustlm.model-runtime-worker.event/1";
+
+    /** Bind each fixture event to its command, monotonic sequence and event kind. */
+    async function eventMessageId(command, sequence, kind) {
+      const canonical = [
+        eventIdDomain,
+        command.workerId,
+        command.messageId,
+        String(sequence),
+        kind
+      ].join("\n");
+      const digest = await crypto.subtle.digest(
+        "SHA-256",
+        new TextEncoder().encode(canonical)
+      );
+      return Array.from(new Uint8Array(digest))
+        .map((value) => value.toString(16).padStart(2, "0"))
+        .join("");
+    }
+
+    class SyntheticRuntimeWorker {
+      /** Intercept only the inference worker URL and forward other URLs/options unchanged. */
+      constructor(url, options) {
+        if (!new URL(url, window.location.href).pathname.endsWith("/model-runtime-worker.js")) {
+          return new NativeWorker(url, options);
+        }
+        this.commands = [];
+        this.eventSequence = 0;
+        this.generationStep = 0;
+        this.maximumLinearMemoryBytes = 64 * 1024 * 1024;
+        this.terminated = false;
+        this.onmessage = null;
+        this.onerror = null;
+        this.onmessageerror = null;
+      }
+
+      /** Preserve transfer detachment before interpreting the supplied current worker command. */
+      postMessage(command, transfer = []) {
+        if (this.terminated) throw new Error("worker terminated");
+        const cloned = structuredClone(command, { transfer });
+        this.commands.push(cloned);
+        queueMicrotask(() => {
+          this.respond(cloned).catch(() => {
+            if (this.onerror) this.onerror({});
+          });
+        });
+      }
+
+      /** Refuse subsequent commands after this fixture worker is terminated. */
+      terminate() {
+        this.terminated = true;
+      }
+
+      /** Return fixture state bound to the command operation and supplied transcript revision. */
+      runtimeState(command, state, revisionLow = 0, revisionHigh = 0) {
+        const active = state !== "empty";
+        return {
+          schema: "tinyrustlm.browser_runtime_wasm.state/1",
+          state,
+          operationId: command.operationId,
+          transcriptRevisionLow: revisionLow,
+          transcriptRevisionHigh: revisionHigh,
+          activeComposition: active ? { ...activeComposition } : null,
+          committedKvBytes: active ? 4096 : 0,
+          memoryPlan: active
+            ? { modelBytes, kvBytes: 4096, scratchBytes: 4096 }
+            : null,
+          observedLinearMemoryBytes: this.maximumLinearMemoryBytes,
+          maximumLinearMemoryBytes: this.maximumLinearMemoryBytes
+        };
+      }
+
+      /** Map current commands to protocol events; generation completes after one fixture step. */
+      eventKind(command) {
+        switch (command.kind) {
+          case "initialize": return "runtime-ready";
+          case "artifact-begin": return "artifact-transfer-begun";
+          case "artifact-chunk": return "artifact-chunk-accepted";
+          case "artifact-commit": return "artifact-transfer-committed";
+          case "activate": return "composition-active";
+          case "set-transcript": return "transcript-updated";
+          case "begin-generation":
+            this.generationStep = 0;
+            return "generation-begun";
+          case "cancel-generation": return "generation-complete";
+          case "release": return "runtime-released";
+          case "step-generation": {
+            const kind = this.generationStep === 0
+              ? "generation-step"
+              : "generation-complete";
+            this.generationStep += 1;
+            return kind;
+          }
+          default: throw new Error(`unexpected command ${command.kind}`);
+        }
+      }
+
+      /** Build the exact current event payload for the command and selected event kind. */
+      payload(command, kind) {
+        const commandMessageId = command.messageId;
+        switch (kind) {
+          case "runtime-ready":
+            return {
+              commandMessageId,
+              state: this.runtimeState(
+                command,
+                "empty",
+                command.payload.transcriptRevisionLow,
+                command.payload.transcriptRevisionHigh
+              )
+            };
+          case "artifact-transfer-begun":
+            return {
+              commandMessageId,
+              artifactKind: command.payload.artifactKind,
+              byteLength: command.payload.byteLength
+            };
+          case "artifact-chunk-accepted":
+            return {
+              commandMessageId,
+              artifactKind: command.payload.artifactKind,
+              offset: command.payload.offset,
+              byteLength: command.payload.bytes.byteLength,
+              nextOffset: command.payload.offset + command.payload.bytes.byteLength
+            };
+          case "artifact-transfer-committed": {
+            const begun = [...this.commands].reverse().find((candidate) =>
+              candidate.kind === "artifact-begin" &&
+              candidate.payload.artifactKind === command.payload.artifactKind
+            );
+            return {
+              commandMessageId,
+              artifactKind: command.payload.artifactKind,
+              byteLength: begun.payload.byteLength
+            };
+          }
+          case "composition-active":
+            return { commandMessageId, state: this.runtimeState(command, "active-idle") };
+          case "transcript-updated":
+            return {
+              commandMessageId,
+              state: this.runtimeState(
+                command,
+                "active-idle",
+                command.payload.revisionLow,
+                command.payload.revisionHigh
+              )
+            };
+          case "generation-begun":
+            return { commandMessageId, state: this.runtimeState(command, "generating") };
+          case "generation-step":
+            return {
+              commandMessageId,
+              step: {
+                schema: "tinyrustlm.browser_runtime_wasm.step/1",
+                selectedTokenId: 17,
+                emittedTokenId: 17,
+                status: { kind: "active", stopTokenId: null },
+                committedKvBytes: 8192
+              }
+            };
+          case "generation-complete": {
+            const cancelled = command.kind === "cancel-generation";
+            return {
+              commandMessageId,
+              output: {
+                schema: "tinyrustlm.browser_runtime_wasm.output/1",
+                text: cancelled ? "test-only partial response" : "test-only local response",
+                tokenIds: cancelled ? [17] : [17, 17],
+                status: {
+                  kind: cancelled ? "cancelled" : "stop-token",
+                  stopTokenId: cancelled ? null : 2
+                },
+                composition: { ...activeComposition },
+                operationId: command.operationId,
+                committedKvBytes: 12288
+              }
+            };
+          }
+          case "runtime-released": return { commandMessageId };
+          default: throw new Error(`unexpected event ${kind}`);
+        }
+      }
+
+      /** Acknowledge transferred bytes and emit an identity-bound response to this command. */
+      async respond(command) {
+        if (command.kind === "initialize") {
+          this.maximumLinearMemoryBytes = command.payload.maximumLinearMemoryBytes;
+        }
+        if (command.kind === "artifact-chunk") {
+          new Uint8Array(command.payload.bytes).fill(0);
+        }
+        const kind = this.eventKind(command);
+        const sequence = this.eventSequence;
+        this.eventSequence += 1;
+        const event = {
+          schema: protocolSchema,
+          workerId: command.workerId,
+          operationId: command.operationId,
+          compositionId: command.compositionId,
+          conversationId: command.conversationId,
+          turnId: command.turnId,
+          generationId: command.generationId,
+          messageId: await eventMessageId(command, sequence, kind),
+          sequence,
+          kind,
+          payload: this.payload(command, kind)
+        };
+        if (this.onmessage) this.onmessage({ data: event });
+      }
+    }
+
+    window.Worker = SyntheticRuntimeWorker;
+  }, {
+    activeComposition: fixture.activeComposition,
+    modelBytes: fixture.modelBytes
+  });
+}
+
+/** Reveal existing Advanced memory controls on the selected browser page. */
 async function openMemorySettings(page) {
   await page.locator("#sidebarAdvancedToolsButton").click();
   const drawer = page.locator('details[data-panel-key="dashboard-model-source"]');
@@ -59,16 +528,36 @@ async function openMemorySettings(page) {
   await expect(page.locator("#memoryEndpointsEnrollmentUrl")).toBeVisible();
 }
 
-async function loadConversationFixture(page) {
-  const fixturePath = path.join(__dirname, "..", "models", "tiny-test-model-q8.slm");
-  await page.locator("#modelEditButton").click();
-  await page.locator("#simpleLocalSourceButton").click();
-  await page.locator("#localModelFile").setInputFiles(fixturePath);
-  await page.locator("#simpleImportLocalModelButton").click();
-  await expect(page.locator("#runtimeStatus")).toHaveText("Ready", { timeout: 30000 });
+/** Import the supplied test-only composition through the current Advanced controls. */
+async function loadConversationFixture(page, fixture) {
+  const chooser = page.locator("#modelEditButton");
+  if (await chooser.getAttribute("aria-expanded") !== "true") await chooser.click();
+  await page.locator("#simpleOpenAdvancedDiscoveryButton").click();
+  const input = page.locator("#localModelFile");
+  await input.setInputFiles(fixture.files);
+  await expect.poll(() => input.evaluate((element) => Array.from(element.files, (file) =>
+    file.name
+  ))).toEqual([
+    "model.slm2",
+    "tokenizer.tokenizer2",
+    "template.template2",
+    "sampling.sampling2",
+    "prompt.prompt2",
+    "composition.acg2",
+    "test-only.browser-composition-admission.json"
+  ]);
+  await page.locator("#importLocalModelButton").click();
+  try {
+    await expect(page.locator("#runtimeStatus")).toHaveText("Ready", { timeout: 30000 });
+  } catch (error) {
+    error.message += `\nImport diagnostic: ${await page.locator("#errorState").textContent()}`;
+    throw error;
+  }
+  await expect(page.locator("#wasmState")).toHaveText("verified");
   await expect(page.locator("#generateButton")).toBeEnabled();
 }
 
+/** Submit a local fixture turn and require the expected completed conversation message count. */
 async function sendTurn(page, prompt, expectedMessageCount) {
   await page.locator("#prompt").fill(prompt);
   await page.locator("#prompt").press("Enter");
@@ -80,6 +569,7 @@ async function sendTurn(page, prompt, expectedMessageCount) {
   });
 }
 
+/** Inspect browser key/value stores for the supplied test credentials without returning stored data. */
 async function browserStorageContains(page, values) {
   return page.evaluate(async (protectedValues) => {
     const serialized = [
@@ -138,9 +628,18 @@ test.describe("one-time MemoryEndpoints agent continuity", () => {
 
     const applicationOrigin = String(testInfo.project.use.baseURL);
     const service = createMemoryEndpointsEnrollmentFixture();
-    const profileRoot = fs.mkdtempSync(path.join(os.tmpdir(), "tinyrustlm-memory-profile-"));
-    const firstProfile = path.join(profileRoot, "browser-a");
-    const secondProfile = path.join(profileRoot, "browser-b");
+    // Keep Windows browser storage paths short, independently of reporter/test title length.
+    const profileParent = path.resolve(__dirname, "../../artifacts/tests/browser-memory-profiles");
+    const browserOptions = {
+      channel: testInfo.project.use.channel,
+      headless: true,
+      colorScheme: "dark",
+      locale: "en-US",
+      viewport: { width: 1365, height: 768 }
+    };
+    const compositionFixture = createConversationCompositionFixture();
+    let firstOwned = null;
+    let secondOwned = null;
     let company = null;
     let firstContext = null;
     let secondContext = null;
@@ -154,16 +653,16 @@ test.describe("one-time MemoryEndpoints agent continuity", () => {
       const shortMarker = `short-memory-${crypto.randomUUID()}`;
       const longMarker = `long-memory-${crypto.randomUUID()}`;
 
-      firstContext = await chromium.launchPersistentContext(firstProfile, {
-        headless: true,
-        colorScheme: "dark",
-        locale: "en-US",
-        viewport: { width: 1365, height: 768 }
-      });
+      firstOwned = createOwnedTemporaryDirectory({ temporaryParent: profileParent });
+      const firstProfile = firstOwned.rootPath;
+      firstContext = await chromium.launchPersistentContext(firstProfile, browserOptions);
+      await routeConversationCatalog(firstContext, compositionFixture);
+      await installSyntheticRuntimeWorker(firstContext, compositionFixture);
       const firstPage = await firstContext.newPage();
       await firstPage.goto(applicationOrigin, { waitUntil: "domcontentloaded" });
-      await expect(firstPage.locator("#wasmState")).toHaveText("loaded", { timeout: 30000 });
-      await loadConversationFixture(firstPage);
+      await expect(firstPage.locator("#runtimeStatus")).toHaveText("Choose a qualified composition");
+      await expect(firstPage.locator("#wasmState")).toHaveText("waiting");
+      await loadConversationFixture(firstPage, compositionFixture);
       await openMemorySettings(firstPage);
       await firstPage.locator("#memoryEndpointsBaseUrl").fill(service.baseUrl);
       await firstPage.locator("#memoryEndpointsEnrollmentUrl").fill(oneTimeUrl);
@@ -177,15 +676,19 @@ test.describe("one-time MemoryEndpoints agent continuity", () => {
       const agentToken = await firstPage.locator("#memoryEndpointsAgentToken").inputValue();
       expect(canonicalAgentName).toBe("tinyrustlm-dogfood-agent");
       expect(agentToken.length).toBeGreaterThan(24);
+      expect(service.snapshot().eventCount).toBe(0);
 
       await sendTurn(firstPage, `Remember this short-term marker exactly: ${shortMarker}`, 2);
+      expect(service.snapshot().eventCount, "A conversation turn does not authorize a memory upload").toBe(0);
       await openMemorySettings(firstPage);
       await firstPage.locator("#memoryEndpointsSaveShortTermButton").click();
       await expect(firstPage.locator("#memoryEndpointsStatus")).toContainText("short-term web memory synchronized", {
         timeout: 30000
       });
+      expect(service.snapshot().eventCount).toBe(1);
 
       await sendTurn(firstPage, `Remember this durable long-term marker exactly: ${longMarker}`, 4);
+      expect(service.snapshot().eventCount, "Saving one turn does not authorize automatic later uploads").toBe(1);
       await openMemorySettings(firstPage);
       await firstPage.locator("#memoryEndpointsSaveLongTermButton").click();
       await expect(firstPage.locator("#memoryEndpointsStatus")).toContainText("long-term web memory synchronized", {
@@ -196,18 +699,18 @@ test.describe("one-time MemoryEndpoints agent continuity", () => {
       await firstContext.close();
       firstContext = null;
       expect(secretOccurrences(firstProfile, [oneTimeUrl, agentToken])).toEqual([]);
-      fs.rmSync(firstProfile, { recursive: true, force: true, maxRetries: 20, retryDelay: 100 });
+      removeOwnedTemporaryDirectory(firstOwned);
+      firstOwned = null;
       expect(fs.existsSync(firstProfile)).toBe(false);
 
-      secondContext = await chromium.launchPersistentContext(secondProfile, {
-        headless: true,
-        colorScheme: "dark",
-        locale: "en-US",
-        viewport: { width: 1365, height: 768 }
-      });
+      secondOwned = createOwnedTemporaryDirectory({ temporaryParent: profileParent });
+      const secondProfile = secondOwned.rootPath;
+      secondContext = await chromium.launchPersistentContext(secondProfile, browserOptions);
+      await routeConversationCatalog(secondContext, compositionFixture);
       const secondPage = await secondContext.newPage();
       await secondPage.goto(applicationOrigin, { waitUntil: "domcontentloaded" });
-      await expect(secondPage.locator("#wasmState")).toHaveText("loaded", { timeout: 30000 });
+      await expect(secondPage.locator("#runtimeStatus")).toHaveText("Choose a qualified composition");
+      await expect(secondPage.locator("#wasmState")).toHaveText("waiting");
       await openMemorySettings(secondPage);
       await secondPage.locator("#memoryEndpointsBaseUrl").fill(service.baseUrl);
       await secondPage.locator("#memoryEndpointsReconnectName").fill(canonicalAgentName);
@@ -245,7 +748,8 @@ test.describe("one-time MemoryEndpoints agent continuity", () => {
       await secondContext.close();
       secondContext = null;
       expect(secretOccurrences(secondProfile, [oneTimeUrl, agentToken])).toEqual([]);
-      fs.rmSync(secondProfile, { recursive: true, force: true, maxRetries: 20, retryDelay: 100 });
+      removeOwnedTemporaryDirectory(secondOwned);
+      secondOwned = null;
       expect(fs.existsSync(secondProfile)).toBe(false);
     } finally {
       if (firstContext) await firstContext.close().catch(() => {});
@@ -259,7 +763,8 @@ test.describe("one-time MemoryEndpoints agent continuity", () => {
       }
       const finalSnapshot = service.snapshot();
       await service.close().catch(() => {});
-      removeOwnedRoot(profileRoot);
+      if (firstOwned) removeOwnedTemporaryDirectory(firstOwned);
+      if (secondOwned) removeOwnedTemporaryDirectory(secondOwned);
       if (company) {
         expect(cleanupReceipts && cleanupReceipts.closed && cleanupReceipts.closed.status).toBe("closed");
         expect(cleanupReceipts && cleanupReceipts.deleted && cleanupReceipts.deleted.deleted).toBe(true);

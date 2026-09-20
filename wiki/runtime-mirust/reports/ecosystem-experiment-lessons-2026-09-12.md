@@ -11,6 +11,41 @@ Keep useful findings and compact evidence identities in the owning canonical
 repository. Keep source history in Git and current model payloads only in
 `D:\LLMs\TinyRustLM`.
 
+## C62: memory browser tests need current admission and usable owned profile paths
+
+Question: can the current user-plugin path preserve both explicit memory tiers
+after the original browser profile is removed? Parent was
+`5ce5b60b993c2b4ca5606fbfe8fa72d37784221c`; the receipt binds final source and logs.
+Inputs are synthetic six-member files, intercepted current catalog/admission/receipt
+bytes, an inference worker double, two marker prompts, a fresh loopback enrollment
+service, and two real desktop Edge profiles. No production account was contacted.
+
+The old test failed before import by expecting eager WASM verification. Later
+harness checks exposed a chooser already open, absent catalog authority, an invalid
+owner/model fixture identity, noncanonical receipt field order, and storage errors
+with deeply nested Windows profile paths. Correct the fixture and preserve the
+production validators. A short canonical profile path completed the same storage
+and memory workflow. The worker double now forwards unrelated worker URLs, but that
+change alone did not cure the storage error. This is evidence for controlling
+profile path depth, not proof of a universal Windows or browser path-length limit.
+
+Five new HTTP tests initially failed during teardown because separately registered
+hooks closed the server before company cleanup. One ordered try/finally now cleans
+the company before closing the server. All five pass, including retired/conflicting
+actor fields, another actor/workspace, exact replay, conflicting replay and summary
+search. An initial 35-test command also named a nonexistent `.test.js` scratch test;
+Node did not fail for that unmatched argument. Verify the file inventory first and
+use the actual `_test.js` owner: the final 42-test run includes all seven scratch
+checks. No missing test is counted as passed.
+
+Final browser result: enrollment, two explicitly saved tiers, no automatic turn
+uploads, profile deletion, fresh-profile search, replay rejection, credential
+nonpersistence checks and local company deletion pass. Service fixture line coverage
+is 82.43%; live service behavior, real inference and physical-device breadth remain
+unmeasured. Stop relying on retired selectors, authority-free local import or long
+reporter-derived browser paths. Keep the exact failed outcomes and reusable lesson
+in `browser-memory-contract-review.json`; retire operation-owned bulky outputs.
+
 ## C61: current entry guides must agree with owner requirements and executable routes
 
 Question: would an engineer following the main product guides reconstruct the

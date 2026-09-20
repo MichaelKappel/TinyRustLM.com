@@ -50,6 +50,20 @@ The clean-cut test proves the registered obsolete executable closure remains
 physically absent, scans active source for superseded tokens, verifies the
 sole deployed browser artifact, and checks canonical Rust workspace ownership.
 
+## Memory Continuity Browser Check
+
+The MemoryEndpoints enrollment browser scenario uses Advanced local import with
+current hash-bound catalog/receipt fixtures, synthetic inference, real browser
+storage, and a loopback memory service. Run it with
+`node node_modules/@playwright/test/cli.js test e2e/memory-endpoints-enrollment.spec.js --project=desktop`
+from `tinyrustlm`; `TINYRUSTLM_PLAYWRIGHT_CHANNEL=msedge` selects installed Edge.
+It checks explicit-save consent, both memory tiers across removal of the original
+profile, invitation replay rejection and credential nonpersistence. Short profiles
+under the canonical root's `artifacts/tests/browser-memory-profiles` are owned and
+removed by the shared scratch helper. Deep reporter-derived profile paths caused
+Windows storage failures. This test does not execute a real model or contact the
+live MemoryEndpoints service and cannot advance live campaign counters.
+
 ## Rust Gates
 
 ```powershell

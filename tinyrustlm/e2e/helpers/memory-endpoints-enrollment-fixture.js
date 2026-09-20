@@ -122,6 +122,7 @@ function createMemoryEndpointsEnrollmentFixture() {
     return company && company.status === "active" ? company : null;
   }
 
+  /** Handle loopback enrollment and current actor/summary submit contracts for browser tests. */
   async function routeRequest(request, response) {
     const url = new URL(request.url, "http://fixture.invalid");
     if (request.method === "OPTIONS") {
@@ -308,7 +309,7 @@ function createMemoryEndpointsEnrollmentFixture() {
     if (url.pathname === "/api/matm/memory-events/submit" && request.method === "POST") {
       const agent = agentForRequest(request);
       if (!agent || !activeCompany(agent.companyId) || body.workspaceId !== agent.workspaceId ||
-          body.agentId !== agent.canonicalAgentName) {
+          body.actorAgentId !== agent.canonicalAgentName || Object.hasOwn(body, "agentId")) {
         const failure = safeFailure("agent_authentication_failed", 401);
         writeJson(response, failure.status, failure.body);
         return;
@@ -365,13 +366,13 @@ function createMemoryEndpointsEnrollmentFixture() {
       const memoryType = String(url.searchParams.get("memory_type") || "");
       const items = (eventsByWorkspace.get(agent.workspaceId) || [])
         .filter((event) => !memoryType || event.payload.memoryType === memoryType)
-        .filter((event) => !query || event.payload.safeSummary.toLowerCase().includes(query) ||
+        .filter((event) => !query || event.payload.summary.toLowerCase().includes(query) ||
           event.payload.title.toLowerCase().includes(query))
         .map((event) => ({
           memoryId: event.eventId,
           revisionId: event.revisionId,
           title: event.payload.title,
-          safeSummary: event.payload.safeSummary,
+          safeSummary: event.payload.summary,
           scope: event.payload.scope,
           scopeId: event.payload.scopeId,
           memoryType: event.payload.memoryType,

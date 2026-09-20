@@ -16,6 +16,15 @@ Authority order is current owner instructions, inspected current contracts and b
 
 ## Current evidence and its limits
 
+**C62 browser memory continuity:** the current Advanced import and canonical catalog
+authority now support the pending synthetic memory scenario. All 42 affected Node
+checks and the desktop Edge two-profile test pass, including explicit-save consent,
+both memory tiers, restore/search, replay rejection, credential nonpersistence and
+owned profile cleanup. Short canonical profile paths avoid the observed deeply
+nested-path storage failure. See `browser-memory-contract-review.json`; synthetic
+inference and a loopback service prove no live integration or model quality. Other
+conversation-test drafts, blocked cleanup and release gates remain incomplete.
+
 **C61 current entry guidance:** the root/browser READMEs, browser architecture and
 companion guide now agree with MiniModel initial seeding, Advanced-only conversion,
 diagnostic-only rejected ancestry and canonical developer storage. Existing source
