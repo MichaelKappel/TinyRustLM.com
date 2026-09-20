@@ -1,10 +1,10 @@
 profile: tinyrustlm.short-term-memory.current.v1
-updated_utc: 2026-09-19T23:38:19Z
+updated_utc: 2026-09-20T00:02:12Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
 now:
-  task: C44 aligns release smoke with deferred startup and independently verifies runtime artifacts. Final 25 checks pass, but intermittent Edge runtime ERR_ABORTED observations remain unresolved. Continue bounded diagnosis without filtering failed requests or treating reruns as a fix. Ternary/Bonsai research stays deferred.
+  task: C45 v8 preserves raw network events while distinguishing complete hash-verified probe bodies from browser aborts. Bounded terminal-event waits fix the Playwright completion stall. All 34 smoke and 42 runtime checks plus the normal CLI pass. Continue independent model/hosting and cleanup work; ternary/Bonsai research stays deferred.
   maturity: Early alpha, never a working release; no code debt, obsolete code or legacy support before the owner's official acceptance of a fully working release.
   broader_goal: Ecosystem cleanup and usable release remain incomplete.
   manifest: docs/report-intake/2026-09-19/working-product-research/MANIFEST.md
@@ -12,7 +12,7 @@ now:
   scope: Local guidance/custody/validation only; no model run, qualification, public seed, deployment or live MemoryEndpoints operation.
 
 current_source_state:
-  release_smoke: Sole v7 report separates deferred UI state from exact runtime-file verification; a present disabled send button and zero startup runtime traffic are required. Premature WASM-ready text removed. Earlier and diagnostic failures remain in deferred-runtime-smoke-review.json; speculative retention/header/stream workarounds were discarded. No stability, model or deployment claim.
+  release_smoke: Sole v8 retains raw failures and classifies only the two exact HTTP 200 probe requests after independent byte verification. Application/other failures remain blocking, with real truncation/corruption/cancellation tests. Empty startup remains deferred. C44 failures and the first failed C45 completion wait are preserved; see completed-runtime-probe-review.json. No claim that browser aborts ceased or model/deployment gates passed.
   runtime_lifetime: C43 gives runtime fetch/read/hash one 60-second default deadline and caller cancellation; admission retains 30 seconds through the shared helper. Empty startup discovers models without WASM. Exact runtime/qualification checks and activation ownership remain mandatory. See browser-runtime-lifetime-review.json; no real model, live seed or deployment.
   runtime_bytes: C42 streams manifest/WASM bytes under decoded limits before copying; 48 checks pass, including gzip/chunked HTTP and installed Edge fixtures. Two fresh builds reproduce the unchanged tracked module. Canonical scratch admits only fully contained hard-link groups. See browser-runtime-streaming-review.json; runtime wait limits and real model/public gates remain separate.
   admission_lifetime: One 30-second deadline spans both admission documents and hashes; linked caller cancellation, stream cleanup and useful timeout UI precede any model transfer. See admission-lifetime-review.json. Edge checks use synthetic metadata, with mobile viewport emulation; no real default or public seed evidence.
@@ -34,7 +34,7 @@ current_source_state:
   static_seed_execution: MiniModel 01063a0 passes 78 affected checks including real Apache 2.4.58 GET/HEAD transfers and rejection controls with synthetic bytes. TRACE bypassed directory rules; plan now requires server/vhost TraceEnable Off. Separate WSL loopback instance and owned output removed; no TLS/browser/LiteSpeed/publication claim. See static-seed-apache-review-20260919.json and C34.
 
 known_blockers:
-  - C44 runtime probe intermittently reports net::ERR_ABORTED despite exact verified bytes. A final green suite does not close this observation; network/identity gates remain strict. Root cause is unproven.
+  - Native internals behind complete-body abort events remain unproven; C45 reproduces them without app code and corrects the smoke evidence model. Raw events remain visible and genuine failed transfers block.
   - Source-authority scan remains incomplete on the two C28 installer links; rerun in this intake confirmed source_authority_scan_incomplete after canonical Git trust configuration.
   - Automatic approval review previously blocked C28 installer-output and other exact reviewed removals. They remain present; no alternate deletion route is authorized.
   - September 19 read-only HTTPS metadata probes see LiteSpeed, working HEAD/range/CORS and empty August 28 catalog/feed missing current authority fields. Model routes, process hosting and safe remote promotion remain unproven; this was not an independent external observer.

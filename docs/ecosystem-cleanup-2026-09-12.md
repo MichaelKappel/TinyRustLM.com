@@ -5,6 +5,39 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C45: distinguish verified probe bodies from browser transport events, September 19
+
+A minimal Edge page reproduced the runtime abort without application code and,
+in one forced-GC case, without an AbortSignal. All 64 downloaded bodies had the
+exact expected size and SHA-256; three forced-GC cases reported `net::ERR_ABORTED`.
+A separate 128-case keepalive matrix retained two such events. Keepalive was not
+adopted. These observations distinguish complete script-visible bytes from the
+browser's network event; they do not identify the exact native browser cause.
+
+Smoke report v8 retains raw failures and separately identifies only completed,
+independently hash-verified probe requests with exact HTTP 200 responses. The two
+probe GETs must have unique identities and the declared runtime paths/origin.
+Startup or unrelated failures, other errors, missing/duplicate requests, truncated
+or corrupted bytes still fail. The unchanged production loader retains all byte,
+identity, timeout and cancellation checks. No v7 compatibility reader was added.
+
+The first implementation passed 33/34 tests but timed out waiting for Playwright's
+response completion after a requestfailed event. Inspection of installed 1.61.1
+confirmed that client failure delivery does not resolve that completion promise.
+The smoke now waits, with a deadline, on its actual terminal-event ledger. The
+corrected suite passes all 34 checks: two sets of twelve Edge observations plus
+four real-browser fault cases. Node smoke coverage is 83.32% lines, 90.95% branches
+and 79.66% functions. All 42 unchanged loader/lifetime checks pass; the normal
+zero-argument command passes twelve observations and verifies cleanup.
+
+Evidence: `artifacts/ecosystem-cleanup-20260912/completed-runtime-probe-review.json`.
+C44's failed outcomes remain historical evidence. C45 supersedes its blanket
+interpretation of a probe abort as failed bytes; no claim that those events have
+stopped is made. Owned scratch was removed, with only logical sizes measured.
+This checkpoint changes TinyRustLM only. The same two blocked installer links
+still prevent the source scan; no deletion bypass, model run, seed or deployment
+is claimed. Ternary/Bonsai research remains deferred.
+
 ## C44: reconcile the release smoke with deferred startup, September 19
 
 The release smoke still required eager WASM verification after C43 deliberately

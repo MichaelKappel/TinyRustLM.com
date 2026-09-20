@@ -1,5 +1,5 @@
 profile: tinyrustlm.operations.current.v1
-updated_utc: 2026-09-19T23:38:19Z
+updated_utc: 2026-09-20T00:02:12Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
@@ -66,7 +66,8 @@ reviewed_storage_and_experiments:
   close_run: Preserve failed attempts and stages never started; a corrected implementation needs a new experiment. Transfer resumption is not scientific replay.
 
 current_limit:
-  c44: Release smoke v7 observes deferred startup and separately binds runtime downloads to publication identities. Final 25 checks pass, but intermittent Edge runtime abort events remain unresolved; discarded lifetime variants did not establish a fix. Keep strict request-failure and identity gates. See deferred-runtime-smoke-review.json; no model or public result.
+  c45: Smoke v8 preserves raw events and separately attributes exact HTTP 200, independently verified probe bodies. Minimal-page diagnostics establish that complete bodies can accompany abort events; native cause remains unproven. Terminal-event waits fix a stalled Playwright response wait. All 34 smoke and 42 runtime checks plus the normal CLI pass; see completed-runtime-probe-review.json. Real model/public gates remain open.
+  c44: Historical v7 aligns deferred startup and artifact verification. Earlier abort observations and failed lifetime workarounds remain in deferred-runtime-smoke-review.json; C45 supersedes their blanket interpretation as failed probe bytes. No model or public result.
   c43: Empty startup discovers models without downloading the runtime. Model operations use shared lifetime logic, a 60-second runtime deadline, caller cancellation and ownership checks before registration. 262 focused, 26 artifact/publication and 14 Edge chooser checks pass; serving closure includes the helper and fresh builds reproduce unchanged WASM. See browser-runtime-lifetime-review.json. Source scan and real model/public gates remain open.
   c42: Streamed decoded runtime limits, canonical build scratch, fully contained hard-link cleanup and pinned-owner profile remapping pass 48 checks. Two fresh builds match unchanged tracked WASM; local HTTP/Edge tests use synthetic modules. See browser-runtime-streaming-review.json. Runtime waiting, source scan and real model/public gates remain open.
   c41: Browser admission checks now own one deadline across fetch/read/hash stages and link caller cancellation. 218 affected JavaScript and eight Edge fixture checks pass; owned output removed. See admission-lifetime-review.json. No real model, public seed, deployment or source-gate pass.

@@ -1,0 +1,345 @@
+{
+  "schema": "tinyrustlm.completed-runtime-probe-review.v1",
+  "observedAtUtc": "2026-09-20T00:02:12Z",
+  "localDate": "2026-09-19",
+  "sourceParent": "a4b87a1974e58a66eec7f54b81e4cf1997863bae",
+  "status": "local-smoke-evidence-corrected-no-product-qualification-or-deployment",
+  "inputs": [
+    {
+      "path": "tinyrustlm/tools/web-release-browser-smoke.js",
+      "bytes": 44097,
+      "sha256": "871da8e65d1f0b7ae6935a0a80d77d8409249dc025afac228905d70f8acb605b"
+    },
+    {
+      "path": "tinyrustlm/tests/web-release-browser-smoke.test.js",
+      "bytes": 13801,
+      "sha256": "71949dab3b828b2ace705ae2c95629e94dd24069ff2b1d7db05be7eec0b03bf1"
+    },
+    {
+      "path": "tinyrustlm/tests/web-release-local-smoke.test.js",
+      "bytes": 12370,
+      "sha256": "5135296fbb2432e246d656e7f90898a8a66abc274f679c0116f7432ae53f649d"
+    },
+    {
+      "path": "tinyrustlm/tests/run-web-release-local-smoke.test.js",
+      "bytes": 9020,
+      "sha256": "c4810045d5a61bea69a7bb2597b10767e35311c97ef4cfbafa45a00032f98d4a"
+    },
+    {
+      "path": "tinyrustlm/tests/static-shell-parity.test.js",
+      "bytes": 5127,
+      "sha256": "c20d60933c2f75bc60a243b2603545c26823a4aafdef4304c87e8e2bc634c89d"
+    },
+    {
+      "path": "tinyrustlm/tools/web-release-local-smoke.js",
+      "bytes": 2777,
+      "sha256": "5957d07bf69554f02adedc70749f9a8ed7226460888cd29f619eb6e8163e368a"
+    },
+    {
+      "path": "tinyrustlm/tools/run-web-release-local-smoke.js",
+      "bytes": 5952,
+      "sha256": "a13933da13f91d5dcea6f0c963f29df97fc42110d2b5886e5b6ade99da1b08b3"
+    },
+    {
+      "path": "tinyrustlm/tools/static-server.js",
+      "bytes": 13282,
+      "sha256": "f7a95852b57568b31b9a5602e63bf57396008cb74b44866d4c47318ba1191465"
+    },
+    {
+      "path": "tinyrustlm/app/index.html",
+      "bytes": 48604,
+      "sha256": "956b669f1dd91b758b64fce1b6e8a334438ac41758b24c57004124eb2aeae61a"
+    },
+    {
+      "path": "tinyrustlm/index.html",
+      "bytes": 48684,
+      "sha256": "bd8e7f7eea5df062c1f4f59489694c038e6e38bfef49531769f29ac2784f4abe"
+    },
+    {
+      "path": "tinyrustlm/app/browser-runtime-loader.js",
+      "bytes": 13096,
+      "sha256": "1836fb805c7be0a43508a54359fe3f128f9b4c1cbf888d2392908f8b4c6717b8"
+    },
+    {
+      "path": "tinyrustlm/app/operation-lifetime.js",
+      "bytes": 2292,
+      "sha256": "4a9d907a3c62b679f896d859e843124bf4252e6d2be0f8aacc7e754113a9f570"
+    },
+    {
+      "path": "tinyrustlm/browser-runtime/tinyrustlm-browser-runtime.wasm",
+      "bytes": 576379,
+      "sha256": "05e9a497f4aab23a1bc0bc4aed3027a2e4914f5aa70c0e79ecbeb50b5fbe8467"
+    },
+    {
+      "path": "tinyrustlm/browser-runtime/tinyrustlm-browser-runtime.wasm.manifest.json",
+      "bytes": 1209,
+      "sha256": "e6109eddda947f53cb00cf07f08e7779b49216c44f6ed54383fc16bb26452eb7"
+    },
+    {
+      "path": "tinyrustlm/deploy/web-deployment-manifest.v2.json",
+      "bytes": 4802,
+      "sha256": "3c97a713670f119a978a1aea1611169dfb7d9cf1974ad8ae7c4a201454a04df8"
+    },
+    {
+      "path": "docs/architecture/2026-09-12-local-release-smoke-cleanup.md",
+      "bytes": 5993,
+      "sha256": "5f6de22b41dbc2a292d966db4a91ac2d5c84a88b08e3257cd7ea8adb42c7a991"
+    },
+    {
+      "path": "tinyrustlm/tests/browser-runtime-loader_test.js",
+      "bytes": 14650,
+      "sha256": "f4fbd3b204ae4b3644e6726f78a8d5ae8f089daefe8bd975f416399b81c8570d"
+    },
+    {
+      "path": "tinyrustlm/tests/operation-lifetime_test.js",
+      "bytes": 3562,
+      "sha256": "66aeffa662279115b31a4a65ccfb7c9e55c0c534dfe550d47a08308c47faf759"
+    },
+    {
+      "path": "tinyrustlm/node_modules/playwright-core/lib/coreBundle.js",
+      "bytes": 3352341,
+      "sha256": "6be5c2ea035554e9b184b1dbc7aa5e7f1fb428dd1b5c202022858dcfae9bee27"
+    }
+  ],
+  "environment": {
+    "node": "24.14.0",
+    "playwright": "1.61.1",
+    "browser": "Microsoft Edge 153.0.4234.48",
+    "platform": "Windows",
+    "browserMode": "headless; mobile tests emulate viewport only"
+  },
+  "changes": [
+    "Sole report schema v8 replaces v7; no compatibility reader.",
+    "Retain raw failure counts, bounded failure records and unique request identities. Classify completed probe aborts separately without removing raw records.",
+    "Require independently recomputed WASM SHA-256 and canonical manifest identity, exactly two distinct declared-origin GET requests, one matching HTTP 200 response each, and the exact net::ERR_ABORTED identity before classification.",
+    "Startup/application failures, unrelated identities, other errors, duplicate or missing requests/responses, corruption and incomplete bytes remain blocking.",
+    "Await the actual requestfinished/requestfailed ledger with a deadline, rather than Response.finished(), which can remain pending after client requestFailed in installed Playwright.",
+    "Take immutable listener snapshots after the screenshot, and preserve bounded failure diagnostics when byte verification fails.",
+    "Production runtime loader, cancellation/lifetime helper, runtime artifacts and visual shells are unchanged."
+  ],
+  "diagnostics": {
+    "classification": "bounded development diagnostics; no preregistered material/model experiment or independent external observer",
+    "method": "Serve canonical module/manifest and actual loader/lifetime scripts from an owned loopback HTTP server to a minimal page. Compare native streamed fetch without signal, native streamed fetch with signal, native arrayBuffer fetch with signal, and the production loader. Run each arm with and without an explicit exposed GC after reading and before hashing; check actual body length and SHA-256 independently; observe terminal events for 20ms per case.",
+    "firstMatrix": {
+      "trialsPerArmPerContext": 8,
+      "cases": 64,
+      "verifiedBodies": 64,
+      "normal": {
+        "cases": 32,
+        "verifiedBodies": 32,
+        "requestFinishedEvents": 40,
+        "requestFailedEvents": 0
+      },
+      "forcedGc": {
+        "cases": 32,
+        "verifiedBodies": 32,
+        "requestFinishedEvents": 37,
+        "requestFailedEvents": 3,
+        "failures": [
+          {
+            "trialIndex": 2,
+            "arm": "production-loader",
+            "path": "/wasm",
+            "error": "net::ERR_ABORTED"
+          },
+          {
+            "trialIndex": 6,
+            "arm": "stream-no-signal",
+            "path": "/wasm",
+            "error": "net::ERR_ABORTED"
+          },
+          {
+            "trialIndex": 7,
+            "arm": "production-loader",
+            "path": "/wasm",
+            "error": "net::ERR_ABORTED"
+          }
+        ]
+      },
+      "inference": "Complete script-visible bytes can coexist with an abort event without application code, and in one native trial without an AbortSignal. Exact browser native cause is not established."
+    },
+    "keepaliveMatrix": {
+      "trialsPerArmPerContext": 16,
+      "cases": 128,
+      "verifiedBodies": 128,
+      "normal": {
+        "cases": 64,
+        "verifiedBodies": 64,
+        "requestFinishedEvents": 79,
+        "requestFailedEvents": 1
+      },
+      "forcedGc": {
+        "cases": 64,
+        "verifiedBodies": 64,
+        "requestFinishedEvents": 79,
+        "requestFailedEvents": 1
+      },
+      "failedArmAttribution": "Not retained by the flattened diagnostic output; do not infer.",
+      "decision": "keepalive did not eliminate the events and was not adopted"
+    },
+    "primaryReference": {
+      "url": "https://fetch.spec.whatwg.org/#garbage-collection",
+      "retrievedDate": "2026-09-19",
+      "displayedUpdateDate": "2026-09-02",
+      "relevance": "Fetch allows termination when script-visible fetch behavior cannot observe it; side-channel observers are excluded. This supports separating body evidence from observer events but does not prove a native browser diagnosis."
+    },
+    "limits": [
+      "20ms per-case observer window is bounded, not proof of all later transport events.",
+      "Forced GC is diagnostic instrumentation, not normal product behavior.",
+      "No population event rate or real model performance conclusion."
+    ]
+  },
+  "developmentFailure": {
+    "stage": "initial v8 implementation used Response.finished for the two probe requests",
+    "sourceIdentity": "Uncommitted intermediate implementation; final inputs below are not asserted to identify that failed intermediate.",
+    "tests": 34,
+    "passed": 33,
+    "failed": 1,
+    "skipped": 0,
+    "failureCode": "browser_smoke_observe_root_mobile_failed",
+    "failureDetailCode": "browser_api_failure",
+    "diagnostic": {
+      "requestCount": 26,
+      "responseCount": 26,
+      "failedRequestCount": 1,
+      "requestId": 26,
+      "path": "/browser-runtime/tinyrustlm-browser-runtime.wasm",
+      "error": "net::ERR_ABORTED",
+      "errorSha256": "7ba7a1709a2d7d220e120c927e0a7e90adf45c88b09ba912b237d705090d1d4e",
+      "errorByteCount": 16
+    },
+    "interpretation": "The 30-second completion wait timed out after a failed event despite verified bytes.",
+    "localSourceFinding": "Installed Playwright coreBundle.js Response.finished races _finishedPromise; BrowserContext._onRequestFailed emits failure but does not resolve that promise. _onRequestFinished resolves it.",
+    "correction": "Wait on promises resolved by the already-observed requestfinished/requestfailed events. Failure classification still runs separately."
+  },
+  "checks": [
+    {
+      "name": "classifier-only first development check",
+      "tests": 12,
+      "passed": 12,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "name": "final affected smoke, CLI runner and shell parity",
+      "tests": 34,
+      "passed": 34,
+      "failed": 0,
+      "skipped": 0,
+      "browserEvidence": "Two sets of twelve Edge observations (normal and deterministic completed-observer-abort injection), plus four real browser negative cases: truncated, same-length corrupted, early-aborted and unrelated-aborted transfers."
+    },
+    {
+      "name": "unchanged runtime loader and operation lifetime",
+      "tests": 42,
+      "passed": 42,
+      "failed": 0,
+      "skipped": 0,
+      "browserEvidence": "Installed Edge streamed-byte fixtures; native HTTP gzip/chunked and timeout/cancellation cases. These use synthetic modules."
+    },
+    {
+      "name": "normal zero-argument release-smoke runner",
+      "status": "pass",
+      "observationCount": 12,
+      "temporaryOutputCleanup": "verified",
+      "reportSha256": "8a83c8e4f933e20565d4a316b7726ac2b5623a5d80da6a202375bc402301912e"
+    },
+    {
+      "name": "UaixMemoryConsolidationTests",
+      "tests": 6,
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0
+    }
+  ],
+  "coverage": {
+    "tool": "Node experimental test coverage",
+    "smoke": {
+      "linePercent": 83.32,
+      "branchPercent": 90.95,
+      "functionPercent": 79.66
+    },
+    "runtimeLoader": {
+      "linePercent": 92.9,
+      "branchPercent": 85.71,
+      "functionPercent": 96
+    },
+    "operationLifetime": {
+      "linePercent": 94.74,
+      "branchPercent": 77.78,
+      "functionPercent": 100
+    },
+    "limit": "Browser-evaluated callbacks run in Edge and are not covered as Node functions."
+  },
+  "cleanup": {
+    "runs": [
+      {
+        "label": "minimal browser matrix",
+        "files": 2,
+        "logicalBytes": 188
+      },
+      {
+        "label": "keepalive matrix",
+        "files": 2,
+        "logicalBytes": 188
+      },
+      {
+        "label": "classifier unit tests",
+        "files": 2,
+        "logicalBytes": 2431505
+      },
+      {
+        "label": "first v8 scoped run failed completion wait",
+        "files": 7,
+        "logicalBytes": 8213448
+      },
+      {
+        "label": "corrected v8 scoped run",
+        "files": 7,
+        "logicalBytes": 8212008
+      },
+      {
+        "label": "unchanged loader and lifetime regressions",
+        "files": 3,
+        "logicalBytes": 2882149
+      },
+      {
+        "label": "zero-argument entry point",
+        "files": 3,
+        "logicalBytes": 2680688
+      }
+    ],
+    "measuredFiles": 26,
+    "measuredLogicalBytes": 24420174,
+    "physicalStorageRecovery": null,
+    "perTestEarlyCleanupBytes": null,
+    "status": "Owned roots removed by containment/identity-checked helpers; completed-runtime-probe, runtime-network-diagnostic and local-release scratch parents verified empty. Per-test screenshots/profiles already removed by test cleanup are not included in the measured counts."
+  },
+  "sourceGate": {
+    "status": "source_authority_scan_incomplete",
+    "unchangedBlockedPaths": [
+      "artifacts/verification/qwen3-environment-install/tinyrustlm-operation-C3ZUt9/install-temp/TmP6xn2evdh-b",
+      "artifacts/verification/qwen3-environment-install/tinyrustlm-operation-C3ZUt9/install-temp/TmPeq63_hr7-b"
+    ],
+    "action": "Read-only gate rerun only. Earlier automatically rejected deletions were not retried or bypassed."
+  },
+  "scope": {
+    "changedProject": "TinyRustLM.com",
+    "otherInventoriedProjects": [
+      "LMComposer.com",
+      "MiniModel.MiRust.com",
+      "MiniModel.org",
+      "MiRust.com",
+      "Runtime.MiRust.com",
+      "TinyRustLM.MiRust.com"
+    ],
+    "otherProjectChanges": "None in C45; unrelated work preserved.",
+    "ternaryResearch": "Deferred by owner."
+  },
+  "limits": [
+    "No claim that browser abort events ceased; only the smoke evidence interpretation and completion wait are corrected.",
+    "C44 failures remain immutable historical evidence; this is not best-of-N model selection.",
+    "No qualified default, real numerical agreement, useful default-model browser inference, proven live initial seed or deployment is established.",
+    "No policy-blocked payload was removed and no retired format or old report reader was restored."
+  ],
+  "lesson": "Verify complete bytes independently and retain transport-observer outcomes separately. An observer API's declared completion contract needs testing against both actual terminal events."
+}

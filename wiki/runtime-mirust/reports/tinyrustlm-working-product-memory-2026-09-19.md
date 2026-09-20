@@ -73,6 +73,18 @@ removed and all error gates remain. Treat smoke stability as unresolved, not
 qualified by a green rerun. See
 `artifacts/ecosystem-cleanup-20260912/deferred-runtime-smoke-review.json`.
 
+**C45 supersedes the preceding smoke-event interpretation:** a minimal-page
+matrix reproduced complete verified bodies with browser abort events, including
+native fetch without a signal. Report v8 keeps raw event counts and bounded records, attributing
+only the exact two HTTP 200 probe requests after independent byte verification.
+Other failures remain blocking. A failed response-completion wait exposed a
+Playwright client distinction; bounded request terminal-event waits replace it.
+All 34 affected checks, 42 unchanged loader/lifetime checks and twelve normal CLI
+observations pass. This fixes the smoke evidence model without claiming browser
+abort events ceased or changing production cancellation. See
+`artifacts/ecosystem-cleanup-20260912/completed-runtime-probe-review.json` and lesson
+C45. Source scan, real model, public seed and deployment remain unresolved.
+
 Compare three routes by evidence:
 - Qualify an already useful compact checkpoint and adapt the sole runtime where justified.
 - Run a bounded new-derivative training experiment after inference, data and independent review readiness.

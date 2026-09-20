@@ -18,7 +18,7 @@ const {
   validateWebDeploymentManifest
 } = require("./web-deployment-manifest.js");
 
-const reportSchema = "tinyrustlm.web_release_browser_smoke.v7";
+const reportSchema = "tinyrustlm.web_release_browser_smoke.v8";
 const canonicalPublicOrigin = "https://tinyrustlm.com";
 const viewports = Object.freeze([
   Object.freeze({ name: "desktop", width: 1440, height: 1000 }),
@@ -45,6 +45,57 @@ function verifyRuntimeArtifactProbe(probe, expected) {
   "Browser smoke runtime probe does not match the publication inputs");
   return Object.freeze({ status: "verified", byteCount: expected.wasm.byteCount,
     wasmSha256: expected.wasm.sha256, manifestSha256: expected.manifest.sha256 });
+}
+
+/** Attribute only completed, hash-verified probe bodies; preserve every raw failure. */
+function classifyCompletedProbeAborts(probe, requests, responses, failures) {
+  if (probe === null) return Object.freeze([]);
+  invariant(probe?.status === "verified", "Runtime probe byte verification is required");
+  const owned = requests.filter(request => request.phase === "runtime-probe");
+  invariant(owned.length === 2 && new Set(owned.map(request => request.requestId)).size === 2 &&
+    [runtimeManifestPath, runtimeWasmPath].every(pathname => owned.some(request =>
+      request.pathname === pathname && request.method === "GET" &&
+      Number.isSafeInteger(request.requestId) && request.requestId > 0 &&
+      request.target?.urlClass === "expected-origin" &&
+      request.target.pathnameClass === "declared-release-path")),
+  "Runtime probe request closure is invalid");
+  for (const request of owned) {
+    const matching = responses.filter(response => response.requestId === request.requestId);
+    invariant(matching.length === 1 && matching[0].status === 200 &&
+      matching[0].pathname === request.pathname &&
+      matching[0].target?.urlClass === "expected-origin" &&
+      matching[0].target.pathnameClass === "declared-release-path",
+    "Runtime probe response closure is invalid");
+  }
+  const abort = boundedMessageIdentity("net::ERR_ABORTED");
+  const completed = failures.filter(failure => owned.some(request =>
+    request.requestId === failure.requestId && failure.method?.value === "GET" &&
+    failure.target?.urlClass === "expected-origin" &&
+    failure.target.pathnameClass === "declared-release-path" &&
+    failure.target.pathname === request.pathname) &&
+      failure.failureMessageSha256 === abort.messageSha256 &&
+      failure.failureMessageByteCount === abort.messageByteCount);
+  invariant(new Set(completed.map(failure => failure.requestId)).size === completed.length,
+    "Runtime probe failure events are duplicated");
+  return Object.freeze(completed.map(failure => failure.requestId));
+}
+
+/** Await both terminal-event promises; requestfailed remains a separate ledger verdict. */
+async function settleProbeRequests(completions, timeoutMilliseconds = 30_000) {
+  invariant(completions.length === 2 && completions.every(value => typeof value?.then === "function") &&
+    Number.isSafeInteger(timeoutMilliseconds) &&
+    timeoutMilliseconds > 0 && timeoutMilliseconds <= 30_000,
+  "Runtime probe completion options are invalid");
+  let timer;
+  try {
+    await Promise.race([
+      Promise.all(completions),
+      new Promise((_resolve, reject) => {
+        timer = setTimeout(() => reject(new Error("Runtime probe completion timed out")),
+          timeoutMilliseconds);
+      })
+    ]);
+  } finally { clearTimeout(timer); }
 }
 
 /** Build fresh, current-schema empty fixtures; no request is sent to MiniModel. */
@@ -324,6 +375,9 @@ async function runPageObservation(
   const blockedRequests = [];
   const requests = [];
   const responses = [];
+  const requestIds = new WeakMap();
+  const probeCompletions = new Map();
+  let runtimeProbeActive = false;
   let consoleErrorCount = 0;
   let pageErrorCount = 0;
   let failedRequestCount = 0;
@@ -384,30 +438,41 @@ async function runPageObservation(
   });
   page.on("request", (request) => {
     requestCount += 1;
+    requestIds.set(request, requestCount);
+    if (runtimeProbeActive && probeCompletions.size < maximumNetworkEvents) {
+      const completion = Promise.withResolvers();
+      probeCompletions.set(request, completion);
+    }
     const url = new URL(request.url());
     pushBounded(requests, Object.freeze({
+      requestId: requestCount,
+      phase: runtimeProbeActive ? "runtime-probe" : "application",
       method: request.method(),
       origin: url.origin,
       pathname: url.pathname,
       target: boundedUrlIdentity(request.url(), baseUrl.origin, allowedRequests)
     }), maximumNetworkEvents);
   });
+  page.on("requestfinished", request => { probeCompletions.get(request)?.resolve(); });
   page.on("requestfailed", (request) => {
     failedRequestCount += 1;
     const failureIdentity = boundedMessageIdentity(
       request.failure()?.errorText || "unknown"
     );
     pushBounded(failedRequests, Object.freeze({
+      requestId: requestIds.get(request),
       method: boundedMethodIdentity(request.method()),
       target: boundedUrlIdentity(request.url(), baseUrl.origin, allowedRequests),
       failureMessageSha256: failureIdentity.messageSha256,
       failureMessageByteCount: failureIdentity.messageByteCount
     }), maximumErrorEvents);
+    probeCompletions.get(request)?.resolve();
   });
   page.on("response", (response) => {
     responseCount += 1;
     const url = new URL(response.url());
     pushBounded(responses, Object.freeze({
+      requestId: requestIds.get(response.request()),
       origin: url.origin,
       pathname: url.pathname,
       target: boundedUrlIdentity(response.url(), baseUrl.origin, allowedRequests),
@@ -554,17 +619,29 @@ async function runPageObservation(
       observationInvariant(startupRuntimeRequestCount === 0, "unexpected_startup_runtime_request",
         { startupRuntimeRequestCount });
       // This calls the loader directly, without marking the app ready or creating a worker.
+      runtimeProbeActive = true;
       const probe = await page.evaluate(async ({ manifestUrl, wasmUrl }) => {
         const api = window.TinyRustLMBrowserRuntimeLoader;
         const asset = await api.load({ manifestUrl, wasmUrl,
           fetchFunction: window.fetch.bind(window), timeoutMilliseconds: 30_000 });
         try {
+          const digest = new Uint8Array(await crypto.subtle.digest("SHA-256", asset.wasmBytes));
           return { manifestText: api.serializeManifest(asset.manifest),
-            byteCount: asset.wasmBytes.byteLength, wasmSha256: asset.manifest.sha256 };
+            byteCount: asset.wasmBytes.byteLength,
+            wasmSha256: Array.from(digest, byte => byte.toString(16).padStart(2, "0")).join("") };
         } finally { new Uint8Array(asset.wasmBytes).fill(0); }
       }, { manifestUrl: runtimeManifestPath, wasmUrl: runtimeWasmPath });
       runtimeArtifactProbe = verifyRuntimeArtifactProbe(probe, expectedRelease.runtimeArtifacts);
+      await settleProbeRequests(Array.from(probeCompletions.values(), entry => entry.promise));
+      runtimeProbeActive = false;
     }
+    const screenshotName = `${route.name}-${viewport.name}.png`;
+    const screenshotPath = path.join(outputDirectory, screenshotName);
+    await page.screenshot({ path: screenshotPath, fullPage: true });
+    const screenshotBytes = fs.readFileSync(screenshotPath);
+    const completedProbeAbortRequestIds = classifyCompletedProbeAborts(
+      runtimeArtifactProbe, requests, responses, failedRequests);
+    const unexpectedFailedRequestCount = failedRequestCount - completedProbeAbortRequestIds.length;
     const expectedOrigin = baseUrl.origin;
     const unexpectedOriginValues = Array.from(new Set(
       requests
@@ -596,13 +673,15 @@ async function runPageObservation(
       surfaceKind: route.kind,
       viewport: viewport.name,
       blockedRequestCount,
-      blockedRequests: Object.freeze(blockedRequests),
+      blockedRequests: Object.freeze(blockedRequests.slice()),
       consoleErrorCount,
-      consoleErrors: Object.freeze(consoleErrors),
+      consoleErrors: Object.freeze(consoleErrors.slice()),
       pageErrorCount,
-      pageErrors: Object.freeze(pageErrors),
+      pageErrors: Object.freeze(pageErrors.slice()),
       failedRequestCount,
-      failedRequests: Object.freeze(failedRequests),
+      failedRequests: Object.freeze(failedRequests.slice()),
+      completedProbeAbortRequestIds,
+      unexpectedFailedRequestCount,
       requestCount,
       responseCount,
       declaredMetadataRequestCount,
@@ -669,7 +748,7 @@ async function runPageObservation(
     );
     observationInvariant(consoleErrorCount === 0, "console_error", diagnostic);
     observationInvariant(pageErrorCount === 0, "page_error", diagnostic);
-    observationInvariant(failedRequestCount === 0, "request_failed", diagnostic);
+    observationInvariant(unexpectedFailedRequestCount === 0, "request_failed", diagnostic);
     observationInvariant(
       declaredMetadataRequestCount === (route.kind === "application" ? 2 : 0),
       "catalog_metadata_request_mismatch",
@@ -797,10 +876,6 @@ async function runPageObservation(
       );
     }
 
-    const screenshotName = `${route.name}-${viewport.name}.png`;
-    const screenshotPath = path.join(outputDirectory, screenshotName);
-    await page.screenshot({ path: screenshotPath, fullPage: true });
-    const screenshotBytes = fs.readFileSync(screenshotPath);
     return Object.freeze({
       route: route.name,
       surfaceKind: route.kind,
@@ -838,6 +913,9 @@ async function runPageObservation(
       blockedRequestCount,
       unexpectedOriginCount: unexpectedOriginValues.length,
       failedRequestCount,
+      failedRequests: diagnostic.failedRequests,
+      completedProbeAbortRequestIds,
+      unexpectedFailedRequestCount,
       consoleErrorCount,
       pageErrorCount,
       unnamedButtonCount: state.unnamedButtonCount,
@@ -851,6 +929,18 @@ async function runPageObservation(
         sha256: sha256(screenshotBytes)
       })
     });
+  } catch (error) {
+    // A failed byte probe has no success diagnostic, but must retain observed failures.
+    if (!error.publicSafeDiagnostic) {
+      error.publicSafeDiagnostic = Object.freeze({
+        route: route.name, surfaceKind: route.kind, viewport: viewport.name,
+        requestCount, responseCount, failedRequestCount,
+        failedRequests: Object.freeze(failedRequests.slice()),
+        consoleErrorCount, consoleErrors: Object.freeze(consoleErrors.slice()),
+        pageErrorCount, pageErrors: Object.freeze(pageErrors.slice())
+      });
+    }
+    throw error;
   } finally {
     await context.close();
   }
@@ -1019,5 +1109,7 @@ module.exports = Object.freeze({
   requireBaseUrl,
   requireSourceRevision,
   runWebReleaseBrowserSmoke,
-  verifyRuntimeArtifactProbe
+  verifyRuntimeArtifactProbe,
+  classifyCompletedProbeAborts,
+  settleProbeRequests
 });

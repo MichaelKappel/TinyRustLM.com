@@ -75,3 +75,19 @@ strict; a passing rerun is not proof that the instability is fixed. Keep this
 release-smoke issue open separately from model quality and public deployment.
 Exact inputs, failed diagnostics, final results and cleanup are recorded in
 `artifacts/ecosystem-cleanup-20260912/deferred-runtime-smoke-review.json`.
+
+September 19 C45 supersedes the preceding network-event interpretation. Minimal
+native-fetch and production-loader trials reproduced complete hash-verified
+bodies with browser abort events, including a native fetch without a signal.
+Report v8 preserves every raw failure and classifies only the two exact HTTP 200,
+hash-verified test-probe requests separately. Application failures and incomplete
+or altered bytes remain blocking. This does not assert that abort events ceased.
+
+The bounded wait uses requestfinished/requestfailed events; installed Playwright
+1.61.1 does not resolve its response completion promise on client request failure.
+Snapshots include screenshot-time events without freezing live listener arrays.
+All 34 affected checks, 42 loader/lifetime checks and the twelve-observation normal
+command pass. Tests include completed-observer-event injection and real truncation,
+corruption, early cancellation and unrelated-request failures. The production
+loader and artifacts are unchanged. Exact results, the earlier failed wait and
+limitations are in `completed-runtime-probe-review.json` under the cleanup artifacts.

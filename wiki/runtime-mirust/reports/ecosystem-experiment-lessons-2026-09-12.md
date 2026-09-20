@@ -1471,6 +1471,42 @@ and the incomplete source scan are unchanged.
   browser network completion. Do not pick a successful rerun as proof that an
   intermittent failure has been repaired.
 
+## C45: separate complete byte evidence from transport-observer outcomes
+
+- **Question:** does C44's runtime abort prove an incomplete download or an
+  application lifetime defect?
+- **Exact inputs:** canonical runtime, loader, lifetime and smoke/test identities
+  are bound in `artifacts/ecosystem-cleanup-20260912/completed-runtime-probe-review.json`.
+  Installed Edge 153.0.4234.48, Playwright 1.61.1 and Node 24.14.0 were used.
+- **Method:** an owned loopback server served canonical bytes to a minimal page.
+  Eight trials per native streamed/no-signal, streamed/signal, arrayBuffer/signal
+  and production-loader arm ran with and without forced GC. A second matrix used
+  keepalive with sixteen trials per arm/context. Every body was independently
+  length/hash checked. These were bounded development diagnostics, not model runs.
+- **Result:** all 64 first-matrix bodies verified. The normal context recorded no
+  failures; forced GC recorded three aborts, including native fetch without a
+  signal. All 128 keepalive bodies verified, with one abort in each context; the
+  compact keepalive output did not retain failed-arm attribution. Keepalive was
+  not adopted. The first v8 test run passed 33/34 but its response.finished wait
+  timed out after requestfailed. Installed Playwright code resolves that promise
+  on requestFinished, not client requestFailed. Waiting on the recorded terminal
+  events fixes that wait; 34 checks now pass, including real negative transfers.
+  Another 42 unchanged runtime/lifetime checks and the normal CLI also pass.
+- **Uncertainty:** exact native browser internals and population event rates are
+  unmeasured. The [Fetch garbage-collection contract](https://fetch.spec.whatwg.org/#garbage-collection)
+  permits termination when script-visible fetch behavior cannot observe it;
+  side-channel observers are excluded. Retrieved September 19, 2026; the standard
+  was dated September 2. This supports separating evidence, not a native diagnosis.
+- **Decision:** v8 retains raw events and only attributes completed HTTP 200 probe
+  aborts after independent byte checks and exact two-request closure. Every other
+  failed request blocks. Truncation, corruption, cancellation and unrelated
+  failures have real-browser regression tests. Preserve C44 failures and the
+  failed initial completion wait. No production loader workaround is required.
+- **Reusable lesson:** state the claim each observable actually establishes.
+  A complete hash-verified body and a later transport abort can coexist. An event
+  observer needs its own bounded completion contract; a type signature alone
+  does not prove the installed implementation handles both terminal paths.
+
 ## Continue the review
 
 Before deleting an experiment that is not covered above, record its purpose,
