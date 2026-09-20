@@ -11,6 +11,28 @@ Keep useful findings and compact evidence identities in the owning canonical
 repository. Keep source history in Git and current model payloads only in
 `D:\LLMs\TinyRustLM`.
 
+## C67: native build success does not prove the packed SDK works on that host
+
+- Question: must every supported platform consume the final package before NuGet
+  publication, and can Unix execute the checked-in script chain?
+- Exact inputs: parent `4d40fc1acd366c860d81056ebef68e6081ca5728`, release workflow,
+  canonical consumer and eleven NuGet Bash entry points. Four baseline checks fail.
+- Method: split pack, platform consumers and protected publication; use one
+  uploaded artifact; execute the architecture guard with matching/mismatched RIDs;
+  inspect Git modes, independently parse YAML and run Bash syntax checks.
+- Result: 103 Node and 38 managed package checks pass. All eleven script blobs are
+  unchanged while Git modes move from 100644 to 100755. The publisher cannot start
+  from a successful native build alone or repack after consumer verification.
+- Uncertainty: hosted execution and ARM64 evidence remain absent. WSL on a Windows
+  filesystem does not reproduce a Unix checkout's executable-bit enforcement.
+- Decision: test the actual final package on every advertised native platform
+  before the credential-bearing job; keep exact artifacts through that dependency
+  chain and preserve existing feed/hash verification afterward.
+- Reusable lesson: native ABI tests and a package's RID inventory are necessary
+  but do not verify package loading and managed/native integration on each host.
+- Evidence identity: `nuget-prepublish-consumer-review.json`; no key read, package
+  push, new model execution or previously blocked deletion.
+
 ## C66: prefill can be terminal before any generation step
 
 - Question: does the browser preserve Rust's context-limit result when the prompt

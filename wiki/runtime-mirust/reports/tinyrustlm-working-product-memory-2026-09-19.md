@@ -16,6 +16,14 @@ Authority order is current owner instructions, inspected current contracts and b
 
 ## Current evidence and its limits
 
+**C67 NuGet consumers:** the release now packs once and requires Windows x64,
+Linux x64 and Linux ARM64 consumers of those exact packages before the protected
+publisher. Eleven Bash scripts have executable Git modes with unchanged bytes.
+All 103 affected Node and 38 managed package checks pass; independent YAML and
+Bash syntax validation pass. This is workflow/source evidence, not a successful
+hosted run, ARM64 proof or publication. Existing external and release gates remain;
+see `nuget-prepublish-consumer-review.json`.
+
 **C66 terminal prefill:** the worker/client now preserve an immediate empty
 `context-limit` result when prefill fills the session, keeping the composition
 active without sampling. They reject wrong initial reasons, text/tokens and KV

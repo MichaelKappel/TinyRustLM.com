@@ -1,0 +1,409 @@
+{
+  "schema": "tinyrustlm.ecosystem-cleanup.nuget-prepublish-consumer-review.v1",
+  "checkpoint": "C67",
+  "parent": "4d40fc1acd366c860d81056ebef68e6081ca5728",
+  "status": "implemented-and-local-checks-passed; owned-output-removed",
+  "previousGoalTurn": "Progress: C66 implementation, tests, cleanup and remote-exact checkpoint completed. C67 continues the full ecosystem and current NuGet objective.",
+  "findings": [
+    "Three native build/test jobs did not establish that the final managed/native NuGet packages ran on all advertised platforms; the old publisher packed and consumed only on Windows.",
+    "Eleven directly or transitively invoked NuGet Bash scripts had Git mode 100644, although WSL on the Windows filesystem could execute them."
+  ],
+  "implementation": [
+    "Build native libraries, pack/audit once, run isolated package consumers on win-x64/linux-x64/linux-arm64, then enter protected publication.",
+    "Each consumer checks the actual Node platform/architecture before execution.",
+    "Consumers and publisher download the same current-run package artifact; include its audit and hashes; do not repack after consumer validation.",
+    "Only the final job requests the nuget-release environment, API-key secret or OIDC write permission.",
+    "Build report validators in the final job because previous job build output is not shared.",
+    "Set executable Git modes on eleven current Bash entry points without changing their blobs.",
+    "Preserve mandatory publication readiness, exact public graph, feed-current and package-hash gates."
+  ],
+  "verification": {
+    "baseline": {
+      "log": "baseline.log",
+      "tests": 4,
+      "pass": 0,
+      "fail": 4,
+      "observations": "Missing pack/consumer dependency jobs and non-executable Git modes."
+    },
+    "focused": {
+      "log": "focused.log",
+      "tests": 16,
+      "pass": 16,
+      "fail": 0
+    },
+    "node": {
+      "log": "node-tests.log",
+      "tests": 103,
+      "pass": 103,
+      "fail": 0,
+      "skip": 0,
+      "command": "node --test tinyrustlm/tests/release-nuget-workflow.test.js tinyrustlm/tests/verify-consumer.test.js tinyrustlm/tests/audit-nuget-release-readiness.test.js",
+      "hostGuard": "Actual win-x64 executable guard passed; linux-x64, linux-arm64 and unknown RID requests rejected on this host. This is not execution on those other platforms.",
+      "readiness": "Includes complete local PowerShell and explicitly bound OSM-Ubuntu Bash readiness scenarios."
+    },
+    "managed": {
+      "log": "packages.log",
+      "tests": 38,
+      "pass": 38,
+      "fail": 0,
+      "skip": 0,
+      "command": "dotnet test dotnet/tests/TinyRustLM.Package.Tests/TinyRustLM.Package.Tests.csproj -c Release --artifacts-path <owned>/dotnet -p:UseSharedCompilation=false"
+    },
+    "memoryFinal": {
+      "log": "memory-final.log",
+      "tests": 9,
+      "pass": 9,
+      "fail": 0,
+      "skip": 0,
+      "command": "Same managed project/output, --no-build and filter UaixMemoryConsolidationTests|ReportIntakeMemoryTests after memory updates."
+    },
+    "coverage": "Workflow configuration and Git modes changed; no numeric runtime coverage claim. Guard success/failure executes, structure and exact artifact/dependency boundaries are checked; hosted scheduling is unverified.",
+    "counting": "Runs overlap; do not add totals as unique tests."
+  },
+  "limitations": [
+    "No hosted release workflow was dispatched and no successful ARM64 package consumer execution is claimed.",
+    "GitHub's previously observed billing failure and default-branch/workflow registration remain unresolved; local source validation is not hosted execution.",
+    "No NuGet credential read, package upload, account-setting change, model run, site publication or blocked-cohort deletion.",
+    "Full source-authority and release gates remain open; a qualified model, real parity/useful browser inference and live initial seed are not established.",
+    "No product visual assets or UI behavior changed; unrelated work in all repositories preserved.",
+    "POSIX execute modes are verified in Git metadata. No second checkout was created to emulate a fresh Unix clone.",
+    "An initial read-only discovery used an absent helper path and the wrong Git safe-directory argument; corrected queries inspected canonical sources without mutation. WSL's first metadata probe warned about an inherited stale Z: PATH entry; later validation omitted that PATH entry."
+  ],
+  "reviewedUtc": "2026-09-20T15:55:12.028Z",
+  "sources": [
+    {
+      "path": ".github/workflows/release-nuget.yml",
+      "bytes": 14440,
+      "sha256": "e58bdd0cddd5ebad03a50c8338926424d393f78ccde19cdbb49b08fb9197e412"
+    },
+    {
+      "path": "tinyrustlm/tests/release-nuget-workflow.test.js",
+      "bytes": 5058,
+      "sha256": "fa048200934cc9156f8e619b7065a15183b93ffb9ec84d247b873684b8621242"
+    },
+    {
+      "path": "docs/nuget/README.md",
+      "bytes": 14169,
+      "sha256": "47d2582c12f4b3cf24e0a6f483a869112cd23ee5e5b8c7f997322a5fead25f9f"
+    },
+    {
+      "path": "eng/build-native.sh",
+      "bytes": 1779,
+      "sha256": "28ab68260306b9aad16bd17964048fd4a8b7dd0f8817496637a5088724572c0c"
+    },
+    {
+      "path": "eng/get-package-version.sh",
+      "bytes": 817,
+      "sha256": "13e5d7d5846c027e4f7facd1e32e6cb45a62678f9837c0ee8eb89f545c011d75"
+    },
+    {
+      "path": "eng/pack.sh",
+      "bytes": 5842,
+      "sha256": "adfb897854dfaad86cf573db9be8d87ea501ca36dc31ef122d20e8a3d678ae4b"
+    },
+    {
+      "path": "eng/verify-consumer.sh",
+      "bytes": 383,
+      "sha256": "f0cbf85d982fb64ccc3cc0d2c2df368567f5868d5d8a4eaa7876efc01157ca18"
+    },
+    {
+      "path": "eng/verify-package.sh",
+      "bytes": 1035,
+      "sha256": "ab022bf9ab95462018c9dba95ee64a9bcec1c2bf3bab2676c857fef976d5f501"
+    },
+    {
+      "path": "eng/write-package-audit.sh",
+      "bytes": 43550,
+      "sha256": "08cb1341e791446c54d0185955b3d264d7a389c895e1a98ce63c467ab0533695"
+    },
+    {
+      "path": "eng/publish-nuget.sh",
+      "bytes": 23305,
+      "sha256": "62c09674a96b338ec6b87d99524ca1deb1feb5cd2067b58aa54808c9022d8073"
+    },
+    {
+      "path": "eng/audit-nuget-release-readiness.sh",
+      "bytes": 15855,
+      "sha256": "ef71e3dc65dd680edb8ad6dc811af160c0ec4520d20fe2be3730a78d0eaaac9f"
+    },
+    {
+      "path": "eng/verify-feed.sh",
+      "bytes": 2558,
+      "sha256": "f3f50bff6400a2dadbce71f298408570e2b7fe76eeaa71739395dff17ebc7880"
+    },
+    {
+      "path": "eng/verify-feed-current.sh",
+      "bytes": 5848,
+      "sha256": "a82b19751770a4fd4fc9b3a74c1ec9ca1016e5f1cd9a16f6e2e8ecfb87ba8953"
+    },
+    {
+      "path": "eng/verify-feed-package-hashes.sh",
+      "bytes": 17199,
+      "sha256": "a119d7525d7135e1d21fe212c453e3ad9553190e4a93abae398acab48c9bd058"
+    },
+    {
+      "path": ".uai/startup-packet.uai",
+      "bytes": 15026,
+      "sha256": "eef2d4319d9c94d381dbefc2942be3144821f192196cf5fbd0cb96a92c42ddcc"
+    },
+    {
+      "path": ".uai/operations.uai",
+      "bytes": 23581,
+      "sha256": "07c474da0f96458e96027aff4cbbfabf1cc0427098895ca95c11588d07ab5daf"
+    },
+    {
+      "path": ".uai/short-term-memory.uai",
+      "bytes": 18702,
+      "sha256": "bf8ca77d79cbfdc86b9cb53ae889a071c9c35203026dec017ebeadbfecb32f81"
+    },
+    {
+      "path": ".uai/long-term-memory.uai",
+      "bytes": 8894,
+      "sha256": "06de0cc015cb332cadadb45887217e763fda0404f01af43c455472e162130f29"
+    },
+    {
+      "path": "docs/ecosystem-cleanup-2026-09-12.md",
+      "bytes": 132980,
+      "sha256": "987f0ab00b27a74b6543dbcdc19d62d20fd405be755e5a8cbe066ae69e0f1859"
+    },
+    {
+      "path": "wiki/runtime-mirust/reports/ecosystem-experiment-lessons-2026-09-12.md",
+      "bytes": 162834,
+      "sha256": "7586a57c62c4a0d19755db43f626735c029ad108b4b1b5b52fafc9b675fd3c65"
+    },
+    {
+      "path": "wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md",
+      "bytes": 58134,
+      "sha256": "a000a6c3feb4f5968f4d94deb6b2410aaaef8eead1b205bbfc617669170ff736"
+    }
+  ],
+  "executableScripts": [
+    {
+      "path": "eng/build-native.sh",
+      "priorMode": "100644",
+      "currentIndexMode": "100755",
+      "blob": "ec1dc67739340b6fb944788b262e3766b3b6a227",
+      "bytesUnchanged": true
+    },
+    {
+      "path": "eng/get-package-version.sh",
+      "priorMode": "100644",
+      "currentIndexMode": "100755",
+      "blob": "326ef51ac092ce53c1a92d7d920f5913a1f2885a",
+      "bytesUnchanged": true
+    },
+    {
+      "path": "eng/pack.sh",
+      "priorMode": "100644",
+      "currentIndexMode": "100755",
+      "blob": "9ff6e90ce5fd91828cbd0c98d08bc37e3c7c5ec5",
+      "bytesUnchanged": true
+    },
+    {
+      "path": "eng/verify-consumer.sh",
+      "priorMode": "100644",
+      "currentIndexMode": "100755",
+      "blob": "90ca57f0bb41b5f53970b2cda94ba65449650973",
+      "bytesUnchanged": true
+    },
+    {
+      "path": "eng/verify-package.sh",
+      "priorMode": "100644",
+      "currentIndexMode": "100755",
+      "blob": "e0b5f610870ae4d609651ae17e49e4f4f3b54455",
+      "bytesUnchanged": true
+    },
+    {
+      "path": "eng/write-package-audit.sh",
+      "priorMode": "100644",
+      "currentIndexMode": "100755",
+      "blob": "e89ea0695b163fb7e07714051ea3dac94aae94c8",
+      "bytesUnchanged": true
+    },
+    {
+      "path": "eng/publish-nuget.sh",
+      "priorMode": "100644",
+      "currentIndexMode": "100755",
+      "blob": "b2cdc6f4e1c6d4a8f36effe73c64737b0d9c7979",
+      "bytesUnchanged": true
+    },
+    {
+      "path": "eng/audit-nuget-release-readiness.sh",
+      "priorMode": "100644",
+      "currentIndexMode": "100755",
+      "blob": "23225a905210c0eadf378577c29fb9989c18593b",
+      "bytesUnchanged": true
+    },
+    {
+      "path": "eng/verify-feed.sh",
+      "priorMode": "100644",
+      "currentIndexMode": "100755",
+      "blob": "29db6238067891e2c20c189ac93aa92c30acae48",
+      "bytesUnchanged": true
+    },
+    {
+      "path": "eng/verify-feed-current.sh",
+      "priorMode": "100644",
+      "currentIndexMode": "100755",
+      "blob": "5d83d66edd498154d6773affdc6c19f6d2c94e96",
+      "bytesUnchanged": true
+    },
+    {
+      "path": "eng/verify-feed-package-hashes.sh",
+      "priorMode": "100644",
+      "currentIndexMode": "100755",
+      "blob": "ecb81eb99271b759eb5e1e06df18aced0647d244",
+      "bytesUnchanged": true
+    }
+  ],
+  "workflowValidation": {
+    "parser": "PyYAML",
+    "version": "6.0.1",
+    "jobs": [
+      "build-native",
+      "pack",
+      "verify-package-consumers",
+      "release"
+    ],
+    "matrix": [
+      {
+        "os": "windows-latest",
+        "rid": "win-x64"
+      },
+      {
+        "os": "ubuntu-latest",
+        "rid": "linux-x64"
+      },
+      {
+        "os": "ubuntu-24.04-arm",
+        "rid": "linux-arm64"
+      }
+    ],
+    "checks": [
+      "duplicate YAML keys rejected",
+      "acyclic exact required job chain",
+      "same native and package-consumer platform matrix",
+      "no job-level failure bypass",
+      "exclusive run/uses steps",
+      "publication environment isolated to release"
+    ],
+    "bashSyntaxPassCount": 11,
+    "limitation": "Static workflow and Bash syntax validation; no GitHub execution or ARM64 hardware evidence."
+  },
+  "logs": [
+    {
+      "path": "baseline.log",
+      "bytes": 8868,
+      "sha256": "c7315c88fae12a0a48d8bf8467511f1357f3da4a7e2fc7412cf56a683d241f35"
+    },
+    {
+      "path": "focused.log",
+      "bytes": 2826,
+      "sha256": "eb649fde8fc57224cfe7b553c64314ddb7e7f3bfbf7bbd9f3c7d3304eb311b77"
+    },
+    {
+      "path": "node-tests.log",
+      "bytes": 9084,
+      "sha256": "951945b3b8b67bb53e3eb01beab096a620397114bbe7db27b37158d65fd058d4"
+    },
+    {
+      "path": "packages.log",
+      "bytes": 2224,
+      "sha256": "bf488782b15ea997e91c3b4a20f26ff26177e643d80d206e274f7aecd1250538"
+    },
+    {
+      "path": "memory-final.log",
+      "bytes": 788,
+      "sha256": "7c611ccf6acc3797517556213748a25564d85946c23a72d8c02979a181e3591f"
+    },
+    {
+      "path": "workflow-validation.json",
+      "bytes": 773,
+      "sha256": "be3d22128f2bd1564f1fb086c54a8ad9938d32eae36ad3982d7850b221428216"
+    }
+  ],
+  "secretScan": {
+    "status": "pass",
+    "scannedArtifactCount": 21,
+    "secretFindingCount": 0,
+    "scopeComplete": false,
+    "scannedInputByteCount": 571989,
+    "scopeManifestSha256": "b27768a6444fed116e38f9d5816f15455997b18cce8aa8fb554342c60e832770",
+    "report": {
+      "path": "source-secret-scan.json",
+      "bytes": 10739,
+      "sha256": "edbe93b8966c11142a30c435969bea1dbecff3b8ad6af33d8b7956fe1c75e001"
+    },
+    "keyContentsRead": false
+  },
+  "repositories": [
+    {
+      "repository": "LMComposer.com",
+      "head": "618e081b510ad75411f2d7bec1d60a8e4f98cbbf",
+      "branch": "main",
+      "changedInThisCheckpoint": false
+    },
+    {
+      "repository": "MiniModel.MiRust.com",
+      "head": "b437611c34ad4f80312016f4bf9aa1a08398d07a",
+      "branch": "master",
+      "changedInThisCheckpoint": false
+    },
+    {
+      "repository": "MiniModel.org",
+      "head": "4b815cbb877a709e8d3060c2039c13e993c334eb",
+      "branch": "master",
+      "changedInThisCheckpoint": false
+    },
+    {
+      "repository": "MiRust.com",
+      "head": "b9420a10feb0819ca6bbf89d92c9199ba89d7c86",
+      "branch": "master",
+      "changedInThisCheckpoint": false
+    },
+    {
+      "repository": "Runtime.MiRust.com",
+      "head": "8623dcf5603ab419d02ffd0809e9ae987fb5b2a0",
+      "branch": "master",
+      "changedInThisCheckpoint": false
+    },
+    {
+      "repository": "TinyRustLM.com",
+      "head": "4d40fc1acd366c860d81056ebef68e6081ca5728",
+      "branch": "codex/model-acquisition-v2",
+      "changedInThisCheckpoint": true
+    },
+    {
+      "repository": "TinyRustLM.MiRust.com",
+      "head": "d17f77af652e9ac086482414a5bd0b6eb2250a50",
+      "branch": "master",
+      "changedInThisCheckpoint": false
+    }
+  ],
+  "intake": {
+    "Content": [
+      ".gitkeep"
+    ],
+    "Improvement": [
+      ".gitkeep"
+    ],
+    "runtimeBuckets": "Only their existing README placeholders; no active content."
+  },
+  "retirement": {
+    "rootPath": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\nuget-release-gate\\tinyrustlm-operation-tQWM6X",
+    "markerPath": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\nuget-release-gate\\tinyrustlm-operation-tQWM6X.owner.v2",
+    "status": "removed-and-absence-verified",
+    "physicalStorageRecovered": null,
+    "blockedCohorts": "Untouched, including their ancestors.",
+    "inventory": {
+      "files": 150,
+      "directories": 39,
+      "logicalFileBytes": 5690323,
+      "markerBytes": 65
+    },
+    "writers": "All tool sessions terminal; no matching active Node/Rust/.NET process was found.",
+    "completedUtc": "2026-09-20T15:55:47.403Z",
+    "rootAbsent": true,
+    "markerAbsent": true
+  }
+}

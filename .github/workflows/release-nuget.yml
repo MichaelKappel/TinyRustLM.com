@@ -67,14 +67,10 @@ jobs:
           name: tinyrustlm-native-${{ matrix.rid }}
           path: artifacts/native/${{ matrix.rid }}/*
 
-  release:
-    name: Pack and publish protected SDK
+  pack:
+    name: Pack and audit the release once
     needs: build-native
     runs-on: windows-latest
-    environment: nuget-release
-    permissions:
-      contents: read
-      id-token: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -131,6 +127,8 @@ jobs:
           path: |
             artifacts/packages/*.nupkg
             artifacts/packages/*.snupkg
+            artifacts/packages/tinyrustlm-nuget-package-audit.json
+            artifacts/packages/SHA256SUMS-TinyRustLM-*.txt
           if-no-files-found: error
 
       - name: Upload NuGet audit reports
@@ -141,6 +139,90 @@ jobs:
             artifacts/packages/tinyrustlm-nuget-package-audit.json
             artifacts/packages/SHA256SUMS-TinyRustLM-*.txt
             artifacts/reports/*.json
+
+  verify-package-consumers:
+    name: Verify packed SDK (${{ matrix.rid }})
+    needs: pack
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            rid: win-x64
+          - os: ubuntu-latest
+            rid: linux-x64
+          - os: ubuntu-24.04-arm
+            rid: linux-arm64
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Download the audited packages
+        uses: actions/download-artifact@v4
+        with:
+          name: tinyrustlm-nuget-packages
+          path: artifacts/packages
+
+      - name: Require the declared consumer host
+        env:
+          EXPECTED_RID: ${{ matrix.rid }}
+        run: >-
+          node -e "const rid = (process.platform === 'win32' ? 'win' : process.platform) + '-' + process.arch;
+          if (rid !== process.env.EXPECTED_RID) throw new Error('Package consumer host does not match expected RID');"
+
+      - name: Execute the packaged consumer (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: eng/verify-consumer.ps1 -PackageSource artifacts/packages
+
+      - name: Execute the packaged consumer (Linux)
+        if: runner.os == 'Linux'
+        shell: bash
+        run: eng/verify-consumer.sh artifacts/packages
+
+  release:
+    name: Publish the verified SDK
+    needs: [pack, verify-package-consumers]
+    runs-on: windows-latest
+    environment: nuget-release
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Download the audited packages
+        uses: actions/download-artifact@v4
+        with:
+          name: tinyrustlm-nuget-packages
+          path: artifacts/packages
+
+      - name: Build report validators
+        shell: pwsh
+        run: dotnet build dotnet/tests/TinyRustLM.Package.Tests/TinyRustLM.Package.Tests.csproj -c Release -p:UseSharedCompilation=false
 
       - name: Audit NuGet release readiness
         id: readiness

@@ -5,6 +5,32 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C67: verify packaged consumers before NuGet publication, September 20
+
+The release workflow tested native libraries on three platforms but packed and
+consumed the final SDK only on Windows before publishing. It now packs once,
+passes that same artifact to Windows x64, Linux x64 and Linux ARM64 consumers,
+and lets the protected publisher run only after every consumer succeeds. Each
+consumer checks its actual host architecture. The final job downloads the same
+packages and audit without rebuilding them, then builds its report validators
+locally. Publication credentials and OIDC permission remain isolated there.
+
+Eleven current NuGet Bash entry points were stored as non-executable Git files,
+including scripts directly invoked by the workflow or other scripts. Their Git
+modes are now executable; source bytes are unchanged. This closes a launch defect
+that earlier Windows-mounted WSL execution could not detect.
+
+Four initial workflow checks failed. All 103 final Node checks and 38 managed
+package checks pass, including actual Windows host-guard rejection and complete
+PowerShell/WSL readiness cases. Independent PyYAML 6.0.1 parsing confirms the job
+dependencies, matching platform matrices, and absence of job failure bypasses;
+Bash syntax validation passes for all eleven scripts. These checks do not execute
+GitHub jobs or prove ARM64 package behavior. Existing hosted billing, default-
+branch, source-authority and release gates remain; no key was read and no package
+was pushed. See `nuget-prepublish-consumer-review.json` for exact identities,
+final memory/secret checks and owned-output retirement. All unrelated changes and
+previously blocked deletion cohorts remain untouched.
+
 ## C66: carry terminal prefill through the browser, September 20
 
 The Rust runtime already returns a terminal result when prefill fills the admitted

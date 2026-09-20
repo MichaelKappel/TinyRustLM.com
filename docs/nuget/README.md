@@ -170,6 +170,18 @@ Relative folder feeds are resolved against the caller's directory before work
 starts. The consumer verifies the package-local native runtime and removes only
 its identity-checked owned output after success or failure.
 
+The release workflow packs and audits the three-platform payload once, then
+downloads those same package files into Windows x64, Linux x64 and Linux ARM64
+consumer jobs. Each job checks its actual host architecture before running the
+consumer. The protected publisher depends on every consumer succeeding and
+downloads the original packages and audit; it does not rebuild them. Credentials
+and OIDC permission are confined to that final job. The publisher builds its own
+report validators because build output is not shared between jobs.
+
+NuGet Bash entry points are executable in Git and use LF line endings, including
+the scripts invoked by other shell scripts. A passing run on a Windows-mounted
+WSL path alone does not prove those modes are correct for a Unix Git checkout.
+
 ## Publication Boundary
 
 The owner's September 19 instruction is to keep NuGet publication current at
@@ -179,13 +191,15 @@ package/native/consumer checks, publish eligible updates and verify feed payload
 Source commits and local packages are not publication. Older `UAIX.Browser.*`
 listings do not authorize recreating retired implementations.
 
-The current observation is recorded in
+The earlier feed and hosting observation is recorded in
 `artifacts/ecosystem-cleanup-20260912/nuget-publication-current-review.json`.
 All three current package indexes returned HTTP 404; source version is `0.1.8`.
 GitHub's default branch is older than the canonical branch, its release workflow
 is not registered, repository Actions secrets are empty, and the `nuget-release`
-environment is absent. Only win-x64 native output is present locally. No new
-package was published.
+environment was absent. That checkpoint had only win-x64 native output. C57 later
+verified Windows and Linux x64 package consumers; the revised workflow still needs
+an actual successful hosted run, including Linux ARM64, before publication. No
+new package publication follows from these source changes.
 
 The daily feed monitor no longer requires an opt-in variable in source. GitHub
 schedules use the default branch, so committing this change to the development

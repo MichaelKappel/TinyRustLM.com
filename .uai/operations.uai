@@ -1,5 +1,5 @@
 profile: tinyrustlm.operations.current.v1
-updated_utc: 2026-09-20T15:37:22Z
+updated_utc: 2026-09-20T15:51:26Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
@@ -10,6 +10,7 @@ historical_checkpoint:
   boundary: These August 28 source/test counts are historical. They do not describe current implementation or establish real-model qualification or deployment.
 
 current_state:
+  nuget_consumers: C67 separates one audited pack, three actual-host package-consumer jobs and protected publication. The publisher downloads the verified artifact and builds only report validators; credentials/OIDC are confined to it. Eleven Bash script modes are corrected. All 103 Node and 38 managed checks pass; YAML/Bash syntax and host-guard execution pass. See nuget-prepublish-consumer-review.json. No hosted ARM64 run or package push is claimed; do not retry unchanged billing-blocked jobs.
   terminal_prefill: C66 permits an immediate empty context-limit result after prefill, verifies reason/identity/unchanged KV and issues no extra step or cancellation. The existing status card reports Context limit reached / Start a new chat; mobile keeps its existing hidden card. All 113 final checks pass plus corrected historical and current-only gates. See browser-terminal-prefill-review.json; Edge initialization/rejection and DOM presentation are not real inference or broad visual-parity proof.
   scratch_retirement: C65 uses an external .owner.v2 marker, bounded inventory and revalidated direct file/directory removal. The marker survives partial or terminal failure and is retired only after root absence. Explicit subsequent cleanup requires the original ownership record and resolution of the cause; no automatic retry, marker recreation or old-layout reader. Stop writers/children first and use -p:UseSharedCompilation=false. See scratch-retirement-ownership-review.json for real Windows locking, 17 focused passes, affected consumers and limitations. Existing policy-blocked cohorts remain untouched.
   runtime_context: C64 narrows sampling to the admitted scalar KV ceiling before prefill, retaining the last token with ContextLimit. All 76 Rust checks and Clippy pass; the refreshed local WASM reproduces twice. The 73 affected Node checks, two additional Edge scenarios and 38 related checks pass across recorded invocations. See runtime-context-limit-review.json for setup failures and coverage limits; no real model, package or public result.

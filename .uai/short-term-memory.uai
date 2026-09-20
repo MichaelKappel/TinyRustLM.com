@@ -1,9 +1,10 @@
 profile: tinyrustlm.short-term-memory.current.v1
-updated_utc: 2026-09-20T15:37:22Z
+updated_utc: 2026-09-20T15:51:26Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
 now:
+  nuget_consumers: C67 requires all three platform consumers of the same package bytes before publication, and corrects eleven executable Git modes. All 103 Node and 38 managed checks pass with independent YAML/Bash validation. Read nuget-prepublish-consumer-review.json. Real hosted ARM64 and release/source-authority gates remain; no credential read or push. Preserve unrelated work.
   terminal_prefill: C66 fixes worker/client fatal rejection when prefill already fills context. The result is empty context-limit output, with no extra sampling/cancel call and the model still active. All 113 final checks pass; Edge boundary and desktop/mobile status presentation checks pass within their fixture/DOM limits. Historical hashes are checked against their recorded Git revision, not rewritten. See browser-terminal-prefill-review.json; real-model, mobile status visibility and broader visual evidence remain separate limits.
   scratch_retirement: C65 fixes marker loss during partial cleanup with an external marker and bounded nonrecursive removal. All 17 focused checks pass with 100% line coverage, including a real Windows file lock. Shared consumers pass after explicit WSL setup; current numerical helper bindings are corrected. See scratch-retirement-ownership-review.json. Stop writers first; no old-layout adoption or blocked-cohort retry.
   next_work: Continue ecosystem entry-point and current-contract cleanup; useful real-model, eligible NuGet release, hosting and public readback gates remain open. Use shared-compilation-disabled managed builds. Previously policy-blocked deletions remain untouched.

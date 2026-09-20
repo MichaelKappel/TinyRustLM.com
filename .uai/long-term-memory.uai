@@ -1,5 +1,5 @@
 profile: tinyrustlm.long-term-memory.current.v1
-updated_utc: 2026-09-20T15:37:22Z
+updated_utc: 2026-09-20T15:51:26Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
@@ -13,8 +13,8 @@ pointers:
     authority: reviewed_guidance
     review_state: reviewed_for_routing_and_identity
     status: current
-    last_reviewed_utc: 2026-09-20T15:37:22Z
-    sha256: 9b5bf38c0e15443ed482529bfe8f5ebfacde870e240b972d538805ef17878e6d
+    last_reviewed_utc: 2026-09-20T15:51:26Z
+    sha256: a000a6c3feb4f5968f4d94deb6b2410aaaef8eead1b205bbfc617669170ff736
   - id: report-decisions
     path: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
     label: September report decisions
@@ -36,21 +36,21 @@ pointers:
   - id: experiment-lessons
     path: wiki/runtime-mirust/reports/ecosystem-experiment-lessons-2026-09-12.md
     label: Retained experiment lessons
-    summary: Open for C21-C66 observations, exact evidence, uncertainty and blocked retirement.
+    summary: Open for C21-C67 observations, exact evidence, uncertainty and blocked retirement.
     authority: reviewed_bounded_historical_evidence
     review_state: reviewed_for_routing_and_identity
     status: active_growing_review
-    last_reviewed_utc: 2026-09-20T15:37:22Z
-    sha256: 3e9c4326865ef6dc2eb9848240b416d1473677f8651001ac30430c01741e81ee
+    last_reviewed_utc: 2026-09-20T15:51:26Z
+    sha256: 7586a57c62c4a0d19755db43f626735c029ad108b4b1b5b52fafc9b675fd3c65
   - id: cleanup-progress
     path: docs/ecosystem-cleanup-2026-09-12.md
     label: Ecosystem cleanup progress
-    summary: Open for cleanup, publication, candidate/runtime/cache/seed contracts, C54-C57 NuGet preparation, C58-C60 cancellation, C61 guidance, C62 memory coverage, C63 visual capture, C64 runtime context, C65 scratch retirement, C66 terminal prefill and remaining model/hosting limits.
+    summary: Open for cleanup, publication, candidate/runtime/cache/seed contracts, C54-C57 NuGet preparation, C58-C60 cancellation, C61 guidance, C62 memory coverage, C63 visual capture, C64 runtime context, C65 scratch retirement, C66 terminal prefill, C67 NuGet consumer gates and remaining model/hosting limits.
     authority: owner_authorized_progress_record
     review_state: reviewed_for_routing_and_identity
     status: current
-    last_reviewed_utc: 2026-09-20T15:37:22Z
-    sha256: 7a957602f06fcc18af339ca22bf4866b79f002d90ebacee591069eabad252fd1
+    last_reviewed_utc: 2026-09-20T15:51:26Z
+    sha256: 987f0ab00b27a74b6543dbcdc19d62d20fd405be755e5a8cbe066ae69e0f1859
   - id: source-lock
     path: contracts/vnext/qwen3-0.6b-base-source-lock.v2.json
     label: Current diagnostic source identity
