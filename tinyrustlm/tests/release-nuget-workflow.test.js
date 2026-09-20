@@ -47,7 +47,8 @@ test("consumers and publisher download the single pack output without rebuilding
   assert.match(consumers, /eng\/verify-consumer\.sh artifacts\/packages/);
   assert.match(consumers, /uses: actions\/setup-node@v4/);
   assert.match(consumers, /uses: actions\/setup-dotnet@v4/);
-  assert.match(release, /Build report validators[\s\S]*dotnet build dotnet\/tests\/TinyRustLM\.Package\.Tests\/TinyRustLM\.Package\.Tests\.csproj/);
+  assert.doesNotMatch(release, /Build report validators/);
+  assert.match(release, /node eng\/verify-release-report\.js readiness/);
 });
 
 test("only the post-consumer job can request publication credentials", () => {

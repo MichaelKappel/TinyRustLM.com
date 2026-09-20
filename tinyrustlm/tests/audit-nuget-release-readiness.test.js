@@ -8,6 +8,7 @@ const crypto = require("node:crypto");
 const { spawn } = require("node:child_process");
 const { once } = require("node:events");
 const test = require("node:test");
+const { verifyReportFile, validateReport } = require("../../eng/verify-release-report.js");
 const { createOwnedTemporaryDirectory, removeOwnedTemporaryDirectory } =
   require("../tools/canonical-operation-scratch.js");
 
@@ -223,6 +224,12 @@ ConvertTo-Json -Compress @{succeeded=$succeeded}`;
       assert.equal(value.package_graph_match, true);
       assert.equal(value.publish_plan_status, "dry_run");
       assert.doesNotMatch(JSON.stringify(value), /synthetic-key-not-valid/);
+      if (expected.startsWith("blocked_")) assert.throws(() => verifyReportFile("readiness", params.ReportOutput));
+      else verifyReportFile("readiness", params.ReportOutput);
+      verifyReportFile("publish-plan", params.PublishPlanReport);
+      verifyReportFile("feed-current", params.LocalFeedCurrentReport);
+      verifyReportFile("feed-hashes", params.LocalFeedHashReport);
+      if (mode === "current") verifyReportFile("feed-hashes", params.RemoteFeedHashReport);
     });
     assert.ok(requests.length > 0);
     assert.ok(requests.every((method) => method === "GET"), "Readiness must never submit a package");
@@ -328,6 +335,13 @@ print(json.dumps({"results": results, "methods": methods}))
       assert.equal(row.code, row.report.status.startsWith("blocked_") ? 1 : 0);
       assert.equal(row.report.publish_plan_status, "dry_run");
       assert.doesNotMatch(JSON.stringify(row.report), /synthetic-key-not-valid/);
+      if (row.report.status.startsWith("blocked_")) assert.throws(() => validateReport("readiness", row.report));
+      else validateReport("readiness", row.report);
+      const output = path.join(owned.rootPath, row.mode);
+      verifyReportFile("publish-plan", path.join(output, "publish.json"));
+      verifyReportFile("feed-current", path.join(output, "local-current.json"));
+      verifyReportFile("feed-hashes", path.join(output, "local-hash.json"));
+      if (row.mode === "current") verifyReportFile("feed-hashes", path.join(output, "remote-hash.json"));
     });
     assert.equal(result.results.length, 6);
     assert.ok(result.methods.length > 0 && result.methods.every((method) => method === "GET"));

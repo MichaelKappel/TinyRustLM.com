@@ -11,6 +11,32 @@ Keep useful findings and compact evidence identities in the owning canonical
 repository. Keep source history in Git and current model payloads only in
 `D:\LLMs\TinyRustLM`.
 
+## C72: a successful test command can execute zero report validators
+
+- Question: do the workflow report-schema steps actually inspect their files?
+- Exact inputs: parent `81624ac5cdb7c7c7c90926d0ac1c99c716d37bdd`, the three
+  current CI/release/feed-monitor workflows and current Package.Tests assembly.
+- Method: inspect discovery, execute the stale feed-current filter, replace
+  nonexistent filters with a direct file validator, then execute all ten workflow
+  commands with missing input and compare genuine PowerShell/WSL Bash producer
+  output against the validator. Use small loopback package fixtures only.
+- Result: the old command returned zero with no matching tests. All 172 affected
+  Node checks now pass; recorded validator line/branch coverage is 100%.
+  Missing/malformed evidence, contradictory package identities/counts/hashes,
+  incomplete gates and a changed public-root child digest reject.
+- Uncertainty: schema/evidence consistency does not independently execute the
+  reported native or browser work, verify public package availability, or qualify
+  a model. UI writer tests execute the writer with declared fixture results.
+- Decision: invoke required evidence validation directly; keep failure artifacts
+  separate. Remove the unused report-test build and redundant monitor graph check.
+- Reusable lesson: test-selection success is insufficient; establish that the
+  intended checks execute and missing evidence fails. Never use optional report
+  presence to skip a required release check.
+- Evidence: `artifacts/ecosystem-cleanup-20260912/release-report-validation-review.json`.
+  GitHub run 35524709256 is terminal with all nine jobs unstarted due to billing;
+  NuGet's three package indexes return 404. No key read, publish or blocked
+  cleanup was attempted.
+
 ## C71: process exit and output EOF are different lifetime boundaries
 
 - Question: does cancellation or timeout end conversion observation after the

@@ -5,6 +5,36 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C72: execute required release-report checks, September 20
+
+Nine workflow commands selected seven test methods that do not exist in the
+current package test assembly. A local invocation of the feed-current filter
+returned exit code zero with "No test matches". These commands provided no
+report-validation evidence.
+
+The release, daily feed-monitor and UI workflows now invoke one explicit Node
+validator for ten required report files. It checks current schemas, successful
+states, exact public package sets, counts, hash/size consistency, required gates
+and the public-root report's actual child UI digest and application identity.
+Missing reports fail. The unused report-test build and duplicate monitor package
+set check are removed; failed producer artifacts remain available for diagnosis.
+
+All 172 focused Node checks pass, including PowerShell and WSL Bash producer
+integration, ten actual workflow commands rejecting absent files, malformed JSON,
+contradictory results and signature-only package differences. The validator's
+reported line/branch coverage is 100%; YAML parses independently. Synthetic
+reports and loopback feed bytes do not establish a public package or UI run.
+See `artifacts/ecosystem-cleanup-20260912/release-report-validation-review.json`
+for exact source, checks, retained evidence and owned-output retirement.
+
+Read-only GitHub evidence at 17:25 UTC confirms run 35524709256 completed with
+all nine jobs rejected before any steps ran. Its annotation names an account
+billing lock. At 17:26 UTC, NuGet returned HTTP 404 for each of the three public
+package ID indexes. No manual retry, account change, NuGet-key read or publication
+was performed. The source-authority scan still stops at the two known
+policy-blocked installer links. All seven direct repositories were rediscovered;
+unrelated work, blocked cleanup, model and publication gates remain open.
+
 ## C71: bound conversion output observation through EOF, September 20
 
 Two real Windows fixture-process cases reproduced a stuck conversion after its

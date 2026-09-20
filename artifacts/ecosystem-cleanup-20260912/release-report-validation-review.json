@@ -1,0 +1,305 @@
+{
+  "schema": "tinyrustlm.ecosystem-release-report-review.v1",
+  "reviewId": "C72",
+  "parentCommit": "81624ac5cdb7c7c7c90926d0ac1c99c716d37bdd",
+  "priorTurnClassification": "Credential-location confirmation was no progress on the ecosystem objective; C71 remains the last completed source checkpoint. This continuation resumes concrete work.",
+  "question": "Do the report-validation workflow steps execute meaningful checks?",
+  "baseline": {
+    "absentMethods": 7,
+    "workflowCommands": 9,
+    "filter": "FeedCurrentReportIsMachineReadableWhenPresent",
+    "exitCode": 0,
+    "observation": "No test matches the given testcase filter",
+    "assembly": "TinyRustLM.Package.Tests (.NET 8)"
+  },
+  "result": {
+    "requiredCommands": 10,
+    "reportKinds": 7,
+    "acceptedEvidence": "Current complete passing reports only; passing labels are checked against rows and required gates.",
+    "retired": [
+      "nine nonexistent-test filter commands",
+      "report-only managed build in publication job",
+      "duplicate package graph check in feed monitor"
+    ]
+  },
+  "validation": {
+    "node": {
+      "passed": 172,
+      "failed": 0,
+      "skipped": 0,
+      "files": [
+        "verify-release-report.test.js",
+        "release-nuget-workflow.test.js",
+        "audit-nuget-release-readiness.test.js",
+        "verify-feed-current.test.js"
+      ],
+      "coverage": {
+        "file": "eng/verify-release-report.js",
+        "linePercent": 100,
+        "branchPercent": 100,
+        "functionPercent": 100,
+        "tool": "Node 24 experimental test coverage"
+      },
+      "scope": [
+        "Real canonical PowerShell/WSL Bash report producers with small synthetic package bytes and loopback HTTP",
+        "Actual PowerShell 5 smoke/UI writer functions with declared fixture outcomes",
+        "All ten workflow commands executed in PowerShell with missing input",
+        "Malformed/duplicate JSON, invalid UTF-8, size bounds, wrong package graph/counts/hashes, signed-payload consistency, public-root child digest/application/browser binding"
+      ]
+    },
+    "yaml": {
+      "parser": "PyYAML 6.0.2 BaseLoader",
+      "workflows": 3,
+      "reportCommands": 10,
+      "status": "pass"
+    },
+    "managed": {
+      "project": "dotnet/tests/TinyRustLM.Package.Tests/TinyRustLM.Package.Tests.csproj",
+      "passed": 38,
+      "failed": 0,
+      "skipped": 0,
+      "trxIdentity": {
+        "bytes": 60225,
+        "sha256": "609b7733c97940e4260d8723d3923ea42c98d83d66d2690f2e56fbe5dd04a31e"
+      }
+    },
+    "secretScan": {
+      "status": "pass",
+      "secretFindingCount": 0,
+      "scannedArtifactCount": 15,
+      "scopeComplete": false,
+      "scopeManifestSha256": "4e138758d00a714f2824c4ffff2e59eec3a5b187b8b07ee71e0698e1cae5453d",
+      "scannerSourceClosureSha256": "05cefc2bb03b448c3c54d688e7f10b05b1eaf21befa5cb602334c11aae68c5ac",
+      "reportIdentity": {
+        "bytes": 8251,
+        "sha256": "269a80d370c42e8246eee2ca5eff63ec446d8596744d7296cb8bf4597b531603"
+      }
+    }
+  },
+  "github": {
+    "observedUtc": "2026-09-20T17:25:55.251Z",
+    "runId": 35524709256,
+    "headSha": "81624ac5cdb7c7c7c90926d0ac1c99c716d37bdd",
+    "status": "completed",
+    "conclusion": "failure",
+    "jobs": [
+      {
+        "id": 106114744198,
+        "status": "completed",
+        "conclusion": "failure",
+        "steps": 0
+      },
+      {
+        "id": 106114744240,
+        "status": "completed",
+        "conclusion": "failure",
+        "steps": 0
+      },
+      {
+        "id": 106114744262,
+        "status": "completed",
+        "conclusion": "failure",
+        "steps": 0
+      },
+      {
+        "id": 106114744270,
+        "status": "completed",
+        "conclusion": "failure",
+        "steps": 0
+      },
+      {
+        "id": 106114744277,
+        "status": "completed",
+        "conclusion": "failure",
+        "steps": 0
+      },
+      {
+        "id": 106114744290,
+        "status": "completed",
+        "conclusion": "failure",
+        "steps": 0
+      },
+      {
+        "id": 106114744311,
+        "status": "completed",
+        "conclusion": "failure",
+        "steps": 0
+      },
+      {
+        "id": 106114744341,
+        "status": "completed",
+        "conclusion": "failure",
+        "steps": 0
+      },
+      {
+        "id": 106114744380,
+        "status": "completed",
+        "conclusion": "failure",
+        "steps": 0
+      }
+    ],
+    "annotations": [
+      {
+        "level": "failure",
+        "message": "The job was not started because your account is locked due to a billing issue."
+      },
+      {
+        "level": "notice",
+        "message": "\"The ubuntu-latest label will migrate to Ubuntu 26 beginning October 19, 2026. For more information, see https://github.com/actions/runner-images/issues/14748\""
+      }
+    ]
+  },
+  "nuget": {
+    "observedUtc": "2026-09-20T17:26:37.742Z",
+    "packages": [
+      {
+        "id": "TinyRustLM.Abstractions",
+        "url": "https://api.nuget.org/v3-flatcontainer/tinyrustlm.abstractions/index.json",
+        "status": 404,
+        "versions": null
+      },
+      {
+        "id": "TinyRustLM.Core",
+        "url": "https://api.nuget.org/v3-flatcontainer/tinyrustlm.core/index.json",
+        "status": 404,
+        "versions": null
+      },
+      {
+        "id": "TinyRustLM.P2P",
+        "url": "https://api.nuget.org/v3-flatcontainer/tinyrustlm.p2p/index.json",
+        "status": 404,
+        "versions": null
+      }
+    ]
+  },
+  "sourceAuthority": {
+    "status": "source_authority_scan_incomplete",
+    "unreadable": [
+      "artifacts/verification/qwen3-environment-install/tinyrustlm-operation-C3ZUt9/install-temp/TmP6xn2evdh-b",
+      "artifacts/verification/qwen3-environment-install/tinyrustlm-operation-C3ZUt9/install-temp/TmPeq63_hr7-b"
+    ],
+    "initialAttempts": "Two invocations stopped at Git safe.directory admission; registering only the seven exact discovered repositories allowed observation of the unchanged two unreadable paths.",
+    "deletionAttempted": false
+  },
+  "repositoriesDiscovered": [
+    "LMComposer.com",
+    "MiniModel.MiRust.com",
+    "MiniModel.org",
+    "MiRust.com",
+    "Runtime.MiRust.com",
+    "TinyRustLM.com",
+    "TinyRustLM.MiRust.com"
+  ],
+  "limitations": [
+    "No NuGet API key read or package push",
+    "Report consistency does not independently execute its claimed experiment",
+    "No new real model/browser/ARM64/public seed/deployment evidence",
+    "Source authority and blocked deletion cohorts remain unresolved",
+    "Unrelated work preserved"
+  ],
+  "ownedOutput": {
+    "root": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\release-reports\\tinyrustlm-operation-9qhDYR",
+    "status": "removed_and_absence_verified",
+    "files": 147,
+    "directories": 40,
+    "logicalBytes": 5655587,
+    "markerBytes": 65,
+    "physicalBytesRecovered": null,
+    "completedUtc": "2026-09-20T17:31:10.146Z"
+  },
+  "recordedUtc": "2026-09-20T17:31:10.147Z",
+  "files": [
+    {
+      "path": ".github/workflows/ci.yml",
+      "bytes": 12623,
+      "sha256": "b38f5462708810837233b9be2300ad6112c86599fd38e9cdfdd8d09278458ba9"
+    },
+    {
+      "path": ".github/workflows/release-nuget.yml",
+      "bytes": 13657,
+      "sha256": "429016b414f42ba763d6ff323685c411a41b23f3e6b5ccec3a9bd6de34865095"
+    },
+    {
+      "path": ".github/workflows/nuget-feed-monitor.yml",
+      "bytes": 4314,
+      "sha256": "b9f3660eb6af387325a29d0afa1cea0716fc493396558371dabce648c9045c0d"
+    },
+    {
+      "path": "eng/verify-release-report.js",
+      "bytes": 16446,
+      "sha256": "95b1109f08836e43257e775c1c1908720ee5d7a4c9ef74a1511e22582d2dd8f8"
+    },
+    {
+      "path": "tinyrustlm/tests/verify-release-report.test.js",
+      "bytes": 17717,
+      "sha256": "57ff25cbbde0fd19cba969f182153872836b978db88a916b2056b3ae75c998f3"
+    },
+    {
+      "path": "tinyrustlm/tests/release-nuget-workflow.test.js",
+      "bytes": 5042,
+      "sha256": "9927a0b804e6d0ba3330a51cf79cd556fcf7a4954d61e417475219f95b6b37e5"
+    },
+    {
+      "path": "tinyrustlm/tests/audit-nuget-release-readiness.test.js",
+      "bytes": 21176,
+      "sha256": "c25759ec8a9149ba6cc5d04a2c01de176997b5adb62913d9c74bcff2dc3a590d"
+    },
+    {
+      "path": "docs/nuget/README.md",
+      "bytes": 15871,
+      "sha256": "0b78715533976abe874015709375d70e77c42713694165e5a27610b5a81398fb"
+    },
+    {
+      "path": "docs/ecosystem-cleanup-2026-09-12.md",
+      "bytes": 141802,
+      "sha256": "d4a020b67d050ecca12369361bbfda46cb457632bbd34f3200b1e4bc4652fa3f"
+    },
+    {
+      "path": "wiki/runtime-mirust/reports/ecosystem-experiment-lessons-2026-09-12.md",
+      "bytes": 171305,
+      "sha256": "f36f4f6738629a25f2045ee89abc5cb1b45789fa69a74fff062c5d40a8ff5621"
+    },
+    {
+      "path": "wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md",
+      "bytes": 61024,
+      "sha256": "7ccf0e02e0bc6c7bd74978ceceb5aaafbcf8d78cab58cf0ef482cd57d1ede3d3"
+    },
+    {
+      "path": ".uai/startup-packet.uai",
+      "bytes": 17173,
+      "sha256": "64ad7b2e68e6d38b3e91b6c123f65b5c9d862aa8c92fb78db689a885b6c903a3"
+    },
+    {
+      "path": ".uai/operations.uai",
+      "bytes": 25910,
+      "sha256": "49cd2cea288d37f08dda72f7e795180248c9123d1a358907ee2a323b036db9f8"
+    },
+    {
+      "path": ".uai/short-term-memory.uai",
+      "bytes": 20754,
+      "sha256": "c3c3e43e78ef40459a4b7034efed45d9f436702c7750211bbbbaa497ad0ad29a"
+    },
+    {
+      "path": ".uai/long-term-memory.uai",
+      "bytes": 8905,
+      "sha256": "32878147518fe1aa8919b750ae765af6ff26f393d2e13d49fa204daed80c4d20"
+    }
+  ],
+  "retainedEvidence": [
+    {
+      "name": "node-tests.log",
+      "bytes": 16482,
+      "sha256": "8b83397cda7874d0c2869267e5dc138ed4316f778b0e3afdddbb4b5599d5570e"
+    },
+    {
+      "name": "missing-filter.log",
+      "bytes": 2454,
+      "sha256": "01e8838b63c0cbd7a779b005ff53a2314acb4ce16e7e213d459f3521214fd0cd"
+    },
+    {
+      "name": "managed-tests.log",
+      "bytes": 1032,
+      "sha256": "7cee840f09739e8728b0e338a71a66c9122476ba4a1d7faed9c49b42bead4b5f"
+    }
+  ]
+}

@@ -16,6 +16,16 @@ Authority order is current owner instructions, inspected current contracts and b
 
 ## Current evidence and its limits
 
+**C72 release reports:** nine workflow commands selected absent test methods;
+the stale feed-current filter returned success with zero tests. Ten explicit
+report-file checks now reject missing or inconsistent evidence and bind the
+public-root child UI digest. All 172 affected Node checks pass, with reported
+100% validator line/branch coverage and independent YAML parsing. Read
+`release-report-validation-review.json`. This validates recorded evidence,
+not a hosted run or model. GitHub run 35524709256 remains billing-blocked before
+execution; the three current public NuGet package indexes return 404. No
+credential read or package publication occurred; release gates remain open.
+
 **C71 conversion pipes:** caller/deadline cancellation now reaches stdout/stderr
 through EOF and the owner observes process exit plus both readers, stopping
 siblings on failure. The held-pipe Windows regressions pass along with all 110

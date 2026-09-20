@@ -1,9 +1,10 @@
 profile: tinyrustlm.short-term-memory.current.v1
-updated_utc: 2026-09-20T17:00:10Z
+updated_utc: 2026-09-20T17:27:00Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
 now:
+  release_reports: C72 closes the zero-test report-validation gap with explicit required-file checks. All 172 affected Node checks pass, including actual PowerShell/Bash producers; read release-report-validation-review.json. GitHub billing and ARM64/source/release gates remain open; all three public NuGet IDs return 404. Preserve unrelated work and blocked cleanup; no key read or publication occurred.
   conversion_pipes: C71 jointly supervises process exit and both cancellable output readers. Two actual Windows held-pipe failures are fixed; all 110 Core/228 companion tests pass. Read conversion-pipe-lifetime-review.json. Detached-child containment is not claimed; the fixture owns its child teardown. Preserve unrelated edits and policy-blocked cleanup.
   conversion_cancellation: C70 propagates cancellation through live input/result hashes while preserving committed evidence and existing companion reconciliation. All 97 Core and 228 companion tests pass; read conversion-hash-cancellation-review.json. Synchronous disk reads retain their limits; C71 adds output-pipe cancellation. No real model or NuGet release. Preserve blocked cleanup and unrelated work.
   candidate_selection: C69 defaults only omitted limits, rejects invalid explicit values and validates the entire selected slice before acquisition. All 48 affected and three gate checks pass; three suites now have discoverable filenames. See candidate-selection-limits-review.json. Metadata screening is not converter support or model quality; only the Qwen3/Qwen-tokenizer conversion chain is exposed today. Preserve unrelated work and blocked cleanup cohorts.

@@ -94,6 +94,22 @@ real ARM64 execution.
 
 ## Package Transaction
 
+Release, feed-monitor and UI workflows validate their required JSON reports
+with `node eng/verify-release-report.js KIND REPORT`. Kinds are `readiness`,
+`publish-plan`, `feed-current`, `feed-hashes`, `feed-smoke`, `ui` and `public-root`.
+Missing, malformed, oversized (over four MiB), failed or internally inconsistent
+reports fail the command. Package checks require the exact three public IDs,
+counts and identities; signed feed packages retain their explicit signature-only
+payload comparison. Public-root validation checks the actual child UI report's
+digest, application identity and successful browser gates.
+
+These checks inspect recorded evidence; they do not rerun native consumers,
+authenticate a feed, prove hosted execution or qualify a model. A passing dry-run
+publish plan remains a dry run. Failed producer reports remain diagnostic output
+and are uploaded separately; their existence does not authorize publication.
+The old filtered `WhenPresent` test invocations have been removed because their
+methods no longer existed and a zero-test invocation could succeed.
+
 Use a new absent or empty output directory for every transaction. The scripts
 refuse a nonempty directory so current bytes cannot be mixed with an earlier or
 failed attempt. They never clean an unknown output directory.

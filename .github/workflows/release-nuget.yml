@@ -220,10 +220,6 @@ jobs:
           name: tinyrustlm-nuget-packages
           path: artifacts/packages
 
-      - name: Build report validators
-        shell: pwsh
-        run: dotnet build dotnet/tests/TinyRustLM.Package.Tests/TinyRustLM.Package.Tests.csproj -c Release -p:UseSharedCompilation=false
-
       - name: Audit NuGet release readiness
         id: readiness
         shell: pwsh
@@ -237,11 +233,10 @@ jobs:
           "status=$($report.status)" >> $env:GITHUB_OUTPUT
 
       - name: Verify release readiness report schema
-        if: ${{ always() && hashFiles('artifacts/reports/tinyrustlm-nuget-release-readiness.json') != '' }}
         shell: pwsh
         env:
           TINYRUSTLM_RELEASE_READINESS_REPORT: artifacts/reports/tinyrustlm-nuget-release-readiness.json
-        run: dotnet test dotnet/tests/TinyRustLM.Package.Tests/TinyRustLM.Package.Tests.csproj -c Release --no-build --filter ReleaseReadinessReportIsMachineReadableWhenPresent
+        run: node eng/verify-release-report.js readiness "$env:TINYRUSTLM_RELEASE_READINESS_REPORT"
 
       - name: Upload NuGet release readiness report
         if: ${{ always() && hashFiles('artifacts/reports/tinyrustlm-nuget-release-readiness.json') != '' }}
@@ -275,11 +270,10 @@ jobs:
         run: eng/publish-nuget.ps1 -SkipVerification -PackageSource artifacts/packages -AuditReport artifacts/packages/tinyrustlm-nuget-package-audit.json -NuGetSource $env:NUGET_SOURCE -ApiKey $env:TINYRUSTLM_TEMP_NUGET_API_KEY
 
       - name: Verify publish plan report schema
-        if: ${{ always() && hashFiles('artifacts/reports/tinyrustlm-nuget-publish-plan.json') != '' }}
         shell: pwsh
         env:
           TINYRUSTLM_PUBLISH_PLAN_REPORT: artifacts/reports/tinyrustlm-nuget-publish-plan.json
-        run: dotnet test dotnet/tests/TinyRustLM.Package.Tests/TinyRustLM.Package.Tests.csproj -c Release --no-build --filter PublishPlanReportIsMachineReadableWhenPresent
+        run: node eng/verify-release-report.js publish-plan "$env:TINYRUSTLM_PUBLISH_PLAN_REPORT"
 
       - name: Upload NuGet publish plan
         if: ${{ always() && hashFiles('artifacts/reports/tinyrustlm-nuget-publish-plan.json') != '' }}
@@ -301,7 +295,7 @@ jobs:
         shell: pwsh
         env:
           TINYRUSTLM_FEED_SMOKE_REPORT: artifacts/reports/tinyrustlm-nuget-feed-smoke.json
-        run: dotnet test dotnet/tests/TinyRustLM.Package.Tests/TinyRustLM.Package.Tests.csproj -c Release --no-build --filter FeedSmokeReportIsMachineReadableWhenPresent
+        run: node eng/verify-release-report.js feed-smoke "$env:TINYRUSTLM_FEED_SMOKE_REPORT"
 
       - name: Verify feed current version
         shell: pwsh
@@ -328,7 +322,7 @@ jobs:
         shell: pwsh
         env:
           TINYRUSTLM_FEED_CURRENT_REPORT: artifacts/reports/tinyrustlm-nuget-feed-current.json
-        run: dotnet test dotnet/tests/TinyRustLM.Package.Tests/TinyRustLM.Package.Tests.csproj -c Release --no-build --filter FeedCurrentReportIsMachineReadableWhenPresent
+        run: node eng/verify-release-report.js feed-current "$env:TINYRUSTLM_FEED_CURRENT_REPORT"
 
       - name: Verify feed package hashes
         shell: pwsh
@@ -356,7 +350,7 @@ jobs:
         shell: pwsh
         env:
           TINYRUSTLM_FEED_HASH_REPORT: artifacts/reports/tinyrustlm-nuget-feed-hashes.json
-        run: dotnet test dotnet/tests/TinyRustLM.Package.Tests/TinyRustLM.Package.Tests.csproj -c Release --no-build --filter FeedHashReportIsMachineReadableWhenPresent
+        run: node eng/verify-release-report.js feed-hashes "$env:TINYRUSTLM_FEED_HASH_REPORT"
 
       - name: Upload mandatory post-publish feed reports
         uses: actions/upload-artifact@v4

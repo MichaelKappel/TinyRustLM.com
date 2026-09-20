@@ -45,7 +45,6 @@ jobs:
       TINYRUSTLM_FEED_CURRENT_REPORT: artifacts/reports/tinyrustlm-nuget-feed-current.json
       TINYRUSTLM_FEED_SMOKE_REPORT: artifacts/reports/tinyrustlm-nuget-feed-smoke.json
       TINYRUSTLM_FEED_HASH_REPORT: artifacts/reports/tinyrustlm-nuget-feed-hashes.json
-      TINYRUSTLM_PUBLIC_PACKAGE_IDS: TinyRustLM.Abstractions,TinyRustLM.Core,TinyRustLM.P2P
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -72,19 +71,9 @@ jobs:
           }
           & eng/verify-feed-current.ps1 @arguments
 
-      - name: Verify exact report package graph
-        shell: pwsh
-        run: |
-          $expected = @($env:TINYRUSTLM_PUBLIC_PACKAGE_IDS -split ',' | Sort-Object)
-          $report = Get-Content -LiteralPath $env:TINYRUSTLM_FEED_CURRENT_REPORT -Raw | ConvertFrom-Json
-          $actual = @($report.package_ids | ForEach-Object { [string]$_ } | Sort-Object)
-          if (($actual -join "`n") -cne ($expected -join "`n")) {
-              throw 'Feed-current report is not bound to the exact public package graph.'
-          }
-
       - name: Verify feed current report schema
         shell: pwsh
-        run: dotnet test dotnet/tests/TinyRustLM.Package.Tests/TinyRustLM.Package.Tests.csproj -c Release --filter FeedCurrentReportIsMachineReadableWhenPresent
+        run: node eng/verify-release-report.js feed-current "$env:TINYRUSTLM_FEED_CURRENT_REPORT"
 
       - name: Verify isolated consumer from feed
         if: ${{ env.VERIFY_CONSUMER == 'true' }}
@@ -94,7 +83,7 @@ jobs:
       - name: Verify feed smoke report schema
         if: ${{ env.VERIFY_CONSUMER == 'true' }}
         shell: pwsh
-        run: dotnet test dotnet/tests/TinyRustLM.Package.Tests/TinyRustLM.Package.Tests.csproj -c Release --no-build --filter FeedSmokeReportIsMachineReadableWhenPresent
+        run: node eng/verify-release-report.js feed-smoke "$env:TINYRUSTLM_FEED_SMOKE_REPORT"
 
       - name: Verify feed package hashes
         if: ${{ env.VERIFY_HASHES == 'true' }}
@@ -104,7 +93,7 @@ jobs:
       - name: Verify feed hash report schema
         if: ${{ env.VERIFY_HASHES == 'true' }}
         shell: pwsh
-        run: dotnet test dotnet/tests/TinyRustLM.Package.Tests/TinyRustLM.Package.Tests.csproj -c Release --no-build --filter FeedHashReportIsMachineReadableWhenPresent
+        run: node eng/verify-release-report.js feed-hashes "$env:TINYRUSTLM_FEED_HASH_REPORT"
 
       - name: Upload feed evidence
         if: ${{ always() }}

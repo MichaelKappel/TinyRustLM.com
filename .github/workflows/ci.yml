@@ -264,8 +264,13 @@ jobs:
         shell: pwsh
         env:
           TINYRUSTLM_UI_VERIFICATION_REPORT: artifacts/reports/tinyrustlm-ui-verification.json
+        run: node eng/verify-release-report.js ui "$env:TINYRUSTLM_UI_VERIFICATION_REPORT"
+
+      - name: Verify TinyRustLM public root report schema
+        shell: pwsh
+        env:
           TINYRUSTLM_PUBLIC_ROOT_VERIFICATION_REPORT: artifacts/reports/tinyrustlm-public-root-verification.json
-        run: dotnet test dotnet/tests/TinyRustLM.Package.Tests/TinyRustLM.Package.Tests.csproj -c Release --filter "UiVerificationReportIsMachineReadableWhenPresent|PublicRootVerificationReportIsMachineReadableWhenPresent"
+        run: node eng/verify-release-report.js public-root "$env:TINYRUSTLM_PUBLIC_ROOT_VERIFICATION_REPORT"
 
       - name: Verify package boundary
         shell: pwsh
