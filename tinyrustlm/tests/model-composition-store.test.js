@@ -1762,7 +1762,256 @@ test("bounded restart cleanup removes incomplete staging but preserves active co
   assert.equal(adapter.hasPath(["installed", installed.manifestSha256]), true);
   assert.equal(adapter.entriesUnder(["staging"]).length, 0);
   assert.ok(adapter.operations.filter((operation) => operation.type === "list")
-    .every((operation) => operation.limit <= 9));
+    .every((operation) => operation.limit <= (operation.path === "installed" ? 130 :
+      operation.path.startsWith("installed/") ? 11 : 9)));
+});
+
+test("cleanup refuses unexpected entries without deleting them or the active installation", async t => {
+  const cases = ["staging-file", "staging-directory", "malformed-marker", "mismatched-marker",
+    "installed-file", "installed-directory", "unowned-hash", "corrupt-manifest",
+    "extra-file", "nested-member", "excess-entries"];
+  for (const variant of cases) {
+    await t.test(variant, async () => {
+      const adapter = new MemoryAdapter();
+      const store = createStore(adapter);
+      const prior = fixture(`ownership-prior-${variant}`);
+      const active = await store.install({ manifest: prior.manifest,
+        admissionAuthority: prior.admissionAuthority, sources: sourceSet(prior.members) });
+      const orphan = fixture(`ownership-orphan-${variant}`);
+      const hash = sha256(canonical(orphan.manifest));
+      const id = sha256(Buffer.from(`ownership-stage-${variant}`));
+      if (variant === "staging-file") adapter.seedFile(["staging", "notes.txt"], bytes("keep", 9));
+      else if (variant === "staging-directory") {
+        adapter.seedFile(["staging", `${id}.json`, "notes.txt"], bytes("keep", 9));
+      } else if (variant === "malformed-marker") {
+        adapter.seedFile(["staging", `${id}.json`], Buffer.from("{broken"));
+      } else if (variant === "mismatched-marker") {
+        adapter.seedFile(["staging", `${id}.json`], canonical({ schema: STAGING_SCHEMA,
+          stagingId: hash, manifestSha256: hash }));
+      } else if (variant === "installed-file") adapter.seedFile(["installed", hash], bytes("keep", 9));
+      else if (variant === "installed-directory") {
+        adapter.seedFile(["installed", "notes", "keep.txt"], bytes("keep", 9));
+      } else {
+        if (variant !== "unowned-hash") adapter.seedFile(["installed", hash, "manifest.json"],
+          variant === "corrupt-manifest" ? Buffer.from("{broken") : canonical(orphan.manifest));
+        adapter.seedFile(["installed", hash, "model.slm2"], bytes("partial", 9));
+        if (variant === "extra-file") adapter.seedFile(["installed", hash, "notes.txt"], bytes("keep", 9));
+        if (variant === "nested-member") {
+          adapter.seedFile(["installed", hash, "tokenizer.tokenizer2", "notes.txt"], bytes("keep", 9));
+        }
+        if (variant === "excess-entries") {
+          for (let i = 0; i < 11; i++) adapter.seedFile(["installed", hash, `extra-${i}`], bytes("keep", 9));
+        }
+      }
+      const snapshot = new Map([...adapter.files.keys()].map(name => [name, adapter.readFile(name.split("/"))]));
+      const operationIndex = adapter.operations.length;
+      await assert.rejects(store.cleanup(), errorCode("model-composition-store-cleanup-ownership"));
+      for (const [name, value] of snapshot) assert.deepEqual(adapter.readFile(name.split("/")), value, name);
+      assert.equal(adapter.operations.slice(operationIndex).some(op => op.type === "remove"), false);
+      assert.equal((await store.openActive()).manifestSha256, active.manifestSha256);
+    });
+  }
+});
+
+test("corrupt-active recovery checks its whole directory before removing the pointer", async () => {
+  const adapter = new MemoryAdapter();
+  const store = createStore(adapter);
+  const value = fixture("recovery-ownership");
+  const active = await store.install({ manifest: value.manifest,
+    admissionAuthority: value.admissionAuthority, sources: sourceSet(value.members) });
+  adapter.mutate(["installed", active.manifestSha256, "model.slm2"]);
+  const unexpected = ["installed", active.manifestSha256, "notes.txt"];
+  adapter.seedFile(unexpected, bytes("keep", 9));
+  const before = adapter.readFile(["active.json"]);
+  await assert.rejects(store.discardInvalidActive(), errorCode("model-composition-store-cleanup-ownership"));
+  assert.deepEqual(adapter.readFile(["active.json"]), before);
+  assert.ok(adapter.hasPath(unexpected));
+});
+
+test("failed candidate cleanup preserves unexpected content and its ownership marker", async () => {
+  const adapter = new MemoryAdapter();
+  const store = createStore(adapter);
+  const value = fixture("abort-ownership");
+  let unexpected;
+  let stage;
+  await assert.rejects(store.install({ manifest: value.manifest,
+    admissionAuthority: value.admissionAuthority, sources: sourceSet(value.members),
+    async activate(candidate) {
+      unexpected = ["installed", candidate.manifestSha256, "notes.txt"];
+      stage = ["staging", `${candidate.activationId}.json`];
+      adapter.seedFile(unexpected, bytes("keep", 9));
+      return false;
+    }
+  }), errorCode("model-composition-store-activation-rejected"));
+  assert.ok(adapter.hasPath(unexpected));
+  assert.ok(adapter.hasPath(stage));
+  assert.equal(adapter.hasPath(["active.json"]), false);
+  await assert.rejects(store.cleanup(), errorCode("model-composition-store-cleanup-ownership"));
+});
+
+test("a canonical marker cannot authorize deleting a file at the installed directory path", async () => {
+  const adapter = new MemoryAdapter();
+  const id = sha256(Buffer.from("marker-file-id"));
+  const hash = sha256(Buffer.from("marker-file-hash"));
+  adapter.seedFile(["staging", `${id}.json`], canonical({ schema: STAGING_SCHEMA,
+    stagingId: id, manifestSha256: hash }));
+  adapter.seedFile(["installed", hash], bytes("keep", 9));
+  await assert.rejects(createStore(adapter).cleanup(), errorCode("model-composition-store-cleanup-ownership"));
+  assert.ok(adapter.hasPath(["installed", hash]));
+  assert.ok(adapter.hasPath(["staging", `${id}.json`]));
+});
+
+test("retirement checks the prior installation before committing a replacement", async () => {
+  const adapter = new MemoryAdapter();
+  const store = createStore(adapter);
+  const prior = fixture("prior-ownership");
+  const active = await store.install({ manifest: prior.manifest,
+    admissionAuthority: prior.admissionAuthority, sources: sourceSet(prior.members) });
+  const pointer = adapter.readFile(["active.json"]);
+  const extra = ["installed", active.manifestSha256, "notes.txt"];
+  adapter.seedFile(extra, bytes("keep", 9));
+  const candidate = fixture("replacement-ownership");
+  await assert.rejects(store.install({ manifest: candidate.manifest,
+    admissionAuthority: candidate.admissionAuthority, sources: sourceSet(candidate.members) }),
+  errorCode("model-composition-store-cleanup-ownership"));
+  assert.deepEqual(adapter.readFile(["active.json"]), pointer);
+  assert.ok(adapter.hasPath(extra));
+  assert.equal(adapter.hasPath(["installed", sha256(canonical(candidate.manifest))]), false);
+});
+
+test("a path appearing after staging is preserved instead of reused or overwritten", async () => {
+  const adapter = new MemoryAdapter();
+  const value = fixture("late-path-collision");
+  const hash = sha256(canonical(value.manifest));
+  const unexpected = ["installed", hash, "model.slm2"];
+  const keep = bytes("unowned", 9);
+  const write = adapter.atomicWrite.bind(adapter);
+  adapter.atomicWrite = async (parts, bytes) => {
+    await write(parts, bytes);
+    if (parts[0] === "staging") adapter.seedFile(unexpected, keep);
+  };
+  await assert.rejects(createStore(adapter).install({ manifest: value.manifest,
+    admissionAuthority: value.admissionAuthority, sources: sourceSet(value.members) }),
+  errorCode("model-composition-store-cleanup-ownership"));
+  assert.deepEqual(adapter.readFile(unexpected), Buffer.from(keep));
+  assert.equal(adapter.hasPath(["active.json"]), false);
+  assert.deepEqual(adapter.entriesUnder(["staging"]), []);
+});
+
+test("a complete hash-bound orphan can be retired without recursive deletion", async () => {
+  const adapter = new MemoryAdapter();
+  const value = fixture("owned-orphan");
+  const store = createStore(adapter);
+  const installed = await store.install({ manifest: value.manifest,
+    admissionAuthority: value.admissionAuthority, sources: sourceSet(value.members) });
+  adapter.files.delete("active.json");
+  const result = await store.cleanup();
+  assert.equal(result.removedInstalled, 1);
+  assert.equal(adapter.hasPath(["installed", installed.manifestSha256]), false);
+  assert.equal(adapter.operations.some(op => op.type === "remove" && op.recursive), false);
+});
+
+test("interrupted file deletion keeps staging authority and resumes on the next cleanup", async () => {
+  const adapter = new MemoryAdapter();
+  const id = sha256(Buffer.from("partial-delete-id"));
+  const hash = sha256(Buffer.from("partial-delete-hash"));
+  const marker = ["staging", `${id}.json`];
+  adapter.seedFile(marker, canonical({ schema: STAGING_SCHEMA, stagingId: id, manifestSha256: hash }));
+  adapter.seedFile(["installed", hash, "model.slm2"], bytes("partial-model", 9));
+  adapter.seedFile(["installed", hash, "prompt.prompt2"], bytes("partial-prompt", 9));
+  const remove = adapter.removeEntry.bind(adapter);
+  let fail = true;
+  adapter.removeEntry = async (parts, options) => {
+    if (parts.at(-1) === "prompt.prompt2" && fail) {
+      fail = false;
+      throw new Error("injected storage failure");
+    }
+    return remove(parts, options);
+  };
+  await assert.rejects(createStore(adapter).cleanup(), errorCode("model-composition-store-cleanup"));
+  assert.ok(adapter.hasPath(marker));
+  assert.equal(adapter.hasPath(["installed", hash, "model.slm2"]), false);
+  await createStore(adapter).cleanup();
+  assert.equal(adapter.hasPath(marker), false);
+  assert.equal(adapter.hasPath(["installed", hash]), false);
+});
+
+test("an unexpected late child cannot be consumed by the final directory removal", async () => {
+  const adapter = new MemoryAdapter();
+  const id = sha256(Buffer.from("late-child-id"));
+  const hash = sha256(Buffer.from("late-child-hash"));
+  const marker = ["staging", `${id}.json`];
+  adapter.seedFile(marker, canonical({ schema: STAGING_SCHEMA, stagingId: id, manifestSha256: hash }));
+  adapter.seedFile(["installed", hash, "model.slm2"], bytes("partial", 9));
+  const remove = adapter.removeEntry.bind(adapter);
+  const extra = ["installed", hash, "notes.txt"];
+  adapter.removeEntry = async (parts, options) => {
+    if (key(parts) === `installed/${hash}`) adapter.seedFile(extra, bytes("keep", 9));
+    return remove(parts, options);
+  };
+  await assert.rejects(createStore(adapter).cleanup(), errorCode("model-composition-store-cleanup"));
+  assert.ok(adapter.hasPath(extra));
+  assert.ok(adapter.hasPath(marker));
+});
+
+test("recovery retains a corrupt pointer's ownership when content removal fails", async () => {
+  const adapter = new MemoryAdapter();
+  const store = createStore(adapter);
+  const value = fixture("recovery-partial-removal");
+  const installed = await store.install({ manifest: value.manifest,
+    admissionAuthority: value.admissionAuthority, sources: sourceSet(value.members) });
+  adapter.mutate(["installed", installed.manifestSha256, "manifest.json"]);
+  const pointer = adapter.readFile(["active.json"]);
+  const remove = adapter.removeEntry.bind(adapter);
+  let fail = true;
+  adapter.removeEntry = async (parts, options) => {
+    if (parts.at(-1) === "prompt.prompt2" && fail) {
+      fail = false;
+      throw new Error("injected storage failure");
+    }
+    return remove(parts, options);
+  };
+  await assert.rejects(store.discardInvalidActive(), errorCode("model-composition-store-cleanup"));
+  assert.deepEqual(adapter.readFile(["active.json"]), pointer);
+  assert.equal(await store.discardInvalidActive(), true);
+  assert.equal(adapter.hasPath(["active.json"]), false);
+  assert.equal(adapter.hasPath(["installed", installed.manifestSha256]), false);
+});
+
+test("cleanup rejects unsafe or duplicate adapter entry names before deletion", async t => {
+  for (const name of ["../outside", "duplicate"]) {
+    await t.test(name, async () => {
+      const adapter = new MemoryAdapter();
+      adapter.listEntries = async () => name === "duplicate"
+        ? [{ name, kind: "file" }, { name, kind: "file" }] : [{ name, kind: "file" }];
+      await assert.rejects(createStore(adapter).cleanup(), errorCode(name === "duplicate"
+        ? "model-composition-store-adapter" : "model-composition-store-opfs-path"));
+      assert.equal(adapter.operations.some(op => op.type === "remove"), false);
+    });
+  }
+});
+
+test("cleanup preserves markers outside its budget and refuses a saturated ownership inventory", async () => {
+  const adapter = new MemoryAdapter();
+  const ids = ["1".repeat(64), "2".repeat(64)];
+  const hashes = ["3".repeat(64), "4".repeat(64)];
+  for (let i = 0; i < ids.length; i++) {
+    adapter.seedFile(["staging", `${ids[i]}.json`], canonical({ schema: STAGING_SCHEMA,
+      stagingId: ids[i], manifestSha256: hashes[i] }));
+    adapter.seedFile(["installed", hashes[i], "model.slm2"], bytes("partial", 9));
+  }
+  const store = createStore(adapter, { cleanupLimit: 1 });
+  const first = await store.cleanup();
+  assert.equal(first.removedStaging, 1);
+  assert.equal(first.remainingStaging, 1);
+  assert.ok(adapter.hasPath(["installed", hashes[1]]));
+  for (let i = 0; i < 129; i++) {
+    await adapter.ensureDirectory(["installed", sha256(Buffer.from(`extra-${i}`))]);
+  }
+  const operationIndex = adapter.operations.length;
+  await assert.rejects(store.cleanup(), errorCode("model-composition-store-cleanup-ownership"));
+  assert.equal(adapter.operations.slice(operationIndex).some(op => op.type === "remove"), false);
+  assert.ok(adapter.hasPath(["staging", `${ids[1]}.json`]));
 });
 
 test("restart reopens and reverifies every immutable member", async () => {

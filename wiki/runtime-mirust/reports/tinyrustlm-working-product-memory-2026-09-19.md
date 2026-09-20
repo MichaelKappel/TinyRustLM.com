@@ -96,6 +96,16 @@ updated and twelve direct smoke observations pass. See
 This is synthetic storage evidence; further ownership/replacement review and all
 real model/public gates remain open.
 
+**C47 cache ownership:** inactive entries are no longer recursively deleted on
+their location alone. Canonical staging/pointer authority or a hash-bound orphan
+manifest and bounded direct-file closure are required. Unexpected content survives;
+candidate paths must be vacant. Failed cleanup retains candidate staging authority,
+and invalid-active recovery retains the pointer until content removal succeeds.
+All 143 affected checks, three actual Edge storage tests and twelve direct smoke
+observations pass. See `composition-cleanup-ownership-review.json`. These are
+synthetic storage tests. Reader retirement and terminal crash cases remain under
+review; no qualified model, public seed or deployment follows.
+
 Compare three routes by evidence:
 - Qualify an already useful compact checkpoint and adapt the sole runtime where justified.
 - Run a bounded new-derivative training experiment after inference, data and independent review readiness.

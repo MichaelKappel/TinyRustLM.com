@@ -1535,6 +1535,34 @@ and the incomplete source scan are unchanged.
   Keep cancellation attached for the duration of every cancellable wait, including
   finally blocks, and prove the next caller can acquire the lock afterward.
 
+## C47: absence from the active pointer does not establish deletion ownership
+
+- Question: can bounded cache cleanup delete content that no current installation
+  owns, or lose the identity needed to resume a failed deletion?
+- Exact inputs: C46 store at `8b24c33f1ad7949056cb6b775d7955f3cd25ed54`, synthetic
+  six-member fixtures, malformed/mismatched staging markers, unowned directories,
+  extra direct/nested files, wrong entry kinds, unsafe/duplicate adapter names,
+  saturated inventories and injected partial/late deletion faults. Final source
+  identities are in `composition-cleanup-ownership-review.json`.
+- Method: first add refusal/preservation regressions, then exercise every installed
+  removal path under the existing writer lock; check actual Edge OPFS separately.
+- Result: initial 58-test run had 44 passes/14 failures (13 failing leaf cases).
+  The first expanded run passed 67/68: a commit-order assertion caught new I/O
+  between authorization and pointer replacement. Moving ownership checks before
+  authorization fixed that ordering without weakening the assertion. Final affected
+  suite passes 143/143; Edge 3/3; direct smoke 12 observations.
+- Decision: require an exact ownership record and bounded direct-file closure;
+  remove files individually, manifest last, then require an empty directory.
+  Preserve staging authority when candidate cleanup fails and pointer authority
+  until invalid content removal succeeds. Preserve unknown content for review.
+- Uncertainty: no real model or public result; Web Locks coordinate cooperating
+  writers only. Final orphan-directory failure after manifest removal can still
+  need review. Reader retirement, metadata cancellation and exhaustive crash
+  transition coverage remain separate work.
+- Reusable lesson: bounded enumeration limits work, but does not by itself confer
+  ownership. Keep cleanup authority until its dependent bytes are gone, and ensure
+  safety checks preserve the existing activation linearization contract.
+
 ## Continue the review
 
 Before deleting an experiment that is not covered above, record its purpose,

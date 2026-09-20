@@ -5,6 +5,49 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C47: admit cache ownership before deletion, September 19
+
+The composition store recursively deleted unrecognized staging entries and
+inactive installed entries. A hash-shaped directory name alone did not establish
+ownership. Thirteen new leaf regressions reproduced deletion or missing refusal;
+the initial run reported 44 passes and 14 failures including the parent test.
+
+Cleanup now requires a canonical filename-bound staging marker, an active pointer,
+this installation's ownership, or a hash-bound current manifest for an orphan.
+It admits only the six member files and four custody files, with an eleven-entry
+sentinel scan. A complete parent scan is bounded to 130 entries; reaching the
+sentinel refuses deletion. Malformed markers, unexpected names, directories in
+file slots and unsafe/duplicate adapter entries are retained or rejected.
+Candidate creation checks that its path is vacant before and after staging.
+
+Deletion removes admitted direct files with the manifest last, then removes the
+empty directory nonrecursively. A late unexpected child therefore survives.
+Failed candidate retirement retains its staging marker; corrupt-active recovery
+retains the invalid pointer until content deletion succeeds. Prior and candidate
+closures are checked before commit authorization. An intermediate 67/68 run
+caught added I/O after that authorization; moving the checks before authorization
+preserved the existing immediate-commit contract without weakening its test.
+
+All 143 affected unit/integration/publication checks pass. Store Node coverage is
+87.96% lines, 83.51% branches and 90.54% functions. Three installed-Edge tests pass
+with real OPFS/Web Locks: unexpected-file preservation/recovery refusal, late
+source cancellation and persistent-cache/restart behavior. The direct zero-argument
+release-smoke runner passes twelve observations. Both shells bind the new store
+script; visual markup and the current six-member format remain unchanged.
+
+Evidence: `artifacts/ecosystem-cleanup-20260912/composition-cleanup-ownership-review.json`.
+All model bytes used here are synthetic. The writer lock coordinates cooperating
+store operations; it does not isolate hostile same-origin code. A terminal orphan
+directory-removal failure after manifest removal can leave an empty or unexpected
+entry requiring review. Active reader lifetime and metadata I/O cancellation need
+further work; this is not complete crash-safety or retirement proof.
+
+Seven canonical repositories were inventoried; only TinyRustLM changes here.
+Operation-owned output was removed with logical sizes recorded; physical recovery
+was not measured. Source scanning still stops at the same two blocked installer
+links. No blocked deletion was retried, and package preflight, real model/default,
+initial public seed and publication gates remain open. Ternary research is deferred.
+
 ## C46: keep cancellation active during failed source cleanup, September 19
 
 The composition store checked cancellation before iterator cleanup, then awaited

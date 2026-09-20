@@ -41,6 +41,8 @@ function (root, admissionApi, catalogApi) {
   const DEFAULT_MAXIMUM_STAGING_ENTRIES = 16;
   const DEFAULT_CLEANUP_LIMIT = 16;
   const MAXIMUM_ENTRY_LIMIT = 64;
+  // Up to 64 staged candidates, 64 retired entries and one active entry, plus a sentinel.
+  const INSTALLED_SCAN_LIMIT = MAXIMUM_ENTRY_LIMIT * 2 + 2;
   const SHA256_PATTERN = /^[0-9a-f]{64}$/u;
   const MEMBER_NAMES = Object.freeze([
     "model.slm2",
@@ -49,6 +51,10 @@ function (root, admissionApi, catalogApi) {
     "sampling.sampling2",
     "prompt.prompt2",
     "composition.acg2"
+  ]);
+  const INSTALLED_FILES = Object.freeze([
+    ...MEMBER_NAMES, INSTALLED_ADMISSION_FILE, INSTALLED_QUALIFICATION_RECEIPT_FILE,
+    INSTALLED_CATALOG_FILE, INSTALLED_MANIFEST_FILE
   ]);
   const CONTENT_ID_PATTERN = /^sha256:[0-9a-f]{64}$/u;
   const DESCRIPTOR_FIELDS = Object.freeze(["byteLength", "sha256"]);
@@ -751,11 +757,15 @@ function (root, admissionApi, catalogApi) {
     if (!Array.isArray(entries) || entries.length > limit) {
       reject("model-composition-store-adapter");
     }
+    const names = new Set();
     for (const entry of entries) {
       if (!entry || typeof entry.name !== "string" ||
-          (entry.kind !== "file" && entry.kind !== "directory")) {
+          (entry.kind !== "file" && entry.kind !== "directory") ||
+          names.has(entry.name)) {
         reject("model-composition-store-adapter");
       }
+      validatePath([entry.name]);
+      names.add(entry.name);
     }
     return entries;
   }
@@ -1417,6 +1427,80 @@ function (root, admissionApi, catalogApi) {
     });
   }
 
+  // Require a canonical marker bound to its filename before using its cleanup authority.
+  async function ownedStaging(adapter, entry) {
+    const code = "model-composition-store-cleanup-ownership";
+    if (entry.kind !== "file" || !/^[0-9a-f]{64}\.json$/u.test(entry.name)) reject(code);
+    let staging;
+    try {
+      staging = await readStaging(adapter, entry.name);
+    } catch (error) {
+      throw new ModelCompositionStoreError(code, { cause: error });
+    }
+    if (!staging || entry.name !== `${staging.stagingId}.json`) reject(code);
+    return staging;
+  }
+
+  // Admit a complete bounded parent inventory; a file must never masquerade as a composition directory.
+  async function installedEntry(options, manifestSha256) {
+    const entries = await listEntries(options.adapter, [INSTALLED_DIRECTORY], INSTALLED_SCAN_LIMIT);
+    if (entries.length === INSTALLED_SCAN_LIMIT) reject("model-composition-store-cleanup-ownership");
+    const entry = entries.find(value => value.name === manifestSha256);
+    if (entry && entry.kind !== "directory") reject("model-composition-store-cleanup-ownership");
+    return entry;
+  }
+
+  // A marker, pointer or this installation proves ownership; orphans need a hash-bound manifest.
+  async function ownedInstalledEntries(options, manifestSha256, identityKnown) {
+    const code = "model-composition-store-cleanup-ownership";
+    if (!SHA256_PATTERN.test(manifestSha256)) reject(code);
+    await installedEntry(options, manifestSha256);
+    if (!identityKnown) {
+      let manifest;
+      try {
+        manifest = await readInstalledManifest(options, manifestSha256);
+      } catch (error) {
+        throw new ModelCompositionStoreError(code, { cause: error });
+      }
+      if (!manifest) reject(code);
+    }
+    const entries = await listEntries(options.adapter,
+      [INSTALLED_DIRECTORY, manifestSha256], INSTALLED_FILES.length + 1);
+    if (entries.length > INSTALLED_FILES.length || entries.some(entry =>
+      entry.kind !== "file" || !INSTALLED_FILES.includes(entry.name))) reject(code);
+    return entries;
+  }
+
+  // Delete only admitted direct files, manifest last; never recursively consume a late extra entry.
+  async function removeInstalled(options, manifestSha256, identityKnown) {
+    const entries = await ownedInstalledEntries(options, manifestSha256, identityKnown);
+    const names = new Set(entries.map(entry => entry.name));
+    for (const name of INSTALLED_FILES) {
+      if (names.has(name)) {
+        await removeEntry(options.adapter, [INSTALLED_DIRECTORY, manifestSha256, name], false);
+      }
+    }
+    await removeEntry(options.adapter, [INSTALLED_DIRECTORY, manifestSha256], false);
+  }
+
+  // Preserve the primary outcome and let a later bounded pass retry owned residue.
+  async function bestEffortRemoveInstalled(options, manifestSha256) {
+    try {
+      await removeInstalled(options, manifestSha256, true);
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  // Bound the complete parent inventory before creating a candidate in an unowned existing path.
+  async function requireVacantInstalledPath(options, manifestSha256) {
+    if (await installedEntry(options, manifestSha256)) {
+      reject("model-composition-store-cleanup-ownership");
+    }
+  }
+
+  // Retire only identified compositions and canonical markers within the caller's bounded budget.
   async function cleanupInternal(options, limit, signal) {
     const pointer = await readPointer(options.adapter);
     await requireResolvedPointer(options.adapter, pointer);
@@ -1429,24 +1513,12 @@ function (root, admissionApi, catalogApi) {
     let removedInstalled = 0;
     for (const entry of stagingEntries.slice(0, limit)) {
       checkCancelled(signal);
-      let staging = null;
-      if (entry.kind === "file" && /^[0-9a-f]{64}\.json$/u.test(entry.name)) {
-        try {
-          staging = await readStaging(options.adapter, entry.name);
-          if (staging && entry.name !== `${staging.stagingId}.json`) staging = null;
-        } catch (error) {
-          if (!(error instanceof ModelCompositionStoreError)) throw error;
-        }
-      }
-      if (staging && (!pointer || staging.manifestSha256 !== pointer.manifestSha256)) {
-        await removeEntry(
-          options.adapter,
-          [INSTALLED_DIRECTORY, staging.manifestSha256],
-          true
-        );
+      const staging = await ownedStaging(options.adapter, entry);
+      if (!pointer || staging.manifestSha256 !== pointer.manifestSha256) {
+        await removeInstalled(options, staging.manifestSha256, true);
         removedInstalled += 1;
       }
-      await removeEntry(options.adapter, [STAGING_DIRECTORY, entry.name], true);
+      await removeEntry(options.adapter, [STAGING_DIRECTORY, entry.name], false);
       removedStaging += 1;
     }
 
@@ -1457,15 +1529,8 @@ function (root, admissionApi, catalogApi) {
     );
     const protectedManifests = new Set(pointer ? [pointer.manifestSha256] : []);
     for (const entry of remainingEntries) {
-      if (entry.kind !== "file" || !/^[0-9a-f]{64}\.json$/u.test(entry.name)) continue;
-      try {
-        const staging = await readStaging(options.adapter, entry.name);
-        if (staging && entry.name === `${staging.stagingId}.json`) {
-          protectedManifests.add(staging.manifestSha256);
-        }
-      } catch (_) {
-        // Malformed stale markers protect no content-addressed directory.
-      }
+      const staging = await ownedStaging(options.adapter, entry);
+      protectedManifests.add(staging.manifestSha256);
     }
 
     const remainingBudget = Math.max(0, limit - removedInstalled);
@@ -1477,7 +1542,9 @@ function (root, admissionApi, catalogApi) {
     for (const entry of installedEntries) {
       if (removedInstalled >= limit) break;
       if (entry.kind === "directory" && protectedManifests.has(entry.name)) continue;
-      await removeEntry(options.adapter, [INSTALLED_DIRECTORY, entry.name], true);
+      checkCancelled(signal);
+      if (entry.kind !== "directory") reject("model-composition-store-cleanup-ownership");
+      await removeInstalled(options, entry.name, false);
       removedInstalled += 1;
     }
     return Object.freeze({
@@ -1666,6 +1733,7 @@ function (root, admissionApi, catalogApi) {
         }
 
         const existingManifest = await readInstalledManifest(options, manifestSha256);
+        if (existingManifest === null) await requireVacantInstalledPath(options, manifestSha256);
         let reuseInstalled = false;
         if (existingManifest !== null) {
           if (!bytesEqual(canonicalBytes(existingManifest), manifestBytes)) {
@@ -1721,11 +1789,7 @@ function (root, admissionApi, catalogApi) {
           // Restart treats a surviving marker as unresolved; preserve both candidates until absence is observed.
           await requireResolvedPointer(options.adapter, pointer);
           if (previousPointer && previousPointer.manifestSha256 !== manifestSha256) {
-            await bestEffortRemove(
-              options.adapter,
-              [INSTALLED_DIRECTORY, previousPointer.manifestSha256],
-              true
-            );
+            await bestEffortRemoveInstalled(options, previousPointer.manifestSha256);
           }
           committedResult = candidate || openedComposition(
             options, pointer, manifest, suppliedAuthority.opened
@@ -1741,11 +1805,7 @@ function (root, admissionApi, catalogApi) {
             { stagingId }
           );
           if (!reuseInstalled) {
-            await removeEntry(
-              options.adapter,
-              [INSTALLED_DIRECTORY, manifestSha256],
-              true
-            );
+            await requireVacantInstalledPath(options, manifestSha256);
             await ensureDirectory(
               options.adapter,
               [INSTALLED_DIRECTORY, manifestSha256]
@@ -1826,6 +1886,10 @@ function (root, admissionApi, catalogApi) {
             signal
           );
           checkCancelled(signal, stagingId);
+          await ownedInstalledEntries(options, manifestSha256, true);
+          if (previousPointer) {
+            await ownedInstalledEntries(options, previousPointer.manifestSha256, true);
+          }
           await requireCommitAuthorization(
             call.authorizeCommit,
             candidate,
@@ -1861,14 +1925,10 @@ function (root, admissionApi, catalogApi) {
             }
           }
           if (!pointerCommitted && !preserveCandidate) {
-            if (ownsCandidate) {
-              await bestEffortRemove(
-                options.adapter,
-                [INSTALLED_DIRECTORY, manifestSha256],
-                true
-              );
-            }
-            await bestEffortRemove(options.adapter, stagingPath, false);
+            const removed = !ownsCandidate ||
+              await bestEffortRemoveInstalled(options, manifestSha256);
+            // A failed retirement keeps its marker so restart still has exact ownership evidence.
+            if (removed) await bestEffortRemove(options.adapter, stagingPath, false);
           }
           throw withCommitDisposition(
             terminalError,
@@ -1949,14 +2009,13 @@ function (root, admissionApi, catalogApi) {
         }
 
         checkCancelled(signal, pointer && pointer.stagingId);
-        await removeEntry(options.adapter, [ACTIVE_POINTER_FILE], false);
         if (pointer && RECOVERABLE_CONTENT_CODES.has(failure.code)) {
           checkCancelled(signal, pointer.stagingId);
-          await removeEntry(
-            options.adapter,
-            [INSTALLED_DIRECTORY, pointer.manifestSha256],
-            true
-          );
+          await removeInstalled(options, pointer.manifestSha256, true);
+        }
+        // Keep the invalid pointer's ownership identity until content removal succeeds.
+        await removeEntry(options.adapter, [ACTIVE_POINTER_FILE], false);
+        if (pointer && RECOVERABLE_CONTENT_CODES.has(failure.code)) {
           checkCancelled(signal, pointer.stagingId);
           await removeEntry(
             options.adapter,

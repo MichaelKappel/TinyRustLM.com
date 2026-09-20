@@ -1,0 +1,275 @@
+{
+  "schema": "tinyrustlm.composition-cleanup-ownership-review.v1",
+  "observedAtUtc": "2026-09-20T00:34:40Z",
+  "localDate": "2026-09-19",
+  "sourceParent": "8b24c33f1ad7949056cb6b775d7955f3cd25ed54",
+  "status": "local-cache-ownership-fixed-no-real-model-or-publication-claim",
+  "inputs": [
+    {
+      "path": "tinyrustlm/app/model-composition-store.js",
+      "bytes": 78822,
+      "sha256": "10c364cad41eed9ec157b7c311a741da50cd785536cf26ab581de8556618b89a"
+    },
+    {
+      "path": "tinyrustlm/tests/model-composition-store.test.js",
+      "bytes": 101619,
+      "sha256": "681f7d14bf554f043f900ed7d668bb48345008e3842cd41480c97c57bcd6a4fb"
+    },
+    {
+      "path": "tinyrustlm/e2e/composition-cache.spec.js",
+      "bytes": 58384,
+      "sha256": "d2c9f6b0f070b3163775d7067cab1558636c6f5d697d34535c048a73c2054090"
+    },
+    {
+      "path": "tinyrustlm/app/index.html",
+      "bytes": 48604,
+      "sha256": "b4ce533ffc111efc1c1d7ff1025d818b90acea80f28191158af0865865c8632d"
+    },
+    {
+      "path": "tinyrustlm/index.html",
+      "bytes": 48684,
+      "sha256": "d57f68a9fb0cacbc9635b2ab7fc8dd751a49842fcd79009bc04f4a1b7c47362e"
+    },
+    {
+      "path": "tinyrustlm/tests/model-cache-custody-integration.test.js",
+      "bytes": 29381,
+      "sha256": "34bc5c311e2e4a1c7c9ccb38142227830dddd5e8ad026fda27f53b87dbff9e9f"
+    },
+    {
+      "path": "tinyrustlm/tests/p2p-composition-install.test.js",
+      "bytes": 45141,
+      "sha256": "356570a67bd3ea6354de021aac73a9ddd499019c3453f45329969503c37443da"
+    },
+    {
+      "path": "tinyrustlm/tests/companion-composition-install.test.js",
+      "bytes": 24905,
+      "sha256": "de712487f22d2186815bb53446368329a6f197b23355d45c60417876fd1dd2cf"
+    },
+    {
+      "path": "tinyrustlm/tests/static-shell-parity.test.js",
+      "bytes": 5127,
+      "sha256": "c20d60933c2f75bc60a243b2603545c26823a4aafdef4304c87e8e2bc634c89d"
+    },
+    {
+      "path": "tinyrustlm/tests/web-deployment-manifest.test.js",
+      "bytes": 11975,
+      "sha256": "4c68f345ff731af733f6a157d2b2d2ecd0b39544a2549f67a58d97fc672467fd"
+    },
+    {
+      "path": "tinyrustlm/app/p2p-composition-install.js",
+      "bytes": 50486,
+      "sha256": "55a53359bb7af64062eb8b7505251af6eab487bc94a8105a92698830ea6ae8e4"
+    },
+    {
+      "path": "tinyrustlm/app/companion-composition-install.js",
+      "bytes": 34515,
+      "sha256": "7099cf16f30fe3fdcebb69bdc3ec8a88db24e5b83df105966b6e1c03c41cf948"
+    },
+    {
+      "path": "tinyrustlm/app/browser-model-admission.js",
+      "bytes": 14858,
+      "sha256": "87cdc059e71435f1572b3ad03fcce17701d5b73e83c3a6172e078a3349e5b683"
+    },
+    {
+      "path": "tinyrustlm/app/minimodel-catalog-v1.js",
+      "bytes": 74274,
+      "sha256": "4868dba65b57197b68de6f3e74987602b9728c5fa0cf28ca05ec2a3166c35333"
+    },
+    {
+      "path": "tinyrustlm/app/incremental-sha256.js",
+      "bytes": 9404,
+      "sha256": "e28faf3a02617d3d6747a0061f10f20b756500ae727f5c02e18da9912c767095"
+    },
+    {
+      "path": "tinyrustlm/e2e/owned-browser-profile.js",
+      "bytes": 2432,
+      "sha256": "35a330243dbbd3c076eab57a6174dcd1a892b33af4774a37ec15bff7e697c4ff"
+    },
+    {
+      "path": "tinyrustlm/tools/static-shell-parity.js",
+      "bytes": 5964,
+      "sha256": "100ae82d9151f592db9607a6803d316d45934b3f349b3533d9c6df9d1e28fdeb"
+    },
+    {
+      "path": "tinyrustlm/tools/web-release-browser-smoke.js",
+      "bytes": 44097,
+      "sha256": "871da8e65d1f0b7ae6935a0a80d77d8409249dc025afac228905d70f8acb605b"
+    },
+    {
+      "path": "tinyrustlm/deploy/web-deployment-manifest.v2.json",
+      "bytes": 4802,
+      "sha256": "3c97a713670f119a978a1aea1611169dfb7d9cf1974ad8ae7c4a201454a04df8"
+    }
+  ],
+  "finding": {
+    "path": "tinyrustlm/app/model-composition-store.js",
+    "before": "cleanupInternal recursively removed unknown staging and inactive installed entries. Recovery and failed-install cleanup also recursively removed directory contents without admitting a complete owned closure.",
+    "correction": "Canonical marker/pointer or hash-bound orphan manifest ownership plus bounded direct-file inventory. Candidate paths must be absent. Remove only admitted direct files, manifest last, then the empty directory nonrecursively. Preserve failed-candidate markers and invalid-active pointer authority until dependent content is gone.",
+    "commitOrdering": "Ownership checks precede authorizeCommit; no added I/O between successful commit authorization and active pointer replacement."
+  },
+  "bounds": {
+    "installedFiles": 10,
+    "installedChildScanSentinel": 11,
+    "installedParentScanSentinel": 130,
+    "unknownEntryPolicy": "Refuse with model-composition-store-cleanup-ownership and retain unexpected bytes. Unsafe/duplicate adapter names fail typed adapter/path admission.",
+    "cooperatingWriters": "Existing exclusive Web Lock remains mandatory; no isolation claim against arbitrary same-origin code."
+  },
+  "developmentResults": [
+    {
+      "stage": "initial-reproducer",
+      "sourceSha256": "2cf2db4a878e789e52c79114b15ba8130415046764445767f4701dbc00ea2c8c",
+      "tests": 58,
+      "passed": 44,
+      "failed": 14,
+      "failedLeafCases": 13,
+      "interpretation": "Eleven cleanup refusal cases, corrupt-active recovery and failed candidate cleanup reproduced unsafe behavior; parent aggregation adds one reported failure."
+    },
+    {
+      "stage": "initial-fix",
+      "tests": 58,
+      "passed": 58,
+      "failed": 0
+    },
+    {
+      "stage": "expanded-regressions",
+      "tests": 68,
+      "passed": 67,
+      "failed": 1,
+      "interpretation": "Existing immediate-commit test rejected ownership reads inserted after authorizeCommit. Moved reads before authorization; retained exact assertion."
+    },
+    {
+      "stage": "affected-before-final-simplification",
+      "tests": 142,
+      "passed": 142,
+      "failed": 0
+    },
+    {
+      "stage": "edge-before-final-simplification",
+      "tests": 3,
+      "passed": 3,
+      "failed": 0
+    },
+    {
+      "stage": "final-affected",
+      "tests": 143,
+      "passed": 143,
+      "failed": 0,
+      "skipped": 0,
+      "coverage": {
+        "instrumentation": "Node V8 coverage of store module in six affected test files; percentages are whole-module, not isolated changed-line metrics",
+        "linePercent": 87.96,
+        "branchPercent": 83.51,
+        "functionPercent": 90.54
+      }
+    },
+    {
+      "stage": "final-edge",
+      "tests": 3,
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0,
+      "retries": 0,
+      "browser": "Installed Microsoft Edge 153.0.4234.48 via Playwright 1.61.1 desktop project",
+      "observations": [
+        "Unexpected staging/orphan/nested active files preserved in actual OPFS.",
+        "Unsafe recovery preserves exact active pointer.",
+        "Admitted orphan cleanup, explicit corrupt-content removal, normal replacement and reopen succeed.",
+        "Existing cancellation and persistent-cache tests pass; no page errors and writer lock released."
+      ]
+    },
+    {
+      "stage": "direct-release-smoke",
+      "status": "pass",
+      "observationCount": 12,
+      "reportSha256": "3d77e71015847a9441c2be74bdfa0738d2be1be9c5ee142eaed5f22ba0857c4b",
+      "temporaryOutputCleanup": "verified",
+      "scope": "Direct zero-argument Node runner, not npm package preflight."
+    },
+    {
+      "stage": "memory-before-pointer-refresh",
+      "tests": 6,
+      "passed": 5,
+      "failed": 1,
+      "interpretation": "Documentation had changed before its pointer hashes were refreshed; checksum test correctly rejected stale guidance."
+    },
+    {
+      "stage": "memory-after-pointer-refresh",
+      "tests": 6,
+      "passed": 6,
+      "failed": 0
+    }
+  ],
+  "invariants": [
+    "No recursive deletion remains in store orchestration; adapter generic remove API is unchanged.",
+    "Unexpected files are retained, including a child injected just before final directory removal.",
+    "A canonical marker cannot authorize deleting a file that occupies the installed directory path.",
+    "Partial staging cleanup retains its marker and resumes after a storage failure.",
+    "Recovery retains corrupt pointer identity through failed content removal.",
+    "Unrelated worktree changes, historical failure records and current composition schemas are preserved."
+  ],
+  "sourceGate": {
+    "status": "source_authority_scan_incomplete",
+    "remaining": [
+      "artifacts/verification/qwen3-environment-install/tinyrustlm-operation-C3ZUt9/install-temp/TmP6xn2evdh-b",
+      "artifacts/verification/qwen3-environment-install/tinyrustlm-operation-C3ZUt9/install-temp/TmPeq63_hr7-b"
+    ],
+    "blockedDeletionsRetried": false
+  },
+  "cleanup": {
+    "runs": [
+      {
+        "run": "initial-reproducer",
+        "files": 2,
+        "logicalBytes": 508329
+      },
+      {
+        "run": "initial-fix",
+        "files": 2,
+        "logicalBytes": 455808
+      },
+      {
+        "run": "expanded-commit-order-failure",
+        "files": 2,
+        "logicalBytes": 464323
+      },
+      {
+        "run": "affected-before-final-simplification",
+        "files": 7,
+        "logicalBytes": 2266828
+      },
+      {
+        "run": "edge-before-final-simplification",
+        "files": 12,
+        "logicalBytes": 888164
+      },
+      {
+        "run": "final-affected",
+        "files": 7,
+        "logicalBytes": 2267455
+      },
+      {
+        "run": "final-edge",
+        "files": 12,
+        "logicalBytes": 888164
+      },
+      {
+        "run": "direct-release-smoke",
+        "files": 3,
+        "logicalBytes": 2681802
+      }
+    ],
+    "removedFiles": 47,
+    "logicalBytesRemoved": 10420873,
+    "physicalBytesRecovered": null,
+    "profileBytesRemovedBeforeHarnessCount": null,
+    "note": "Operation-owned scratch was removed with canonical ownership helpers. Per-test browser profiles were removed before harness counting, so their sizes are not included. No broad or previously blocked cleanup was attempted."
+  },
+  "remaining": [
+    "No qualified real default, numerical parity, useful real default browser inference, live initial seed or publication result.",
+    "Active reader lifetime across replacement remains under review.",
+    "No signal-free metadata/storage deadline is added.",
+    "Final orphan-directory deletion failure after manifest removal can leave an empty or unexpected entry requiring explicit review; complete crash-safety is not claimed.",
+    "Bounded ownership scans fail closed at the sentinel; unknown entries can block automatic acquisition pending review.",
+    "Ternary/Bonsai/Hadamard research remains explicitly deferred."
+  ]
+}

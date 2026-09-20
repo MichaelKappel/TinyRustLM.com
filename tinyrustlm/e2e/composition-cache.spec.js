@@ -364,6 +364,96 @@ test("late source cancellation releases the real OPFS writer lock and preserves 
   }
 });
 
+test("OPFS cleanup preserves unexpected files and refuses unsafe recovery", async ({}, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop", "The OPFS ownership contract runs in desktop Chromium");
+  const fixtures = { prior: createSyntheticFixture("ownership-prior", 127),
+    candidate: createSyntheticFixture("ownership-candidate", 149) };
+  const profileRoot = createOwnedBrowserProfile("cache-ownership");
+  let context = null;
+  try {
+    context = await launchProfile(profileRoot);
+    const page = await openRuntimePage(context, String(testInfo.project.use.baseURL));
+    const pageErrors = [];
+    page.on("pageerror", error => pageErrors.push(error.message));
+    const result = await page.evaluate(async ({ fixtures, rootName, lockName }) => {
+      const api = globalThis.TinyRustLMModelCompositionStore;
+      const adapter = api.createOpfsAdapter({ createSha256: globalThis.TinyRustLMIncrementalSha256.createSha256 });
+      const store = api.createModelCompositionStore({ adapter });
+      // These bytes exercise storage only; the fixtures are ineligible as live models.
+      const install = value => store.install({ manifest: value.manifest,
+        admissionAuthority: value.admissionAuthority, activate: async () => true,
+        authorizeCommit: async () => true,
+        sources: Object.fromEntries(api.memberNames.map(name => [name, {
+          async *[Symbol.asyncIterator]() {
+            yield Uint8Array.from(atob(value.members[name]), character => character.charCodeAt(0));
+          }
+        }])) });
+      // Fixture writes use explicit handles and are removed only by their known exact names.
+      const write = async (directory, name, value) => {
+        const writer = await (await directory.getFileHandle(name, { create: true })).createWritable();
+        await writer.write(value);
+        await writer.close();
+      };
+      const read = async (directory, name) => (await (await directory.getFileHandle(name)).getFile()).text();
+      const code = promise => promise.then(() => "unexpected-success", error => error.code);
+      const active = await install(fixtures.prior);
+      const root = await (await navigator.storage.getDirectory()).getDirectoryHandle(rootName);
+      const staging = await root.getDirectoryHandle("staging");
+      const installed = await root.getDirectoryHandle("installed");
+      const before = await read(root, "active.json");
+      await write(staging, "notes.txt", "preserve staging evidence");
+      const stagingCode = await code(store.cleanup());
+      const stagingText = await read(staging, "notes.txt");
+      await staging.removeEntry("notes.txt");
+
+      const orphan = await installed.getDirectoryHandle(fixtures.candidate.manifestSha256, { create: true });
+      await write(orphan, "manifest.json", `${JSON.stringify(fixtures.candidate.manifest)}\n`);
+      await write(orphan, "notes.txt", "preserve orphan evidence");
+      const orphanCode = await code(store.cleanup());
+      const orphanText = await read(orphan, "notes.txt");
+      await orphan.removeEntry("notes.txt");
+      const cleaned = await store.cleanup();
+
+      const current = await installed.getDirectoryHandle(active.manifestSha256);
+      const nested = await current.getDirectoryHandle("notes", { create: true });
+      await write(nested, "keep.txt", "preserve recovery evidence");
+      await write(current, "model.slm2", "corrupted test member");
+      const recoveryCode = await code(store.discardInvalidActive());
+      const recoveryText = await read(nested, "keep.txt");
+      const afterRefusal = await read(root, "active.json");
+      await nested.removeEntry("keep.txt");
+      await current.removeEntry("notes");
+      const discarded = await store.discardInvalidActive();
+      await install(fixtures.prior);
+      const replacement = await install(fixtures.candidate);
+      const names = [];
+      for await (const name of installed.keys()) names.push(name);
+      const held = (await navigator.locks.query()).held.filter(lock => lock.name === lockName);
+      return { stagingCode, stagingText, orphanCode, orphanText, cleaned,
+        recoveryCode, recoveryText, before, afterRefusal, discarded, names,
+        held: held.length, replacement: replacement.manifestSha256,
+        reopened: (await store.openActive()).manifestSha256 };
+    }, { fixtures, rootName: OPFS_ROOT_NAME, lockName: LOCK_NAME });
+    for (const code of [result.stagingCode, result.orphanCode, result.recoveryCode]) {
+      expect(code).toBe("model-composition-store-cleanup-ownership");
+    }
+    expect(result.stagingText).toBe("preserve staging evidence");
+    expect(result.orphanText).toBe("preserve orphan evidence");
+    expect(result.recoveryText).toBe("preserve recovery evidence");
+    expect(result.afterRefusal).toBe(result.before);
+    expect(result.cleaned.removedInstalled).toBe(1);
+    expect(result.discarded).toBe(true);
+    expect(result.names).toEqual([fixtures.candidate.manifestSha256]);
+    expect(result.replacement).toBe(fixtures.candidate.manifestSha256);
+    expect(result.reopened).toBe(result.replacement);
+    expect(result.held).toBe(0);
+    expect(pageErrors).toEqual([]);
+  } finally {
+    if (context !== null) await context.close();
+    removeOwnedBrowserProfile(profileRoot);
+  }
+});
+
 test("persistent OPFS cache keeps only the admitted six-member composition", async ({}, testInfo) => {
   test.skip(testInfo.project.name !== "desktop", "The persistent-cache contract runs in desktop Chromium");
   test.slow();

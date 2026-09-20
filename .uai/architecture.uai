@@ -1,5 +1,5 @@
 profile: tinyrustlm.architecture.current.v1
-updated_utc: 2026-09-20T00:16:44Z
+updated_utc: 2026-09-20T00:34:40Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
@@ -29,6 +29,7 @@ companion:
   route_choice: Restore a usable eligible cached model or automatically acquire a small qualified MiniModel composition. HF, local files, conversion and manual peer/IP controls belong in Advanced; never silently convert or use remote inference.
 
 browser:
+  - C47 uses canonical marker/pointer or hash-bound manifest ownership plus a bounded direct-file closure for cache retirement. Unknown files/directories are preserved; only recognized direct files and then the empty directory may be deleted. Web Locks coordinate cooperating writers, not arbitrary same-origin code. See composition-cleanup-ownership-review.json; reader lifetime and terminal crash recovery remain under review.
   - C46 keeps composition-source cancellation active during iterator cleanup, preserving the primary failure and prior installation; supplied signals remain required. Real Edge OPFS and Web Locks pass synthetic regression checks. See composition-cleanup-cancellation-review.json; this does not qualify a model or prove every cache lifecycle path.
   - Dedicated worker owns composition, tokenizer, KV cache, generation, and cancellation.
   - Typed messages bind composition, conversation, turn, generation, message, sequence, and bounded payload identities.
