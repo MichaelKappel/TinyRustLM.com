@@ -151,6 +151,8 @@ test("delivers success and terminal rejection in two deleted Chromium profiles",
       let context;
       try {
         context = await chromium.launchPersistentContext(ownedProfile.profilePath, {
+          // Share the client/loader gate's explicit installed-browser selection.
+          channel: process.env.TINYRUSTLM_PLAYWRIGHT_CHANNEL || undefined,
           headless: true,
           locale: "en-US",
           acceptDownloads: false,

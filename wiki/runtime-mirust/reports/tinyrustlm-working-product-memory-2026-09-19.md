@@ -16,6 +16,17 @@ Authority order is current owner instructions, inspected current contracts and b
 
 ## Current evidence and its limits
 
+**C64 runtime context:** generation now honors the admitted scalar KV ceiling
+before prefill. Exact-full prompts terminate without sampling; the last admitted
+token remains in the answer with `ContextLimit`. All 76 affected Rust checks and
+Clippy pass. The updated local WASM reproduces in two fresh offline builds; 73
+affected Node checks, two additional Edge worker/client scenarios and 38 related
+contract checks pass across the recorded invocations. Environment setup failures
+and the verified retirement of an accidentally installed toolchain are retained
+in `runtime-context-limit-review.json`. No real-composition chat, numerical/quality
+qualification, NuGet publication or deployment is established. Blocked cleanup
+and broader product gates remain open; Rust coverage tooling was unavailable.
+
 **C63 current visual capture:** the sole owner now uses Playwright, owned profiles,
 current startup and explicit six-member admission for active modes. Twenty focused
 checks (including actual desktop/mobile Edge capture) and 42 affected checks pass;

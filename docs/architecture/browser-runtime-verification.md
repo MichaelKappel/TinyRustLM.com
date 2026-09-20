@@ -1,6 +1,6 @@
 # Browser Runtime Verification
 
-Reviewed: 2026-08-28
+Reviewed: 2026-09-20
 
 ## Purpose
 
@@ -24,6 +24,18 @@ manifest. Worker tests prove the exact UI/worker protocol, bounded transfers,
 sequence ownership, activation, generation, cancellation, terminal faults,
 and release.
 
+Generation uses the admitted session's context ceiling, which may be smaller
+than the model's advertised context. The controller must stop normally at that
+ceiling and retain generated output, rather than attempting another scalar
+forward and aborting the turn. The scalar/controller regression covers this
+boundary. Exact-full prompts terminate without sampling. Actual qualified
+six-member conversation and real-model browser evidence remain separate gates.
+
+The September 20 local artifact refresh is reproducible from the corrected
+source in two fresh offline builds. Its manifest and checked identity change
+together. This is a development artifact change, not public deployment or
+material model qualification; historical execution records remain unchanged.
+
 ## Real Chromium Contract
 
 `model-runtime-worker-browser.test.js` executes the actual worker and WASM in
@@ -32,6 +44,11 @@ committed site at desktop, narrow-desktop, and mobile viewports. Profile roots
 are uniquely marked, browser processes are closed, and deletion is verified.
 
 Node execution or a page reload is not browser-profile evidence.
+
+Set `TINYRUSTLM_PLAYWRIGHT_CHANNEL=msedge` to run the loader, worker and client
+browser gates with installed Edge. If unset, Playwright uses its bundled
+Chromium. Record which browser actually ran; a missing executable is an
+environment failure, not runtime disagreement.
 
 ## Release Contract
 
@@ -44,11 +61,12 @@ The sole campaign runner is documented in `vnext-campaign-runner.md`.
 
 ## Privacy Boundary
 
-Project origins may serve app code, WASM, schemas, metadata, and public-safe
-release records. They may not receive prompts, responses, model members,
-composition bytes, MemoryEndpoints credentials, or implicit telemetry. Direct
-P2P, loopback companion, and opt-in hosted-memory traffic require separate
-allowlisted operations and evidence.
+TinyRustLM.com serves app code, WASM, schemas, metadata and public-safe release
+records. MiniModel.org is authorized to serve the initial verified model seeds.
+These public download origins may not receive user prompts, responses, uploaded
+compositions, MemoryEndpoints credentials or implicit telemetry. Direct P2P,
+loopback companion and opt-in hosted-memory traffic require separate allowlisted
+operations and evidence. Serving model bytes does not authorize remote inference.
 
 ## Commands
 

@@ -11,6 +11,47 @@ Keep useful findings and compact evidence identities in the owning canonical
 repository. Keep source history in Git and current model payloads only in
 `D:\LLMs\TinyRustLM`.
 
+## C64: generation must use the same context budget as its KV cache
+
+- Question: does a smaller admitted runtime context end generation normally?
+- Exact inputs: parent `b5aba376c3083726ae50c2aa8dd89a90d91ff643`, the canonical
+  8,704-byte synthetic scalar model, prompt IDs `[1,2]`, context four, fixed
+  finite logits selecting token one, output ceiling eight and seed 42. The
+  source and evidence hashes are in `runtime-context-limit-review.json`.
+- Method: execute actual scalar forwards alongside Sampling2, then test exact
+  full contexts, last-token retention, simultaneous limits, invalid/expanding
+  restrictions and unchanged generated/terminal state. Build the corrected WASM
+  twice and exercise its ABI and real Edge worker/client boundaries.
+- Result: baseline controller remained `Active` at cache position four. The
+  corrected controller reports `ContextLimit` and retains `[1,1]`. All 76 Rust
+  checks and Clippy pass; the local WASM reproduces exactly. The 73 affected Node
+  checks pass across initial and corrected browser invocations; two additional
+  Edge scenarios and 38 related contract checks pass. No Rust coverage tooling
+  was available, so the parameter-sensitive tests are the closest evidence.
+- Uncertainty: scalar/controller integration is synthetic and does not execute
+  a complete admitted composition through chat. Browser checks cover real WASM
+  initialization, integrity rejection, transfer bounds and release, not useful
+  model answers. No public or material qualification gate follows.
+- Decision: restrict the live controller before activation rather than modifying
+  the model-wide Prompt2 wire or allowing scalar failure to erase output.
+- Reusable lesson: resource admission and termination must share one effective
+  limit. An implementation can be correct under the model maximum and still
+  fail under a smaller host allocation.
+- Environment lesson: bind `RUSTUP_HOME`, `CARGO_HOME`, compiler paths and virtual
+  home before inspection/build. An unbound rustup query installed a new stable
+  toolchain under Michael's profile; exact inspected uninstall and absence were
+  verified without changing the canonical compiler. The separately installed
+  numeric toolchain lacked WASM/Clippy components despite matching version text.
+  Use executable identity and installed components, not a version name alone.
+- Cleanup lesson: terminal `dotnet test` does not imply its shared compiler has
+  exited. Two xUnit analyzer DLLs remained mapped by the compiler server and
+  caused `EPERM`. Observed module paths, graceful compiler shutdown and verified
+  PID absence resolved the lock; a new complete remaining-tree review preceded
+  removal of the unchanged owned directory. The recursive scratch helper erased
+  its marker too early. Preserve ownership until contents are gone, and disable
+  shared compilation for future operation-bound checks. This helper correction
+  remains open; the C64 output itself is verified absent.
+
 ## C63: a visual check must finish current work and preserve a failed comparison
 
 - Question: can the existing visual tool inspect the current application without

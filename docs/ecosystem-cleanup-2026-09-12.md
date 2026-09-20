@@ -5,6 +5,56 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C64: honor the admitted runtime context, September 20
+
+The generation controller used the model-wide 40,960-token ceiling even when
+the scalar session reserved a smaller KV cache. A four-token scalar regression
+reproduced the mismatch: two prompt tokens and two generated tokens filled the
+cache while the controller still reported `Active`. Another forward would reject
+and abort the turn, discarding its visible output.
+
+`ConversationRuntime::begin_request` now narrows the controller to the admitted
+session ceiling before activation/prefill mutation. Oversized prompts keep their
+existing rejection. Exact-full prompts are terminal without sampling; the last
+admitted generated token is retained with `ContextLimit`. Invalid, expanding or
+post-generation restrictions leave state unchanged. The six-member formats,
+Prompt2 wire, sampling arithmetic, stop behavior and frozen vectors stay unchanged.
+
+All 76 affected Rust tests and denied-warning Clippy pass. Four new Sampling2
+tests exercise boundary and mutation rejection, and the scalar/controller
+regression passes with the fix. Two fresh offline builds reproduce the updated
+576,621-byte local WASM and manifest exactly; the checked artifact identity is
+updated with them. The 73 affected Node checks pass across the original run and
+the corrected browser invocation. Two additional Edge worker/client scenarios
+pass with owned profile cleanup, as do 38 related format, prompt, shell and
+deployment-contract checks. Rust coverage tools are unavailable; no percentage
+is claimed. Actual six-member conversation at the smaller limit remains untested.
+
+Environment failures are retained in the receipt. The first browser invocation
+lacked bundled Chromium; explicit installed Edge completed it. Child Git needed
+an exact canonical safe-directory binding. A named Rust toolchain lacked WASM
+and Clippy components; the existing pinned stable installation has both. An
+earlier unbound rustup inspection unexpectedly installed stable under Michael's
+profile. Its newly created exact toolchain was inspected, uninstalled and verified
+absent; pre-existing settings and the canonical AI compiler were preserved.
+Future inspection must bind Rust custody before invoking rustup.
+
+`artifacts/ecosystem-cleanup-20260912/runtime-context-limit-review.json` retains
+inputs, source/artifact/log identities, failures and cleanup results. The local
+runtime artifact changes; no site, package or model is published. The credential
+file remains path-only memory. Blocked removals, source-authority completion,
+qualified model, real parity/browser conversation, live seed, ARM64 package
+execution and release gates remain open. Unrelated work stays uncommitted.
+
+Owned output is now absent: the reviewed tree contained 856,353,229 logical bytes
+before retirement (physical recovery unmeasured). The first removal hit two
+xUnit analyzer DLLs held by this operation's compiler server. Its exact loaded
+paths were observed; graceful compiler shutdown and PID absence were verified.
+The same directory was then fully reinspected and removed. This was an OS lock,
+not a policy-review rejection. The helper had removed its ownership marker before
+the failure; retaining that marker until content removal completes is the next
+cleanup defect to fix. No marker was fabricated and no blocked cohort was retried.
+
 ## C63: replace obsolete visual-capture execution, September 20
 
 The visual-lock owner still selected a retired single `.slm` fixture, waited for

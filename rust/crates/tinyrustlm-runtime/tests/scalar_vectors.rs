@@ -10,6 +10,51 @@ const Q8_WEIGHT_VECTORS: &str =
 const RUNTIME_VECTORS: &str =
     include_str!("../../../../contracts/vnext/slm2-runtime-q8-vectors.v1.json");
 
+/// A lower admitted KV budget must terminate sampling before scalar execution rejects a token.
+#[test]
+fn generation_stops_at_the_admitted_scalar_context_limit() {
+    use tinyrustlm_sampling2::{
+        write_sampling2, GenerationController, GenerationStatus, Sampling2, Sampling2Config,
+        Sampling2Policy, Sampling2State,
+    };
+
+    let scalar_policy = policy(4);
+    let mut session = ScalarSession::from_bytes(canonical_model(), scalar_policy).unwrap();
+    for token in [1, 2] {
+        session.forward_token(token).unwrap();
+    }
+    let mut bytes = Vec::new();
+    write_sampling2(&mut bytes).unwrap();
+    let sampling = Sampling2::from_bytes(bytes, Sampling2Policy::exact_profile_limits()).unwrap();
+    let mut controller = GenerationController::new(
+        &sampling,
+        Sampling2Config::new(0, 1, 1_000_000, 1_000_000, 0, 8).unwrap(),
+        session.position().unwrap(),
+        session.spec().vocabulary_size,
+        &[31],
+        Sampling2State::from_seed(42),
+    )
+    .unwrap();
+    controller
+        .restrict_context(scalar_policy.maximum_sequence_tokens())
+        .unwrap();
+    // The known finite distribution selects one visible token; this checks lifecycle, not quality.
+    let mut logits = vec![0_f32.to_bits(); session.spec().vocabulary_size as usize];
+    logits[1] = 1_f32.to_bits();
+    for _ in 0..2 {
+        let step = controller.step_bits(&sampling, &logits, false).unwrap();
+        session
+            .forward_token(step.selected_token_id.unwrap())
+            .unwrap();
+    }
+    assert_eq!(
+        session.position().unwrap(),
+        scalar_policy.maximum_sequence_tokens()
+    );
+    assert_eq!(controller.generated_token_ids(), [1, 1]);
+    assert_eq!(controller.status(), GenerationStatus::ContextLimit);
+}
+
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 struct RuntimeVectors {

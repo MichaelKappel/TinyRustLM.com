@@ -1,0 +1,374 @@
+{
+  "schema": "tinyrustlm.ecosystem-cleanup.runtime-context-limit-review.v1",
+  "checkpoint": "C64",
+  "reviewedUtc": "2026-09-20T14:45:29.512Z",
+  "parent": "b5aba376c3083726ae50c2aa8dd89a90d91ff643",
+  "status": "implemented-and-affected-checks-passed; development-artifact-only",
+  "previousGoalCheckpoint": "C63 made implementation and verification progress; C64 continued the reproducible runtime defect. The intervening credential-location check did not advance release gates.",
+  "defect": {
+    "modelContext": 40960,
+    "scalarContext": 4,
+    "promptTokenIds": [
+      1,
+      2
+    ],
+    "fixedSelectedTokenId": 1,
+    "generatedTokenIds": [
+      1,
+      1
+    ],
+    "syntheticModelBytes": 8704,
+    "maximumNewTokens": 8,
+    "seed": 42,
+    "baseline": {
+      "pass": 0,
+      "fail": 1,
+      "observed": "Active",
+      "expected": "ContextLimit",
+      "cachePosition": 4
+    },
+    "consequence": "Another scalar forward would reject; ConversationRuntime abort clears visible tokens."
+  },
+  "implementation": [
+    "Narrow the controller to the admitted scalar ceiling before activation/prefill mutation.",
+    "Reject zero, expansion, below-prompt and post-generation changes without state mutation.",
+    "Exact-full prompts terminate without sampling; last admitted token is retained with ContextLimit.",
+    "Keep binary formats, Prompt2 wire, sampling arithmetic, stop semantics, ABI, profile/version and frozen vectors unchanged.",
+    "Refresh the local tracked WASM and manifest from corrected canonical source; no deployment or model-qualification promotion.",
+    "Allow explicit installed-browser channel in the worker test, matching existing loader/client gates."
+  ],
+  "sources": [
+    {
+      "path": "rust/crates/tinyrustlm-runtime/src/conversation.rs",
+      "bytes": 27830,
+      "sha256": "3a8d8cfccd656ddb31d4b8cbb1ac3799450347d1c10e8f91525acfc8e1826d5b"
+    },
+    {
+      "path": "rust/crates/tinyrustlm-runtime/tests/scalar_vectors.rs",
+      "bytes": 14251,
+      "sha256": "3529ea287d62b7ede51f4ed43f67c1edbf579f730b66d595e02a306e3ffefbf2"
+    },
+    {
+      "path": "rust/crates/tinyrustlm-sampling2/src/runtime.rs",
+      "bytes": 31906,
+      "sha256": "1143419f0bd07c80b1e002f9f2145ab2654a65ffab4dd082c42d67ad6816835e"
+    },
+    {
+      "path": "rust/crates/tinyrustlm-sampling2/tests/sampling2_contract.rs",
+      "bytes": 10444,
+      "sha256": "c5bd34be1f08004f69b4b3219eb154dceada0dc90a3c708463de553a8716a015"
+    },
+    {
+      "path": "tinyrustlm/tests/browser-runtime-web-artifact.test.js",
+      "bytes": 19606,
+      "sha256": "cf77cc0a06047b2c7d7d7812fba265bd98a907eb052c469ae0841866cd0a5a11"
+    },
+    {
+      "path": "tinyrustlm/tests/model-runtime-worker-browser.test.js",
+      "bytes": 15793,
+      "sha256": "16b66b602be2e88fb5e6ba1594625b227018d9ab7f263921af67983c21e6d9fa"
+    },
+    {
+      "path": "tinyrustlm/browser-runtime/tinyrustlm-browser-runtime.wasm",
+      "bytes": 576621,
+      "sha256": "80cc1e2ce69c19485ae52965dd93051cb007253168a98e9e38871ab34a7c78ac"
+    },
+    {
+      "path": "tinyrustlm/browser-runtime/tinyrustlm-browser-runtime.wasm.manifest.json",
+      "bytes": 1209,
+      "sha256": "80eaffc3eb5a77a416eb5a2c34910793e89c9c1a6077a779e095d1bcdd67ace6"
+    }
+  ],
+  "validation": {
+    "rust": {
+      "pass": 76,
+      "fail": 0,
+      "ignored": 0,
+      "packages": [
+        "tinyrustlm-sampling2",
+        "tinyrustlm-prompt2",
+        "tinyrustlm-composition2",
+        "tinyrustlm-runtime",
+        "tinyrustlm-browser-runtime-wasm",
+        "tinyrustlm-native"
+      ],
+      "command": "cargo test --locked --offline -p <each package>",
+      "newSamplingTests": 4,
+      "newScalarControllerRegression": 1
+    },
+    "clippy": {
+      "exit": 0,
+      "allTargets": true,
+      "deniedWarnings": true,
+      "samePackages": true
+    },
+    "nodeRuntimeInitial": {
+      "tests": 73,
+      "pass": 72,
+      "fail": 1,
+      "skipped": 0,
+      "files": [
+        "browser-runtime-web-artifact.test.js",
+        "browser-runtime-wasm-raw-abi.test.js",
+        "model-runtime-worker.test.js",
+        "model-runtime-client.test.js",
+        "browser-runtime-loader_test.js"
+      ],
+      "failure": "Only installed-browser loader case: missing bundled Chromium executable."
+    },
+    "correctedEdge": {
+      "pass": 3,
+      "fail": 0,
+      "skipped": 0,
+      "overlapWithInitialSuite": 1,
+      "additionalScenarios": 2,
+      "channel": "msedge",
+      "cases": [
+        "installed browser enforces streamed runtime byte bounds",
+        "browser client initializes and releases through the real worker in two deleted Chromium profiles",
+        "delivers success and terminal rejection in two deleted Chromium profiles"
+      ],
+      "realModel": false,
+      "consoleAndPageErrors": 0,
+      "clientAndWorkerProfilesRemoved": 4
+    },
+    "relatedInitial": {
+      "pass": 37,
+      "fail": 1,
+      "reason": "Child Git lacked an exact safe.directory binding under the invoking account."
+    },
+    "relatedBoundGit": {
+      "pass": 38,
+      "fail": 0,
+      "files": [
+        "sampling2-format-vectors.test.js",
+        "prompt2-format-vectors.test.js",
+        "prompt2-request-browser-writer.test.js",
+        "web-deployment-manifest.test.js",
+        "static-shell-parity.test.js"
+      ]
+    },
+    "memoryInitial": {
+      "pass": 5,
+      "fail": 1,
+      "reason": "Check ran before current pointer checksums were refreshed."
+    },
+    "memoryCurrentPointers": {
+      "pass": 6,
+      "fail": 0,
+      "skipped": 0
+    },
+    "reproducibleWasm": {
+      "freshOfflineBuilds": 2,
+      "exactEquality": true,
+      "trackedEquality": true,
+      "manifestEquality": true,
+      "privateBuildPaths": false,
+      "priorBytes": 576379,
+      "priorSha256": "05e9a497f4aab23a1bc0bc4aed3027a2e4914f5aa70c0e79ecbeb50b5fbe8467",
+      "currentBytes": 576621,
+      "currentSha256": "80cc1e2ce69c19485ae52965dd93051cb007253168a98e9e38871ab34a7c78ac"
+    },
+    "formatAndDiff": {
+      "rustfmt": true,
+      "nodeSyntax": true,
+      "gitDiffCheck": true
+    },
+    "coverage": {
+      "measuredPercent": null,
+      "toolGap": "No cargo-llvm-cov executable or pinned-toolchain LLVM coverage tools installed.",
+      "closestEvidence": "Four parameter-sensitive Sampling2 tests plus actual scalar/controller context-bound integration and existing affected suites."
+    },
+    "sourceSecretScan": {
+      "status": "pass",
+      "findings": 0,
+      "files": 17,
+      "scopeManifestSha256": "72dcf589615be49ec7ae1216d337868beeb1bf6ba8288be958d39804fe106715",
+      "entireRelease": false
+    },
+    "finalSourceSecretScan": {
+      "status": "pass",
+      "findings": 0,
+      "files": 17,
+      "scopeManifestSha256": "461b038e3d352604041435e8bb136b666b0f79a92fa51b6ed84d3db809a3dbc7",
+      "entireRelease": false
+    },
+    "finalMemoryPointers": {
+      "count": 17,
+      "exactHashes": true
+    }
+  },
+  "environment": {
+    "rustc": "1.96.0 ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96",
+    "cargo": "1.96.0 30a34c6821b57de0aaec83a901aca39f88f6778c",
+    "llvm": "22.1.2",
+    "toolchainRoot": "C:\\Users\\AI\\.rustup\\toolchains\\stable-x86_64-pc-windows-msvc",
+    "failedNamedToolchain": "Installed 1.96.0 directory lacked WASM target and Clippy. No component install was attempted for it.",
+    "boundChildVariables": [
+      "CARGO_HOME",
+      "RUSTUP_HOME",
+      "RUSTUP_TOOLCHAIN",
+      "RUSTC",
+      "CARGO",
+      "USERPROFILE",
+      "CARGO_TARGET_DIR",
+      "TEMP",
+      "TMP",
+      "TMPDIR",
+      "NODE_V8_COVERAGE",
+      "TINYRUSTLM_PLAYWRIGHT_CHANNEL",
+      "GIT_CONFIG_* (one canonical safe.directory)"
+    ],
+    "accidentalInstallation": {
+      "cause": "Unbound rustup component inspection selected Michael profile and installed stable 1.98.1.",
+      "path": "C:\\Users\\Michael\\.rustup\\toolchains\\stable-x86_64-pc-windows-msvc",
+      "createdUtc": "2026-09-20T14:26:30Z",
+      "inspectedDescendantEntries": 67399,
+      "logicalBytes": 1370670058,
+      "status": "Exact newly created toolchain uninstalled; absence verified. Pre-existing settings hash unchanged; canonical AI compiler unchanged.",
+      "remainingNewDownloadsOrTmpEntries": false,
+      "physicalBytesRecovered": null
+    }
+  },
+  "logs": [
+    {
+      "path": "Microsoft.NET.Workload_31676_20260920_074600_268.log",
+      "bytes": 1359,
+      "sha256": "c7d343b8dff48130e161b9b808f3963ea0ffb4b1d166ea5ca50e3c9e354aedc6"
+    },
+    {
+      "path": "Microsoft.NET.Workload_38932_20260920_074250_099.log",
+      "bytes": 1336,
+      "sha256": "d14010af4b23620829f0b0578fdc163a2e135e3287dd18508ac9da9b8b15dd93"
+    },
+    {
+      "path": "Microsoft.NET.Workload_38932_20260920_074251_425.log",
+      "bytes": 2430,
+      "sha256": "ede177aa9d5e081316602569830a407498d887dfd7b981fe1e57204ddcd1988a"
+    },
+    {
+      "path": "Microsoft.NET.Workload_38932_20260920_074251_425_4654124f06a3b97be3fb6c48229426a8-x64_AdminInstall.log",
+      "bytes": 86300,
+      "sha256": "5a8bcf7851bd3f55e2bc512068f03d9d98d749dc3db3359f815a007707a63343"
+    },
+    {
+      "path": "Microsoft.NET.Workload_55884_20260920_074407_308.log",
+      "bytes": 1347,
+      "sha256": "f6330b5184329912d399eb1a26c3504cb64b49c91053e14c36cda33b8de7fcfe"
+    },
+    {
+      "path": "accidental-toolchain-retirement.log",
+      "bytes": 926,
+      "sha256": "f153fa9711930fdfcd0512cb669e50084baba7df26573aff8c6145be2ce7e372"
+    },
+    {
+      "path": "clippy-pinned.log",
+      "bytes": 6734,
+      "sha256": "bb106fbeb6194c6de60ad0a0a7637fbb0272fbe316d3576b98cac1b3e78c1e5c"
+    },
+    {
+      "path": "clippy.log",
+      "bytes": 1070,
+      "sha256": "89961170d9ff3f901b17b01951ae9bd75f2cade79f9cff5004f7a7bb68816f0d"
+    },
+    {
+      "path": "context-baseline.log",
+      "bytes": 5588,
+      "sha256": "036379fbb8ee0cbbcabc57a9be65a8671ac033270ed78a858de54706df5292b5"
+    },
+    {
+      "path": "memory-tests-current-pointers.log",
+      "bytes": 782,
+      "sha256": "5c81887ba4c8dcfef52a7f8e468bee0f399b6798ea74d50d092379a6b9c02045"
+    },
+    {
+      "path": "memory-tests-final.log",
+      "bytes": 782,
+      "sha256": "5c81887ba4c8dcfef52a7f8e468bee0f399b6798ea74d50d092379a6b9c02045"
+    },
+    {
+      "path": "memory-tests.log",
+      "bytes": 6146,
+      "sha256": "6a52ce167d1d114db1e6cd07276694e1daeb323aaf5f73930d30d9c69295768f"
+    },
+    {
+      "path": "node-runtime.log",
+      "bytes": 13090,
+      "sha256": "bd8c29e1aba479dbd5bf7dde67844ff7664d18af1cf45cbe893141e7767ea13d"
+    },
+    {
+      "path": "related-contracts-bound-git.log",
+      "bytes": 6726,
+      "sha256": "5b7ddd68703a8670e8caa0a3a169b9d42a1affc3e22da906fbb3eb0bc0adb16a"
+    },
+    {
+      "path": "related-contracts.log",
+      "bytes": 12110,
+      "sha256": "91c866c31e986e6f0eee73bc90a4df9ff3e00c4069f9facba39de481962552a5"
+    },
+    {
+      "path": "runtime-edge.log",
+      "bytes": 770,
+      "sha256": "89e1ebc41f0d593084fef83734f7ef17a93ec7924d0c44e791eef9ca95df19b2"
+    },
+    {
+      "path": "rust-tests.log",
+      "bytes": 27158,
+      "sha256": "249cdcc6033242090630fa4b42d5999cd3380cfd2315fa9751a80d1627bbc7c6"
+    },
+    {
+      "path": "wasm-build.log",
+      "bytes": 1214,
+      "sha256": "56585e9d9cdeaddb149cfee66e8433137177635d9aa71af62d2f1ebefc156fb3"
+    },
+    {
+      "path": "wasm-pinned-build.log",
+      "bytes": 1784,
+      "sha256": "a664bf1824d6249a9b1c03dccf8dbce90574f249634ad18c23011eaa4322f26e"
+    }
+  ],
+  "retirement": {
+    "ownedRoot": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\runtime-context\\tinyrustlm-operation-txMLjm",
+    "files": 3457,
+    "directoriesIncludingRoot": 840,
+    "logicalBytes": 856353229,
+    "physicalBytesRecovered": null,
+    "status": "removed-and-absence-verified",
+    "firstAttempt": {
+      "error": "EPERM",
+      "kind": "Windows file lock, not an automatic policy-review rejection",
+      "remainingFiles": 476,
+      "remainingDirectoriesIncludingRoot": 188,
+      "remainingLogicalBytes": 120499703,
+      "remainingInventorySha256": "8004ae8219afaef2451107abeb36d9e510f47cb8078b28048a13e0ff8bea0c77",
+      "cause": "VBCSCompiler PID 31824 retained the two operation-owned xUnit analyzer DLLs; module paths independently observed.",
+      "correction": "dotnet build-server shutdown --vbcscompiler returned success; PID absence verified.",
+      "ownership": "The recursive helper removed its marker before hitting locked DLLs. Fresh full remaining-tree review binds the unchanged original root dev/ino, ordinary ancestry, direct allowlist and closed contained hard links. No marker was recreated.",
+      "shutdownOutput": "One fresh first-use/SDK workload log and empty NuGet/temp directories were separately inspected; initial allowlist refused them before mutation.",
+      "followup": "Improve scratch cleanup to retain ownership markers until contents are removed; broader cleanup remains incomplete."
+    },
+    "completedUtc": "2026-09-20T14:51:11.622Z",
+    "browserBuildAndLoaderParentsEmpty": true
+  },
+  "limitations": [
+    "No full admitted six-member conversation at the reduced context was executed.",
+    "Synthetic scalar inference and real WASM browser boundaries do not establish model quality or numerical agreement.",
+    "No qualified default, live seed, NuGet package or website publication. Credential contents were not read.",
+    "Existing policy-blocked removals and source-authority gate remain; no deletion retry.",
+    "No Rust coverage percentage or physical recovered-storage measurement.",
+    "Unrelated work preserved; ecosystem goal remains active."
+  ],
+  "secretScanEvidence": {
+    "path": "source-secret-scan.json",
+    "bytes": 8463,
+    "sha256": "69d2de9f8eefc9aa809dd85b4e96f0b44763b8240b7c512e8c6bea9e7b47ee55"
+  },
+  "finalSecretScanEvidence": {
+    "bytes": 8469,
+    "sha256": "1a570d8d76ccdd863b597a88e9c4491d685197d75470fc3e8aaacfd0c701b1ad"
+  },
+  "finalReviewScratch": {
+    "root": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\runtime-context\\tinyrustlm-operation-a1UvzH",
+    "status": "removed-and-absence-verified"
+  }
+}

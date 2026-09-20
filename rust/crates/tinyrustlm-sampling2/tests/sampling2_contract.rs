@@ -207,6 +207,120 @@ fn all_zero_serialized_state_is_rejected() {
     );
 }
 
+/// Build a controller with a model-wide ceiling and a small explicit prompt for host-budget tests.
+fn context_controller(
+    prompt_tokens: u32,
+    maximum_new_tokens: u32,
+) -> (Sampling2, GenerationController) {
+    let sampling = sampling();
+    let controller = GenerationController::new(
+        &sampling,
+        greedy(maximum_new_tokens),
+        prompt_tokens,
+        3,
+        &[2],
+        Sampling2State::from_seed(42),
+    )
+    .unwrap();
+    (sampling, controller)
+}
+
+/// A filled runtime context terminates without looking at logits or consuming random state.
+#[test]
+fn exact_runtime_context_is_terminal_before_sampling() {
+    for limit in [1, 4, 4096, 40_960] {
+        let (_, mut controller) = context_controller(limit, 8);
+        let before = controller.sampling_state();
+        controller.restrict_context(limit).unwrap();
+        assert_eq!(controller.status(), GenerationStatus::ContextLimit);
+        assert_eq!(controller.sampling_state(), before);
+        assert!(controller.generated_token_ids().is_empty());
+    }
+}
+
+/// Reduced contexts preserve visible tokens and take precedence over the simultaneous output limit.
+#[test]
+fn reduced_runtime_context_stops_after_the_last_admitted_token() {
+    for output_limit in [2, 8] {
+        let (sampling, mut controller) = context_controller(2, output_limit);
+        controller.restrict_context(4).unwrap();
+        let logits = [0_f32.to_bits(), 1_f32.to_bits(), (-1_f32).to_bits()];
+        assert_eq!(
+            controller
+                .step_bits(&sampling, &logits, false)
+                .unwrap()
+                .status,
+            GenerationStatus::Active
+        );
+        assert_eq!(
+            controller
+                .step_bits(&sampling, &logits, false)
+                .unwrap()
+                .status,
+            GenerationStatus::ContextLimit
+        );
+        assert_eq!(controller.generated_token_ids(), [1, 1]);
+        let state = controller.sampling_state();
+        assert_eq!(
+            controller
+                .step_bits(&sampling, &[], true)
+                .unwrap_err()
+                .code(),
+            "sampling2-generation-terminal"
+        );
+        assert_eq!(controller.sampling_state(), state);
+    }
+}
+
+/// Invalid or expanding limits never alter the previously accepted context.
+#[test]
+fn context_restriction_rejects_invalid_limits_without_mutation() {
+    let (sampling, mut controller) = context_controller(2, 8);
+    controller.restrict_context(4).unwrap();
+    for invalid in [0, 1, 5, 40_961, u32::MAX] {
+        let before = controller.sampling_state();
+        assert_eq!(
+            controller.restrict_context(invalid).unwrap_err().code(),
+            "sampling2-config"
+        );
+        assert_eq!(controller.status(), GenerationStatus::Active);
+        assert_eq!(controller.sampling_state(), before);
+        assert!(controller.generated_token_ids().is_empty());
+    }
+    controller.restrict_context(3).unwrap();
+    controller.restrict_context(3).unwrap();
+    assert_eq!(
+        controller
+            .step_bits(&sampling, &[0, 1_f32.to_bits(), 0], false)
+            .unwrap()
+            .status,
+        GenerationStatus::ContextLimit
+    );
+}
+
+/// Hosts cannot change the budget after generation, cancellation, or a stop-token transition.
+#[test]
+fn context_restriction_preserves_generated_and_terminal_state() {
+    for (cancelled, stop) in [(false, false), (true, false), (false, true)] {
+        let (sampling, mut controller) = context_controller(2, 8);
+        let logits = if stop {
+            [0, 0, 1_f32.to_bits()]
+        } else {
+            [0, 1_f32.to_bits(), 0]
+        };
+        let step = controller.step_bits(&sampling, &logits, cancelled).unwrap();
+        let before = controller.sampling_state();
+        let tokens = controller.generated_token_ids().to_vec();
+        assert_eq!(
+            controller.restrict_context(4).unwrap_err().code(),
+            "sampling2-generation-terminal"
+        );
+        assert_eq!(controller.status(), step.status);
+        assert_eq!(controller.sampling_state(), before);
+        assert_eq!(controller.generated_token_ids(), tokens);
+    }
+}
+
 fn hex_lower(bytes: &[u8]) -> String {
     const HEX: &[u8; 16] = b"0123456789abcdef";
     let mut output = String::with_capacity(bytes.len() * 2);

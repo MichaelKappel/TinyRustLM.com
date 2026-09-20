@@ -376,19 +376,21 @@ impl ConversationRuntime {
         if request_bytes.len() > self.policy.maximum_request_bytes {
             return Err(RuntimeError::new("runtime-request-limit"));
         }
-        let plan = self
+        let mut plan = self
             .activation
             .active()
             .ok_or_else(|| RuntimeError::new("runtime-composition-required"))?
             .prompt()
             .compile_request_bytes(request_bytes, self.policy.maximum_request_bytes)?;
-        let prompt_tokens = plan.result().token_ids();
-        if prompt_tokens.is_empty()
-            || prompt_tokens.len() > checked_usize(self.policy.scalar.maximum_sequence_tokens())?
+        let maximum_tokens = checked_usize(self.policy.scalar.maximum_sequence_tokens())?;
+        if plan.result().token_ids().is_empty() || plan.result().token_ids().len() > maximum_tokens
         {
             return Err(RuntimeError::new("runtime-sequence-limit"));
         }
-        let maximum_tokens = checked_usize(self.policy.scalar.maximum_sequence_tokens())?;
+        // Prompt2 describes the model-wide limit; generation must also fit this session's KV budget.
+        plan.controller_mut()
+            .restrict_context(self.policy.scalar.maximum_sequence_tokens())?;
+        let prompt_tokens = plan.result().token_ids();
         if self.visible_tokens.capacity() < maximum_tokens {
             self.visible_tokens
                 .try_reserve_exact(maximum_tokens - self.visible_tokens.capacity())

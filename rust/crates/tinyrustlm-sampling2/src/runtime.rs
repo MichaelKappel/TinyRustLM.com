@@ -626,6 +626,35 @@ impl GenerationController {
         self.status
     }
 
+    /// Narrows the context ceiling before the first generated token.
+    ///
+    /// Hosts may reserve less KV than the artifact's maximum context. A prompt
+    /// exactly at this ceiling is terminal without a draw. Invalid, expanding,
+    /// or post-generation changes leave the controller unchanged.
+    pub fn restrict_context(&mut self, maximum_context_tokens: u32) -> Result<(), Sampling2Error> {
+        if !self.generated.is_empty()
+            || !matches!(
+                self.status,
+                GenerationStatus::Active | GenerationStatus::ContextLimit
+            )
+        {
+            return Err(Sampling2Error::new("sampling2-generation-terminal"));
+        }
+        if maximum_context_tokens == 0
+            || maximum_context_tokens > self.maximum_context_tokens
+            || self.prompt_token_count > maximum_context_tokens
+        {
+            return Err(Sampling2Error::new("sampling2-config"));
+        }
+        self.maximum_context_tokens = maximum_context_tokens;
+        self.status = if self.prompt_token_count == maximum_context_tokens {
+            GenerationStatus::ContextLimit
+        } else {
+            GenerationStatus::Active
+        };
+        Ok(())
+    }
+
     /// Returns generated non-stop token IDs in exact order.
     pub fn generated_token_ids(&self) -> &[u32] {
         &self.generated

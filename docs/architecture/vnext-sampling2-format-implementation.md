@@ -97,6 +97,16 @@ keeps private run seeds and prompt-derived state out of public receipts.
 The controller accepts an explicit config, prompt-token count, model
 vocabulary, ordered unique stop set, and seed state. No field has a default.
 
+Before generation, a host that reserves a smaller KV context calls
+`GenerationController::restrict_context` with that admitted token ceiling.
+`ConversationRuntime::begin_request` applies this restriction before prefill or
+activation mutation. Zero, expansion, a ceiling below the prompt count, or a
+change after sampling/cancellation fails without changing controller state.
+A prompt exactly at the runtime ceiling is already terminal. Otherwise the last
+admitted token remains in the output and ends with `ContextLimit`, before another
+scalar forward could exceed the cache. This resource restriction changes neither
+the Sampling2 artifact nor the Prompt2 model-wide wire contract.
+
 Its states are active, stop-token, maximum-new-tokens, context-limit, and
 cancelled. Cancellation precedes model sampling and consumes no state. A stop
 token terminates without entering generated history. Context limit wins when
@@ -125,7 +135,7 @@ The vector document freezes:
 The Rust integration tests parse the independent JSON and replay exact values.
 The Rust implementation does not parse JSON or invoke Node at runtime.
 
-## Current Verification
+## Historical Format Verification
 
 The focused checkpoint passes:
 
@@ -138,6 +148,14 @@ The focused checkpoint passes:
 
 The complete affected source, denied-warning Clippy, hygiene, documentation,
 and source-control gates remain required before this checkpoint is pushed.
+
+The September 20 runtime-context correction adds four parameter-sensitive
+Sampling2 cases and a real scalar/controller integration regression. All 76
+affected Rust tests and denied-warning Clippy pass. The local WASM is rebuilt
+from the corrected source and reproduced by two fresh offline builds. See
+`artifacts/ecosystem-cleanup-20260912/runtime-context-limit-review.json` for
+identities, browser boundary checks and limits; a small synthetic scalar model
+does not establish full-composition conversation quality.
 
 ## Next Composition Gate
 
@@ -162,6 +180,7 @@ independent implementations. It does not prove production composition,
 browser execution, real-model behavior, answer quality, P2P acquisition,
 deployment, publication, or campaign progress.
 
-MemoryEndpoints remains unauthorized and disconnected. Campaign counters
-remain 0/20 models, 0/50 browser rounds, 0/25 live memory rounds, 0/40
-outside-proven lanes, and 0/20 announcements.
+MemoryEndpoints is authorized for direct agent coordination and the separate
+opt-in Connect user-memory lane. This Sampling2 verification executes neither
+lane. Campaign counters remain 0/20 models, 0/50 browser rounds, 0/25 live memory
+rounds, 0/40 outside-proven lanes, and 0/20 announcements.
