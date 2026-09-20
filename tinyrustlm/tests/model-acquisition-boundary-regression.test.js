@@ -1292,7 +1292,7 @@ function createWorkerActivationHarness() {
       setText: () => {}
     }
   );
-  return { admission, events, initialized, oldClient, nextClient, previousState, state,
+  return { admission, model, events, initialized, oldClient, nextClient, previousState, state,
     activate: () => activateBrowserComposition(model, 1) };
 }
 
@@ -1316,6 +1316,66 @@ test("acquisition security: changed identity or policy initializes a fresh worke
         harness.admission.composition.graphIdentitySha256);
       assert.strictEqual(harness.state.runtimeClient, harness.nextClient);
       assert.equal(result.state, "active-idle");
+    });
+  }
+});
+
+test("cached artifact transfer requires the matching scoped reader and preserves chunk offsets", async () => {
+  const source = sourceSection(app, "  async function* storedCompositionChunks(", "  function requireActivatedComposition(");
+  const { browserCompositionArtifacts } = evaluateProductionSection(source,
+    ["browserCompositionArtifacts"], { modelRuntimeClientApi: { ACTIVATION_ROLES: ["model"] } });
+  const model = { browserComposition: { storedComposition: { manifestSha256: "a".repeat(64) },
+    admission: { artifacts: [{ role: "model", fileName: "model.slm2", byteCount: 3 }] } } };
+  const signal = new AbortController().signal;
+  assert.throws(() => browserCompositionArtifacts(model, signal), /matching active read lease/);
+  assert.throws(() => browserCompositionArtifacts(model, signal,
+    { manifestSha256: "b".repeat(64), streamMember() {} }), /matching active read lease/);
+  const reader = { manifestSha256: "a".repeat(64),
+    async *streamMember(name, options) {
+      assert.equal(name, "model.slm2");
+      assert.equal(options.signal, signal);
+      yield Uint8Array.of(1, 2);
+      yield Uint8Array.of(3);
+    } };
+  const [artifact] = browserCompositionArtifacts(model, signal, reader);
+  assert.equal(artifact.byteLength, 3);
+  const chunks = [];
+  for await (const chunk of artifact.chunks) chunks.push({ offset: chunk.offset, bytes: [...new Uint8Array(chunk.bytes)] });
+  assert.deepEqual(chunks, [{ offset: 0, bytes: [1, 2] }, { offset: 2, bytes: [3] }]);
+});
+
+test("cached activation holds its composition read scope through worker success or failure", async t => {
+  for (const fail of [false, true]) {
+    await t.test(fail ? "worker failure" : "worker success", async () => {
+      const harness = createWorkerActivationHarness();
+      const entered = Promise.withResolvers();
+      const finish = Promise.withResolvers();
+      let held = false;
+      let released = false;
+      const original = harness.nextClient.activate.bind(harness.nextClient);
+      harness.nextClient.activate = async (...args) => {
+        assert.equal(held, true);
+        entered.resolve();
+        await finish.promise;
+        if (fail) throw new Error("synthetic worker failure");
+        return original(...args);
+      };
+      harness.model.browserComposition.storedComposition = {
+        async withRead(callback, options) {
+          assert.equal(typeof options.signal.addEventListener, "function");
+          held = true;
+          try { return await callback({ manifestSha256: "a".repeat(64), streamMember() {} }); }
+          finally { held = false; released = true; }
+        }
+      };
+      const activation = harness.activate();
+      const observed = fail ? assert.rejects(activation, /synthetic worker failure/) : activation;
+      await entered.promise;
+      assert.equal(released, false);
+      finish.resolve();
+      await observed;
+      assert.equal(released, true);
+      assert.equal(held, false);
     });
   }
 });

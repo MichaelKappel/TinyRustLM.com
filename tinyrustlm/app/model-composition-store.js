@@ -125,6 +125,7 @@ function (root, admissionApi, catalogApi) {
   ]);
   const REQUIRED_ADAPTER_METHODS = Object.freeze([
     "withExclusiveLock",
+    "withCompositionLock",
     "createSha256",
     "randomBytes",
     "ensureDirectory",
@@ -1371,8 +1372,50 @@ function (root, admissionApi, catalogApi) {
     }
   }
 
+  // Composition locks never acquire the writer lock; retirement takes writer then composition.
+  async function withCompositionLock(adapter, identity, mode, callback, signal) {
+    checkCancelled(signal);
+    try {
+      return await adapter.withCompositionLock(identity, mode, callback, signal || undefined);
+    } catch (error) {
+      if (error instanceof ModelCompositionStoreError) throw error;
+      checkCancelled(signal);
+      throw typed(error, "model-composition-store-lock");
+    }
+  }
+
+  // Hold a shared lock across an iterator's yields without buffering its model bytes.
+  async function acquireCompositionRead(options, pointer, signal) {
+    let acquired;
+    let rejected;
+    let release;
+    const ready = new Promise((resolve, rejectPromise) => { acquired = resolve; rejected = rejectPromise; });
+    const held = new Promise(resolve => { release = resolve; });
+    const pending = withCompositionLock(options.adapter, pointer.manifestSha256, "shared", async () => {
+      acquired();
+      await held;
+    }, signal);
+    pending.catch(rejected);
+    await ready;
+    return async () => { release(); await pending; };
+  }
+
+  // Link callback-scope cancellation and a member-specific signal without changing either input.
+  function linkedReadSignal(scopeSignal, memberSignal) {
+    const controller = new AbortController();
+    const signals = [...new Set([scopeSignal, memberSignal].filter(Boolean))];
+    const abort = () => controller.abort();
+    for (const signal of signals) {
+      if (signal.aborted) abort();
+      else signal.addEventListener("abort", abort, { once: true });
+    }
+    return { signal: controller.signal,
+      dispose() { for (const signal of signals) signal.removeEventListener("abort", abort); } };
+  }
+
   function openedComposition(options, pointer, manifest, admissionAuthority) {
-    async function* streamMember(fileName, callOptions) {
+    // Read one exact member while the caller holds this composition's shared lease.
+    async function* readMember(fileName, callOptions, scope) {
       if (!MEMBER_NAMES.includes(fileName)) {
         reject("model-composition-store-member-name", { memberName: fileName });
       }
@@ -1382,40 +1425,89 @@ function (root, admissionApi, catalogApi) {
         ["signal"],
         "model-composition-store-stream-options"
       );
-      const signal = normalizeSignal(source.signal);
-      const member = manifest.members[MEMBER_NAMES.indexOf(fileName)];
-      const details = { stagingId: pointer.stagingId, memberName: fileName };
-      const readable = await openReadable(
-        options.adapter,
-        [INSTALLED_DIRECTORY, pointer.manifestSha256, fileName],
-        "model-composition-store-read",
-        details
-      );
-      if (!readable || readable.byteLength !== member.byteLength) {
-        reject("model-composition-store-stored-length", details);
-      }
-      const hasher = createHasher(options.adapter);
-      let byteLength = 0;
-      for await (const chunk of boundedChunks(
-        readable.stream,
-        options.chunkBytes,
-        signal,
-        pointer.stagingId,
-        "model-composition-store-read"
-      )) {
-        if (byteLength + chunk.byteLength > member.byteLength) {
+      if (scope && !scope.active) reject("model-composition-store-read-scope-closed");
+      const linked = linkedReadSignal(scope && scope.signal, normalizeSignal(source.signal));
+      const signal = linked.signal;
+      try {
+        checkCancelled(signal, pointer.stagingId);
+        const member = manifest.members[MEMBER_NAMES.indexOf(fileName)];
+        const details = { stagingId: pointer.stagingId, memberName: fileName };
+        const readable = await nextWithCancellation(openReadable(
+          options.adapter,
+          [INSTALLED_DIRECTORY, pointer.manifestSha256, fileName],
+          "model-composition-store-read",
+          details
+        ), signal, pointer.stagingId);
+        if (!readable || readable.byteLength !== member.byteLength) {
           reject("model-composition-store-stored-length", details);
         }
-        await updateHasher(hasher, chunk);
-        byteLength += chunk.byteLength;
-        yield chunk;
-      }
-      if (byteLength !== member.byteLength) {
-        reject("model-composition-store-stored-length", details);
-      }
-      if (await finishHasher(hasher) !== member.sha256) {
-        reject("model-composition-store-stored-sha256", details);
-      }
+        const hasher = createHasher(options.adapter);
+        let byteLength = 0;
+        for await (const chunk of boundedChunks(
+          readable.stream,
+          options.chunkBytes,
+          signal,
+          pointer.stagingId,
+          "model-composition-store-read"
+        )) {
+          if (byteLength + chunk.byteLength > member.byteLength) {
+            reject("model-composition-store-stored-length", details);
+          }
+          await updateHasher(hasher, chunk);
+          byteLength += chunk.byteLength;
+          yield chunk;
+        }
+        if (byteLength !== member.byteLength) {
+          reject("model-composition-store-stored-length", details);
+        }
+        if (await finishHasher(hasher) !== member.sha256) {
+          reject("model-composition-store-stored-sha256", details);
+        }
+      } finally { linked.dispose(); }
+    }
+
+    // Standalone reads pin one member until completion or iterator disposal.
+    async function* streamMember(fileName, callOptions) {
+      const call = normalizeCall(callOptions, [], ["signal"], "model-composition-store-stream-options");
+      const signal = normalizeSignal(call.signal);
+      const release = await acquireCompositionRead(options, pointer, signal);
+      try { yield* readMember(fileName, call, null); }
+      finally { await release(); }
+    }
+
+    // Pin all six files for one load; close escaped streams before releasing the shared lease.
+    async function withRead(callback, callOptions) {
+      if (typeof callback !== "function") reject("model-composition-store-read-options");
+      const call = normalizeCall(callOptions, [], ["signal"], "model-composition-store-read-options");
+      const signal = normalizeSignal(call.signal);
+      return withCompositionLock(options.adapter, pointer.manifestSha256, "shared", async () => {
+        const controller = new AbortController();
+        const scopeSignal = linkedReadSignal(signal, controller.signal);
+        const scope = { active: true, signal: scopeSignal.signal };
+        const iterators = new Set();
+        // Observe pending reads even when a callback exits before awaiting them.
+        const scopedStream = (fileName, memberOptions) => {
+          if (!scope.active) reject("model-composition-store-read-scope-closed");
+          const iterator = readMember(fileName, memberOptions, scope);
+          iterators.add(iterator);
+          return {
+            next(value) { const pending = iterator.next(value); pending.catch(() => {}); return pending; },
+            return(value) { return iterator.return(value); },
+            throw(error) { return iterator.throw(error); },
+            [Symbol.asyncIterator]() { return this; }
+          };
+        };
+        try {
+          return await nextWithCancellation(Promise.resolve().then(() => callback(
+            Object.freeze({ manifestSha256: pointer.manifestSha256, streamMember: scopedStream })
+          )), scope.signal, pointer.stagingId);
+        } finally {
+          scope.active = false;
+          controller.abort();
+          await Promise.allSettled([...iterators].map(iterator => iterator.return()));
+          scopeSignal.dispose();
+        }
+      }, signal);
     }
     return Object.freeze({
       manifestSha256: pointer.manifestSha256,
@@ -1423,7 +1515,8 @@ function (root, admissionApi, catalogApi) {
       activationId: pointer.stagingId,
       manifest,
       admissionAuthority,
-      streamMember
+      streamMember,
+      withRead
     });
   }
 
@@ -1472,15 +1565,19 @@ function (root, admissionApi, catalogApi) {
   }
 
   // Delete only admitted direct files, manifest last; never recursively consume a late extra entry.
-  async function removeInstalled(options, manifestSha256, identityKnown) {
-    const entries = await ownedInstalledEntries(options, manifestSha256, identityKnown);
-    const names = new Set(entries.map(entry => entry.name));
-    for (const name of INSTALLED_FILES) {
-      if (names.has(name)) {
-        await removeEntry(options.adapter, [INSTALLED_DIRECTORY, manifestSha256, name], false);
+  async function removeInstalled(options, manifestSha256, identityKnown, signal) {
+    return withCompositionLock(options.adapter, manifestSha256, "exclusive", async () => {
+      const entries = await ownedInstalledEntries(options, manifestSha256, identityKnown);
+      const names = new Set(entries.map(entry => entry.name));
+      for (const name of INSTALLED_FILES) {
+        checkCancelled(signal);
+        if (names.has(name)) {
+          await removeEntry(options.adapter, [INSTALLED_DIRECTORY, manifestSha256, name], false);
+        }
       }
-    }
-    await removeEntry(options.adapter, [INSTALLED_DIRECTORY, manifestSha256], false);
+      checkCancelled(signal);
+      await removeEntry(options.adapter, [INSTALLED_DIRECTORY, manifestSha256], false);
+    }, signal);
   }
 
   // Preserve the primary outcome and let a later bounded pass retry owned residue.
@@ -1515,7 +1612,7 @@ function (root, admissionApi, catalogApi) {
       checkCancelled(signal);
       const staging = await ownedStaging(options.adapter, entry);
       if (!pointer || staging.manifestSha256 !== pointer.manifestSha256) {
-        await removeInstalled(options, staging.manifestSha256, true);
+        await removeInstalled(options, staging.manifestSha256, true, signal);
         removedInstalled += 1;
       }
       await removeEntry(options.adapter, [STAGING_DIRECTORY, entry.name], false);
@@ -1544,7 +1641,7 @@ function (root, admissionApi, catalogApi) {
       if (entry.kind === "directory" && protectedManifests.has(entry.name)) continue;
       checkCancelled(signal);
       if (entry.kind !== "directory") reject("model-composition-store-cleanup-ownership");
-      await removeInstalled(options, entry.name, false);
+      await removeInstalled(options, entry.name, false, signal);
       removedInstalled += 1;
     }
     return Object.freeze({
@@ -1805,55 +1902,58 @@ function (root, admissionApi, catalogApi) {
             { stagingId }
           );
           if (!reuseInstalled) {
-            await requireVacantInstalledPath(options, manifestSha256);
-            await ensureDirectory(
-              options.adapter,
-              [INSTALLED_DIRECTORY, manifestSha256]
-            );
-            ownsCandidate = true;
-            await atomicWrite(
-              options.adapter,
-              [INSTALLED_DIRECTORY, manifestSha256, INSTALLED_MANIFEST_FILE],
-              manifestBytes,
-              "model-composition-store-write",
-              { stagingId }
-            );
-            await atomicWrite(
-              options.adapter,
-              [INSTALLED_DIRECTORY, manifestSha256, INSTALLED_ADMISSION_FILE],
-              suppliedAuthority.admission.bytes,
-              "model-composition-store-write",
-              { stagingId }
-            );
-            await atomicWrite(
-              options.adapter,
-              [
-                INSTALLED_DIRECTORY,
-                manifestSha256,
-                INSTALLED_QUALIFICATION_RECEIPT_FILE
-              ],
-              suppliedAuthority.receipt.bytes,
-              "model-composition-store-write",
-              { stagingId }
-            );
-            await atomicWrite(
-              options.adapter,
-              [INSTALLED_DIRECTORY, manifestSha256, INSTALLED_CATALOG_FILE],
-              suppliedAuthority.catalog.bytes,
-              "model-composition-store-write",
-              { stagingId }
-            );
-            const context = {
-              adapter: options.adapter,
-              chunkBytes: options.chunkBytes,
-              signal,
-              stagingId,
-              manifestSha256
-            };
-            for (const member of manifest.members) {
+            await withCompositionLock(options.adapter, manifestSha256, "exclusive", async () => {
               checkCancelled(signal, stagingId);
-              await writeMember(context, member, sources[member.fileName]);
-            }
+              await requireVacantInstalledPath(options, manifestSha256);
+              await ensureDirectory(
+                options.adapter,
+                [INSTALLED_DIRECTORY, manifestSha256]
+              );
+              ownsCandidate = true;
+              await atomicWrite(
+                options.adapter,
+                [INSTALLED_DIRECTORY, manifestSha256, INSTALLED_MANIFEST_FILE],
+                manifestBytes,
+                "model-composition-store-write",
+                { stagingId }
+              );
+              await atomicWrite(
+                options.adapter,
+                [INSTALLED_DIRECTORY, manifestSha256, INSTALLED_ADMISSION_FILE],
+                suppliedAuthority.admission.bytes,
+                "model-composition-store-write",
+                { stagingId }
+              );
+              await atomicWrite(
+                options.adapter,
+                [
+                  INSTALLED_DIRECTORY,
+                  manifestSha256,
+                  INSTALLED_QUALIFICATION_RECEIPT_FILE
+                ],
+                suppliedAuthority.receipt.bytes,
+                "model-composition-store-write",
+                { stagingId }
+              );
+              await atomicWrite(
+                options.adapter,
+                [INSTALLED_DIRECTORY, manifestSha256, INSTALLED_CATALOG_FILE],
+                suppliedAuthority.catalog.bytes,
+                "model-composition-store-write",
+                { stagingId }
+              );
+              const context = {
+                adapter: options.adapter,
+                chunkBytes: options.chunkBytes,
+                signal,
+                stagingId,
+                manifestSha256
+              };
+              for (const member of manifest.members) {
+                checkCancelled(signal, stagingId);
+                await writeMember(context, member, sources[member.fileName]);
+              }
+            }, signal);
           }
 
           const storedManifest = await readInstalledManifest(options, manifestSha256);
@@ -2011,7 +2111,7 @@ function (root, admissionApi, catalogApi) {
         checkCancelled(signal, pointer && pointer.stagingId);
         if (pointer && RECOVERABLE_CONTENT_CODES.has(failure.code)) {
           checkCancelled(signal, pointer.stagingId);
-          await removeInstalled(options, pointer.manifestSha256, true);
+          await removeInstalled(options, pointer.manifestSha256, true, signal);
         }
         // Keep the invalid pointer's ownership identity until content removal succeeds.
         await removeEntry(options.adapter, [ACTIVE_POINTER_FILE], false);
@@ -2196,8 +2296,21 @@ function (root, admissionApi, catalogApi) {
       return options.lockManager.request(LOCK_NAME, lockOptions, callback);
     }
 
+    // Shared readers pin immutable composition bytes; exclusive retirement waits for their release.
+    function withCompositionLock(identity, mode, callback, signal) {
+      if (typeof identity !== "string" || !SHA256_PATTERN.test(identity) ||
+          !["shared", "exclusive"].includes(mode) || typeof callback !== "function") {
+        reject("model-composition-store-adapter");
+      }
+      const lockOptions = { mode };
+      const normalizedSignal = normalizeSignal(signal);
+      if (normalizedSignal) lockOptions.signal = normalizedSignal;
+      return options.lockManager.request(`${LOCK_NAME}:${identity}`, lockOptions, callback);
+    }
+
     return Object.freeze({
       withExclusiveLock,
+      withCompositionLock,
       createSha256: options.createSha256,
       randomBytes,
       ensureDirectory,

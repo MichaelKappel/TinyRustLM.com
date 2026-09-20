@@ -6,6 +6,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const test = require("node:test");
 const vm = require("node:vm");
+const { locks } = require("node:worker_threads");
 
 const admissionApi = require("../app/browser-model-admission.js");
 const catalogApi = require("../app/minimodel-catalog-v1.js");
@@ -343,6 +344,12 @@ class MemoryAdapter {
   async ensureDirectory(pathParts) {
     for (const directory of parentKeys(pathParts)) this.directories.add(directory);
     this.operations.push({ type: "ensure-directory", path: key(pathParts) });
+  }
+
+  // Exercise real shared/exclusive scheduling without coupling it to the store's writer lock.
+  withCompositionLock(identity, mode, callback, signal) {
+    this.compositionLockPrefix ||= crypto.randomUUID();
+    return locks.request(`${this.compositionLockPrefix}:${identity}`, { mode, ...(signal ? { signal } : {}) }, callback);
   }
 
   async listEntries(pathParts, limit) {
@@ -2012,6 +2019,230 @@ test("cleanup preserves markers outside its budget and refuses a saturated owner
   await assert.rejects(store.cleanup(), errorCode("model-composition-store-cleanup-ownership"));
   assert.equal(adapter.operations.slice(operationIndex).some(op => op.type === "remove"), false);
   assert.ok(adapter.hasPath(["staging", `${ids[1]}.json`]));
+});
+
+test("replacement cannot retire an installation while its member stream is being consumed", async () => {
+  const adapter = new MemoryAdapter();
+  const store = createStore(adapter, { chunkBytes: 4 });
+  const prior = fixture("stream-reader-prior", 48);
+  const active = await store.install({ manifest: prior.manifest,
+    admissionAuthority: prior.admissionAuthority, sources: sourceSet(prior.members) });
+  const iterator = active.streamMember("model.slm2")[Symbol.asyncIterator]();
+  const first = await iterator.next();
+  assert.equal(first.done, false);
+  const next = fixture("stream-reader-next");
+  const committed = Promise.withResolvers();
+  let finished = false;
+  adapter.onAfterActiveWrite = () => committed.resolve();
+  const replacing = createStore(adapter).install({ manifest: next.manifest,
+    admissionAuthority: next.admissionAuthority, sources: sourceSet(next.members) })
+    .then(value => { finished = true; return value; });
+  try {
+    await settleWithin(committed.promise);
+    await new Promise(resolve => setImmediate(resolve));
+    assert.equal(finished, false);
+    assert.ok(adapter.hasPath(["installed", active.manifestSha256]));
+    const chunks = [first.value];
+    for await (const chunk of iterator) chunks.push(chunk);
+    assert.deepEqual(Buffer.concat(chunks), Buffer.from(prior.members["model.slm2"]));
+  } finally {
+    await iterator.return();
+    await settleWithin(replacing);
+  }
+  assert.equal(adapter.hasPath(["installed", active.manifestSha256]), false);
+});
+
+test("a scoped six-member load pins the complete installation across replacement", async () => {
+  const adapter = new MemoryAdapter();
+  const store = createStore(adapter);
+  const prior = fixture("scope-prior");
+  const active = await store.install({ manifest: prior.manifest,
+    admissionAuthority: prior.admissionAuthority, sources: sourceSet(prior.members) });
+  const entered = Promise.withResolvers();
+  const resume = Promise.withResolvers();
+  let escaped;
+  const reading = active.withRead(async reader => {
+    escaped = reader;
+    assert.equal(reader.manifestSha256, active.manifestSha256);
+    assert.deepEqual(await collect(reader.streamMember(MEMBER_NAMES[0])), Buffer.from(prior.members[MEMBER_NAMES[0]]));
+    entered.resolve();
+    await resume.promise;
+    for (const name of MEMBER_NAMES.slice(1)) {
+      assert.deepEqual(await collect(reader.streamMember(name)), Buffer.from(prior.members[name]));
+    }
+    return "all-six-read";
+  });
+  await settleWithin(entered.promise);
+  const committed = Promise.withResolvers();
+  adapter.onAfterActiveWrite = () => committed.resolve();
+  const candidate = fixture("scope-next");
+  let finished = false;
+  const replacing = createStore(adapter).install({ manifest: candidate.manifest,
+    admissionAuthority: candidate.admissionAuthority, sources: sourceSet(candidate.members) })
+    .then(value => { finished = true; return value; });
+  try {
+    await settleWithin(committed.promise);
+    await new Promise(resolve => setImmediate(resolve));
+    assert.equal(finished, false);
+    assert.ok(adapter.hasPath(["installed", active.manifestSha256]));
+  } finally { resume.resolve(); }
+  assert.equal(await reading, "all-six-read");
+  await settleWithin(replacing);
+  assert.equal(adapter.hasPath(["installed", active.manifestSha256]), false);
+  assert.throws(() => escaped.streamMember("model.slm2"), errorCode("model-composition-store-read-scope-closed"));
+});
+
+test("scope exit closes partially consumed streams before releasing reader locks", async () => {
+  const adapter = new MemoryAdapter();
+  const value = fixture("scope-exit", 24);
+  const active = await createStore(adapter, { chunkBytes: 4 }).install({ manifest: value.manifest,
+    admissionAuthority: value.admissionAuthority, sources: sourceSet(value.members) });
+  let stream;
+  await active.withRead(async reader => {
+    stream = reader.streamMember("model.slm2");
+    assert.equal((await stream.next()).done, false);
+  });
+  assert.equal((await stream.next()).done, true);
+  assert.equal((await locks.query()).held.some(lock => lock.name.startsWith(adapter.compositionLockPrefix)), false);
+  await assert.rejects(active.withRead(null), errorCode("model-composition-store-read-options"));
+  await assert.rejects(active.withRead(() => {}, { extra: true }), errorCode("model-composition-store-read-options"));
+  await assert.rejects(active.withRead(reader => collect(reader.streamMember("other.bin"))),
+    errorCode("model-composition-store-member-name"));
+});
+
+test("scope cancellation releases hung callbacks and pending reads and observes later rejection", async () => {
+  const adapter = new MemoryAdapter();
+  const value = fixture("scope-abort");
+  const active = await createStore(adapter).install({ manifest: value.manifest,
+    admissionAuthority: value.admissionAuthority, sources: sourceSet(value.members) });
+  const controller = new AbortController();
+  const entered = Promise.withResolvers();
+  const callback = Promise.withResolvers();
+  const source = Promise.withResolvers();
+  const open = adapter.openReadable.bind(adapter);
+  adapter.openReadable = parts => parts.at(-1) === "model.slm2" ? source.promise : open(parts);
+  let pending;
+  const reading = active.withRead(reader => {
+    pending = reader.streamMember("model.slm2").next();
+    entered.resolve();
+    return callback.promise;
+  }, { signal: controller.signal });
+  const observed = assert.rejects(reading, errorCode("model-composition-store-aborted"));
+  await entered.promise;
+  controller.abort();
+  await settleWithin(observed);
+  await assert.rejects(pending, errorCode("model-composition-store-aborted"));
+  assert.equal((await locks.query()).held.some(lock => lock.name.startsWith(adapter.compositionLockPrefix)), false);
+  source.reject(new Error("late synthetic source failure"));
+  callback.reject(new Error("late synthetic callback failure"));
+  await new Promise(resolve => setImmediate(resolve));
+});
+
+test("reader admission waits for a writer and can be cancelled in the queue", async () => {
+  const adapter = new MemoryAdapter();
+  const value = fixture("queued-reader");
+  const active = await createStore(adapter).install({ manifest: value.manifest,
+    admissionAuthority: value.admissionAuthority, sources: sourceSet(value.members) });
+  const entered = Promise.withResolvers();
+  const release = Promise.withResolvers();
+  const writer = adapter.withCompositionLock(active.manifestSha256, "exclusive", async () => {
+    entered.resolve(); await release.promise;
+  });
+  await entered.promise;
+  const controller = new AbortController();
+  const read = active.withRead(() => assert.fail("cancelled reader callback ran"), { signal: controller.signal });
+  const failed = assert.rejects(read, errorCode("model-composition-store-aborted"));
+  controller.abort();
+  try { await settleWithin(failed); }
+  finally { release.resolve(); await writer; }
+});
+
+test("multiple shared readers release independently before exclusive retirement", async () => {
+  const adapter = new MemoryAdapter();
+  const value = fixture("shared-readers");
+  const store = createStore(adapter);
+  const active = await store.install({ manifest: value.manifest,
+    admissionAuthority: value.admissionAuthority, sources: sourceSet(value.members) });
+  const entered = [Promise.withResolvers(), Promise.withResolvers()];
+  const release = [Promise.withResolvers(), Promise.withResolvers()];
+  const readers = entered.map((ready, i) => active.withRead(async () => {
+    ready.resolve(); await release[i].promise;
+  }));
+  await settleWithin(Promise.all(entered.map(item => item.promise)));
+  const held = (await locks.query()).held.filter(lock => lock.name.endsWith(active.manifestSha256));
+  assert.equal(held.length, 2);
+  // Explicit recovery may retire corrupted bytes, but only after both readers relinquish them.
+  adapter.mutate(["installed", active.manifestSha256, "model.slm2"]);
+  let done = false;
+  const recovery = store.discardInvalidActive().then(value => { done = true; return value; });
+  try {
+    await new Promise(resolve => setImmediate(resolve));
+    release[0].resolve();
+    await readers[0];
+    await new Promise(resolve => setImmediate(resolve));
+    assert.equal(done, false);
+    assert.ok(adapter.hasPath(["installed", active.manifestSha256]));
+  } finally {
+    release.forEach(item => item.resolve());
+    await Promise.all(readers);
+  }
+  assert.equal(await settleWithin(recovery), true);
+  assert.equal(adapter.hasPath(["installed", active.manifestSha256]), false);
+});
+
+test("candidate writes wait for a composition lease and cancellation leaves no partial installation", async () => {
+  const adapter = new MemoryAdapter();
+  const value = fixture("queued-candidate-write");
+  const identity = sha256(canonical(value.manifest));
+  const entered = Promise.withResolvers();
+  const release = Promise.withResolvers();
+  const reader = adapter.withCompositionLock(identity, "shared", async () => {
+    entered.resolve(); await release.promise;
+  });
+  await entered.promise;
+  const staged = Promise.withResolvers();
+  const atomicWrite = adapter.atomicWrite.bind(adapter);
+  adapter.atomicWrite = async (parts, bytes) => {
+    await atomicWrite(parts, bytes);
+    if (parts[0] === "staging") staged.resolve();
+  };
+  const controller = new AbortController();
+  const install = createStore(adapter).install({ manifest: value.manifest,
+    admissionAuthority: value.admissionAuthority, sources: sourceSet(value.members), signal: controller.signal });
+  const observed = assert.rejects(install, errorCode("model-composition-store-aborted"));
+  try {
+    await settleWithin(staged.promise);
+    await new Promise(resolve => setImmediate(resolve));
+    assert.equal(adapter.hasPath(["installed", identity]), false);
+    controller.abort();
+    await settleWithin(observed);
+    assert.equal(adapter.hasPath(["active.json"]), false);
+    assert.deepEqual(adapter.entriesUnder(["staging"]), []);
+  } finally { release.resolve(); await reader; }
+});
+
+test("cancelled recovery stops waiting for readers without deleting bytes or pointer authority", async () => {
+  const adapter = new MemoryAdapter();
+  const value = fixture("cancelled-reader-retirement");
+  const store = createStore(adapter);
+  const active = await store.install({ manifest: value.manifest,
+    admissionAuthority: value.admissionAuthority, sources: sourceSet(value.members) });
+  const entered = Promise.withResolvers();
+  const release = Promise.withResolvers();
+  const read = active.withRead(async () => { entered.resolve(); await release.promise; });
+  await entered.promise;
+  adapter.mutate(["installed", active.manifestSha256, "model.slm2"]);
+  const pointer = adapter.readFile(["active.json"]);
+  const controller = new AbortController();
+  const recovery = store.discardInvalidActive({ signal: controller.signal });
+  const observed = assert.rejects(recovery, errorCode("model-composition-store-aborted"));
+  try {
+    await new Promise(resolve => setImmediate(resolve));
+    controller.abort();
+    await settleWithin(observed);
+    assert.deepEqual(adapter.readFile(["active.json"]), pointer);
+    assert.ok(adapter.hasPath(["installed", active.manifestSha256]));
+  } finally { release.resolve(); await read; }
 });
 
 test("restart reopens and reverifies every immutable member", async () => {

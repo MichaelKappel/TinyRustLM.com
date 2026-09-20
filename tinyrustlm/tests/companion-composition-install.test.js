@@ -342,6 +342,9 @@ class ConsumingStore {
       admissionAuthority,
       streamMember() {
         throw new Error("fixture stream is not opened by this bridge test");
+      },
+      withRead() {
+        throw new Error("fixture read scope is not opened by this bridge test");
       }
     });
     return this.activated;
@@ -688,6 +691,21 @@ test("sources are one-shot and enforce canonical nonconcurrent role order", asyn
     code("companion-composition-install-source-order")
   );
   assert.equal(reorderedClient.calls.length, 0);
+});
+
+test("the companion boundary rejects an opened composition without a callable read scope", async () => {
+  for (const withRead of [undefined, null]) {
+    const value = fixture({ label: `missing-read-scope-${withRead}` });
+    const store = new ConsumingStore();
+    const consume = store.install.bind(store);
+    store.install = async input => {
+      const result = { ...await consume(input), withRead };
+      if (withRead === undefined) delete result.withRead;
+      return result;
+    };
+    await assert.rejects(install(value, new FakeCapabilityClient(value), store),
+      code("companion-composition-install-activation"));
+  }
 });
 
 test("progress and store failures fail closed without an activation result", async () => {

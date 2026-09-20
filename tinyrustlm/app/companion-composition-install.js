@@ -74,7 +74,8 @@ function (root, admissionApi) {
     "activationId",
     "manifest",
     "admissionAuthority",
-    "streamMember"
+    "streamMember",
+    "withRead"
   ]);
   const OPENED_AUTHORITY_FIELDS = Object.freeze([
     "admission",
@@ -799,7 +800,8 @@ function (root, admissionApi) {
             canonicalBytes(plan.admissionAuthority.catalogAuthority)
           ) ||
           authority.p2pPieceSetSha256 !== null ||
-          typeof activated.streamMember !== "function") {
+          typeof activated.streamMember !== "function" ||
+          typeof activated.withRead !== "function") {
         reject("companion-composition-install-activation");
       }
       sha256(

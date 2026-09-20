@@ -97,6 +97,25 @@ Source changes implemented:
   await owner-run deletion after automatic approval review blocked removal.
   Historical tooling review and complete legacy-support cleanup remain open.
 
+Cached model readers and replacement:
+
+- A full cached load uses `storedComposition.withRead(callback, { signal })`.
+  Its scoped reader pins all six files while they transfer to the worker.
+  The callback must consume or dispose its streams and must not call a store
+  mutation while holding the lease. Scope exit closes outstanding streams;
+  cancellation rejects pending reads and releases the lease.
+- Standalone `streamMember` pins that member until its iterator completes or is
+  disposed. An opened metadata object alone is not a persistent pin; a load begun
+  after its files were retired fails validation rather than mixing installations.
+- Composition writes and retirement take an exclusive per-composition Web Lock.
+  Shared readers never acquire the global writer lock; mutations take the writer
+  lock before a composition lock. Replacement retires prior bytes after readers
+  release them. Closing a reader tab releases its browser-owned locks.
+- This protects cooperating store users. It does not isolate arbitrary same-origin
+  code, guarantee progress for an abandoned uncancelled callback, or establish
+  useful model quality. See `composition-read-lease-review.json` in the existing
+  ecosystem-cleanup artifacts for source and synthetic browser evidence.
+
 Not deployed or working-model proof:
 
 - The local catalog has zero entries and zero seed announcements. Its September

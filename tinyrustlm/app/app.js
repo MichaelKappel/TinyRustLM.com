@@ -2039,7 +2039,7 @@
     const admissionAuthority = storedComposition && storedComposition.admissionAuthority;
     if (!storedComposition || !admissionAuthority ||
         typeof admissionAuthority.admissionText !== "string" ||
-        typeof storedComposition.streamMember !== "function") {
+        typeof storedComposition.withRead !== "function") {
       throw new Error("The cached composition record is incomplete");
     }
     const admission = browserModelAdmissionApi.parseAdmissionText(
@@ -10590,13 +10590,17 @@ if (view.matches.length) {
     }
   }
 
-  function browserCompositionArtifacts(model, signal) {
+  // A cached load receives a scoped reader that pins all six files until worker activation completes.
+  function browserCompositionArtifacts(model, signal, storedReader) {
     const source = model && model.browserComposition;
     if (!source || !source.admission) {
       throw new Error("The selected model is not a complete browser composition");
     }
-    if (source.storedComposition &&
-        typeof source.storedComposition.streamMember === "function") {
+    if (source.storedComposition) {
+      if (!storedReader || typeof storedReader.streamMember !== "function" ||
+          storedReader.manifestSha256 !== source.storedComposition.manifestSha256) {
+        throw new Error("The cached composition has no matching active read lease");
+      }
       return modelRuntimeClientApi.ACTIVATION_ROLES.map((role) => {
         const artifact = source.admission.artifacts.find((entry) => entry.role === role);
         if (!artifact) {
@@ -10606,7 +10610,7 @@ if (view.matches.length) {
           role,
           byteLength: artifact.byteCount,
           chunks: storedCompositionChunks(
-            source.storedComposition,
+            storedReader,
             artifact.fileName,
             signal
           )
@@ -10735,8 +10739,9 @@ if (view.matches.length) {
       }
       let stateReport;
       try {
-        stateReport = await client.activate(
-          browserCompositionArtifacts(model, transferController.signal),
+        // Keep immutable cached bytes pinned across all six member transfers to the worker.
+        const transfer = storedReader => client.activate(
+          browserCompositionArtifacts(model, transferController.signal, storedReader),
           (progress) => {
             if (loadId !== state.modelLoadSequence || (signal && signal.aborted)) {
               transferController.abort();
@@ -10746,6 +10751,10 @@ if (view.matches.length) {
             setText(el.modelState, `${progress.role} ${percent}%`, false);
           }
         );
+        const stored = model.browserComposition.storedComposition;
+        stateReport = stored
+          ? await stored.withRead(transfer, { signal: transferController.signal })
+          : await transfer(null);
       } finally {
         if (signal) {
           signal.removeEventListener("abort", abortTransfer);

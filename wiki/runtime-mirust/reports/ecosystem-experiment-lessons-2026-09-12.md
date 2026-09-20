@@ -1563,6 +1563,40 @@ and the incomplete source scan are unchanged.
   ownership. Keep cleanup authority until its dependent bytes are gone, and ensure
   safety checks preserve the existing activation linearization contract.
 
+## C48: immutable identity does not protect a reader from retirement
+
+- Question: can replacement delete an exact installed composition while another
+  consumer is still reading it, and can reader coordination preserve cancellation?
+- Exact inputs: C47 store at `04ed7687c1d53f42b57f3dd695cb014a95cefe42`, synthetic
+  six-member prior/replacement compositions, deliberately paused member/scoped
+  reads, queued writers/recovery, cancelled reads and actual same-origin Edge tabs.
+  Final app/store/bridge/test identities are in `composition-read-lease-review.json`.
+- Method: reproduce premature retirement before editing; use real Node shared/
+  exclusive locks for unit concurrency and actual Edge OPFS/Web Locks for cross-tab
+  scheduling and tab closure. Hold a shared composition lease through six-member
+  worker transfer; take exclusive composition locks for writes/retirement.
+- Result: initial regression 69/70; final affected suite 246/246, final Edge 6/6,
+  direct smoke twelve observations. Store line/branch/function coverage is
+  88.24/84.66/90.06 percent. Scope cancellation closes pending readers and observes
+  late failures; multiple readers release independently; queued recovery/writes
+  can cancel; closing the reader tab permits retirement.
+- Intermediate failures: 239/241 exposed a closed companion contract missing the
+  new callable method and an outdated activation source-shape assertion. Edge
+  2/4 exposed byte-array/hex comparison in the new test and an observer assuming
+  every lock was the global writer. Updated observers retain the exact one-writer
+  invariant and distinguish identity-bound composition locks.
+- Decision: keep global mutation ordering, add per-composition reader lifetime,
+  require the current read-scope contract at the companion/app boundary, and retain
+  existing immediate commit authorization. Never retain old model bytes merely
+  as history; retire after active readers relinquish them.
+- Uncertainty: fixtures do not prove real model quality or public deployment.
+  Callbacks must finish/cancel and avoid mutations inside read scopes; standalone
+  iterators must finish/dispose. Opened metadata is not a permanent pin. Complete
+  metadata I/O deadlines and terminal crash recovery remain under review.
+- Reusable lesson: content hashes prevent mixing bytes, while locks govern how
+  long those bytes remain available. Model both requirements and test actual
+  browser lock release instead of assuming a file snapshot survives deletion.
+
 ## Continue the review
 
 Before deleting an experiment that is not covered above, record its purpose,

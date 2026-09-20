@@ -1,5 +1,5 @@
 profile: tinyrustlm.startup-packet.current.v1
-updated_utc: 2026-09-20T00:34:40Z
+updated_utc: 2026-09-20T00:53:30Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
@@ -10,6 +10,7 @@ startup_steps:
   - Preserve immutable failed operations and all campaign counters.
 
 current_truth:
+  cache_readers: C48 gives each composition shared read leases and exclusive write/retirement locks. The app pins all six cached files through worker activation; companion validation requires withRead. Scope cleanup and cancellation release readers; actual Edge tabs prove waiting and release on closure. See composition-read-lease-review.json. Remaining crash/metadata lifetime and real model/public gates stay open.
   cache_ownership: C47 rejects unknown staging/installed content, bounds ownership inventories and removes only recognized direct files. Recovery keeps invalid pointer authority until content deletion succeeds; failed candidates keep markers on failed cleanup. All 143 affected checks, three Edge storage tests and twelve direct smoke observations pass; see composition-cleanup-ownership-review.json. Reader/crash lifecycle and real model/public gates remain open.
   cache_cancellation: C46 fixes a stalled source-cleanup wait that ignored later cancellation. All 118 affected checks, two Edge OPFS/cache tests and twelve direct smoke observations pass. Previous installation and lock availability are preserved; supplied signals are required. See composition-cleanup-cancellation-review.json. Whole-cache review and real model/public gates remain open.
   release_smoke: C45 v8 retains raw abort events and separately attributes only exact HTTP 200 probe bodies after independent byte verification. Minimal-page trials reproduced the distinction; bounded terminal-event waits replace a stalled Playwright response wait. All 34 smoke and 42 unchanged runtime checks plus the normal CLI pass. See completed-runtime-probe-review.json; no real model or public result.

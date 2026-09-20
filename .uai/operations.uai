@@ -1,5 +1,5 @@
 profile: tinyrustlm.operations.current.v1
-updated_utc: 2026-09-20T00:34:40Z
+updated_utc: 2026-09-20T00:53:30Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
@@ -66,6 +66,7 @@ reviewed_storage_and_experiments:
   close_run: Preserve failed attempts and stages never started; a corrected implementation needs a new experiment. Transfer resumption is not scientific replay.
 
 current_limit:
+  c48: Shared composition readers delay exclusive retirement; candidate writes use the same exclusive boundary. App worker activation holds a six-member read scope, and companion validation admits only the current callable scope contract. Cancellation can interrupt queued precommit writes and explicit cleanup/recovery waits. See composition-read-lease-review.json. Caller completion/disposal, remaining crash/metadata lifetime work and real model/public gates remain explicit.
   c47: Cache deletion now admits exact ownership, preserves unexpected entries and uses nonrecursive direct-file removal. Existing commit authorization remains immediately before pointer replacement. All 143 affected checks, three Edge OPFS/cache tests and twelve direct smoke observations pass; see composition-cleanup-ownership-review.json. The same source-scan blockage remains; no blocked deletion, model qualification or deployment is claimed.
   c46: A malformed source could stall iterator cleanup after user cancellation. The existing cancellable wait now releases the lock, preserves the prior pointer and observes late cleanup errors. All 118 affected checks, two actual Edge OPFS/cache checks and twelve direct smoke observations pass; see composition-cleanup-cancellation-review.json. Signal-free deadlines, broader cache ownership and real model/public evidence remain outside this result.
   c45: Smoke v8 preserves raw events and separately attributes exact HTTP 200, independently verified probe bodies. Minimal-page diagnostics establish that complete bodies can accompany abort events; native cause remains unproven. Terminal-event waits fix a stalled Playwright response wait. All 34 smoke and 42 runtime checks plus the normal CLI pass; see completed-runtime-probe-review.json. Real model/public gates remain open.

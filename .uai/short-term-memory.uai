@@ -1,10 +1,10 @@
 profile: tinyrustlm.short-term-memory.current.v1
-updated_utc: 2026-09-20T00:34:40Z
+updated_utc: 2026-09-20T00:53:30Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
 now:
-  task: C47 admits exact cache cleanup ownership and removes only recognized direct files. All 143 affected checks, three actual Edge cache tests and twelve direct smoke observations pass. Continue reader/replacement lifecycle and independent model/hosting work; ternary/Bonsai research stays deferred.
+  task: C48 pins cached composition reads through worker activation and waits for readers before retirement. Current source, affected tests and browser evidence are recorded in composition-read-lease-review.json. Continue remaining cache/crash/cancellation and independent model/hosting work; ternary/Bonsai research stays deferred.
   maturity: Early alpha, never a working release; no code debt, obsolete code or legacy support before the owner's official acceptance of a fully working release.
   broader_goal: Ecosystem cleanup and usable release remain incomplete.
   manifest: docs/report-intake/2026-09-19/working-product-research/MANIFEST.md
@@ -12,6 +12,7 @@ now:
   scope: Local guidance/custody/validation only; no model run, qualification, public seed, deployment or live MemoryEndpoints operation.
 
 current_source_state:
+  cache_readers: C48 adds shared per-composition read leases and exclusive write/retirement locks beneath the global writer lock. The app uses withRead for the full six-member worker transfer; companion validation requires that method. Scope exit/cancellation closes pending readers. Standalone member iterators pin until completion/disposal; metadata alone does not pin bytes. Real cross-tab Edge checks cover retirement and tab closure; no real model or public claim follows.
   cache_ownership: C47 requires a canonical staging marker, active pointer or hash-bound orphan manifest plus a bounded ten-file directory inventory before deletion. Unexpected entries are retained; candidate paths must be vacant. Recovery retains pointer ownership until content removal succeeds; failed candidate cleanup retains its marker. See composition-cleanup-ownership-review.json. This is synthetic storage evidence, not real model qualification or complete crash/reader lifecycle proof.
   cache_cancellation: Failed source cleanup uses the existing cancellable wait instead of an uninterruptible iterator return. The original failure and prior pointer remain authoritative; late cleanup errors are observed. Both shell hashes bind the new script. See composition-cleanup-cancellation-review.json; synthetic storage tests do not qualify a real model.
   release_smoke: Sole v8 retains raw failures and classifies only the two exact HTTP 200 probe requests after independent byte verification. Application/other failures remain blocking, with real truncation/corruption/cancellation tests. Empty startup remains deferred. C44 failures and the first failed C45 completion wait are preserved; see completed-runtime-probe-review.json. No claim that browser aborts ceased or model/deployment gates passed.
@@ -43,7 +44,7 @@ known_blockers:
   - Training pilot needs genuine independent reviewers and holdout authors; no accepted derivative or 200000-record scale authorization follows from reports.
 
 next_decisions:
-  - Continue cache reader lifetime during replacement, cancellation during metadata I/O and terminal cleanup failures. C47 bounds ownership and avoids recursive deletion; orphan final-directory failures can still require explicit review after their manifest is removed. No complete crash-safety or reader-retirement claim is established.
+  - Continue cancellation during metadata I/O and terminal cleanup failures. C48 protects cooperating readers during replacement; callbacks must finish or cancel and must not acquire store mutation locks from inside a read scope. C47 orphan final-directory failures can still require review after manifest removal. Complete crash-safety is not established.
   - Continue historical execution-owner and producer/consumer review, independent candidate admission and remaining model/hosting work. C35-C39 provide one current discovery contract, exact exclusions, bounded transfers and complete owned receipts; tests do not grant quality/execution admission or reopen a closed experiment.
   - Test exact eligible source usefulness before conversion; diagnose semantics/arithmetic separately; measure actual browser viability.
   - Establish actual LiteSpeed hosting capabilities, server TRACE rejection, remote paths, TLS/browser CORS and qualified member readbacks. C34 proves local Apache HTTP only, using an Alias and invalid-model fixtures. MiniModel seeding is authorized; no qualified payload or deployment gate pass exists.

@@ -2636,7 +2636,7 @@ test("worker activation cancellation invalidates transfer and blocks late ready 
   assert.match(activation, /signal\.addEventListener\("abort", abortTransfer, \{ once: true \}\);/);
   assert.match(
     activation,
-    /stateReport = await client\.activate\([\s\S]*?throwIfModelActivationCancelled\(loadId, signal\);\s*const verifiedState = requireActivatedComposition[\s\S]*?requireCurrentBrowserComposition\(model\);\s*return verifiedState;/
+    /stateReport = stored\s*\? await stored\.withRead\(transfer, \{ signal: transferController\.signal \}\)\s*: await transfer\(null\);[\s\S]*?throwIfModelActivationCancelled\(loadId, signal\);\s*const verifiedState = requireActivatedComposition[\s\S]*?requireCurrentBrowserComposition\(model\);\s*return verifiedState;/
   );
   assert.match(load, /parentSignal\.addEventListener\("abort", abortActivation, \{ once: true \}\);/);
   const activationAwait = load.indexOf("state.runtimeState = await activateBrowserComposition(");

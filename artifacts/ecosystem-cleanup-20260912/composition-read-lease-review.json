@@ -1,0 +1,345 @@
+{
+  "schema": "tinyrustlm.composition-read-lease-review.v1",
+  "observedAtUtc": "2026-09-20T00:53:30Z",
+  "localDate": "2026-09-19",
+  "sourceParent": "04ed7687c1d53f42b57f3dd695cb014a95cefe42",
+  "status": "local-composition-reader-lifetime-fixed-no-real-model-or-publication-claim",
+  "inputs": [
+    {
+      "path": "tinyrustlm/app/model-composition-store.js",
+      "bytes": 84578,
+      "sha256": "c70b991fb68ab77134c67fc7049b755b1584c51ec52194e8bf4a24e804d5350e"
+    },
+    {
+      "path": "tinyrustlm/tests/model-composition-store.test.js",
+      "bytes": 113236,
+      "sha256": "350fe1a13a7d9c8a816c789903a54b60db3594d2b55bc88a16c709d27d7f51ae"
+    },
+    {
+      "path": "tinyrustlm/e2e/composition-cache.spec.js",
+      "bytes": 65797,
+      "sha256": "8e800af77de7ec0f7eccb756403fa4321237c03f0aa4df22202d3010ba04e311"
+    },
+    {
+      "path": "tinyrustlm/app/index.html",
+      "bytes": 48604,
+      "sha256": "96ade5380da80e63bc8e8ccdb997a667c0f49a01690c78a9d10964f3357f7f29"
+    },
+    {
+      "path": "tinyrustlm/index.html",
+      "bytes": 48684,
+      "sha256": "b91e1d52676c682dc6e48ea2fc8f268c66f7a944ac91fb9f5626d1b6d7d05eca"
+    },
+    {
+      "path": "tinyrustlm/tests/model-cache-custody-integration.test.js",
+      "bytes": 29747,
+      "sha256": "a297825dc40a8dbc0e7ebcc38cdfcf13eaf3175cded674ff9f2a8035653f0f9c"
+    },
+    {
+      "path": "tinyrustlm/tests/p2p-composition-install.test.js",
+      "bytes": 45141,
+      "sha256": "356570a67bd3ea6354de021aac73a9ddd499019c3453f45329969503c37443da"
+    },
+    {
+      "path": "tinyrustlm/tests/companion-composition-install.test.js",
+      "bytes": 25654,
+      "sha256": "ef0938dbb20a0663f42af42719f8af0948bd7d702e703013fe08cf9f3e1dff34"
+    },
+    {
+      "path": "tinyrustlm/tests/static-shell-parity.test.js",
+      "bytes": 5127,
+      "sha256": "c20d60933c2f75bc60a243b2603545c26823a4aafdef4304c87e8e2bc634c89d"
+    },
+    {
+      "path": "tinyrustlm/tests/web-deployment-manifest.test.js",
+      "bytes": 11975,
+      "sha256": "4c68f345ff731af733f6a157d2b2d2ecd0b39544a2549f67a58d97fc672467fd"
+    },
+    {
+      "path": "tinyrustlm/app/p2p-composition-install.js",
+      "bytes": 50486,
+      "sha256": "55a53359bb7af64062eb8b7505251af6eab487bc94a8105a92698830ea6ae8e4"
+    },
+    {
+      "path": "tinyrustlm/app/companion-composition-install.js",
+      "bytes": 34585,
+      "sha256": "cbf8617b8467fe32d196788f69acd45a43e499dec31643675278f881c2b9b2b7"
+    },
+    {
+      "path": "tinyrustlm/app/browser-model-admission.js",
+      "bytes": 14858,
+      "sha256": "87cdc059e71435f1572b3ad03fcce17701d5b73e83c3a6172e078a3349e5b683"
+    },
+    {
+      "path": "tinyrustlm/app/minimodel-catalog-v1.js",
+      "bytes": 74274,
+      "sha256": "4868dba65b57197b68de6f3e74987602b9728c5fa0cf28ca05ec2a3166c35333"
+    },
+    {
+      "path": "tinyrustlm/app/incremental-sha256.js",
+      "bytes": 9404,
+      "sha256": "e28faf3a02617d3d6747a0061f10f20b756500ae727f5c02e18da9912c767095"
+    },
+    {
+      "path": "tinyrustlm/e2e/owned-browser-profile.js",
+      "bytes": 2432,
+      "sha256": "35a330243dbbd3c076eab57a6174dcd1a892b33af4774a37ec15bff7e697c4ff"
+    },
+    {
+      "path": "tinyrustlm/tools/static-shell-parity.js",
+      "bytes": 5964,
+      "sha256": "100ae82d9151f592db9607a6803d316d45934b3f349b3533d9c6df9d1e28fdeb"
+    },
+    {
+      "path": "tinyrustlm/tools/web-release-browser-smoke.js",
+      "bytes": 44097,
+      "sha256": "871da8e65d1f0b7ae6935a0a80d77d8409249dc025afac228905d70f8acb605b"
+    },
+    {
+      "path": "tinyrustlm/deploy/web-deployment-manifest.v2.json",
+      "bytes": 4802,
+      "sha256": "3c97a713670f119a978a1aea1611169dfb7d9cf1974ad8ae7c4a201454a04df8"
+    },
+    {
+      "path": "tinyrustlm/app/app.js",
+      "bytes": 461521,
+      "sha256": "5e164b597ca5f1dd301acff2c906ac68537058ed2cc95112be5ef0497580a095"
+    },
+    {
+      "path": "tinyrustlm/tests/model-acquisition.test.js",
+      "bytes": 121632,
+      "sha256": "4ec97bc06643c39e8d9b53ceb1014ae4ba7597d4a0a8ea6f9ddd44ea28b69bde"
+    },
+    {
+      "path": "tinyrustlm/tests/model-acquisition-boundary-regression.test.js",
+      "bytes": 58516,
+      "sha256": "8b5700062cfa781dd95d0e0324bc130ffaefe41253b55e00bfb47e4e0abad216"
+    },
+    {
+      "path": "tinyrustlm/e2e/direct-p2p-composition.spec.js",
+      "bytes": 64545,
+      "sha256": "0bf79152816f86df9c550b11542b1db2255970386e0ed0ee3512b989b2252476"
+    },
+    {
+      "path": "docs/server-seeded-startup-2026-09-12.md",
+      "bytes": 11910,
+      "sha256": "5e46fa1b80abcbd5d9d6a1e0a78c43d56a5c90cceede26edabc0ebdb43a66725"
+    }
+  ],
+  "finding": {
+    "before": "An opened composition streamed outside the global writer lock. Another store could commit a replacement and retire the prior directory while its iterator was suspended.",
+    "reproducer": "Install prior synthetic composition, consume only its first model chunk, replace it from a second store sharing the adapter. Before the fix replacement completes and retires the old directory before the reader finishes.",
+    "correction": "Shared per-composition leases for reads; exclusive leases for candidate writes and all installed-content retirement. App cached activation holds a withRead scope across six member transfers and worker activation. Companion opened-result validation requires callable withRead.",
+    "identity": "Current six-member binary composition and storage schemas unchanged; read-scope API and adapter lock contract updated coherently."
+  },
+  "lockContract": {
+    "writer": "tinyrustlm-model-compositions-v2-writer",
+    "composition": "tinyrustlm-model-compositions-v2-writer:<manifest-sha256>",
+    "ordering": "Mutations acquire writer then composition. Read scopes acquire composition shared only and must not call store mutations.",
+    "standalone": "streamMember pins one iterator until completion/disposal.",
+    "scoped": "withRead closes unfinished iterators and cancels pending reads/callback waits before releasing its lease. Escaped scoped readers reject after closure.",
+    "cancellation": "Queued precommit candidate writes and explicit cleanup/recovery waits observe the caller signal. Postcommit best-effort retirement does not reinterpret an already committed pointer as cancellation.",
+    "retirement": "Prior bytes remain only while readers or a failed cleanup require them, then normal retirement removes them without recursive deletion.",
+    "boundary": "Web Locks coordinate cooperating origin clients; opened metadata alone does not pin retired bytes."
+  },
+  "developmentResults": [
+    {
+      "stage": "baseline-reproducer",
+      "sourceSha256": "10c364cad41eed9ec157b7c311a741da50cd785536cf26ab581de8556618b89a",
+      "tests": 70,
+      "passed": 69,
+      "failed": 1,
+      "result": "Replacement finished while prior member iterator was still open."
+    },
+    {
+      "stage": "first-read-lease-fix",
+      "tests": 70,
+      "passed": 70,
+      "failed": 0
+    },
+    {
+      "stage": "scoped-unit-tests",
+      "tests": 74,
+      "passed": 74,
+      "failed": 0
+    },
+    {
+      "stage": "initial-affected",
+      "tests": 241,
+      "passed": 239,
+      "failed": 2,
+      "result": "Companion exact activated field list rejected new withRead; an activation source assertion expected the prior direct call syntax. Updated the sole current bridge contract and assertion while preserving behavioral cancellation tests."
+    },
+    {
+      "stage": "initial-edge",
+      "tests": 4,
+      "passed": 2,
+      "failed": 2,
+      "result": "Test digest bytes were compared against hex text; old observer treated composition locks as global writer locks. Corrected hex encoding and separate exact lock accounting; one-global-writer invariant remains."
+    },
+    {
+      "stage": "affected-after-contract-update",
+      "tests": 241,
+      "passed": 241,
+      "failed": 0
+    },
+    {
+      "stage": "edge-after-observer-update",
+      "tests": 4,
+      "passed": 4,
+      "failed": 0
+    },
+    {
+      "stage": "additional-reader-cases",
+      "tests": 245,
+      "passed": 245,
+      "failed": 0
+    },
+    {
+      "stage": "direct-p2p-before-final-cancellation",
+      "tests": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    {
+      "stage": "final-affected",
+      "tests": 246,
+      "passed": 246,
+      "failed": 0,
+      "skipped": 0,
+      "coverage": {
+        "scope": "Node V8 whole model-composition-store.js module, not isolated changed-line coverage; app source sections are exercised by behavioral tests.",
+        "linePercent": 88.24,
+        "branchPercent": 84.66,
+        "functionPercent": 90.06
+      }
+    },
+    {
+      "stage": "final-edge",
+      "tests": 6,
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0,
+      "retries": 0,
+      "toolchain": "Node 24.14.0 / Playwright 1.61.1 / installed Microsoft Edge 153.0.4234.48",
+      "scope": "Desktop composition-cache and direct-p2p-composition specs; actual OPFS/Web Locks, synthetic models and controlled peers.",
+      "observations": [
+        "Writer commits replacement but cannot retire the prior composition while a tab holds its six-member read scope.",
+        "Reader completes all six exact member hashes before retirement completes.",
+        "Reader-tab closure releases its shared lock; waiting retirement completes and leaves only the current installed composition.",
+        "Existing source cancellation, ownership refusal, persistence, acquisition UI and direct peer transport tests pass."
+      ]
+    },
+    {
+      "stage": "smoke-before-final-cancellation",
+      "status": "pass",
+      "observationCount": 12,
+      "reportSha256": "5b4f96b44c11344520ee10c1f289a1b11920e1d7f6eefb1b88609495e03d0e4c"
+    },
+    {
+      "stage": "final-direct-release-smoke",
+      "status": "pass",
+      "observationCount": 12,
+      "reportSha256": "2025aa2bfa3ee88b8d6feafd3a7e0c530643a472289fed10ab5b69f169d12c63",
+      "temporaryOutputCleanup": "verified",
+      "scope": "Direct zero-argument Node command; npm package preflight remains blocked."
+    },
+    {
+      "stage": "memory",
+      "tests": 6,
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0
+    }
+  ],
+  "sourceGate": {
+    "status": "source_authority_scan_incomplete",
+    "remaining": [
+      "artifacts/verification/qwen3-environment-install/tinyrustlm-operation-C3ZUt9/install-temp/TmP6xn2evdh-b",
+      "artifacts/verification/qwen3-environment-install/tinyrustlm-operation-C3ZUt9/install-temp/TmPeq63_hr7-b"
+    ],
+    "blockedDeletionsRetried": false
+  },
+  "cleanup": {
+    "runs": [
+      {
+        "run": "initial-reader-reproducer",
+        "files": 2,
+        "logicalBytes": 474321
+      },
+      {
+        "run": "first-read-lease-fix",
+        "files": 2,
+        "logicalBytes": 473598
+      },
+      {
+        "run": "scoped-read-unit-tests",
+        "files": 2,
+        "logicalBytes": 479629
+      },
+      {
+        "run": "initial-affected-contract-failure",
+        "files": 9,
+        "logicalBytes": 3069358
+      },
+      {
+        "run": "initial-edge-observer-failures",
+        "files": 18,
+        "logicalBytes": 1076580
+      },
+      {
+        "run": "affected-after-contract-update",
+        "files": 9,
+        "logicalBytes": 3063310
+      },
+      {
+        "run": "edge-after-observer-update",
+        "files": 13,
+        "logicalBytes": 934061
+      },
+      {
+        "run": "affected-additional-reader-cases",
+        "files": 9,
+        "logicalBytes": 3067131
+      },
+      {
+        "run": "smoke-before-final-cleanup-cancellation",
+        "files": 3,
+        "logicalBytes": 2680690
+      },
+      {
+        "run": "direct-p2p-before-final-cleanup-cancellation",
+        "files": 13,
+        "logicalBytes": 918206
+      },
+      {
+        "run": "final-affected",
+        "files": 9,
+        "logicalBytes": 3067108
+      },
+      {
+        "run": "final-edge-cache-and-p2p",
+        "files": 15,
+        "logicalBytes": 1309841
+      },
+      {
+        "run": "final-smoke",
+        "files": 3,
+        "logicalBytes": 2680689
+      }
+    ],
+    "removedFiles": 107,
+    "logicalBytesRemoved": 23294522,
+    "physicalBytesRecovered": null,
+    "profileBytesRemovedBeforeHarnessCount": null,
+    "note": "Canonical operation-owned scratch and browser profiles were removed. Profiles already removed by each test are outside the harness byte totals. No model payload or previously blocked deletion was attempted."
+  },
+  "remaining": [
+    "No qualified default, useful real default browser conversation, numerical parity, public initial seed or deployment is claimed.",
+    "Callbacks must complete or cancel; standalone iterators must complete or be disposed. Arbitrary abandoned callbacks and same-origin code are outside the lock guarantee.",
+    "No automatic retry when opened metadata outlives retired bytes; exact read failure remains visible.",
+    "Remaining metadata I/O deadlines and terminal orphan-directory crash cleanup need further review.",
+    "Other repository WIP and historical evidence remain untouched; TinyRustLM only changes in this checkpoint.",
+    "Ternary/Bonsai/Hadamard research remains deferred."
+  ]
+}

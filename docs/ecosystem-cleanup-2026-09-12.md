@@ -5,6 +5,52 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C48: keep composition bytes alive while readers use them, September 19
+
+The store released its global lock before callers consumed `streamMember`.
+A second store could commit a replacement and delete the prior directory while
+its reader was suspended. The added concurrency regression reproduced premature
+retirement: the first run passed 69/70 tests and failed the reader invariant.
+
+Each immutable composition now has a shared read lock and an exclusive write/
+retirement lock. Mutations take the global writer lock before a composition lock;
+readers never take the writer lock. Standalone member iterators pin their member
+until completion/disposal. The app's full cached load uses a callback read scope
+across all six transfers and worker activation. Scope exit closes unfinished
+streams; cancellation interrupts the callback/read wait, observes late rejection,
+and releases its lease. Queued precommit writes and explicit cleanup/recovery
+remain cancellable. Postcommit retirement preserves the committed outcome.
+
+The companion bridge's closed opened-result contract now requires callable
+`withRead`; it rejects missing/noncallable scope methods. The current binary
+composition formats are unchanged. Both shell asset lists bind the new app,
+store and companion scripts; visual markup is unchanged.
+
+All 246 affected unit/integration/publication checks pass. Store Node coverage is
+88.24% lines, 84.66% branches and 90.06% functions. Six installed-Edge checks pass,
+including actual cross-tab OPFS/Web Locks, six-member hash verification, delayed
+retirement, release on reader-tab closure, existing cache behavior and the direct
+P2P acquisition UI/transport fixtures. The direct zero-argument release smoke
+passes twelve observations. Model bytes remain synthetic; this is not real model
+quality, public reachability or deployment evidence.
+
+Intermediate failures remain recorded: 239/241 affected checks exposed the
+companion field-list mismatch and a source assertion tied to the old call shape.
+The first Edge run passed 2/4; a test compared digest bytes with hex text, and the
+old observer counted the new composition lock as a second global writer. The
+corrected test verifies one global writer, a separate composition lock, exact
+lock identities and allowed modes; it does not permit concurrent global writers.
+
+Evidence: `artifacts/ecosystem-cleanup-20260912/composition-read-lease-review.json`.
+Callbacks must finish/cancel, dispose streams, and avoid store mutations while
+holding a read scope. Metadata objects alone do not pin files. Arbitrary same-origin
+code is outside cooperative lock guarantees. Remaining metadata I/O lifetime and
+terminal orphan cleanup/crash cases are still open. Owned scratch was removed;
+logical sizes are recorded, physical recovery is unmeasured. The seven repository
+inventory is unchanged; only TinyRustLM changes here. Source scan still stops at
+the two previously blocked installer links. No blocked deletion was retried, no
+real default/initial seed is established, and ternary research stays deferred.
+
 ## C47: admit cache ownership before deletion, September 19
 
 The composition store recursively deleted unrecognized staging entries and

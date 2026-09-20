@@ -269,8 +269,9 @@ async function launchProfile(profileRoot) {
   });
 }
 
-async function openRuntimePage(context, baseURL) {
-  const page = context.pages()[0] || await context.newPage();
+// Use an explicit page for cross-tab storage tests, otherwise reuse the profile's first page.
+async function openRuntimePage(context, baseURL, suppliedPage) {
+  const page = suppliedPage || context.pages()[0] || await context.newPage();
   await page.goto(new URL("/app/browser-model-admission.js", baseURL).href, {
     waitUntil: "domcontentloaded"
   });
@@ -454,6 +455,103 @@ test("OPFS cleanup preserves unexpected files and refuses unsafe recovery", asyn
   }
 });
 
+test("cross-tab OPFS retirement waits for all six-member readers and releases on tab closure", async ({}, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop", "The read-lease contract runs in desktop Chromium");
+  const fixtures = { prior: createSyntheticFixture("lease-prior", 127),
+    candidate: createSyntheticFixture("lease-candidate", 149) };
+  const profileRoot = createOwnedBrowserProfile("cache-reader-lease");
+  let context = null;
+  try {
+    context = await launchProfile(profileRoot);
+    const baseURL = String(testInfo.project.use.baseURL);
+    const readerPage = await openRuntimePage(context, baseURL);
+    const writerPage = await openRuntimePage(context, baseURL, await context.newPage());
+    const errors = [];
+    for (const page of [readerPage, writerPage]) page.on("pageerror", error => errors.push(error.message));
+    // Both tabs use their own store/adapter against the same real origin and OPFS directory.
+    const setup = async ({ fixtures, rootName }) => {
+      const api = globalThis.TinyRustLMModelCompositionStore;
+      const adapter = api.createOpfsAdapter({ createSha256: globalThis.TinyRustLMIncrementalSha256.createSha256 });
+      const store = api.createModelCompositionStore({ adapter, chunkBytes: 8 });
+      window.leaseTest = { store, fixtures, done: false,
+        install: value => store.install({ manifest: value.manifest,
+          admissionAuthority: value.admissionAuthority, activate: async () => true,
+          authorizeCommit: async () => true,
+          sources: Object.fromEntries(api.memberNames.map(name => [name, {
+            async *[Symbol.asyncIterator]() {
+              yield Uint8Array.from(atob(value.members[name]), character => character.charCodeAt(0));
+            }
+          }])) }),
+        async snapshot() {
+          const root = await (await navigator.storage.getDirectory()).getDirectoryHandle(rootName);
+          const pointer = JSON.parse(await (await (await root.getFileHandle("active.json")).getFile()).text());
+          const installed = [];
+          for await (const name of (await root.getDirectoryHandle("installed")).keys()) installed.push(name);
+          return { pointer: pointer.manifestSha256, installed, locks: await navigator.locks.query() };
+        }
+      };
+    };
+    for (const page of [readerPage, writerPage]) await page.evaluate(setup, { fixtures, rootName: OPFS_ROOT_NAME });
+    await readerPage.evaluate(async () => { await leaseTest.install(leaseTest.fixtures.prior); });
+    await readerPage.evaluate(async () => {
+      const active = await leaseTest.store.openActive();
+      const entered = Promise.withResolvers();
+      const resume = Promise.withResolvers();
+      leaseTest.resume = resume.resolve;
+      leaseTest.reading = active.withRead(async reader => {
+        const hashes = {};
+        for (const name of globalThis.TinyRustLMModelCompositionStore.memberNames) {
+          const hash = globalThis.TinyRustLMIncrementalSha256.createSha256();
+          for await (const chunk of reader.streamMember(name)) hash.update(chunk);
+          hashes[name] = Array.from(hash.digest(), byte => byte.toString(16).padStart(2, "0")).join("");
+          if (name === "model.slm2") { entered.resolve(); await resume.promise; }
+        }
+        return hashes;
+      });
+      await entered.promise;
+    });
+    await writerPage.evaluate(() => {
+      leaseTest.replacing = leaseTest.install(leaseTest.fixtures.candidate).then(() => { leaseTest.done = true; });
+    });
+    await expect.poll(() => writerPage.evaluate(async () => (await leaseTest.snapshot()).pointer))
+      .toBe(fixtures.candidate.manifestSha256);
+    const blocked = await writerPage.evaluate(async () => ({ ...(await leaseTest.snapshot()), done: leaseTest.done }));
+    expect(blocked.done).toBe(false);
+    expect(blocked.installed.sort()).toEqual([fixtures.prior.manifestSha256, fixtures.candidate.manifestSha256].sort());
+    expect(blocked.locks.held.some(lock => lock.mode === "shared" && lock.name.endsWith(fixtures.prior.manifestSha256))).toBe(true);
+    expect(blocked.locks.pending.some(lock => lock.mode === "exclusive" && lock.name.endsWith(fixtures.prior.manifestSha256))).toBe(true);
+    const hashes = await readerPage.evaluate(async () => { leaseTest.resume(); return leaseTest.reading; });
+    for (const member of fixtures.prior.manifest.members) expect(hashes[member.fileName]).toBe(member.sha256);
+    await writerPage.evaluate(() => leaseTest.replacing);
+    expect((await writerPage.evaluate(() => leaseTest.snapshot())).installed).toEqual([fixtures.candidate.manifestSha256]);
+
+    // A suspended tab pins no permanent backup: destroying its context releases the browser-owned lease.
+    await readerPage.evaluate(async () => {
+      const active = await leaseTest.store.openActive();
+      const entered = Promise.withResolvers();
+      leaseTest.reading = active.withRead(() => { entered.resolve(); return new Promise(() => {}); });
+      await entered.promise;
+    });
+    await writerPage.evaluate(() => {
+      leaseTest.done = false;
+      leaseTest.replacing = leaseTest.install(leaseTest.fixtures.prior).then(() => { leaseTest.done = true; });
+    });
+    await expect.poll(() => writerPage.evaluate(async () => (await leaseTest.snapshot()).pointer))
+      .toBe(fixtures.prior.manifestSha256);
+    expect(await writerPage.evaluate(() => leaseTest.done)).toBe(false);
+    await readerPage.close();
+    await writerPage.evaluate(() => leaseTest.replacing);
+    const final = await writerPage.evaluate(() => leaseTest.snapshot());
+    expect(final.installed).toEqual([fixtures.prior.manifestSha256]);
+    expect(final.locks.held.filter(lock => lock.name.startsWith(LOCK_NAME))).toEqual([]);
+    expect(final.locks.pending.filter(lock => lock.name.startsWith(LOCK_NAME))).toEqual([]);
+    expect(errors).toEqual([]);
+  } finally {
+    if (context !== null) await context.close();
+    removeOwnedBrowserProfile(profileRoot);
+  }
+});
+
 test("persistent OPFS cache keeps only the admitted six-member composition", async ({}, testInfo) => {
   test.skip(testInfo.project.name !== "desktop", "The persistent-cache contract runs in desktop Chromium");
   test.slow();
@@ -561,7 +659,7 @@ test("persistent OPFS cache keeps only the admitted six-member composition", asy
         return entries.sort((left, right) => left.name.localeCompare(right.name));
       }
 
-      const lockObservations = { requests: 0, held: 0, maxHeld: 0, names: [], modes: [] };
+      const lockObservations = { requests: 0, held: 0, maxHeld: 0, writerHeld: 0, maxWriterHeld: 0, names: [], modes: [] };
       const shaObservations = { instances: 0, updates: 0, digests: 0, maxUpdateBytes: 0 };
       const nativeLocks = navigator.locks;
       const lockManager = {
@@ -572,10 +670,15 @@ test("persistent OPFS cache keeps only the admitted six-member composition", asy
           return nativeLocks.request(name, options, async (lock) => {
             lockObservations.held += 1;
             lockObservations.maxHeld = Math.max(lockObservations.maxHeld, lockObservations.held);
+            if (name === "tinyrustlm-model-compositions-v2-writer") {
+              lockObservations.writerHeld += 1;
+              lockObservations.maxWriterHeld = Math.max(lockObservations.maxWriterHeld, lockObservations.writerHeld);
+            }
             try {
               return await callback(lock);
             } finally {
               lockObservations.held -= 1;
+              if (name === "tinyrustlm-model-compositions-v2-writer") lockObservations.writerHeld -= 1;
             }
           });
         }
@@ -852,10 +955,14 @@ test("persistent OPFS cache keeps only the admitted six-member composition", asy
       "tokenizer.tokenizer2"
     ].map((name) => ({ name, kind: "file" })));
     expect(installed.lockObservations.requests).toBeGreaterThanOrEqual(3);
-    expect(installed.lockObservations.maxHeld).toBe(1);
+    expect(installed.lockObservations.maxWriterHeld).toBe(1);
+    expect(installed.lockObservations.maxHeld).toBe(2);
     expect(installed.lockObservations.held).toBe(0);
-    expect(installed.lockObservations.names.every((name) => name === LOCK_NAME)).toBe(true);
-    expect(installed.lockObservations.modes.every((mode) => mode === "exclusive")).toBe(true);
+    expect(installed.lockObservations.names.every(name => name === LOCK_NAME ||
+      (name.startsWith(`${LOCK_NAME}:`) && /^[0-9a-f]{64}$/u.test(name.slice(LOCK_NAME.length + 1))))).toBe(true);
+    expect(installed.lockObservations.modes.every((mode, index) =>
+      installed.lockObservations.names[index] === LOCK_NAME ? mode === "exclusive" :
+        ["shared", "exclusive"].includes(mode))).toBe(true);
     expect(installed.shaObservations.instances).toBeGreaterThan(MEMBER_NAMES.length);
     expect(installed.shaObservations.updates).toBeGreaterThan(installed.shaObservations.instances);
     expect(installed.shaObservations.digests).toBe(installed.shaObservations.instances);
@@ -998,7 +1105,7 @@ test("persistent OPFS cache keeps only the admitted six-member composition", asy
         return { byteLength, chunks, maximumChunkBytes };
       }
 
-      const lockObservations = { requests: 0, held: 0, maxHeld: 0, names: [], modes: [] };
+      const lockObservations = { requests: 0, held: 0, maxHeld: 0, writerHeld: 0, maxWriterHeld: 0, names: [], modes: [] };
       const shaObservations = { instances: 0, updates: 0, digests: 0 };
       const nativeLocks = navigator.locks;
       const lockManager = {
@@ -1009,10 +1116,15 @@ test("persistent OPFS cache keeps only the admitted six-member composition", asy
           return nativeLocks.request(name, options, async (lock) => {
             lockObservations.held += 1;
             lockObservations.maxHeld = Math.max(lockObservations.maxHeld, lockObservations.held);
+            if (name === "tinyrustlm-model-compositions-v2-writer") {
+              lockObservations.writerHeld += 1;
+              lockObservations.maxWriterHeld = Math.max(lockObservations.maxWriterHeld, lockObservations.writerHeld);
+            }
             try {
               return await callback(lock);
             } finally {
               lockObservations.held -= 1;
+              if (name === "tinyrustlm-model-compositions-v2-writer") lockObservations.writerHeld -= 1;
             }
           });
         }
@@ -1345,10 +1457,14 @@ test("persistent OPFS cache keeps only the admitted six-member composition", asy
     }]);
 
     expect(reopened.lockObservations.requests).toBeGreaterThanOrEqual(9);
-    expect(reopened.lockObservations.maxHeld).toBe(1);
+    expect(reopened.lockObservations.maxWriterHeld).toBe(1);
+    expect(reopened.lockObservations.maxHeld).toBe(2);
     expect(reopened.lockObservations.held).toBe(0);
-    expect(reopened.lockObservations.names.every((name) => name === LOCK_NAME)).toBe(true);
-    expect(reopened.lockObservations.modes.every((mode) => mode === "exclusive")).toBe(true);
+    expect(reopened.lockObservations.names.every(name => name === LOCK_NAME ||
+      (name.startsWith(`${LOCK_NAME}:`) && /^[0-9a-f]{64}$/u.test(name.slice(LOCK_NAME.length + 1))))).toBe(true);
+    expect(reopened.lockObservations.modes.every((mode, index) =>
+      reopened.lockObservations.names[index] === LOCK_NAME ? mode === "exclusive" :
+        ["shared", "exclusive"].includes(mode))).toBe(true);
     expect(reopened.shaObservations.instances).toBeGreaterThan(MEMBER_NAMES.length * 3);
     expect(reopened.shaObservations.updates).toBeGreaterThan(reopened.shaObservations.instances);
     expect(reopened.shaObservations.digests).toBeLessThanOrEqual(reopened.shaObservations.instances);

@@ -386,6 +386,13 @@ class MemoryAdapter {
     }
   }
 
+  // Match the production composition lease using Node's shared/exclusive lock manager.
+  withCompositionLock(identity, mode, callback, signal) {
+    this.compositionLockPrefix ||= crypto.randomUUID();
+    return require("node:worker_threads").locks.request(`${this.compositionLockPrefix}:${identity}`,
+      { mode, ...(signal ? { signal } : {}) }, callback);
+  }
+
   createSha256() {
     const hash = crypto.createHash("sha256");
     let complete = false;

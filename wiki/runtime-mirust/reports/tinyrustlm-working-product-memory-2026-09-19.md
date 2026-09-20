@@ -106,6 +106,16 @@ observations pass. See `composition-cleanup-ownership-review.json`. These are
 synthetic storage tests. Reader retirement and terminal crash cases remain under
 review; no qualified model, public seed or deployment follows.
 
+**C48 cache readers:** a paused reader could lose its installed files to another
+replacement. Shared composition leases now protect member reads; the app holds
+one scope across all six files and worker activation, while writes/retirement
+take exclusive composition locks beneath the global writer lock. Companion
+results require the callable scope contract. Cancellation and scope exit dispose
+pending reads. All 246 affected checks, six actual Edge tests and twelve direct
+smoke observations pass. See `composition-read-lease-review.json`. Metadata alone
+does not pin files, callbacks must finish/cancel without nested store mutation,
+and fixture/storage evidence remains separate from a useful model/public release.
+
 Compare three routes by evidence:
 - Qualify an already useful compact checkpoint and adapt the sole runtime where justified.
 - Run a bounded new-derivative training experiment after inference, data and independent review readiness.
