@@ -11,6 +11,35 @@ Keep useful findings and compact evidence identities in the owning canonical
 repository. Keep source history in Git and current model payloads only in
 `D:\LLMs\TinyRustLM`.
 
+## C80: helper success does not prove the browser executor still matches the app
+
+- Question: does the exposed browser-round chain execute the current composition
+  boundary, and does its receipt feed the sole current campaign control plane?
+- Inputs: TinyRust parent `852d36f866cf62fc319b9938fdfd89ad635b0670`; eight exact
+  tool/test identities in `browser-contract-gate-review.json`, including the two
+  pending Advanced-selector edits. The current loader already uses those controls.
+- Method: trace every caller, compare actual admission exports and artifact count,
+  inspect DOM identities and receipt consumers, run old helper tests, then run the
+  current composition/runtime suites and actual Edge worker lifecycle.
+- Result: old helper baseline 26/27; one pinned-Chromium executable is missing.
+  The executor calls an absent API and supplies two files for a six-member app.
+  New focused UI gate 230/230, integration gate 41/41, Edge lifecycle 1/1 in two
+  deleted profiles. Real model generation and privacy qualification remain unproven.
+- Decision: remove the unusable npm route, wire focused gates to current suites,
+  retain source-admission prehooks and unchanged complete standard discovery.
+  Preserve privacy/profile-deletion requirements in the control-plane guidance;
+  authorized MiniModel downloads are distinct from prompt leakage.
+- Retirement: native PowerShell deletion was rejected by automatic review as
+  blocked by policy. All eight files remain unchanged, without retry or index-only
+  deletion. The proposed new absence assertion failed before deletion and was
+  withdrawn when retirement was blocked; existing cutover assertions are unchanged.
+- Reusable lesson: fixture receipts and isolated helpers can keep passing after
+  the real UI/API has moved. Trace the executable route and its final consumer.
+  Removing a stale command does not produce a working live evidence producer.
+- Uncertainty: source admission remains blocked by the two installer links.
+  No model, seed, credential, package or deployment claim follows from these tests.
+- Evidence: `artifacts/ecosystem-cleanup-20260912/browser-contract-gate-review.json`.
+
 ## C79: browser handoff must leave local HTTP responsive
 
 - Question: can the local server answer while its OS browser request is pending,

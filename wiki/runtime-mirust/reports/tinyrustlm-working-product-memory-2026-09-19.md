@@ -16,6 +16,17 @@ Authority order is current owner instructions, inspected current contracts and b
 
 ## Current evidence and its limits
 
+**C80 browser gates:** focused checks now cover the current six-member admission,
+installation, client and worker; all 230 UI and 41 integration checks pass. An
+actual Edge worker initialization/release check passes in two deleted profiles.
+The obsolete two-file npm executor route is removed, but automatic review blocked
+removal of its eight tool/test files. Keep that cohort and its unique selector
+edits intact; the exact paths/hashes are in `browser-contract-gate-review.json`.
+Standard test discovery still includes the old tests; their baseline is 26/27
+with one missing pinned-Chromium failure. Source admission, real model evidence,
+live round production, all campaign counts and NuGet/publication gates remain open.
+
+
 **C79 launcher handoff:** local HTTP remains responsive during the asynchronous
 OS browser request. Structured readiness replaces terminal scraping; termination
 cancels pending handoff and releases signal subscriptions. The actual listener

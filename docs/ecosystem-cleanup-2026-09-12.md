@@ -5,6 +5,30 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C80: current browser contract gates and blocked retirement, September 20
+
+The old npm browser-round path still called a removed admission API, imported
+only a model and admission file, and read obsolete runtime diagnostics. Its
+separate receipt/counter chain is not consumed by the vNext control plane.
+Remove that npm command and direct both focused browser/UI gates to the current
+six-member admission, companion installation, runtime client and worker suites.
+Explicit source-admission prehooks remain required for both commands.
+
+All 230 UI checks and 41 integration checks pass. The current Edge worker also
+initializes/releases in two fresh profiles, with deletion verified. This is
+runtime-boundary evidence, not real model generation or qualification. Production
+HTML/CSS and the required campaign counts remain unchanged.
+
+Automatic review rejected the eight-file physical retirement as blocked by
+policy. All eight remain with their inspected bytes, including two pending
+Advanced-selector edits. Standard test discovery still includes their suites;
+the old baseline passed 26/27, with one missing pinned-Chromium executable.
+No deletion was retried, no source file removed from the index, and no storage
+recovery is claimed for that cohort. The two installer links still block source
+admission. The current live round producer, qualified model, seed and publication
+requirements remain open. Exact identities and test/cleanup details are in
+`artifacts/ecosystem-cleanup-20260912/browser-contract-gate-review.json`.
+
 ## C79: responsive launcher handoff and listener ownership, September 20
 
 The pending browser launcher used synchronous OS execution on the same event

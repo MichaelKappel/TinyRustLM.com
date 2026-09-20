@@ -49,18 +49,18 @@
     "test:vnext-protected-equality-private-loader": "node --preserve-symlinks --preserve-symlinks-main --test tests/vnext-protected-equality-private-loader.test.js",
     "test:vnext-signature-rust-vectors": "node --test tests/vnext-signature-rust-vectors.test.js",
     "test:vnext-subject-store": "node --test tests/vnext-subject-store.test.js",
-    "test:ui": "node --test --test-concurrency=1 tests/browser-model-admission.test.js tests/browser-round-evidence.test.js tests/companion-capability.test.js tests/companion-capability-vectors.test.js tests/fresh-browser-conversation.test.js tests/model-acquisition.test.js tests/run-browser-round.test.js tests/site-release-browser.test.js tests/site-release-contract.test.js tests/static-shell-parity.test.js tests/web-deployment-manifest.test.js tests/web-release-browser-smoke.test.js",
+    "test:ui": "node --test --test-concurrency=1 tests/browser-model-admission.test.js tests/companion-composition-install.test.js tests/model-runtime-client.test.js tests/model-runtime-worker.test.js tests/companion-capability.test.js tests/companion-capability-vectors.test.js tests/model-acquisition.test.js tests/site-release-browser.test.js tests/site-release-contract.test.js tests/static-shell-parity.test.js tests/web-deployment-manifest.test.js tests/web-release-browser-smoke.test.js",
     "pretest:deployment": "npm run verify:source-authority",
     "test:deployment": "node --test tests/deploy-tinyrustlm-web.test.js tests/web-deployment-manifest.test.js tests/web-deployment-custody.test.js",
     "verify:vnext-campaign-release-surface": "node tools/run-vnext-campaign-release-surface-gate.js verify",
     "presmoke:web-release-local": "npm run verify:source-authority",
     "smoke:web-release-local": "node tools/run-web-release-local-smoke.js",
-    "test:browser-contract": "node --test tests/browser-model-admission.test.js tests/fresh-browser-conversation.test.js tests/browser-round-evidence.test.js tests/run-browser-round.test.js",
-    "run:browser-round": "node tools/run-browser-round.js",
+    "test:browser-contract": "node --test tests/browser-model-admission.test.js tests/companion-composition-install.test.js tests/model-runtime-client.test.js tests/model-runtime-worker.test.js",
     "verify:source-authority": "node tools/verify-single-source-authority.js",
     "pretest:e2e:acquisition": "npm run verify:source-authority",
     "test:e2e:acquisition": "playwright test --config=playwright.config.js --workers=1 --retries=0 --forbid-only e2e/model-chooser.spec.js e2e/composition-cache.spec.js e2e/direct-p2p-composition.spec.js",
-    "pretest:ui": "npm run verify:source-authority"
+    "pretest:ui": "npm run verify:source-authority",
+    "pretest:browser-contract": "npm run verify:source-authority"
   },
   "devDependencies": {
     "@playwright/test": "1.61.1"

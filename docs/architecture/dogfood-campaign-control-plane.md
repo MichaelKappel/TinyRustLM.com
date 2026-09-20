@@ -4,9 +4,9 @@
 
 This document is the maintained operator and architecture entry point for the
 clean-slate TinyRustLM campaign control plane as of 2026-08-15. The sole local
-release and publication path is vNext. The repository retains no second
-mutable release path, compatibility wrapper, migration reader, deprecated
-command, or fallback authority.
+release and publication path is vNext. Remaining obsolete source files are not
+current execution or release authority; their physical retirement must be tracked
+separately from maintained entry points.
 
 The local cutover is implementation evidence only. It does not prove a model
 qualified, a browser profile was deleted, MemoryEndpoints continuity ran, an
@@ -14,6 +14,24 @@ outside observer transferred model bytes, a catalog announcement became
 public, a package executed on physical target hardware, or production HTTPS
 served an authorized release. Current campaign counts remain exactly `0/20`,
 `0/50`, `0/25`, `0/40`, and `0/20`.
+
+The September 20 cleanup removes the npm route for the incompatible two-file
+browser executor. Automatic deletion review blocked physical removal of its
+four tools and four dedicated tests; they remain pending retirement and are not
+vNext consumers. The current app admits six composition
+members with a bound composition admission document; visual capture can load that
+input but does not produce live campaign rounds. A qualification-bound browser
+round producer remains unfinished. The completion predicate below is unchanged.
+
+Retain these requirements when implementing that producer: bind exact model,
+runtime, template and sampler identities; observe every multi-turn answer through
+the sole renderer; keep prompts local; inspect network, console, cookies, storage
+and the owned profile without publishing protected values; mark bounded or failed
+inspection incomplete; and prove profile deletion before crediting a round.
+MiniModel initial model-byte seeding is authorized, so authorized model downloads
+must be distinguished from prompt leakage. A blanket ban on public model bytes
+from the obsolete executor is not current product policy. No live privacy,
+deletion, quality or acquisition result follows from local helper tests.
 
 ## Canonical Boundaries
 

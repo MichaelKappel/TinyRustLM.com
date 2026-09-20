@@ -1,0 +1,218 @@
+{
+  "schema": "ecosystem.browser-contract-gate-review/1",
+  "reviewedUtc": "2026-09-20T19:53:58Z",
+  "sourceParent": "852d36f866cf62fc319b9938fdfd89ad635b0670",
+  "purpose": "Reconcile focused browser gates with current composition execution; remove the unusable npm command and record blocked physical retirement.",
+  "findings": [
+    "The old browser executor calls absent admissionForModel, imports two files instead of six members plus current admission, and expects removed DOM/runtime fields.",
+    "All direct tool callers belong to the old chain; its receipt and counter implementation is separate from the sole vNext campaign path.",
+    "Pending fresh-browser-conversation changes only update two Advanced selectors. Their useful intent already exists in current capture-ui-lock.loadComposition; these pending bytes remain.",
+    "Isolated helper and fixture receipt tests do not exercise the current composition-loading route.",
+    "The old prohibition on public model bytes conflicts with authorized MiniModel initial seeds. Prompts must still stay local."
+  ],
+  "implementation": [
+    "Remove run:browser-round from npm without claiming a replacement live producer.",
+    "Use current admission, companion installation, runtime client and worker suites in test:browser-contract and test:ui; preserve other UI suites.",
+    "Preserve the existing UI source-admission prehook and add the pending prehook for test:browser-contract.",
+    "Regression checks require current focused coverage, source prehooks and standard-discovered suite paths.",
+    "Keep complete standard discovery unchanged, including pending obsolete suites. Retain privacy/profile-deletion requirements and current campaign thresholds."
+  ],
+  "tests": {
+    "oldChainBaseline": {
+      "passed": 26,
+      "failed": 1,
+      "skipped": 0,
+      "failure": "Pinned Playwright Chromium headless executable missing; no retry and no current-model execution."
+    },
+    "proposedRetirementCheck": {
+      "passed": 0,
+      "failed": 1,
+      "disposition": "New absence assertion failed before removal and was withdrawn after policy rejection; existing cutover assertions unchanged."
+    },
+    "focusedBrowser": {
+      "passed": 83,
+      "failed": 0,
+      "skipped": 0,
+      "subsetOfUi": true
+    },
+    "focusedUi": {
+      "passed": 230,
+      "failed": 0,
+      "skipped": 0,
+      "command": "Direct package test:ui argv under canonical owned output; not a source-admission pass."
+    },
+    "integration": {
+      "passed": 41,
+      "failed": 0,
+      "skipped": 0,
+      "files": [
+        "vnext-unit-test-gate.test.js",
+        "vnext-release-cutover.test.js",
+        "vnext-campaign-projection.test.js",
+        "capture-ui-lock.test.js"
+      ]
+    },
+    "actualBrowser": {
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "engine": "Installed Edge via Playwright msedge",
+      "scope": "Current client/worker initialization and release with compiled current WASM in two fresh, subsequently deleted profiles; no model loaded."
+    },
+    "managedFirst": {
+      "passed": 37,
+      "failed": 1,
+      "cause": "Pointer patch failed before managed launch, leaving old hashes."
+    },
+    "managedFinal": {
+      "passed": 38,
+      "failed": 0,
+      "skipped": 0,
+      "change": "Correct ordered pointer patch applied before final check."
+    },
+    "actualNpmGate": {
+      "exitCode": 1,
+      "outcome": "Source prehook refuses at the two previously blocked installer links; focused tests never start."
+    },
+    "coverage": "Only npm wiring, tests and guidance changed; no production function or new code coverage claim."
+  },
+  "retirement": {
+    "status": "blocked_by_automatic_review",
+    "reason": "blocked by policy",
+    "attempt": "Native PowerShell exact-path file deletion after containment, reparse and hash checks.",
+    "files": [
+      {
+        "path": "tinyrustlm/tools/fresh-browser-conversation.js",
+        "bytes": 38230,
+        "lines": 1029,
+        "sha256": "4abe59b500722526bdfdff33f12dcb2d0dd5f4c7d4ee157e72de2a05bb361d8d"
+      },
+      {
+        "path": "tinyrustlm/tests/fresh-browser-conversation.test.js",
+        "bytes": 11426,
+        "lines": 325,
+        "sha256": "6637f10c0dedb5e075bcdfe07afa04b74ecf43b789cf6b70533c25eeb31578ed"
+      },
+      {
+        "path": "tinyrustlm/tools/run-browser-round.js",
+        "bytes": 5974,
+        "lines": 170,
+        "sha256": "0d0a6399b58ffb4454e3bcd66a64b7d73a50a033d4dd7535c505f8240ddbd297"
+      },
+      {
+        "path": "tinyrustlm/tests/run-browser-round.test.js",
+        "bytes": 3097,
+        "lines": 97,
+        "sha256": "8525e97fcd363849ff103bd34350dae0d0696b0710edc1a3e74aae11d542d843"
+      },
+      {
+        "path": "tinyrustlm/tools/browser-round-evidence.js",
+        "bytes": 23173,
+        "lines": 552,
+        "sha256": "40270e7cf4108891de36bd2534456cfbf220e682994cb9de3dfebbe2927dc017"
+      },
+      {
+        "path": "tinyrustlm/tests/browser-round-evidence.test.js",
+        "bytes": 13753,
+        "lines": 350,
+        "sha256": "4a454be04edb3aa2f751afda93570891a950d6f28a0b6f518dcd9edccf14de22"
+      },
+      {
+        "path": "tinyrustlm/tools/dogfood-campaign.js",
+        "bytes": 42443,
+        "lines": 1041,
+        "sha256": "1cc55fca17b215afacce59762c3e72d525318d7e1ebefc4bbcdbbec2102afd65"
+      },
+      {
+        "path": "tinyrustlm/tests/dogfood-campaign.test.js",
+        "bytes": 16677,
+        "lines": 415,
+        "sha256": "d13631b17bf0f0a31e069f540e85949e9dde4f998ea798a85bbc0f1c436fcaaa"
+      }
+    ],
+    "retried": false,
+    "filesDeleted": 0,
+    "indexOnlyDeletion": false,
+    "logicalBytesRemoved": 0,
+    "physicalBytesRecovered": null,
+    "handling": "Preserve these eight files and their parents; no alternate API, rename, truncation or parent deletion. All eight verified byte-identical after rejection."
+  },
+  "preservation": {
+    "blockedFilesUnchanged": 8,
+    "protectedContractsAndReceipts": 238,
+    "changed": [],
+    "chunks": [
+      {
+        "index": 0,
+        "count": 35,
+        "changed": [],
+        "baselineSha256": "f5dc0577395f07f8a0d70f6e19df08f52911c164f840ae8ac95679d5fd4772ff"
+      },
+      {
+        "index": 1,
+        "count": 35,
+        "changed": [],
+        "baselineSha256": "72692f00c6abcbaeedb3d96d573f83f41663366ede38bf15cf450045f3d4a0d7"
+      },
+      {
+        "index": 2,
+        "count": 35,
+        "changed": [],
+        "baselineSha256": "ff02439b910dd35a5849f051cef299b6a1d225eb08fb90fe3a729ac9362a6cc4"
+      },
+      {
+        "index": 3,
+        "count": 35,
+        "changed": [],
+        "baselineSha256": "514de11da55c198096bc0ce0bbc052258fcc6f9c009527788853745579ef6d1b"
+      },
+      {
+        "index": 4,
+        "count": 35,
+        "changed": [],
+        "baselineSha256": "de4ab4f3ab8f400a33ffcffe464cdf7d4455611ad99825248d7a676e1b28dd8a"
+      },
+      {
+        "index": 5,
+        "count": 35,
+        "changed": [],
+        "baselineSha256": "d991615179142fd43b035e33f67603c60b156fec23ba1cc18f1a9432b3f4f60f"
+      },
+      {
+        "index": 6,
+        "count": 35,
+        "changed": [],
+        "baselineSha256": "460b378d23ec8b205b0699f11d868e7e4e2d3d67637ba20af901dba034f4cb60"
+      },
+      {
+        "index": 7,
+        "count": 1,
+        "changed": [],
+        "baselineSha256": "8083815de741fb1e4924fba9dd8d2d6ee48312d4861566193fb95113399cf72e"
+      }
+    ]
+  },
+  "limits": [
+    "Source authority remains incomplete at the two C28 installer links.",
+    "Live browser-round production, real model qualification, seed and publication requirements remain open.",
+    "No key read, NuGet push, deployment or changed campaign count.",
+    "Unrelated work and earlier blocked cohorts remain."
+  ],
+  "secretScan": {
+    "status": "pass",
+    "scannedArtifactCount": 12,
+    "secretFindingCount": 0,
+    "scopeComplete": false,
+    "initialAttempt": "Missing campaignId rejected receipt creation; corrected invocation used a distinct report/store.",
+    "scope": "Twelve reviewed worktree files before final receipt accounting; partial source scope, not release admission."
+  },
+  "ownedOutput": {
+    "root": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\browser-round-retirement\\tinyrustlm-operation-Wz0O8n",
+    "status": "removed_and_verified_absent",
+    "files": 968,
+    "childDirectories": 227,
+    "logicalBytes": 190415809,
+    "markerBytes": 65,
+    "physicalBytesRecovered": null
+  }
+}

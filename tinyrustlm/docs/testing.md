@@ -50,6 +50,19 @@ The clean-cut test proves the registered obsolete executable closure remains
 physically absent, scans active source for superseded tokens, verifies the
 sole deployed browser artifact, and checks canonical Rust workspace ownership.
 
+`test:browser-contract` exercises the current six-member admission, companion
+installation, runtime client and worker boundaries. The same suites participate
+in `test:ui`. These are contract fixtures, not deletion-backed campaign rounds.
+The npm command for the incompatible two-file browser executor is removed;
+the vNext control plane remains the sole campaign authority. Automatic deletion
+review blocked removal of that executor, its separate receipt/counter chain and
+their four dedicated suites. Those eight files remain pending retirement; standard
+Node discovery still includes their tests. Do not restore the obsolete npm route
+or treat its isolated helper tests as current application execution.
+A current live round producer still needs qualification-bound full composition
+input, real multi-turn execution, bounded privacy observation and profile deletion
+evidence. Neither this focused gate nor visual capture supplies that evidence.
+
 ## Candidate selection checks
 
 The discovery and acquisition suites, together with metadata bounds, storage and
