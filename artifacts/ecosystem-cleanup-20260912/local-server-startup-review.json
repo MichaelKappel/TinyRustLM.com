@@ -1,0 +1,121 @@
+{
+  "schema": "ecosystem.local-server-startup-review/1",
+  "reviewedUtc": "2026-09-20T19:20:46Z",
+  "sourceParent": "e07d0ce4924ace257b67c54edb1ae35ea8786def",
+  "purpose": "Complete the pending canonical local server with exact preflight admission and bounded HTTP readiness.",
+  "baselineUncommittedFiles": [
+    {
+      "path": "tinyrustlm/tools/interview-demo-server.js",
+      "bytes": 11979,
+      "sha256": "1504a76009fbce0d439699716520234cd2eaa6dba86c5dfa0c9d82b598933988"
+    },
+    {
+      "path": "tinyrustlm/tools/interview-demo-launcher.js",
+      "bytes": 11044,
+      "sha256": "00feb4282fe2a894dc43acfd5824d67b358c3d5820ebe9be8fd753a4ea492ac2"
+    },
+    {
+      "path": "tinyrustlm/tests/interview-demo-server.test.js",
+      "bytes": 9091,
+      "sha256": "9c23e4b8d272e1b49b525750c081d19edd17bff0366e2c86445fcb3453cbce5c"
+    },
+    {
+      "path": "tinyrustlm/tests/interview-demo-launcher.test.js",
+      "bytes": 13219,
+      "sha256": "9920f8d19726e8fd55e5e2addf2e41a90c09267882fac13ea9f140feb34fd59b"
+    }
+  ],
+  "findings": [
+    "A report with just one passing source check could admit startup; the valid current source-failed report with skipped dependents was rejected as unavailable.",
+    "HTTP readiness used an inactivity timeout. A response dripping data every 5 ms completed after roughly 528 ms and falsely satisfied a 100 ms readiness budget.",
+    "The default child path could be derived from an alternate site root."
+  ],
+  "implementation": [
+    "Share the producer's ordered six-check definition; independently test exact IDs, codes, fields, statuses, failure list, strict bounded JSON and child exit status.",
+    "Admit source-failed reports with all dependent checks skipped. Invalid/incomplete/contradictory reports cannot open the server.",
+    "Require the canonical site before child execution. Observe local HTTP responses with a monotonic total deadline; destroy response/request on every terminal outcome and handle aborted/error/close events.",
+    "Add the local server and three package commands. The separate browser launcher and its corrected complete-report fixture remain uncommitted pending their own review."
+  ],
+  "tests": {
+    "baseline": {
+      "passed": 19,
+      "failed": 0,
+      "scope": "pending server and launcher"
+    },
+    "regressionsBeforeFix": {
+      "passed": 9,
+      "failed": 3,
+      "scope": "server tests: skipped report, incomplete report, continuously streaming body"
+    },
+    "final": {
+      "passed": 113,
+      "failed": 0,
+      "skipped": 0,
+      "files": [
+        "interview-demo-preflight.test.js",
+        "interview-demo-server.test.js",
+        "interview-demo-launcher.test.js",
+        "static-server.test.js",
+        "strict-json.test.js"
+      ],
+      "coverage": {
+        "server": {
+          "linePercent": 90.02,
+          "branchPercent": 85.71,
+          "functionPercent": 95
+        },
+        "preflight": {
+          "linePercent": 91.96,
+          "branchPercent": 84.7,
+          "functionPercent": 85.94
+        }
+      }
+    },
+    "realCli": {
+      "command": "node tinyrustlm/tools/interview-demo-server.js --port 43127",
+      "exitCode": 1,
+      "result": "demo_server_ui_preflight_blocked",
+      "sourceFailure": "demo_source_authority_failed",
+      "checks": 6,
+      "passed": 0,
+      "readyUrlPrinted": false
+    },
+    "memoryChecks": {
+      "passed": 38,
+      "failed": 0,
+      "skipped": 0,
+      "exitCode": 0
+    }
+  },
+  "sourceAuthority": {
+    "status": "incomplete",
+    "reason": "same two unreadable C28 installer links",
+    "blockedDeletionRetried": false
+  },
+  "intake": "Both live buckets contain placeholders only.",
+  "cleanup": {
+    "status": "removed-and-verified-absent",
+    "ownedRoot": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\launcher-startup\\tinyrustlm-operation-rkwWBI",
+    "files": 143,
+    "childDirectories": 38,
+    "logicalBytes": 5633134,
+    "externalMarkerBytes": 65,
+    "originalOwnershipVerified": true,
+    "matchingLiveProcesses": 0,
+    "physicalRecoveryMeasured": false
+  },
+  "secretScan": {
+    "status": "pass",
+    "scannedFiles": 13,
+    "findings": 0,
+    "scope": "Seven memory/progress files, preflight, server, server test, worktree package manifest, this receipt and pending launcher test; before final receipt accounting.",
+    "credentialRead": false
+  },
+  "boundaries": [
+    "No product HTML/CSS or visual changes; no browser was opened for this review.",
+    "Real loopback HTTP and fault tests do not prove model usefulness, browser inference, an outside seed, or deployment.",
+    "Source admission remains blocked; twenty C76 model fixture files and their strict storage failure remain unchanged.",
+    "NuGet key location is already stored in operations.uai. Key contents were not read and no package/site was published.",
+    "Full ecosystem objective remains active; unrelated work preserved."
+  ]
+}

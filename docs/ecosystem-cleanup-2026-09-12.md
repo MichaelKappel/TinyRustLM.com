@@ -5,6 +5,29 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C78: reconcile server admission and bound readiness, September 20
+
+The pending local server accepted a single passing check as a complete preflight,
+but rejected valid source-failed reports with skipped dependent checks. It now
+admits the exact six-check producer contract, bounded strict JSON and matching
+exit status. Default preflight execution requires the canonical root.
+
+The HTTP probe previously allowed ongoing traffic to renew its timeout. It now
+uses one monotonic deadline and releases both request and response on success,
+timeout, abort or error. Real loopback tests cover incomplete bodies, wrong
+status/content type, silent connections, refused connections and recovery.
+
+All 113 affected checks pass, with 90.02% server and 91.96% preflight line coverage.
+The actual CLI exits with source-preflight-blocked, before opening a server or
+printing a ready URL. Existing blocked installer links remain; no deletion was
+retried. Twenty C76 payloads and their strict storage failure remain unchanged.
+
+This checkpoint includes the server and three package entry commands. The pending
+browser launcher, its corrected report fixture, UI gates and unrelated work remain
+uncommitted for further review. No HTML/CSS, model bytes, credentials or public
+deployment changed. Evidence and cleanup accounting are in
+`artifacts/ecosystem-cleanup-20260912/local-server-startup-review.json`.
+
 ## C77: enforce local preflight admission and owned output, September 20
 
 The pending preflight previously started release-file creation and live catalog

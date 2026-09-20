@@ -11,6 +11,30 @@ Keep useful findings and compact evidence identities in the owning canonical
 repository. Keep source history in Git and current model payloads only in
 `D:\LLMs\TinyRustLM`.
 
+## C78: exact consumer admission and absolute readiness deadlines
+
+- Question: does the pending local server admit the real producer contract and
+  stop readiness observation even while an incomplete response keeps arriving?
+- Inputs: TinyRust parent `e07d0ce4924ace257b67c54edb1ae35ea8786def`; exact initial
+  uncommitted identities are retained in the review receipt.
+- Method: compare the actual producer's pass/fail/argument reports, mutate fields
+  independently, and serve real loopback responses that drip, abort, stall, fail
+  or recover. Exercise the actual CLI against current source admission.
+- Result: baseline 19 tests passed, but three added regressions exposed incomplete
+  report acceptance, skipped-check rejection and a 100 ms budget falsely passing
+  after roughly 528 ms. After correction all 113 affected checks pass. Server line
+  coverage is 90.02%; preflight is 91.96%. The actual CLI remains source-blocked.
+- Decision: share one ordered current check definition, independently assert it
+  in tests, require exact report/exit agreement and use an absolute monotonic
+  HTTP deadline with terminal socket cleanup.
+- Reusable lesson: an inactivity timeout cannot enforce a total operation budget.
+  A producer contract change needs a real consumer round trip; weak one-check
+  fixtures had concealed both false acceptance and false rejection.
+- Uncertainty: event-loop scheduling can delay timer observation. Loopback success
+  does not prove model usefulness, a public seed or deployment; blocked cleanup
+  and package release requirements remain. No key was read or package published.
+- Evidence: `artifacts/ecosystem-cleanup-20260912/local-server-startup-review.json`.
+
 ## C77: admission must finish before dependent preflight work starts
 
 - Question: does the pending local preflight prevent work before source admission

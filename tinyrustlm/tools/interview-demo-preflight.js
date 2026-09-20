@@ -41,6 +41,15 @@ const DEFAULT_TIMEOUTS = Object.freeze({
   checkMilliseconds: 30000,
   catalogMilliseconds: 6000
 });
+// One ordered current report contract shared by producer and startup consumer.
+const UI_CHECKS = Object.freeze([
+  ["source-authority", FAILURE_CODES.SOURCE_AUTHORITY, "verifyCanonicalSource"],
+  ["static-shell", FAILURE_CODES.STATIC_SHELL, "verifyStaticShell"],
+  ["deployment-closure", FAILURE_CODES.DEPLOYMENT_CLOSURE, "verifyDeploymentClosure"],
+  ["browser-modules", FAILURE_CODES.BROWSER_MODULES, "verifyBrowserModules"],
+  ["companion-modules", FAILURE_CODES.COMPANION_MODULES, "verifyCompanionModules"],
+  ["stale-bridge", FAILURE_CODES.STALE_BRIDGE, "verifyNoStaleBridge"]
+].map(([id, failureCode, dependency]) => Object.freeze({ id, failureCode, dependency })));
 const MAXIMUM_TIMEOUT_MILLISECONDS = 30000;
 const MAXIMUM_STALE_SCAN_BYTES = 1024 * 1024;
 const MAXIMUM_COMPANION_SCAN_ENTRIES = 512;
@@ -619,14 +628,7 @@ async function runPreflight(options = {}) {
     now,
     catalogFetch: options.catalogFetch
   });
-  const uiDefinitions = [
-    ["source-authority", FAILURE_CODES.SOURCE_AUTHORITY, "verifyCanonicalSource"],
-    ["static-shell", FAILURE_CODES.STATIC_SHELL, "verifyStaticShell"],
-    ["deployment-closure", FAILURE_CODES.DEPLOYMENT_CLOSURE, "verifyDeploymentClosure"],
-    ["browser-modules", FAILURE_CODES.BROWSER_MODULES, "verifyBrowserModules"],
-    ["companion-modules", FAILURE_CODES.COMPANION_MODULES, "verifyCompanionModules"],
-    ["stale-bridge", FAILURE_CODES.STALE_BRIDGE, "verifyNoStaleBridge"]
-  ].map(([id, failureCode, dependency]) => Object.freeze({
+  const uiDefinitions = UI_CHECKS.map(({ id, failureCode, dependency }) => Object.freeze({
     id,
     failureCode,
     operation: dependencies[dependency]
@@ -806,6 +808,7 @@ module.exports = Object.freeze({
   REQUIRED_BROWSER_FILES,
   REQUIRED_COMPANION_FILES,
   SCHEMA,
+  UI_CHECKS,
   PreflightError,
   evaluateLiveCatalog,
   hasCompanionHostOutput,

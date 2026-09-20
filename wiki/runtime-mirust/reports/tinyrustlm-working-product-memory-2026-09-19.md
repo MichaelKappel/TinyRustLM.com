@@ -16,6 +16,14 @@ Authority order is current owner instructions, inspected current contracts and b
 
 ## Current evidence and its limits
 
+**C78 local server:** startup now requires the complete current preflight report,
+including source-failed dependent skips, exact exit status and strict JSON.
+HTTP readiness has one monotonic deadline even when responses keep sending data;
+aborted, stalled and malformed responses cannot admit readiness. All 113 affected
+checks pass; server/preflight line coverage is 90.02%/91.96%. The actual CLI remains
+blocked by source admission and opens no server. Read `local-server-startup-review.json`.
+No product visuals, real model, external seed, package or deployment changed.
+
 **C77 preflight admission:** local preflight now waits for canonical-source
 verification before starting dependent checks, release metadata or catalog work.
 Metadata uses original owned canonical scratch and is removed on success/failure.
