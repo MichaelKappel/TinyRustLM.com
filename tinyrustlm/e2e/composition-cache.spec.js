@@ -554,6 +554,103 @@ test("OPFS cleanup preserves unexpected files and refuses unsafe recovery", asyn
   }
 });
 
+for (const retirementKind of ["orphan", "replacement"]) {
+  test(`OPFS ${retirementKind} retirement resumes after tab closure at final directory removal`, async ({}, testInfo) => {
+    test.skip(testInfo.project.name !== "desktop", "The persistent retirement contract runs in desktop Edge");
+    const fixtures = { prior: createSyntheticFixture(`retirement-${retirementKind}-prior`, 127),
+      candidate: createSyntheticFixture(`retirement-${retirementKind}-candidate`, 149) };
+    const profileRoot = createOwnedBrowserProfile(`retirement-${retirementKind}`);
+    let context = null;
+    try {
+      context = await launchProfile(profileRoot);
+      const page = await openRuntimePage(context, String(testInfo.project.use.baseURL));
+      const pageErrors = [];
+      context.on("page", child => child.on("pageerror", error => pageErrors.push(error.message)));
+      page.on("pageerror", error => pageErrors.push(error.message));
+      const expected = await page.evaluate(async ({ fixtures, rootName, retirementKind }) => {
+        const api = globalThis.TinyRustLMModelCompositionStore;
+        const base = api.createOpfsAdapter({ createSha256: globalThis.TinyRustLMIncrementalSha256.createSha256 });
+        // Only synthetic storage fixtures are admitted by this test callback.
+        const request = value => ({ manifest: value.manifest, admissionAuthority: value.admissionAuthority,
+          activate: async () => true, authorizeCommit: async () => true,
+          sources: Object.fromEntries(api.memberNames.map(name => [name, {
+            async *[Symbol.asyncIterator]() {
+              yield Uint8Array.from(atob(value.members[name]), character => character.charCodeAt(0));
+            }
+          }])) });
+        await api.createModelCompositionStore({ adapter: base }).install(request(fixtures.prior));
+        const root = await (await navigator.storage.getDirectory()).getDirectoryHandle(rootName);
+        const retired = retirementKind === "replacement" ? fixtures.prior.manifestSha256 : fixtures.candidate.manifestSha256;
+        const active = retirementKind === "replacement" ? fixtures.candidate.manifestSha256 : fixtures.prior.manifestSha256;
+        if (retirementKind === "orphan") {
+          const directory = await (await root.getDirectoryHandle("installed")).getDirectoryHandle(retired, { create: true });
+          const writer = await (await directory.getFileHandle("manifest.json", { create: true })).createWritable();
+          await writer.write(`${JSON.stringify(fixtures.candidate.manifest)}\n`);
+          await writer.close();
+        }
+        const adapter = { ...base, async removeEntry(parts, options) {
+          if (parts.length === 2 && parts[0] === "installed" && parts[1] === retired) {
+            globalThis.retirementPaused = true;
+            // Tab closure, rather than a synthetic rejection, ends this pending operation and its locks.
+            return new Promise(() => {});
+          }
+          return base.removeEntry(parts, options);
+        } };
+        const store = api.createModelCompositionStore({ adapter });
+        const operation = retirementKind === "replacement" ? store.install(request(fixtures.candidate)) : store.cleanup();
+        operation.catch(error => { globalThis.retirementFailure = error.code || error.message; });
+        return { retired, active };
+      }, { fixtures, rootName: OPFS_ROOT_NAME, retirementKind });
+      await page.waitForFunction(() => globalThis.retirementPaused === true);
+      const paused = await page.evaluate(async ({ rootName, retired }) => {
+        const root = await (await navigator.storage.getDirectory()).getDirectoryHandle(rootName);
+        const pointer = JSON.parse(await (await (await root.getFileHandle("active.json")).getFile()).text());
+        const directory = await (await root.getDirectoryHandle("installed")).getDirectoryHandle(retired);
+        const names = [];
+        for await (const name of directory.keys()) names.push(name);
+        const markers = [];
+        for await (const [, handle] of (await root.getDirectoryHandle("staging")).entries()) {
+          markers.push(JSON.parse(await (await handle.getFile()).text()));
+        }
+        return { pointer, names, markers, failure: globalThis.retirementFailure || null };
+      }, { rootName: OPFS_ROOT_NAME, retired: expected.retired });
+      expect(paused.names).toEqual([]);
+      expect(paused.markers).toHaveLength(1);
+      expect(paused.markers[0].manifestSha256).toBe(expected.retired);
+      expect(paused.markers[0].stagingId).not.toBe(paused.pointer.stagingId);
+      expect(paused.pointer.manifestSha256).toBe(expected.active);
+      expect(paused.failure).toBeNull();
+      await page.close();
+      const restarted = await openRuntimePage(context, String(testInfo.project.use.baseURL));
+      const recovered = await restarted.evaluate(async ({ rootName, lockName }) => {
+        const api = globalThis.TinyRustLMModelCompositionStore;
+        const store = api.createModelCompositionStore({ adapter: api.createOpfsAdapter({
+          createSha256: globalThis.TinyRustLMIncrementalSha256.createSha256 }) });
+        const before = (await store.openActive()).manifestSha256;
+        const cleanup = await store.cleanup();
+        const after = (await store.openActive()).manifestSha256;
+        const root = await (await navigator.storage.getDirectory()).getDirectoryHandle(rootName);
+        const installed = [], staging = [];
+        for await (const name of (await root.getDirectoryHandle("installed")).keys()) installed.push(name);
+        for await (const name of (await root.getDirectoryHandle("staging")).keys()) staging.push(name);
+        const held = (await navigator.locks.query()).held.filter(lock => lock.name.startsWith(lockName));
+        return { before, after, cleanup, installed, staging, held };
+      }, { rootName: OPFS_ROOT_NAME, lockName: LOCK_NAME });
+      expect(recovered.before).toBe(expected.active);
+      expect(recovered.after).toBe(expected.active);
+      expect(recovered.cleanup.removedStaging).toBe(1);
+      expect(recovered.cleanup.removedInstalled).toBe(1);
+      expect(recovered.installed).toEqual([expected.active]);
+      expect(recovered.staging).toEqual([]);
+      expect(recovered.held).toEqual([]);
+      expect(pageErrors).toEqual([]);
+    } finally {
+      if (context !== null) await context.close();
+      removeOwnedBrowserProfile(profileRoot);
+    }
+  });
+}
+
 test("cross-tab OPFS retirement waits for all six-member readers and releases on tab closure", async ({}, testInfo) => {
   test.skip(testInfo.project.name !== "desktop", "The read-lease contract runs in desktop Chromium");
   const fixtures = { prior: createSyntheticFixture("lease-prior", 127),

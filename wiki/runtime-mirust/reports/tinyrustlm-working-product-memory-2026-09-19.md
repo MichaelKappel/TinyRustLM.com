@@ -143,8 +143,8 @@ late promise failures are observed. Pointer mutation and authoritative readback
 continue to settle, including after cancellation. All 317 affected checks, seven
 actual Edge storage/P2P tests and twelve direct smoke observations pass. See
 `artifacts/ecosystem-cleanup-20260912/composition-read-cancellation-review.json`.
-C50 below supplies startup's cache deadline; durable-mutation lifetimes and
-terminal orphan crash cleanup remain separate work. The source scan,
+C50 below supplies startup's cache deadline; C51 adds terminal retirement
+ownership. Durable-mutation lifetimes remain separate work. The source scan,
 real-model qualification and public seed/deployment gates remain unresolved.
 
 **C50 startup cache lifetime:** the app now supplies a 60-second cache-check
@@ -155,8 +155,20 @@ recovery text in the chooser. Cache or cached-activation errors require explicit
 action before replacement acquisition; an empty verified cache still bootstraps.
 All 336 affected checks, nineteen actual Edge tests and twelve direct smoke
 observations pass. See `startup-cache-lifetime-review.json`. Real-model startup
-timing, durable mutation/reconciliation and terminal orphan crash recovery remain
-open; no source-scan, model, seed or deployment gate passed.
+timing and durable mutation/reconciliation remain open; C51 addresses the missing
+terminal retirement authority. No source-scan, model, seed or deployment gate passed.
+
+**C51 retirement recovery:** before removing a hash-bound orphan or superseded
+installation, cleanup persists and verifies a canonical staging marker outside
+its directory. The marker remains until direct-file deletion, nonrecursive
+directory removal and observed absence succeed. Retained pointer/staging authority
+still governs existing recovery paths. Allocation reserves the active activation
+ID. All 369 affected checks, nine actual Edge tests and twelve smoke observations
+pass; two Edge cases close a tab at final directory removal and finish cleanup
+from a fresh tab without invalidating the current model. See
+`composition-retirement-recovery-review.json`. This is synthetic storage evidence,
+not power-loss or model proof. Startup remains read-only; pending retirement is
+completed by the next bounded cleanup, including cleanup before installation.
 
 ## Semantic and numerical diagnosis
 

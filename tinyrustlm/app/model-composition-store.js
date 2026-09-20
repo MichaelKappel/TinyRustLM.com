@@ -1603,10 +1603,30 @@ function (root, admissionApi, catalogApi) {
     return entries;
   }
 
-  // Delete only admitted direct files, manifest last; never recursively consume a late extra entry.
-  async function removeInstalled(options, manifestSha256, identityKnown, signal) {
+  // Preserve hash-bound orphan ownership outside the directory before its manifest can disappear.
+  async function createRetirementMarker(options, manifestSha256, signal) {
+    const entries = await listEntries(options.adapter, [STAGING_DIRECTORY],
+      options.maximumStagingEntries + 1, signal);
+    if (entries.length >= options.maximumStagingEntries) reject("model-composition-store-staging-limit");
+    const stagingId = await allocateStagingId(options, signal);
+    const marker = { schema: STAGING_SCHEMA, stagingId, manifestSha256 };
+    const path = [STAGING_DIRECTORY, `${stagingId}.json`];
+    checkCancelled(signal);
+    await atomicWrite(options.adapter, path, canonicalBytes(marker), "model-composition-store-staging");
+    // A failed or cancelled write/readback leaves the model intact and any marker available to cleanup.
+    const observed = await readStaging(options.adapter, path[1], signal);
+    if (!observed || observed.stagingId !== stagingId || observed.manifestSha256 !== manifestSha256) {
+      reject("model-composition-store-cleanup-ownership");
+    }
+    return path;
+  }
+
+  // Durable ownership is a retained pointer/staging marker; otherwise create one before direct deletion.
+  async function removeInstalled(options, manifestSha256, durableOwnership, signal) {
     return withCompositionLock(options.adapter, manifestSha256, "exclusive", async () => {
-      const entries = await ownedInstalledEntries(options, manifestSha256, identityKnown, signal);
+      const entries = await ownedInstalledEntries(options, manifestSha256, durableOwnership, signal);
+      const retirementPath = durableOwnership ? null :
+        await createRetirementMarker(options, manifestSha256, signal);
       const names = new Set(entries.map(entry => entry.name));
       for (const name of INSTALLED_FILES) {
         checkCancelled(signal);
@@ -1616,13 +1636,16 @@ function (root, admissionApi, catalogApi) {
       }
       checkCancelled(signal);
       await removeEntry(options.adapter, [INSTALLED_DIRECTORY, manifestSha256], false);
+      // Keep external authority until the directory's absence is observed, including an ambiguous remove.
+      if (await installedEntry(options, manifestSha256, signal)) reject("model-composition-store-cleanup");
+      if (retirementPath) await removeEntry(options.adapter, retirementPath, false);
     }, signal);
   }
 
   // Preserve the primary outcome and let a later bounded pass retry owned residue.
-  async function bestEffortRemoveInstalled(options, manifestSha256) {
+  async function bestEffortRemoveInstalled(options, manifestSha256, durableOwnership) {
     try {
-      await removeInstalled(options, manifestSha256, true);
+      await removeInstalled(options, manifestSha256, durableOwnership);
       return true;
     } catch (_) {
       return false;
@@ -1697,6 +1720,7 @@ function (root, admissionApi, catalogApi) {
 
   // Allocation reads may be cancelled before any staging marker is persisted.
   async function allocateStagingId(options, signal) {
+    const pointer = await readPointer(options.adapter, signal);
     for (let attempt = 0; attempt < 4; attempt += 1) {
       let bytes;
       try {
@@ -1709,6 +1733,8 @@ function (root, admissionApi, catalogApi) {
         reject("model-composition-store-random");
       }
       const stagingId = bytesToHex(bytes);
+      // Reusing the active activation ID would make a retirement marker look like an unresolved commit.
+      if (pointer && stagingId === pointer.stagingId) continue;
       const existing = await openReadable(
         options.adapter,
         [STAGING_DIRECTORY, `${stagingId}.json`],
@@ -1938,7 +1964,7 @@ function (root, admissionApi, catalogApi) {
           // Restart treats a surviving marker as unresolved; preserve both candidates until absence is observed.
           await requireResolvedPointer(options.adapter, pointer);
           if (previousPointer && previousPointer.manifestSha256 !== manifestSha256) {
-            await bestEffortRemoveInstalled(options, previousPointer.manifestSha256);
+            await bestEffortRemoveInstalled(options, previousPointer.manifestSha256, false);
           }
           committedResult = candidate || openedComposition(
             options, pointer, manifest, suppliedAuthority.opened
@@ -2079,7 +2105,7 @@ function (root, admissionApi, catalogApi) {
           }
           if (!pointerCommitted && !preserveCandidate) {
             const removed = !ownsCandidate ||
-              await bestEffortRemoveInstalled(options, manifestSha256);
+              await bestEffortRemoveInstalled(options, manifestSha256, true);
             // A failed retirement keeps its marker so restart still has exact ownership evidence.
             if (removed) await bestEffortRemove(options.adapter, stagingPath, false);
           }

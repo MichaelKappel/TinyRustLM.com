@@ -5,6 +5,41 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C51: retain retirement ownership across terminal cleanup interruption, September 19
+
+An orphan's hash-bound manifest was its only durable ownership evidence. Cleanup
+removed that file before the directory; interruption at either final transition
+could leave an empty directory that the next pass correctly refused to delete.
+Replacement retirement had the same gap once the active pointer named the new
+composition. The baseline regression run passed 154/159 checks; four terminal
+fault cases and their enclosing test failed.
+
+Retirement now writes and reads back an existing-format staging marker before
+deleting a hash-bound orphan or superseded installation. Existing staging markers
+and retained invalid pointers remain sufficient authority for their own removal
+paths. The new marker stays until direct-file deletion, nonrecursive directory
+removal and observed directory absence all succeed. A later bounded cleanup uses
+that marker even after the manifest is gone. Staging allocation also reserves the
+active pointer's activation ID, preventing a retirement marker from making the
+current installation appear unresolved. No alternate storage schema was added.
+
+All 369 affected checks pass, including interruption after each of the ten direct
+files, marker write/readback faults, cancellation, capacity/collision bounds,
+ambiguous removal and late unknown files. Whole-store coverage is 90.43% lines,
+86.83% branches and 94.22% functions. Nine actual Edge storage/P2P tests pass without
+retry or skip. Two new tests pause final directory removal, close the owning tab,
+then open a fresh tab and finish cleanup with the active composition still valid.
+The direct release smoke passes all twelve observations.
+
+Evidence: `artifacts/ecosystem-cleanup-20260912/composition-retirement-recovery-review.json`.
+This establishes tested storage recovery when bounded cleanup runs; it does not
+make read-only startup invoke cleanup, prove power-loss durability or bound a
+stalled durable mutation. Model qualification, real-model browser measurements,
+live seeding and publication remain open. The same two blocked installer links
+still stop the source scan; no blocked deletion was retried. Owned output was
+removed; logical totals are in the receipt, physical recovery is unmeasured.
+Other repositories and unrelated work remain intact. Ternary research is deferred.
+
 ## C50: bound the startup cache check, September 19
 
 Startup called `openActive` without a deadline, and opening the cache initialized

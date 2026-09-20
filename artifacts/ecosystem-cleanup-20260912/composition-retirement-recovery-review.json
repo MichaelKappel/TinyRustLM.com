@@ -1,0 +1,274 @@
+{
+  "schema": "tinyrustlm.composition-retirement-recovery-review.v1",
+  "observedAtUtc": "2026-09-20T01:43:22Z",
+  "localDate": "2026-09-19",
+  "sourceParent": "1a1adcdc6b937de1ea7c5a448bc2ed4ec106baa5",
+  "status": "local-retirement-recovery-fixed-no-model-or-publication-claim",
+  "inputs": [
+    {
+      "path": "tinyrustlm/app/model-composition-store.js",
+      "bytes": 89199,
+      "sha256": "57a21147dd892b45ed63bca7e3a8be95fb85f6148c4813d939bb5ffe391ec576"
+    },
+    {
+      "path": "tinyrustlm/tests/model-composition-store.test.js",
+      "bytes": 147614,
+      "sha256": "5c02999aab6991b4514998fcb8c9b5439750fd4614da562723325989a3b16b5c"
+    },
+    {
+      "path": "tinyrustlm/e2e/composition-cache.spec.js",
+      "bytes": 77576,
+      "sha256": "d6b8f05ab0f3456bf0bb277eaeaf0745c12cbad4ceb6e3be9fdbc1326e38c988"
+    },
+    {
+      "path": "tinyrustlm/app/index.html",
+      "bytes": 48604,
+      "sha256": "292ce014b455984c5cc5c1462905b96cfe78c74a9c9c7dcd3b4e2c9a80185302"
+    },
+    {
+      "path": "tinyrustlm/index.html",
+      "bytes": 48684,
+      "sha256": "c3f6f4024b5893ed3f9a7c0b513fa5045baa46827e15e1be8c3629e468de9de1"
+    },
+    {
+      "path": "tinyrustlm/tests/model-cache-custody-integration.test.js",
+      "bytes": 29747,
+      "sha256": "a297825dc40a8dbc0e7ebcc38cdfcf13eaf3175cded674ff9f2a8035653f0f9c"
+    },
+    {
+      "path": "tinyrustlm/tests/p2p-composition-install.test.js",
+      "bytes": 45141,
+      "sha256": "356570a67bd3ea6354de021aac73a9ddd499019c3453f45329969503c37443da"
+    },
+    {
+      "path": "tinyrustlm/tests/companion-composition-install.test.js",
+      "bytes": 25654,
+      "sha256": "ef0938dbb20a0663f42af42719f8af0948bd7d702e703013fe08cf9f3e1dff34"
+    },
+    {
+      "path": "tinyrustlm/tests/static-shell-parity.test.js",
+      "bytes": 5127,
+      "sha256": "c20d60933c2f75bc60a243b2603545c26823a4aafdef4304c87e8e2bc634c89d"
+    },
+    {
+      "path": "tinyrustlm/tests/web-deployment-manifest.test.js",
+      "bytes": 11975,
+      "sha256": "4c68f345ff731af733f6a157d2b2d2ecd0b39544a2549f67a58d97fc672467fd"
+    },
+    {
+      "path": "tinyrustlm/app/p2p-composition-install.js",
+      "bytes": 50486,
+      "sha256": "55a53359bb7af64062eb8b7505251af6eab487bc94a8105a92698830ea6ae8e4"
+    },
+    {
+      "path": "tinyrustlm/app/companion-composition-install.js",
+      "bytes": 34585,
+      "sha256": "cbf8617b8467fe32d196788f69acd45a43e499dec31643675278f881c2b9b2b7"
+    },
+    {
+      "path": "tinyrustlm/app/browser-model-admission.js",
+      "bytes": 14858,
+      "sha256": "87cdc059e71435f1572b3ad03fcce17701d5b73e83c3a6172e078a3349e5b683"
+    },
+    {
+      "path": "tinyrustlm/app/minimodel-catalog-v1.js",
+      "bytes": 74274,
+      "sha256": "4868dba65b57197b68de6f3e74987602b9728c5fa0cf28ca05ec2a3166c35333"
+    },
+    {
+      "path": "tinyrustlm/app/incremental-sha256.js",
+      "bytes": 9404,
+      "sha256": "e28faf3a02617d3d6747a0061f10f20b756500ae727f5c02e18da9912c767095"
+    },
+    {
+      "path": "tinyrustlm/e2e/owned-browser-profile.js",
+      "bytes": 2432,
+      "sha256": "35a330243dbbd3c076eab57a6174dcd1a892b33af4774a37ec15bff7e697c4ff"
+    },
+    {
+      "path": "tinyrustlm/tools/static-shell-parity.js",
+      "bytes": 5964,
+      "sha256": "100ae82d9151f592db9607a6803d316d45934b3f349b3533d9c6df9d1e28fdeb"
+    },
+    {
+      "path": "tinyrustlm/tools/web-release-browser-smoke.js",
+      "bytes": 44097,
+      "sha256": "871da8e65d1f0b7ae6935a0a80d77d8409249dc025afac228905d70f8acb605b"
+    },
+    {
+      "path": "tinyrustlm/deploy/web-deployment-manifest.v2.json",
+      "bytes": 4802,
+      "sha256": "3c97a713670f119a978a1aea1611169dfb7d9cf1974ad8ae7c4a201454a04df8"
+    },
+    {
+      "path": "tinyrustlm/app/app.js",
+      "bytes": 462821,
+      "sha256": "c33278f13c23630d316ba2c57402f90fc6e68bbf4504ef93593de44825585361"
+    },
+    {
+      "path": "tinyrustlm/tests/model-acquisition.test.js",
+      "bytes": 127964,
+      "sha256": "57c715f29ee36b42070dbb5a0888d1ec35c8e4a76291d4fde06cfea39bca3824"
+    },
+    {
+      "path": "tinyrustlm/tests/model-acquisition-boundary-regression.test.js",
+      "bytes": 58516,
+      "sha256": "8b5700062cfa781dd95d0e0324bc130ffaefe41253b55e00bfb47e4e0abad216"
+    },
+    {
+      "path": "tinyrustlm/e2e/direct-p2p-composition.spec.js",
+      "bytes": 64545,
+      "sha256": "0bf79152816f86df9c550b11542b1db2255970386e0ed0ee3512b989b2252476"
+    },
+    {
+      "path": "docs/server-seeded-startup-2026-09-12.md",
+      "bytes": 14238,
+      "sha256": "2b08d7f0fdf2135f2512f8d218504039731b1b87d3d74e98fd6bd19d3acf391f"
+    },
+    {
+      "path": "tinyrustlm/e2e/model-chooser.spec.js",
+      "bytes": 77325,
+      "sha256": "e767ea33fe706befdc386db6cbc7e22922706d667c6b251754d4fcbeecb683c2"
+    },
+    {
+      "path": "tinyrustlm/app/operation-lifetime.js",
+      "bytes": 2292,
+      "sha256": "4a9d907a3c62b679f896d859e843124bf4252e6d2be0f8aacc7e754113a9f570"
+    }
+  ],
+  "finding": "Orphan and superseded composition retirement deleted the hash-bound manifest before the directory. A terminal interruption could leave an empty directory without durable cleanup authority.",
+  "contract": {
+    "ownership": "Hash-bound orphan/superseded deletion first persists and reads back a canonical existing-format staging marker. Existing retained pointer/staging authority protects its own removal path without a redundant marker.",
+    "completion": "Delete admitted direct files, then remove the directory nonrecursively and observe its absence before removing the new marker. Interrupted or ambiguous operations preserve authority for later bounded cleanup.",
+    "identity": "Bound marker capacity and four allocation attempts. Never allocate the current active pointer's activation ID, which would make retirement resemble an unresolved active commit.",
+    "coordination": "Keep global writer then exclusive composition locking. Readers retain their shared leases. Unknown files/directories remain protected.",
+    "unchanged": "No new schema, format reader, model admission relaxation, app visual change, remote publication or model execution."
+  },
+  "developmentResults": [
+    {
+      "stage": "baseline",
+      "tests": 159,
+      "passed": 154,
+      "failed": 5,
+      "sourceSha256": "121a5a6fff370be642ad6b1efd7affdcaf1d3960097cb1007c7cd46eea7fa80c",
+      "result": "Four terminal interruption subtests and their enclosing test failed: manifest-after, directory-before, directory-after lacked a retained marker; marker-before had no marker removal to interrupt."
+    },
+    {
+      "stage": "first-fixed-unit",
+      "tests": 159,
+      "passed": 159,
+      "failed": 0
+    },
+    {
+      "stage": "expanded-unit",
+      "tests": 181,
+      "passed": 181,
+      "failed": 0
+    },
+    {
+      "stage": "final-affected",
+      "tests": 369,
+      "passed": 369,
+      "failed": 0,
+      "skipped": 0,
+      "coverage": {
+        "scope": "Node V8 whole-store coverage, not isolated changed-line coverage",
+        "linePercent": 90.43,
+        "branchPercent": 86.83,
+        "functionPercent": 94.22
+      },
+      "cases": [
+        "Interruption after all ten direct member/authority files and before/after terminal directory/marker removal",
+        "Marker write before/after failure, absent/wrong readback and cancellation after persistence",
+        "Observed-absence check rejects a no-op directory removal; late unknown files are retained",
+        "Cancellation after manifest deletion; replacement keeps its current active model through cleanup restart",
+        "Bounded marker capacity and random allocation collisions, including reservation of the current activation ID",
+        "Existing acquisition, custody, P2P/companion, shell and deployment-manifest checks"
+      ]
+    },
+    {
+      "stage": "browser",
+      "tests": 9,
+      "passed": 9,
+      "failed": 0,
+      "retries": 0,
+      "skipped": 0,
+      "scope": "Installed desktop Edge, real OPFS/Web Locks, synthetic six-member fixtures and controlled P2P; no useful-model claim",
+      "observations": [
+        "Orphan and replacement removal each paused before final directory removal after files were gone",
+        "Owning tab was closed while mutation remained pending; a fresh tab verified the active composition and completed bounded cleanup",
+        "Empty retired directory and persisted marker were absent afterward, with only the current composition retained",
+        "Existing reader/cancellation, unknown-file, persistence and basic-click/direct-P2P tests passed"
+      ]
+    },
+    {
+      "stage": "direct-release-smoke",
+      "status": "pass",
+      "observationCount": 12,
+      "reportSha256": "a529e287a2926aef483f3deef263f6a8acae74c513950bf65534f14f5d54ffc2",
+      "temporaryOutputCleanup": "verified",
+      "scope": "Direct zero-argument Node invocation; the npm source preflight remains blocked"
+    },
+    {
+      "stage": "memory",
+      "tests": 6,
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0
+    }
+  ],
+  "sourceGate": {
+    "status": "source_authority_scan_incomplete",
+    "remaining": [
+      "artifacts/verification/qwen3-environment-install/tinyrustlm-operation-C3ZUt9/install-temp/TmP6xn2evdh-b",
+      "artifacts/verification/qwen3-environment-install/tinyrustlm-operation-C3ZUt9/install-temp/TmPeq63_hr7-b"
+    ],
+    "blockedDeletionsRetried": false
+  },
+  "cleanup": {
+    "runs": [
+      {
+        "stage": "baseline",
+        "files": 2,
+        "logicalBytes": 503505
+      },
+      {
+        "stage": "first-fixed-unit",
+        "files": 2,
+        "logicalBytes": 499242
+      },
+      {
+        "stage": "expanded-unit",
+        "files": 2,
+        "logicalBytes": 503026
+      },
+      {
+        "stage": "affected",
+        "files": 9,
+        "logicalBytes": 3104659
+      },
+      {
+        "stage": "browser",
+        "files": 15,
+        "logicalBytes": 1381710
+      },
+      {
+        "stage": "smoke",
+        "files": 3,
+        "logicalBytes": 2680688
+      }
+    ],
+    "total": {
+      "files": 33,
+      "logicalBytes": 8672830
+    },
+    "physicalRecoveryBytes": null,
+    "note": "Only owned scratch was removed. Browser-profile helpers retire profiles before the outer count; those bytes are excluded. Existing blocked deletions remain untouched."
+  },
+  "remaining": [
+    "Read-only startup does not invoke cleanup; interrupted retirement completes when bounded cleanup runs, including before installation.",
+    "Tab closure/reopen is tested, not machine power-loss durability. Stalled durable writes and authoritative reconciliation retain separate lifetime requirements.",
+    "No qualified default, real numerical/browser usefulness or proven public seed/deployment. The source gate remains incomplete.",
+    "Other repositories and the 30 pre-existing unrelated Tiny worktree entries are preserved. Ternary research deferred; full ecosystem objective incomplete."
+  ]
+}

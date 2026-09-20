@@ -115,6 +115,17 @@ Cached model readers and replacement:
   code, guarantee progress for an abandoned uncancelled callback, or establish
   useful model quality. See `composition-read-lease-review.json` in the existing
   ecosystem-cleanup artifacts for source and synthetic browser evidence.
+- Before retiring a hash-bound orphan or superseded installation, the store writes
+  and reads back a canonical staging marker outside that installation. It removes
+  the marker only after direct-file deletion, nonrecursive directory removal and
+  observed directory absence. A retained invalid pointer or existing staging
+  marker already provides this authority for its own recovery path.
+- Marker allocation reserves the current activation ID and respects the bounded
+  staging inventory. Unknown entries still block deletion. Interrupted retirement
+  resumes when bounded cleanup runs, including before the next installation;
+  read-only startup does not itself run cleanup. Actual Edge tab closure/reopen is
+  tested, but power-loss durability is not established. See
+  `composition-retirement-recovery-review.json`.
 
 Cached model read cancellation:
 

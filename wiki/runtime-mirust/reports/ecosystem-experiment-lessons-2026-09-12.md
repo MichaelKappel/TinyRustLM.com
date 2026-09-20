@@ -1655,6 +1655,33 @@ and the incomplete source scan are unchanged.
   later mutate authoritative state. An unknown cache is not an empty cache, and
   a rejected or stalled cached promise must not govern every later explicit attempt.
 
+## C51: ownership must outlive the last byte being retired
+
+- Question: can a bounded cleanup resume after deleting an orphan's manifest or
+  after the active pointer has switched away from the retiring composition?
+- Exact inputs: parent `1a1adcdc6b937de1ea7c5a448bc2ed4ec106baa5`; source, tests,
+  shell and evidence identities in `composition-retirement-recovery-review.json`.
+- Method: inject failure after every direct file removal, before/after directory
+  removal, during marker write/readback and after marker removal. Cancel after
+  marker persistence and manifest deletion; exhaust marker capacity and collide
+  with the active activation ID. Preserve unexpected late entries. In actual Edge,
+  close a tab paused at final orphan/replacement directory removal and resume
+  cleanup from a fresh tab using persisted OPFS state and real Web Locks.
+- Result: baseline 154/159; four terminal cases and their parent failed. First
+  fixed store run 159/159; expanded run 181/181; final affected 369/369. Edge 9/9
+  without retries/skips; twelve direct smoke observations pass. Whole-store
+  line/branch/function coverage is 90.43/86.83/94.22 percent.
+- Decision: persist and verify an existing-format staging marker before retiring
+  content whose manifest is its remaining authority. Keep it until the directory
+  is observed absent. Use retained pointer/staging authority where already present;
+  reserve the active activation ID. Continue bounded, direct, nonrecursive removal.
+- Uncertainty: storage fixtures do not qualify a model. Tab closure is not machine
+  power loss. Durable writes/reconciliation can still stall; startup remains
+  read-only and pending retirement completes when bounded cleanup is invoked.
+- Reusable lesson: deleting the last ownership record before its owned directory
+  creates an unrecoverable ambiguity. External authority must survive partial
+  deletion, and a record serving cleanup must not impersonate an active commit.
+
 ## Continue the review
 
 Before deleting an experiment that is not covered above, record its purpose,

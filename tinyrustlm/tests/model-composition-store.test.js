@@ -2025,6 +2025,242 @@ test("interrupted file deletion keeps staging authority and resumes on the next 
   assert.equal(adapter.hasPath(["installed", hash]), false);
 });
 
+test("orphan retirement retains ownership through the final persistent transitions", async t => {
+  for (const phase of ["manifest-after", "directory-before", "directory-after", "marker-before"]) {
+    await t.test(phase, async () => {
+      const adapter = new MemoryAdapter();
+      const value = fixture(`retirement-${phase}`);
+      const store = createStore(adapter);
+      const installed = await store.install({ manifest: value.manifest,
+        admissionAuthority: value.admissionAuthority, sources: sourceSet(value.members) });
+      adapter.files.delete("active.json");
+      const remove = adapter.removeEntry.bind(adapter);
+      let interrupted = false;
+      adapter.removeEntry = async (parts, options) => {
+        const target = key(parts);
+        const matches = phase === "manifest-after" ? target.endsWith("/manifest.json") :
+          phase === "marker-before" ? parts[0] === "staging" :
+            target === `installed/${installed.manifestSha256}`;
+        if (!interrupted && matches) {
+          interrupted = true;
+          if (phase.endsWith("-after")) await remove(parts, options);
+          throw new Error(`injected ${phase} interruption`);
+        }
+        return remove(parts, options);
+      };
+      await assert.rejects(store.cleanup(), errorCode("model-composition-store-cleanup"));
+      assert.equal(interrupted, true);
+      assert.equal(adapter.hasPath(["installed", installed.manifestSha256, "manifest.json"]), false);
+      assert.equal(adapter.entriesUnder(["staging"]).length, 1);
+      await createStore(adapter).cleanup();
+      assert.equal(adapter.hasPath(["installed", installed.manifestSha256]), false);
+      assert.deepEqual(adapter.entriesUnder(["staging"]), []);
+      assert.equal(adapter.operations.some(op => op.type === "remove" && op.recursive), false);
+    });
+  }
+});
+
+test("orphan retirement can resume after each direct member or authority file removal", async t => {
+  for (const name of [...MEMBER_NAMES, "admission.json", "qualification-receipt.json", "catalog.json"]) {
+    await t.test(name, async () => {
+      const adapter = new MemoryAdapter();
+      const value = fixture(`retirement-member-${name}`);
+      const store = createStore(adapter);
+      const installed = await store.install({ manifest: value.manifest,
+        admissionAuthority: value.admissionAuthority, sources: sourceSet(value.members) });
+      adapter.files.delete("active.json");
+      const remove = adapter.removeEntry.bind(adapter);
+      let interrupted = false;
+      adapter.removeEntry = async (parts, options) => {
+        await remove(parts, options);
+        if (!interrupted && parts.at(-1) === name) {
+          interrupted = true;
+          throw new Error("injected interruption after direct file removal");
+        }
+      };
+      await assert.rejects(store.cleanup(), errorCode("model-composition-store-cleanup"));
+      assert.equal(adapter.entriesUnder(["staging"]).length, 1);
+      await createStore(adapter).cleanup();
+      assert.equal(adapter.hasPath(["installed", installed.manifestSha256]), false);
+      assert.deepEqual(adapter.entriesUnder(["staging"]), []);
+    });
+  }
+});
+
+test("retirement marker write and readback failures never delete model bytes", async t => {
+  for (const phase of ["write-before", "write-after", "not-written", "wrong-identity", "cancel-after"]) {
+    await t.test(phase, async () => {
+      const adapter = new MemoryAdapter();
+      const value = fixture(`retirement-marker-${phase}`);
+      const store = createStore(adapter);
+      const installed = await store.install({ manifest: value.manifest,
+        admissionAuthority: value.admissionAuthority, sources: sourceSet(value.members) });
+      adapter.files.delete("active.json");
+      const controller = new AbortController();
+      const write = adapter.atomicWrite.bind(adapter);
+      adapter.atomicWrite = async (parts, value) => {
+        assert.equal(parts[0], "staging");
+        if (phase === "write-before") throw new Error("injected marker write failure");
+        if (phase === "not-written") return;
+        if (phase === "wrong-identity") {
+          const marker = JSON.parse(Buffer.from(value).toString());
+          value = canonical({ ...marker, manifestSha256: "f".repeat(64) });
+        }
+        await write(parts, value);
+        if (phase === "write-after") throw new Error("injected ambiguous marker completion");
+        if (phase === "cancel-after") controller.abort();
+      };
+      const start = adapter.operations.length;
+      await assert.rejects(store.cleanup({ signal: controller.signal }), errorCode(
+        phase.startsWith("write-") ? "model-composition-store-staging" :
+          phase === "cancel-after" ? "model-composition-store-aborted" :
+            "model-composition-store-cleanup-ownership"));
+      assert.equal(adapter.operations.slice(start).some(op => op.type === "remove"), false);
+      for (const name of MEMBER_NAMES) {
+        assert.deepEqual(adapter.readFile(["installed", installed.manifestSha256, name]), Buffer.from(value.members[name]));
+      }
+      if (phase === "write-after" || phase === "cancel-after") {
+        adapter.atomicWrite = write;
+        await createStore(adapter).cleanup();
+        assert.equal(adapter.hasPath(["installed", installed.manifestSha256]), false);
+        assert.deepEqual(adapter.entriesUnder(["staging"]), []);
+      }
+    });
+  }
+});
+
+test("unobserved directory removal and late unknown files retain retirement authority", async t => {
+  for (const lateFile of [false, true]) {
+    await t.test(lateFile ? "unknown-file" : "no-op-remove", async () => {
+      const adapter = new MemoryAdapter();
+      const value = fixture(`retirement-preserve-${lateFile}`);
+      const store = createStore(adapter);
+      const installed = await store.install({ manifest: value.manifest,
+        admissionAuthority: value.admissionAuthority, sources: sourceSet(value.members) });
+      adapter.files.delete("active.json");
+      const remove = adapter.removeEntry.bind(adapter);
+      adapter.removeEntry = async (parts, options) => {
+        if (key(parts) === `installed/${installed.manifestSha256}`) {
+          if (!lateFile) return;
+          adapter.seedFile([...parts, "notes.txt"], Buffer.from("retain unknown bytes"));
+        }
+        return remove(parts, options);
+      };
+      await assert.rejects(store.cleanup(), errorCode("model-composition-store-cleanup"));
+      assert.equal(adapter.entriesUnder(["staging"]).length, 1);
+      adapter.removeEntry = remove;
+      if (lateFile) {
+        await assert.rejects(createStore(adapter).cleanup(), errorCode("model-composition-store-cleanup-ownership"));
+        assert.equal(adapter.readFile(["installed", installed.manifestSha256, "notes.txt"]).toString(),
+          "retain unknown bytes");
+      } else {
+        await createStore(adapter).cleanup();
+        assert.equal(adapter.hasPath(["installed", installed.manifestSha256]), false);
+        assert.deepEqual(adapter.entriesUnder(["staging"]), []);
+      }
+    });
+  }
+});
+
+test("replacement retirement survives restart without invalidating the new active model", async t => {
+  for (const collide of [false, true]) {
+    await t.test(collide ? "reserved-active-id" : "new-marker-id", async () => {
+      const adapter = new MemoryAdapter();
+      const prior = fixture(`retirement-prior-${collide}`);
+      const next = fixture(`retirement-next-${collide}`);
+      const store = createStore(adapter);
+      const active = await store.install({ manifest: prior.manifest,
+        admissionAuthority: prior.admissionAuthority, sources: sourceSet(prior.members) });
+      const random = adapter.randomBytes.bind(adapter);
+      let reservedReturned = false;
+      adapter.randomBytes = count => {
+        const pointer = JSON.parse(adapter.readFile(["active.json"]));
+        if (collide && pointer.manifestSha256 !== active.manifestSha256 && !reservedReturned) {
+          reservedReturned = true;
+          return Uint8Array.from(Buffer.from(pointer.stagingId, "hex"));
+        }
+        return random(count);
+      };
+      const remove = adapter.removeEntry.bind(adapter);
+      adapter.removeEntry = async (parts, options) => {
+        if (key(parts) === `installed/${active.manifestSha256}`) throw new Error("injected terminal retirement fault");
+        return remove(parts, options);
+      };
+      const replacement = await store.install({ manifest: next.manifest,
+        admissionAuthority: next.admissionAuthority, sources: sourceSet(next.members) });
+      assert.equal(reservedReturned, collide);
+      assert.equal(adapter.entriesUnder(["staging"]).length, 1);
+      assert.equal((await createStore(adapter).openActive()).manifestSha256, replacement.manifestSha256);
+      adapter.removeEntry = remove;
+      await createStore(adapter).cleanup();
+      assert.equal(adapter.hasPath(["installed", active.manifestSha256]), false);
+      assert.deepEqual(adapter.entriesUnder(["staging"]), []);
+      assert.equal((await store.openActive()).manifestSha256, replacement.manifestSha256);
+    });
+  }
+});
+
+test("retirement cannot exhaust marker capacity or reuse the active activation identity", async t => {
+  for (const fault of ["capacity", "random-collision"]) {
+    await t.test(fault, async () => {
+      const adapter = new MemoryAdapter();
+      const prior = fixture(`retirement-bound-prior-${fault}`);
+      const orphan = fixture(`retirement-bound-orphan-${fault}`);
+      const store = createStore(adapter);
+      const active = await store.install({ manifest: prior.manifest,
+        admissionAuthority: prior.admissionAuthority, sources: sourceSet(prior.members) });
+      const hash = sha256(canonical(orphan.manifest));
+      adapter.seedFile(["installed", hash, "manifest.json"], canonical(orphan.manifest));
+      const list = adapter.listEntries.bind(adapter);
+      let stagingLists = 0, randomCalls = 0;
+      adapter.listEntries = async (parts, limit) => {
+        if (parts[0] === "staging" && ++stagingLists === 3 && fault === "capacity") {
+          return Array.from({ length: 8 }, (_, index) => ({ name: `${String(index).repeat(64)}.json`, kind: "file" }));
+        }
+        return list(parts, limit);
+      };
+      adapter.randomBytes = () => {
+        randomCalls += 1;
+        return Uint8Array.from(Buffer.from(active.activationId, "hex"));
+      };
+      const start = adapter.operations.length;
+      await assert.rejects(store.cleanup(), errorCode(fault === "capacity"
+        ? "model-composition-store-staging-limit" : "model-composition-store-staging-collision"));
+      assert.equal(randomCalls, fault === "capacity" ? 0 : 4);
+      assert.equal(adapter.operations.slice(start).some(op => op.type === "remove" || op.type === "atomic-write"), false);
+      assert.equal((await store.openActive()).manifestSha256, active.manifestSha256);
+      assert.ok(adapter.hasPath(["installed", hash, "manifest.json"]));
+    });
+  }
+});
+
+test("cancellation and ambiguous final marker removal both permit bounded cleanup restart", async t => {
+  for (const fault of ["cancel-after-manifest", "marker-after"]) {
+    await t.test(fault, async () => {
+      const adapter = new MemoryAdapter();
+      const value = fixture(`retirement-final-${fault}`);
+      const store = createStore(adapter);
+      const installed = await store.install({ manifest: value.manifest,
+        admissionAuthority: value.admissionAuthority, sources: sourceSet(value.members) });
+      adapter.files.delete("active.json");
+      const controller = new AbortController();
+      const remove = adapter.removeEntry.bind(adapter);
+      adapter.removeEntry = async (parts, options) => {
+        await remove(parts, options);
+        if (fault === "cancel-after-manifest" && parts.at(-1) === "manifest.json") controller.abort();
+        if (fault === "marker-after" && parts[0] === "staging") throw new Error("injected marker completion fault");
+      };
+      await assert.rejects(store.cleanup({ signal: controller.signal }), errorCode(fault === "marker-after"
+        ? "model-composition-store-cleanup" : "model-composition-store-aborted"));
+      assert.equal(adapter.entriesUnder(["staging"]).length, fault === "marker-after" ? 0 : 1);
+      adapter.removeEntry = remove;
+      await createStore(adapter).cleanup();
+      assert.equal(adapter.hasPath(["installed", installed.manifestSha256]), false);
+      assert.deepEqual(adapter.entriesUnder(["staging"]), []);
+    });
+  }
+});
+
 test("an unexpected late child cannot be consumed by the final directory removal", async () => {
   const adapter = new MemoryAdapter();
   const id = sha256(Buffer.from("late-child-id"));
