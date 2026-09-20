@@ -1,9 +1,10 @@
 profile: tinyrustlm.short-term-memory.current.v1
-updated_utc: 2026-09-20T17:52:00Z
+updated_utc: 2026-09-20T18:10:00Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
 now:
+  catalog_unicode: C74 closes Unicode/BOM discrepancies across MiniModel and TinyRust. All 412/88 Node checks pass with four TinyRust Edge and fourteen MiniModel observations. Preserve exact text and code-unit limits; reject lone surrogates and BOMs. Read catalog-unicode-review.json for baseline failures and controlled visual comparison. Continue the full ecosystem goal; source/release/model/hosting blockers and unrelated WIP remain.
   minimodel_catalog: C73 committed and pushed bounded loading, cancellation and reviewed deployment-tool pins. All 86 focused checks pass; fourteen Edge observations include stalled stream closure/recovery and oversized rejection. Eight baseline captures match. Broader 117/121 is not a release pass: four checks stop at the existing source scan blocker. Read MiniModel.org artifacts/reports/catalog-lifetime-review-20260920.json. No publication or blocked deletion; preserve unrelated work.
   release_reports: C72 closes the zero-test report-validation gap with explicit required-file checks. All 172 affected Node checks pass, including actual PowerShell/Bash producers; read release-report-validation-review.json. GitHub billing and ARM64/source/release gates remain open; all three public NuGet IDs return 404. Preserve unrelated work and blocked cleanup; no key read or publication occurred.
   conversion_pipes: C71 jointly supervises process exit and both cancellable output readers. Two actual Windows held-pipe failures are fixed; all 110 Core/228 companion tests pass. Read conversion-pipe-lifetime-review.json. Detached-child containment is not claimed; the fixture owns its child teardown. Preserve unrelated edits and policy-blocked cleanup.

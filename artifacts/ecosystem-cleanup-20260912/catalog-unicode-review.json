@@ -1,0 +1,433 @@
+{
+  "schema": "tinyrustlm.ecosystem-catalog-unicode-review.v1",
+  "reviewId": "C74",
+  "observedAtUtc": "2026-09-20T18:10:00Z",
+  "priorGoalTurnClassification": "Progress: C73 implementation, verification, cleanup and pushed commits.",
+  "parents": {
+    "TinyRustLM": "36e9d301c48f790824a90ed0cd089cd20e26cfa6",
+    "MiniModel": "104225396a021d449d4966e5c7c555d1be037ac5"
+  },
+  "baseline": {
+    "failedTests": 5,
+    "issues": [
+      "TinyRustLM rejected literal supplementary Unicode accepted by MiniModel.",
+      "TinyRustLM streaming TextDecoder stripped a leading UTF-8 BOM before canonical verification.",
+      "Both direct catalog validators accepted lone surrogates; MiniModel canonical parsing also accepted escaped lone-surrogate keys/values."
+    ]
+  },
+  "changes": [
+    "Recognize literal UTF-16 pairs, preserving exact scalar text and normalization form.",
+    "Retain BOM for canonical rejection; keep fatal UTF-8 decoding and byte/count limits.",
+    "Reject lone surrogates at direct schema boundaries and MiniModel nested key/value parsing.",
+    "Bind updated JavaScript identities in both TinyRust shells and MiniModel page."
+  ],
+  "validation": {
+    "tinyNode": {
+      "passed": 412,
+      "failed": 0,
+      "skipped": 0,
+      "files": [
+        "minimodel-catalog-v1.test.js",
+        "catalog-admission-loader.test.js",
+        "model-composition-store.test.js",
+        "model-cache-custody-integration.test.js",
+        "p2p-composition-install.test.js",
+        "direct-peer-url-authority.test.js",
+        "model-acquisition.test.js",
+        "static-shell-parity.test.js",
+        "app_test.js"
+      ],
+      "coverage": {
+        "linePercent": 86.75,
+        "branchPercent": 72.49,
+        "functionPercent": 91.53
+      }
+    },
+    "miniNode": {
+      "passed": 88,
+      "failed": 0,
+      "skipped": 0,
+      "files": [
+        "catalog.test.js",
+        "catalog-contract.test.js",
+        "browser-smoke_test.js",
+        "build-static-seed-plan_test.js"
+      ],
+      "coverage": {
+        "linePercent": 92.05,
+        "branchPercent": 82.98,
+        "functionPercent": 98.94
+      }
+    },
+    "tinyBrowser": {
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0,
+      "projects": [
+        "desktop",
+        "mobile"
+      ],
+      "command": "node node_modules/@playwright/test/cli.js test e2e/model-chooser.spec.js --grep Unicode --project desktop --project mobile --workers 1 --retries 0 --reporter line --output <owned>/browser-results",
+      "scope": "Actual app chooser uses unsupported-source fixture name; actual browser stream parser rejects split BOM/lone surrogate and preserves ZWJ emoji. No acquisition or inference claim."
+    },
+    "managed": {
+      "passed": 38,
+      "failed": 0,
+      "skipped": 0,
+      "project": "dotnet/tests/TinyRustLM.Package.Tests/TinyRustLM.Package.Tests.csproj",
+      "configuration": "Release"
+    },
+    "miniBrowser": {
+      "browser": "153.0.4234.48",
+      "playwright": "1.61.1",
+      "observations": 14,
+      "unicode": [
+        {
+          "viewport": "desktop",
+          "roundTrip": true,
+          "rejected": [
+            true,
+            true,
+            true
+          ]
+        },
+        {
+          "viewport": "mobile",
+          "roundTrip": true,
+          "rejected": [
+            true,
+            true,
+            true
+          ]
+        }
+      ],
+      "comparison": [
+        {
+          "label": "desktop:current-expired-source",
+          "prior": "08ff371b2f5444d65fb1fa186495adb44f55bfcdf8de5aac97c6b641fad75189",
+          "first": "08ff371b2f5444d65fb1fa186495adb44f55bfcdf8de5aac97c6b641fad75189",
+          "final": "08ff371b2f5444d65fb1fa186495adb44f55bfcdf8de5aac97c6b641fad75189"
+        },
+        {
+          "label": "desktop:historical-empty-fixture",
+          "prior": "b488db3fb323840ee68b205ccd6bc88aee55b8fb33302a67625cb2d4009649c4",
+          "first": "b488db3fb323840ee68b205ccd6bc88aee55b8fb33302a67625cb2d4009649c4",
+          "final": "b488db3fb323840ee68b205ccd6bc88aee55b8fb33302a67625cb2d4009649c4"
+        },
+        {
+          "label": "desktop:failed-reload-fixture",
+          "prior": "08ff371b2f5444d65fb1fa186495adb44f55bfcdf8de5aac97c6b641fad75189",
+          "first": "08ff371b2f5444d65fb1fa186495adb44f55bfcdf8de5aac97c6b641fad75189",
+          "final": "08ff371b2f5444d65fb1fa186495adb44f55bfcdf8de5aac97c6b641fad75189"
+        },
+        {
+          "label": "desktop:recovered-empty-fixture",
+          "prior": "422d6762607c16c8a421cb21e2972d42ebccd841605d08c91709377c857cb545",
+          "first": "422d6762607c16c8a421cb21e2972d42ebccd841605d08c91709377c857cb545",
+          "final": "b488db3fb323840ee68b205ccd6bc88aee55b8fb33302a67625cb2d4009649c4"
+        },
+        {
+          "label": "mobile:current-expired-source",
+          "prior": "cba4c347661bd40b5fd4ecf38fabfed8a80c9c2a0bad22e18a4624cecf0e588a",
+          "first": "cba4c347661bd40b5fd4ecf38fabfed8a80c9c2a0bad22e18a4624cecf0e588a",
+          "final": "cba4c347661bd40b5fd4ecf38fabfed8a80c9c2a0bad22e18a4624cecf0e588a"
+        },
+        {
+          "label": "mobile:historical-empty-fixture",
+          "prior": "cba4c347661bd40b5fd4ecf38fabfed8a80c9c2a0bad22e18a4624cecf0e588a",
+          "first": "cba4c347661bd40b5fd4ecf38fabfed8a80c9c2a0bad22e18a4624cecf0e588a",
+          "final": "cba4c347661bd40b5fd4ecf38fabfed8a80c9c2a0bad22e18a4624cecf0e588a"
+        },
+        {
+          "label": "mobile:failed-reload-fixture",
+          "prior": "cba4c347661bd40b5fd4ecf38fabfed8a80c9c2a0bad22e18a4624cecf0e588a",
+          "first": "cba4c347661bd40b5fd4ecf38fabfed8a80c9c2a0bad22e18a4624cecf0e588a",
+          "final": "cba4c347661bd40b5fd4ecf38fabfed8a80c9c2a0bad22e18a4624cecf0e588a"
+        },
+        {
+          "label": "mobile:recovered-empty-fixture",
+          "prior": "cba4c347661bd40b5fd4ecf38fabfed8a80c9c2a0bad22e18a4624cecf0e588a",
+          "first": "cba4c347661bd40b5fd4ecf38fabfed8a80c9c2a0bad22e18a4624cecf0e588a",
+          "final": "cba4c347661bd40b5fd4ecf38fabfed8a80c9c2a0bad22e18a4624cecf0e588a"
+        }
+      ],
+      "controlled": [
+        {
+          "version": "prior",
+          "step": "initial",
+          "bytes": 279010,
+          "sha256": "b488db3fb323840ee68b205ccd6bc88aee55b8fb33302a67625cb2d4009649c4",
+          "active": "BODY"
+        },
+        {
+          "version": "prior",
+          "step": "recovered",
+          "bytes": 279070,
+          "sha256": "422d6762607c16c8a421cb21e2972d42ebccd841605d08c91709377c857cb545",
+          "active": "BODY"
+        },
+        {
+          "version": "prior",
+          "step": "settled",
+          "bytes": 279070,
+          "sha256": "422d6762607c16c8a421cb21e2972d42ebccd841605d08c91709377c857cb545",
+          "active": "BODY"
+        },
+        {
+          "version": "current",
+          "step": "initial",
+          "bytes": 279010,
+          "sha256": "b488db3fb323840ee68b205ccd6bc88aee55b8fb33302a67625cb2d4009649c4",
+          "active": "BODY"
+        },
+        {
+          "version": "current",
+          "step": "recovered",
+          "bytes": 279070,
+          "sha256": "422d6762607c16c8a421cb21e2972d42ebccd841605d08c91709377c857cb545",
+          "active": "BODY"
+        },
+        {
+          "version": "current",
+          "step": "settled",
+          "bytes": 279070,
+          "sha256": "422d6762607c16c8a421cb21e2972d42ebccd841605d08c91709377c857cb545",
+          "active": "BODY"
+        }
+      ],
+      "cleanup": {
+        "files": 446,
+        "bytes": 21471956
+      },
+      "outputAbsent": true
+    },
+    "visualInvestigation": {
+      "difference": {
+        "bounds": [
+          926,
+          758,
+          1205,
+          761
+        ],
+        "changedPixels": 15
+      },
+      "explanation": "First post-production-change capture matched 8/8 prior hashes. After adding test-only parser evaluation, final capture matched 7/8; recovered desktop image took the other already observed ready-state border rendering. Controlled prior/current source in memory produced byte-identical initial, recovery and settled captures. No masks or style changes.",
+      "sourceCustody": "Prior committed index/catalog bytes served from Git stdout in memory only; no source snapshot or extra tree created.",
+      "diagnosticLimits": "PIL was not installed; read-only pixel comparison used the existing Playwright PNG decoder. An initial incorrect export name was corrected; no dependency was installed."
+    },
+    "earlierAffectedRun": {
+      "passed": 411,
+      "failed": 1,
+      "reason": "Root shell still referenced the prior catalog script digest. Updated it coherently with app shell; final full affected run passes."
+    }
+  },
+  "limits": [
+    "No complete RFC 8785 conformance or all-device/full-page visual claim.",
+    "Model quality, live seed and source/release/hosting gates remain unresolved; C73 publication failures remain historical failed evidence, not retried unchanged here.",
+    "No NuGet key read, package push, website deployment or blocked deletion. Other repository work remains preserved."
+  ],
+  "inputs": [
+    {
+      "repo": "TinyRustLM.com",
+      "path": ".uai/startup-packet.uai",
+      "bytes": 18148,
+      "sha256": "cad91ea000934668992e54c28df51a36668f1f660159cbcfc72b0ea38848a398"
+    },
+    {
+      "repo": "TinyRustLM.com",
+      "path": ".uai/operations.uai",
+      "bytes": 26821,
+      "sha256": "8480130738630d7ead84b36011522120de70e68345f2ad181c53a1e93f6f7914"
+    },
+    {
+      "repo": "TinyRustLM.com",
+      "path": ".uai/short-term-memory.uai",
+      "bytes": 21684,
+      "sha256": "43a79ff4935d5cbd1f26cc7ac1bc28043862a79600d6af615c213b6ec5d861a9"
+    },
+    {
+      "repo": "TinyRustLM.com",
+      "path": ".uai/long-term-memory.uai",
+      "bytes": 8959,
+      "sha256": "7f0a40a2f02c4019bd62bf1e32daa07d0d78dc1ea8886bafce1ca9a57efea182"
+    },
+    {
+      "repo": "TinyRustLM.com",
+      "path": "docs/ecosystem-cleanup-2026-09-12.md",
+      "bytes": 145584,
+      "sha256": "565d3a6b251decb0b1be129e44f1627c843d33a5e1493486aef18adcff2323bb"
+    },
+    {
+      "repo": "TinyRustLM.com",
+      "path": "wiki/runtime-mirust/reports/ecosystem-experiment-lessons-2026-09-12.md",
+      "bytes": 175524,
+      "sha256": "8fbd8bb97814f0a06c315a8e472b622c6fb13df76882bce9ab90098d043790dc"
+    },
+    {
+      "repo": "TinyRustLM.com",
+      "path": "wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md",
+      "bytes": 62192,
+      "sha256": "d2c936fb70ac02fbd8a2afd98ebbc61a67f2704ec0ebc5932cc38154795ffe2e"
+    },
+    {
+      "repo": "TinyRustLM.com",
+      "path": "tinyrustlm/app/minimodel-catalog-v1.js",
+      "bytes": 74811,
+      "sha256": "5c690e1b3cb96843f87f3951fcdc1a46ccc2418a7d2b0fbf16b97ba689ccd98b"
+    },
+    {
+      "repo": "TinyRustLM.com",
+      "path": "tinyrustlm/app/index.html",
+      "bytes": 48604,
+      "sha256": "8cea11bd0d08fb03d1cae889b324f4a3135d9d3a9ae5144ccb960d72e9913563"
+    },
+    {
+      "repo": "TinyRustLM.com",
+      "path": "tinyrustlm/index.html",
+      "bytes": 48684,
+      "sha256": "8e2deaa1e5582cf351510ad084d4896b1748e39059f057e8029ef19628aec1f4"
+    },
+    {
+      "repo": "TinyRustLM.com",
+      "path": "tinyrustlm/tests/minimodel-catalog-v1.test.js",
+      "bytes": 29856,
+      "sha256": "9c38a9575bd8f5c1c0b176bca97de32a831ce11f4de813dece977f492a9bae41"
+    },
+    {
+      "repo": "TinyRustLM.com",
+      "path": "tinyrustlm/e2e/model-chooser.spec.js",
+      "bytes": 84704,
+      "sha256": "68018ddb6e7aca4e4945d2b9f56d34f722f0309f10a8049bb6b03a42bcb45120"
+    },
+    {
+      "repo": "MiniModel.org",
+      "path": "catalog.js",
+      "bytes": 52220,
+      "sha256": "a65fc580d1aa21d10649bec48ad361e3f8a0f00ff63c7368e1f5901bc0eb2311"
+    },
+    {
+      "repo": "MiniModel.org",
+      "path": "docs/catalog-boundary.md",
+      "bytes": 10492,
+      "sha256": "14a238afed70d815196a881de20b347745ce5536c1fb82d1f9fdb543dd05c54e"
+    },
+    {
+      "repo": "MiniModel.org",
+      "path": "index.html",
+      "bytes": 8357,
+      "sha256": "5dca0eaaad9857fe5f297f21c7fd46ff935c16d270505b64dbd4d4f7ada2046d"
+    },
+    {
+      "repo": "MiniModel.org",
+      "path": "tests/README.md",
+      "bytes": 6752,
+      "sha256": "b4615b86d0054ad49f8e7c9c02feb8ca8f26d6735c26a0a5b249878a678226ef"
+    },
+    {
+      "repo": "MiniModel.org",
+      "path": "tests/browser-smoke.js",
+      "bytes": 17096,
+      "sha256": "4c35c406ad8462087e0eb766a64c8ea31d61bc38d368e344fcb2f8914cb4a637"
+    },
+    {
+      "repo": "MiniModel.org",
+      "path": "tests/catalog-contract.test.js",
+      "bytes": 29376,
+      "sha256": "bd4dbf1e0605b0f4c475fdb8aa5c85b77dfbf0b03cfd9ab2f755d032bf437419"
+    },
+    {
+      "repo": "MiniModel.org",
+      "path": ".uai/short-term-memory.uai",
+      "bytes": 20454,
+      "sha256": "82a83a9ef901385bf777dc7d9ccaaca5c46a14fc17eb3648e8efbb3a352bbf39"
+    }
+  ],
+  "retiredLogs": [
+    {
+      "path": "node-tests.log",
+      "root": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\catalog-unicode\\tinyrustlm-operation-o8weQO",
+      "bytes": 70128,
+      "sha256": "90eb272a3645b1528850b7df99971ded1964652be7fecff141d30d6dc790c48e"
+    },
+    {
+      "path": "final-node-tests.log",
+      "root": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\catalog-unicode\\tinyrustlm-operation-o8weQO",
+      "bytes": 68230,
+      "sha256": "ff2e1a3758f5d0306fb2f40ada6ac72c5f1a7f91eaff3e97ad5f60b693684aaf"
+    },
+    {
+      "path": "browser-tests.log",
+      "root": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\catalog-unicode\\tinyrustlm-operation-o8weQO",
+      "bytes": 2562,
+      "sha256": "f8bcf2849f0a4e86d686b852691c82ebd56e2bc244ea30b87e47967c556930e1"
+    },
+    {
+      "path": "package-tests.log",
+      "root": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\catalog-unicode\\tinyrustlm-operation-o8weQO",
+      "bytes": 2450,
+      "sha256": "409dafa7e51b2ad9b344f4ae1f0ede80275aef9207f06cf2a688094851c8c34d"
+    },
+    {
+      "path": "results/package.trx",
+      "root": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\catalog-unicode\\tinyrustlm-operation-o8weQO",
+      "bytes": 60225,
+      "sha256": "f852d9b37044dd2d2d93512eda943d6b546226650e6e489b97d07ed3a8f71fa8"
+    },
+    {
+      "path": "node-tests.log",
+      "root": "E:\\Source\\Rust\\MiniModel.org\\artifacts\\tests\\minimodel-browser-sqXU7e",
+      "bytes": 37722,
+      "sha256": "05b9b8cab98c3f07502c5250dd50e2ac6ec6b7b8f4bbdc03f51adeb057cd5558"
+    },
+    {
+      "path": "final-node-tests.log",
+      "root": "E:\\Source\\Rust\\MiniModel.org\\artifacts\\tests\\minimodel-browser-sqXU7e",
+      "bytes": 38016,
+      "sha256": "301942dd0894cfd686d4db6e4ba8cb1e961b7d4e5d6d6da4a0522729c44bd627"
+    },
+    {
+      "path": "visual-comparison.json",
+      "root": "E:\\Source\\Rust\\MiniModel.org\\artifacts\\tests\\minimodel-browser-sqXU7e",
+      "bytes": 1093,
+      "sha256": "122cada989db0146c41cb069d43ea8c374c32be5a9b0f1250f6d8b7990d3c254"
+    }
+  ],
+  "secretScan": {
+    "status": "fail",
+    "files": 20,
+    "findings": 1,
+    "scopeComplete": false,
+    "reportSha256": "edf428ece10b90150806a42b67184a72c56b13b631caa4b8720b589cac4d58dd",
+    "manualReview": {
+      "classification": "existing-synthetic-negative-test-fixture",
+      "file": "tinyrustlm/tests/minimodel-catalog-v1.test.js",
+      "line": 548,
+      "rule": "credential_url_userinfo",
+      "evidence": "Same literal user/secret userinfo URL exists in parent commit; it is supplied only to a rejection test expecting encoded or unsafe URL failure. No key file or real credential supplied.",
+      "disposition": "Keep the meaningful rejection fixture unchanged. Automated scan remains recorded as fail with one finding; manual review found no credential disclosure. This is not a complete release secret gate."
+    }
+  },
+  "miniModelCommit": "015d36818f339a9194f2e09591254f954b71ea96",
+  "miniModelDirectRemoteMatches": true,
+  "cleanup": {
+    "miniModel": {
+      "root": "E:\\Source\\Rust\\MiniModel.org\\artifacts\\tests\\minimodel-browser-sqXU7e",
+      "entriesRemoved": 454,
+      "logicalFileBytes": 23221338,
+      "rootAbsent": true,
+      "physicalStorageRecoveryMeasured": false,
+      "scope": "Original marked C74 logs, in-memory-source visual comparison screenshots and closed browser profiles only."
+    },
+    "tinyRustLM": {
+      "root": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\catalog-unicode\\tinyrustlm-operation-o8weQO",
+      "filesRemoved": 157,
+      "directoriesRemoved": 45,
+      "logicalFileBytes": 6811605,
+      "externalMarkerBytes": 65,
+      "rootAbsent": true,
+      "markerAbsent": true,
+      "physicalStorageRecoveryMeasured": false,
+      "scope": "Original marked C74 terminal test/coverage/build/scan/browser output only; no historical or blocked path."
+    }
+  }
+}

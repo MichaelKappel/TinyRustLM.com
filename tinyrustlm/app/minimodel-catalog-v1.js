@@ -152,8 +152,17 @@
           }
           continue;
         }
-        if (character.charCodeAt(0) < 0x20 ||
-            (character.charCodeAt(0) >= 0xd800 && character.charCodeAt(0) <= 0xdfff)) {
+        const codeUnit = character.charCodeAt(0);
+        if (codeUnit >= 0xd800 && codeUnit <= 0xdbff) {
+          // A literal scalar above U+FFFF occupies two UTF-16 code units.
+          const trailing = value.charCodeAt(index);
+          if (index >= end || !(trailing >= 0xdc00 && trailing <= 0xdfff)) {
+            reject("json", "metadata JSON surrogate pair was invalid");
+          }
+          result += character + value[index++];
+          continue;
+        }
+        if (codeUnit < 0x20 || (codeUnit >= 0xdc00 && codeUnit <= 0xdfff)) {
           reject("json", "metadata JSON string contained an invalid character");
         }
         result += character;
@@ -247,7 +256,8 @@
     }
     let decoder;
     try {
-      decoder = new TextDecoder("utf-8", { fatal: true });
+      // Preserve a leading BOM so canonical parsing rejects it instead of repairing bytes.
+      decoder = new TextDecoder("utf-8", { fatal: true, ignoreBOM: true });
     } catch (_error) {
       reject("json", "metadata UTF-8 decoder was unavailable");
     }
@@ -306,7 +316,7 @@
 
   function requireString(value, label, maximum = 512) {
     if (typeof value !== "string" || value.length < 1 || value.length > maximum ||
-        value !== value.trim() || /[\u0000-\u001f\u007f]/u.test(value)) {
+        value !== value.trim() || /[\u0000-\u001f\u007f\ud800-\udfff]/u.test(value)) {
       reject("string", `${label} must be a bounded printable string`);
     }
     return value;

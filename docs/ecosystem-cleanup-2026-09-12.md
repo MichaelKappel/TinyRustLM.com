@@ -5,6 +5,33 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C74: preserve catalog Unicode without repairing identity bytes, September 20
+
+Cross-project execution found that MiniModel accepted supplementary Unicode
+which TinyRustLM rejected. TinyRustLM also stripped a UTF-8 BOM before canonical
+validation; both direct schema validators accepted lone surrogates. Five new
+baseline tests failed. The current reader now recognizes valid UTF-16 pairs,
+preserves their exact text and normalization form, and retains BOMs for rejection.
+Both validators reject lone surrogates; MiniModel also checks nested parsed keys
+and values. Existing code-unit, byte, signature and canonical-spelling limits stay.
+
+All 412 affected TinyRustLM and 88 MiniModel Node checks pass, with line coverage
+86.75 and 92.05 percent respectively. Four actual desktop/mobile Edge chooser
+and stream checks pass. MiniModel's fourteen browser observations and explicit
+Unicode checks pass. Its first post-change captures matched all eight previous
+captures; the final run differed in one recovery capture. A controlled comparison
+of prior/current source in memory matched all three captured phases exactly.
+The two recovery variants differ by fifteen pixels at the select's upper border
+and occur without a source change. No masking or styling change was used; this
+does not claim full-page or every-device visual coverage.
+
+The initial broad test also caught the root shell's stale catalog script query;
+both root and app now bind the current exact script. See
+`artifacts/ecosystem-cleanup-20260912/catalog-unicode-review.json` for source,
+failure, browser, memory-check and cleanup evidence. Source-only changes do not
+renew the empty/expired catalog or qualify a model. Known source-scan, release,
+ARM64 and hosting blockers remain; no blocked deletion, key read or publication.
+
 ## C73: bound MiniModel catalog loading, September 20
 
 MiniModel's loader could wait indefinitely for metadata and checked body size

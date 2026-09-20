@@ -11,6 +11,33 @@ Keep useful findings and compact evidence identities in the owning canonical
 repository. Keep source history in Git and current model payloads only in
 `D:\LLMs\TinyRustLM`.
 
+## C74: scalar Unicode and byte identity need independent boundary tests
+
+- Question: do both catalog implementations accept the same Unicode and preserve
+  canonical wire bytes across streamed decoding?
+- Inputs: TinyRust parent `36e9d301c48f790824a90ed0cd089cd20e26cfa6` and MiniModel
+  parent `104225396a021d449d4966e5c7c555d1be037ac5`; literal U+10000 through
+  U+10FFFF, emoji/ZWJ/CJK, combining forms, lone surrogate keys/values, split BOM,
+  invalid/truncated UTF-8, alternate escapes and exact code-unit length limits.
+- Method: compare canonical bytes and signed fixture views in both actual
+  modules, exercise one-byte stream chunks, then actual Edge chooser and parser
+  paths. Preserve rejected fixtures and do not normalize text to pass.
+- Result: five baseline tests failed. All 412 TinyRust and 88 MiniModel checks
+  pass after fixes; four Edge chooser/stream tests and fourteen MiniModel browser
+  observations pass. Line coverage is 86.75/92.05 percent; full-module branch
+  coverage is 72.49/82.98 percent, not a claim of exhaustive parser conformance.
+- Decision: recognize literal UTF-16 pairs as scalars, reject lone surrogates
+  at parsing and direct schema boundaries, and preserve BOMs for rejection.
+- Visual observation: one recovery screenshot varied by fifteen pixels on the
+  select border. Prior and current source, served in memory without snapshots,
+  produced identical captures at each matched phase. Keep both outcomes rather
+  than selecting only a matching run or applying a screenshot mask.
+- Uncertainty: synthetic qualification descriptors are not real qualification;
+  these cases do not prove the complete RFC 8785 profile. Existing JSON spelling,
+  signature and resource rules remain. No new model, seed or publication claim.
+- Evidence: `artifacts/ecosystem-cleanup-20260912/catalog-unicode-review.json`.
+  Retire owned output after source/log identities and findings are recorded.
+
 ## C73: metadata bounds must cover reads and verification observation
 
 - Question: can stalled metadata leave the catalog loading forever, and can

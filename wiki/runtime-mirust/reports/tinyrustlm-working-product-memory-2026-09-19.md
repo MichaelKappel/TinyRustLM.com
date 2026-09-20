@@ -16,6 +16,14 @@ Authority order is current owner instructions, inspected current contracts and b
 
 ## Current evidence and its limits
 
+**C74 catalog Unicode:** TinyRust's canonical reader preserves literal Unicode
+scalar pairs and rejects BOM-prefixed streams. Both catalog validators reject
+lone surrogates, including direct schema input; MiniModel checks parsed keys and
+values. All 412 TinyRust/88 MiniModel Node checks and four Edge chooser/stream
+checks pass. See `catalog-unicode-review.json` for fourteen MiniModel observations,
+the controlled visual comparison and retained failures. This is contract/fixture
+evidence only; no model, live seed or release gate is promoted.
+
 **C73 MiniModel catalog:** metadata streams now share a ten-second deadline
 through signature verification, with one MiB/4096-chunk bounds, cancellation
 and disposal of late responses. All 86 focused checks and fourteen Edge fixture

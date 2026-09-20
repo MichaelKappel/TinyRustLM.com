@@ -479,6 +479,43 @@ async function expectChooserContentContained(page, selectors) {
 }
 
 test.describe("compact model chooser", () => {
+  test("preserves Unicode catalog names in the actual chooser", async ({ page }) => {
+    const displayName = "Fixture \u{1f680} \u{20000} e\u0301";
+    const compositionId = sha256("9");
+    const errors = [];
+    page.on("pageerror", error => errors.push(error.message));
+    await openApplication(page, { advanced: true, entries: [catalogEntry({
+      entryId: "unicode-fixture", displayName, compositionSha: compositionId,
+      revisionCharacter: "9", repository: "playwright/unsupported-source", revision: "9".repeat(40)
+    })] });
+    const card = page.locator(`#simpleModelList [data-composition-id="${compositionId}"]`);
+    await expect(card).toContainText(displayName);
+    await expect(card).toBeDisabled();
+    expect(errors).toEqual([]);
+  });
+
+  test("rejects Unicode byte repair and lone surrogates in browser streams", async ({ page }) => {
+    await openApplication(page);
+    const results = await page.evaluate(() => {
+      const api = window.TinyRustLMMiniModelCatalogV1;
+      const outcomes = [];
+      for (const text of ['\ufeff{}\n', '{"x":"\\ud800"}\n']) {
+        const parser = api.createCanonicalJsonStreamParser();
+        try {
+          for (const byte of new TextEncoder().encode(text)) parser.push(Uint8Array.of(byte));
+          parser.finish();
+          outcomes.push("accepted");
+        } catch (error) { outcomes.push(error.code); }
+      }
+      const text = JSON.stringify({ name: "\u{1f469}\u200d\u{1f4bb}" }) + "\n";
+      const parser = api.createCanonicalJsonStreamParser();
+      for (const byte of new TextEncoder().encode(text)) parser.push(Uint8Array.of(byte));
+      outcomes.push(parser.finish().text);
+      return outcomes;
+    });
+    expect(results).toEqual(["json", "json", '{"name":"\u{1f469}\u200d\u{1f4bb}"}\n']);
+  });
+
   test("startup cleanup completes without creating an empty model store", async ({ page }) => {
     await openApplication(page);
     await expect.poll(() => readCleanupDiagnostics(page))

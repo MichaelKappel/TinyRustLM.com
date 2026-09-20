@@ -1,5 +1,5 @@
 profile: tinyrustlm.operations.current.v1
-updated_utc: 2026-09-20T17:52:00Z
+updated_utc: 2026-09-20T18:10:00Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
@@ -10,6 +10,7 @@ historical_checkpoint:
   boundary: These August 28 source/test counts are historical. They do not describe current implementation or establish real-model qualification or deployment.
 
 current_state:
+  catalog_unicode: C74 repairs supplementary Unicode rejection and BOM stripping in TinyRust; both catalog validators reject lone surrogates. All 412 TinyRust/88 MiniModel checks pass, plus four Edge chooser/stream checks and fourteen MiniModel observations. Read catalog-unicode-review.json. Controlled old/current captures match despite a recorded select-border paint variation; no styles or admission gates changed. No key read or publication.
   minimodel_catalog: C73 bounds streamed metadata and verification observation by one ten-second deadline; cancellation stops stale work and sibling requests. All 86 focused checks pass with fourteen Edge observations and eight exact baseline matches. MiniModel commits 81f0b4c/1042253 are pushed; read its catalog-lifetime-review-20260920.json. Broader 117/121 retains four failures at the policy-blocked installer links. No gate bypass, key read or publication.
   release_reports: C72 removes nine nonexistent-test filters and the unused test build; ten direct checks now require complete consistent reports. All 172 Node checks pass, including actual PowerShell/Bash producer output and missing-input workflow failures. Read release-report-validation-review.json. This is report validation, not product or publication proof. NuGet's three public package indexes returned 404 at 17:26 UTC; the API key was not read.
   conversion_pipes: C71 propagates caller/deadline cancellation to output reads, jointly observes exit/stdout/stderr and stops siblings on any failure. All 110 Core/228 companion tests pass, including actual Windows inherited pipes; reader coverage is 100%. Read conversion-pipe-lifetime-review.json. The test independently terminates its child; arbitrary detached-process containment and Linux execution are not proven.

@@ -1,5 +1,5 @@
 profile: tinyrustlm.long-term-memory.current.v1
-updated_utc: 2026-09-20T17:52:00Z
+updated_utc: 2026-09-20T18:10:00Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
@@ -13,8 +13,8 @@ pointers:
     authority: reviewed_guidance
     review_state: reviewed_for_routing_and_identity
     status: current
-    last_reviewed_utc: 2026-09-20T17:52:00Z
-    sha256: b37fbfa30aec262506aace51271634f0d565f976b82d4606b105743b1bbd0d63
+    last_reviewed_utc: 2026-09-20T18:10:00Z
+    sha256: d2c936fb70ac02fbd8a2afd98ebbc61a67f2704ec0ebc5932cc38154795ffe2e
   - id: report-decisions
     path: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
     label: September report decisions
@@ -36,21 +36,21 @@ pointers:
   - id: experiment-lessons
     path: wiki/runtime-mirust/reports/ecosystem-experiment-lessons-2026-09-12.md
     label: Retained experiment lessons
-    summary: Open for C21-C73 observations, exact evidence, uncertainty and blocked retirement.
+    summary: Open for C21-C74 observations, exact evidence, uncertainty and blocked retirement.
     authority: reviewed_bounded_historical_evidence
     review_state: reviewed_for_routing_and_identity
     status: active_growing_review
-    last_reviewed_utc: 2026-09-20T17:52:00Z
-    sha256: 508a9eb1cb297ca2dcd264fc70ebeb66f8b71128d07942e592a1e80b26322053
+    last_reviewed_utc: 2026-09-20T18:10:00Z
+    sha256: 8fbd8bb97814f0a06c315a8e472b622c6fb13df76882bce9ab90098d043790dc
   - id: cleanup-progress
     path: docs/ecosystem-cleanup-2026-09-12.md
     label: Ecosystem cleanup progress
-    summary: Open for ecosystem cleanup, publication and current contracts; C54-C57 NuGet preparation, C58-C60 cancellation, C61-C63 guides/memory/capture, C64-C66 runtime/scratch/prefill, C67-C68 package gates, C69 candidate selection, C70-C71 conversion cancellation, C72 release reports and C73 MiniModel catalog lifetime. Model and hosting limits remain.
+    summary: Open for ecosystem cleanup, publication and current contracts; C54-C57 NuGet preparation, C58-C60 cancellation, C61-C63 guides/memory/capture, C64-C66 runtime/scratch/prefill, C67-C68 package gates, C69 candidate selection, C70-C71 conversion cancellation, C72 release reports, C73 MiniModel catalog lifetime and C74 Unicode identity. Model and hosting limits remain.
     authority: owner_authorized_progress_record
     review_state: reviewed_for_routing_and_identity
     status: current
-    last_reviewed_utc: 2026-09-20T17:52:00Z
-    sha256: 6e2aea083444ccf35c2fd075e912a1ae794f9e91c8af2be37dc1db7aaf2ae327
+    last_reviewed_utc: 2026-09-20T18:10:00Z
+    sha256: 565d3a6b251decb0b1be129e44f1627c843d33a5e1493486aef18adcff2323bb
   - id: source-lock
     path: contracts/vnext/qwen3-0.6b-base-source-lock.v2.json
     label: Current diagnostic source identity

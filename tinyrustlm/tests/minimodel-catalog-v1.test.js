@@ -7,6 +7,62 @@ const test = require("node:test");
 const catalogApi = require("../app/minimodel-catalog-v1.js");
 const p2pInstallApi = require("../app/p2p-composition-install.js");
 
+test("canonical strings preserve Unicode scalar pairs, keys and normalization", () => {
+  for (const value of ["plain", "e\u0301", "\u00e9", "\ud7ff", "\ue000", "\ufffd",
+    "\u{10000}", "\u{1f680}", "\u{1f469}\u200d\u{1f4bb}", "\u{20000}", "\u{10ffff}", "x\ufeffy"]) {
+    const input = { [value]: [value, { text: value }] };
+    const text = JSON.stringify(input) + "\n";
+    assert.equal(JSON.stringify(catalogApi.parseCanonicalJsonText(text)) + "\n", text);
+    const parser = catalogApi.createCanonicalJsonStreamParser();
+    for (const byte of Buffer.from(text)) parser.push(Uint8Array.of(byte));
+    const result = parser.finish();
+    assert.equal(result.text, text);
+    assert.equal(result.byteLength, Buffer.byteLength(text));
+    assert.equal(JSON.stringify(result.value) + "\n", text);
+  }
+});
+
+test("canonical strings reject lone surrogates and escaped alternate spellings", () => {
+  for (const value of ["\ud800", "\udbff", "\udc00", "\udfff", "\ud800x", "\ud800\ud800", "\udc00\ud800"]) {
+    for (const text of [JSON.stringify({ value }) + "\n", '{"value":"' + value + '"}\n',
+      JSON.stringify({ [value]: 1 }) + "\n"]) {
+      assert.throws(() => catalogApi.parseCanonicalJsonText(text), error => error.code === "json");
+    }
+    assert.throws(() => catalogApi.validateCatalog(validCatalog([validEntry({ displayName: value })])));
+  }
+  for (const text of ['{"x":"\\ud83d\\ude80"}\n', '{"x":"\\u0061"}\n', '{"x":"\\/"}\n']) {
+    assert.throws(() => catalogApi.parseCanonicalJsonText(text), error => error.code === "json-canonical");
+  }
+  assert.throws(() => catalogApi.parseCanonicalJsonText('{"\u{1f680}":1,"\u{1f680}":2}\n'),
+    error => error.code === "json-duplicate-key");
+});
+
+test("canonical streams reject leading BOM bytes across every split", () => {
+  const bytes = Buffer.concat([Buffer.from([0xef, 0xbb, 0xbf]), Buffer.from('{}\n')]);
+  for (let split = 1; split < bytes.length; split++) {
+    const parser = catalogApi.createCanonicalJsonStreamParser();
+    parser.push(bytes.subarray(0, split));
+    parser.push(bytes.subarray(split));
+    assert.throws(() => parser.finish(), error => error.code === "json");
+  }
+  for (const invalid of [[0xf0, 0x9f, 0x9a], [0xed, 0xa0, 0x80], [0xf4, 0x90, 0x80, 0x80]]) {
+    assert.throws(() => {
+      const parser = catalogApi.createCanonicalJsonStreamParser();
+      for (const byte of invalid) parser.push(Uint8Array.of(byte));
+      parser.finish();
+    }, error => error.code === "json");
+  }
+});
+
+test("supplementary Unicode retains code-unit string limits", () => {
+  const text = "\u{1f680}".repeat(128 * 1024);
+  assert.equal(catalogApi.parseCanonicalJsonText(JSON.stringify(text) + "\n"), text);
+  assert.throws(() => catalogApi.parseCanonicalJsonText(JSON.stringify(text + "\u{1f680}") + "\n"), /string exceeded/);
+  assert.throws(() => catalogApi.parseCanonicalJsonText('"\ud800\n'), /surrogate pair/);
+  assert.doesNotThrow(() => catalogApi.validateCatalog(validCatalog([validEntry({ displayName: "\u{1f680}".repeat(80) })])));
+  assert.throws(() => catalogApi.validateCatalog(validCatalog([validEntry({ displayName: "\u{1f680}".repeat(81) })])));
+});
+
 const CANONICAL_MEMBER_NAMES = Object.freeze([
   "model.slm2",
   "tokenizer.tokenizer2",
