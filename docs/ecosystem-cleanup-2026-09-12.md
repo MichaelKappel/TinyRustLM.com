@@ -5,6 +5,30 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C79: responsive launcher handoff and listener ownership, September 20
+
+The pending browser launcher used synchronous OS execution on the same event
+loop as the local HTTP server. It now awaits a bounded asynchronous request,
+receives a structured readiness callback and honors termination during handoff.
+Terminal prose no longer authorizes a browser request. Signal subscriptions are
+installed before the callback and removed on every callback failure or shutdown.
+
+The separate reserve/release port probe is removed. After source admission, the
+actual listener receives an OS-assigned port, which is validated before use.
+The README explains manual no-browser mode and correct recovery after handoff
+failure: the old listener has closed, so its printed URL is no longer usable.
+
+All 120 focused checks pass. A real Node child fetched the local page while the
+handoff was pending; separate children terminated on timeout and cancellation.
+Launcher/server line coverage is 91.27%/91.10%. The actual no-browser CLI remains
+source-blocked and never reaches listener startup. No OS browser was launched.
+
+The launcher, its tests, server integration, package commands and README form
+this checkpoint. Pending runbook/UI-gate assertions were preserved with the
+uncommitted acquisition-gate tests; synthetic walkthrough work remains pending.
+No product HTML/CSS, model, credential, NuGet package or deployed site changed.
+Evidence and cleanup accounting: `artifacts/ecosystem-cleanup-20260912/launcher-handoff-review.json`.
+
 ## C78: reconcile server admission and bound readiness, September 20
 
 The pending local server accepted a single passing check as a complete preflight,

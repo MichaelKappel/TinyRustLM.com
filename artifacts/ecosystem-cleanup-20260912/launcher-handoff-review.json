@@ -1,0 +1,111 @@
+{
+  "schema": "ecosystem.launcher-handoff-review/1",
+  "reviewedUtc": "2026-09-20T19:34:23Z",
+  "sourceParent": "b9430820883ef34da1ca540fd3f4d00c77b163f8",
+  "purpose": "Finish the pending local launcher using structured readiness, responsive browser handoff, cancellable signal ownership and one actual listener.",
+  "baselineUncommittedFiles": [
+    {
+      "path": "tinyrustlm/tools/interview-demo-launcher.js",
+      "bytes": 11044,
+      "sha256": "00feb4282fe2a894dc43acfd5824d67b358c3d5820ebe9be8fd753a4ea492ac2"
+    },
+    {
+      "path": "tinyrustlm/tests/interview-demo-launcher.test.js",
+      "bytes": 13331,
+      "sha256": "7c0967c3375a10b1b6e38528904ebb7ca72a1a768b79d8ada51181e9b1299dda"
+    },
+    {
+      "path": "tinyrustlm/docs/interview-demo.md",
+      "bytes": 8363,
+      "sha256": "0d9b1ae1bd00a8241e1a727f412aefeaa2d8508baf8f0ea0311adec97100b127"
+    }
+  ],
+  "findings": [
+    "Synchronous browser-helper execution blocked the same Node event loop that serves the local UI.",
+    "The launcher scraped exact terminal prose to authorize browser handoff and rejected asynchronous handoff promises.",
+    "A separate probe reserved and released a port before preflight, leaving a bind race and redundant listener ownership.",
+    "The pending recovery instructions advised opening a URL after the server had already closed on handoff failure."
+  ],
+  "implementation": [
+    "Replace terminal-output scraping with a single onReady callback after HTTP readiness. The launcher independently validates the loopback origin.",
+    "Use shell-free asynchronous execFile with a bounded output buffer, timeout and AbortSignal. OS acceptance is reported as a browser request, not proof of a rendered page.",
+    "Subscribe to termination before readiness output/handoff and dispose subscriptions on failure. Cancellation stops pending handoff without a false success message.",
+    "Remove the separate port probe; a null requested port binds the actual listener once on port zero after preflight, then validates its assigned unprivileged port.",
+    "Admit the canonical site before launcher work. Add launcher commands and current README instructions.",
+    "Move pending runbook/UI-gate assertions intact into acquisition-playwright-gate.test.js. That file, the synthetic runbook and UI gate edits remain uncommitted pending integration review."
+  ],
+  "tests": {
+    "baseline": {
+      "passed": 48,
+      "failed": 0,
+      "scope": "server and pending launcher"
+    },
+    "regressionsBeforeFix": {
+      "passed": 10,
+      "failed": 2,
+      "scope": "launcher; synchronous HTTP starvation boundary and termination during asynchronous handoff"
+    },
+    "final": {
+      "passed": 120,
+      "failed": 0,
+      "skipped": 0,
+      "files": [
+        "interview-demo-launcher.test.js",
+        "interview-demo-server.test.js",
+        "interview-demo-preflight.test.js",
+        "static-server.test.js",
+        "acquisition-playwright-gate.test.js"
+      ],
+      "coverage": {
+        "launcher": {
+          "linePercent": 91.27,
+          "branchPercent": 80.56,
+          "functionPercent": 92.31
+        },
+        "server": {
+          "linePercent": 91.1,
+          "branchPercent": 87.5,
+          "functionPercent": 93.02
+        }
+      }
+    },
+    "realChildEvidence": "A Node child fetched HTTP 200 from the running local source server. Separate timeout and cancellation children terminated and emitted close; no OS browser was launched.",
+    "realCli": {
+      "command": "node tinyrustlm/tools/interview-demo-launcher.js --no-browser",
+      "exitCode": 1,
+      "result": "demo_server_ui_preflight_blocked",
+      "sourceFailure": "demo_source_authority_failed",
+      "readyUrlPrinted": false
+    },
+    "memoryChecks": {
+      "passed": 38,
+      "failed": 0,
+      "skipped": 0
+    }
+  },
+  "intake": "Both live buckets are placeholder-only.",
+  "cleanup": {
+    "status": "removed-and-verified-absent",
+    "ownedRoot": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\launcher-handoff\\tinyrustlm-operation-yYPshn",
+    "files": 143,
+    "childDirectories": 38,
+    "logicalBytes": 5634353,
+    "externalMarkerBytes": 65,
+    "originalOwnershipVerified": true,
+    "matchingLiveProcesses": 0,
+    "physicalRecoveryMeasured": false
+  },
+  "secretScan": {
+    "status": "pass",
+    "scannedFiles": 16,
+    "findings": 0,
+    "scope": "Fourteen selected worktree files plus pending runbook and acquisition-gate test; before final receipt accounting. Package scan includes preserved unstaged edits.",
+    "credentialRead": false
+  },
+  "boundaries": [
+    "Actual OS browser rendering was not exercised; platform command selection is tested with injected execution and real Node child behavior.",
+    "No product HTML/CSS, model bytes, public deployment or NuGet package changed.",
+    "Source admission still blocks the actual CLI. C28/C57/C76 blocked cleanup remains untouched; no alternate deletion route was tried.",
+    "The full ecosystem goal remains active. Pending synthetic demonstration work is not model evidence and is not part of this checkpoint."
+  ]
+}

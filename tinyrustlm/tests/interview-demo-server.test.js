@@ -435,6 +435,31 @@ test("termination waiting removes both signal handlers after the first signal", 
   assert.equal(signals.listenerCount("SIGTERM"), 0);
 });
 
+test("termination subscriptions are disposable before and after registration", async () => {
+  for (const alreadyAborted of [false, true]) {
+    const signals = new EventEmitter();
+    const controller = new AbortController();
+    if (alreadyAborted) controller.abort();
+    const waiting = demo.waitForTermination(signals, { signal: controller.signal });
+    if (!alreadyAborted) {
+      assert.equal(signals.listenerCount("SIGINT"), 1);
+      controller.abort();
+    }
+    assert.equal(await waiting, null);
+    assert.equal(signals.listenerCount("SIGINT"), 0);
+    assert.equal(signals.listenerCount("SIGTERM"), 0);
+  }
+  assert.throws(() => demo.waitForTermination(new EventEmitter(), { signal: {} }),
+    errorCode(demo.ERROR_CODES.SERVER_FAILED));
+});
+
+test("invalid readiness callbacks fail before preflight or server startup", async () => {
+  let started = false;
+  await assert.rejects(demo.runDemoServer({ onReady: true,
+    runUiPreflight: async () => { started = true; } }), errorCode(demo.ERROR_CODES.ARGUMENTS_INVALID));
+  assert.equal(started, false);
+});
+
 test("the real source server becomes HTTP-ready and releases its explicit port", async () => {
   const port = await availablePort();
   const stdout = capture();

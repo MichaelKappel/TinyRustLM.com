@@ -142,6 +142,27 @@ cargo run -p tinyrustlm-local-server -- .\tinyrustlm 8080
 
 Open `http://127.0.0.1:8080/app/`.
 
+To open the canonical shell through its guarded local launcher:
+
+```powershell
+npm --prefix .\tinyrustlm run demo:interview
+```
+
+Source/UI preflight must pass before the listener starts. The operating system
+assigns the listener's port; `-- --port 8187` selects an explicit port instead.
+After HTTP readiness, an asynchronous OS request opens the default browser while
+the local server remains responsive. The terminal stays attached until Ctrl+C.
+`-- --no-browser` serves the same shell without an OS browser request; use this
+mode to open the printed URL manually. A failed browser request closes the
+listener, so rerun with `--no-browser` instead of opening its stopped URL.
+
+Run `npm --prefix .\tinyrustlm run test:demo:interview:no-browser` for the launcher
+checks, or `npm --prefix .\tinyrustlm run demo:preflight:live` for the separate
+live-model report. UI readiness does not prove a model, seed or deployment.
+The current source scan remains blocked by two installer links; the launcher
+must retain that failure rather than skip admission. No browser installation or
+model download is performed by the launcher.
+
 The complete local quality gate is:
 
 ```powershell

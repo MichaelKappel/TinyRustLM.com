@@ -1,5 +1,5 @@
 profile: tinyrustlm.startup-packet.current.v1
-updated_utc: 2026-09-20T19:20:46Z
+updated_utc: 2026-09-20T19:34:23Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
@@ -10,6 +10,7 @@ startup_steps:
   - Preserve immutable failed operations and all campaign counters.
 
 current_truth:
+  launcher_handoff: C79 replaces terminal scraping and synchronous browser opening with structured readiness and cancellable asynchronous handoff. One actual listener selects its port after preflight. All 120 focused checks pass; launcher/server line coverage is 91.27%/91.10%. The actual no-browser CLI remains source-blocked. Read launcher-handoff-review.json; OS rendering, model and publication gates remain unproven. No key read or blocked removal.
   local_server_startup: C78 admits only complete current preflight reports, accepts source-failed skips and bounds HTTP readiness by one monotonic deadline. All 113 affected checks pass; server/preflight line coverage is 90.02%/91.96%. The actual CLI reports source refusal and opens no server. Read local-server-startup-review.json. Source/model deletion blocks and release gates remain; no key read or publication.
   preflight_admission: C77 makes local preflight await source admission before any other checks and keeps disposable release records under original canonical ownership. All 88 affected and 19 related checks pass; preflight line coverage is 91.93%. Actual live-mode CLI reports one source failure and eight skipped checks without creating output. Read preflight-admission-ownership-review.json. Existing installer/model deletion blocks and real product/release requirements remain; no credentials or publication.
   retired_model_faults: C76 retires the obsolete SLM1 tensor-offset executor and copied-source package fault consumer; required faults stay 24. All 35 focused tests and six actual Edge scenarios pass, with one pinned-Chromium test skipped. Automatic review blocked deletion of twenty model files; preserve that exact cohort and its parent, and do not retry another API. The strict storage check fails on those files and remains uncommitted. Read retired-model-fixture-review.json; no model, package publication or source-authority pass.

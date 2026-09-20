@@ -274,21 +274,27 @@ async function waitForHttpReadiness(origin, options = {}) {
 }
 
 // Observe one foreground termination signal and release both subscriptions.
-function waitForTermination(signalSource = process) {
+function waitForTermination(signalSource = process, options = {}) {
+  const cancellation = options.signal;
   if (!signalSource || typeof signalSource.once !== "function" ||
-      typeof signalSource.removeListener !== "function") {
+      typeof signalSource.removeListener !== "function" ||
+      (cancellation !== undefined && !(cancellation instanceof AbortSignal))) {
     reject(ERROR_CODES.SERVER_FAILED);
   }
   return new Promise((resolve) => {
     const finish = (signal) => {
       signalSource.removeListener("SIGINT", onInterrupt);
       signalSource.removeListener("SIGTERM", onTerminate);
+      cancellation?.removeEventListener("abort", onCancel);
       resolve(signal);
     };
     const onInterrupt = () => finish("SIGINT");
     const onTerminate = () => finish("SIGTERM");
+    const onCancel = () => finish(null);
+    if (cancellation?.aborted) return onCancel();
     signalSource.once("SIGINT", onInterrupt);
     signalSource.once("SIGTERM", onTerminate);
+    cancellation?.addEventListener("abort", onCancel, { once: true });
   });
 }
 
@@ -308,15 +314,20 @@ function renderReadySummary(origin) {
 
 // Admit preflight, own the local server, and close it on every post-start exit.
 async function runDemoServer(options = {}) {
-  const port = normalizePort(options.port === undefined ? DEFAULT_PORT : options.port);
+  if (options.onReady !== undefined && typeof options.onReady !== "function") {
+    reject(ERROR_CODES.ARGUMENTS_INVALID);
+  }
+  // Null requests one OS-assigned port on the actual listener, after admission.
+  const port = options.port === null ? 0 :
+    normalizePort(options.port === undefined ? DEFAULT_PORT : options.port);
   const siteRoot = path.resolve(options.siteRoot || path.join(__dirname, ".."));
   const stdout = options.stdout || process.stdout;
   const stderr = options.stderr || process.stderr;
   const executePreflight = options.runUiPreflight || runUiPreflight;
   const startServer = options.startSourceServer || startSourceServer;
   const waitUntilReady = options.waitForHttpReadiness || waitForHttpReadiness;
-  const waitUntilTerminated = options.waitForTermination || (() =>
-    waitForTermination(options.signalSource || process));
+  const waitUntilTerminated = options.waitForTermination || ((terminationOptions) =>
+    waitForTermination(options.signalSource || process, terminationOptions));
 
   let preflightExecution;
   try {
@@ -345,16 +356,32 @@ async function runDemoServer(options = {}) {
 
   let origin;
   let signal;
+  const handoff = new AbortController();
   try {
-    origin = normalizeLoopbackOrigin(server.origin, port);
+    let expectedPort = port;
+    if (port === 0) {
+      try { expectedPort = normalizePort(new URL(server.origin).port); }
+      catch (_error) { reject(ERROR_CODES.SERVER_FAILED); }
+    }
+    origin = normalizeLoopbackOrigin(server.origin, expectedPort);
     try {
       await waitUntilReady(origin, { timeoutMilliseconds: READINESS_TIMEOUT_MILLISECONDS });
     } catch (_error) {
       reject(ERROR_CODES.READINESS_FAILED);
     }
+    // Subscribe before announcing readiness or invoking asynchronous consumers.
+    const termination = Promise.resolve(waitUntilTerminated({ signal: handoff.signal }));
+    const stopped = termination.then(value => {
+      signal = value;
+      handoff.abort();
+    });
+    // Observe failures immediately while the handoff may still be pending.
+    stopped.catch(() => handoff.abort());
     stdout.write(`${renderReadySummary(origin)}\n`);
-    signal = await waitUntilTerminated();
+    if (options.onReady) await options.onReady(origin, { signal: handoff.signal });
+    await stopped;
   } finally {
+    handoff.abort();
     await server.close();
   }
   stdout.write(`TinyRustLM interview UI demo: STOPPED (${signal}).\n`);

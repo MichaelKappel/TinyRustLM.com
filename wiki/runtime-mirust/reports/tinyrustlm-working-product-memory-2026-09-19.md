@@ -16,6 +16,15 @@ Authority order is current owner instructions, inspected current contracts and b
 
 ## Current evidence and its limits
 
+**C79 launcher handoff:** local HTTP remains responsive during the asynchronous
+OS browser request. Structured readiness replaces terminal scraping; termination
+cancels pending handoff and releases signal subscriptions. The actual listener
+now selects its port after preflight, replacing the separate probe. All 120
+focused checks pass, including real Node child HTTP/timeout/cancellation cases;
+launcher/server line coverage is 91.27%/91.10%. The actual no-browser CLI remains
+source-blocked. Read `launcher-handoff-review.json`; OS browser rendering, real
+model, seed and publication evidence remain separate requirements.
+
 **C78 local server:** startup now requires the complete current preflight report,
 including source-failed dependent skips, exact exit status and strict JSON.
 HTTP readiness has one monotonic deadline even when responses keep sending data;

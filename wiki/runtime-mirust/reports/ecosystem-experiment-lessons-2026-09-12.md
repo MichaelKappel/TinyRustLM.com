@@ -11,6 +11,29 @@ Keep useful findings and compact evidence identities in the owning canonical
 repository. Keep source history in Git and current model payloads only in
 `D:\LLMs\TinyRustLM`.
 
+## C79: browser handoff must leave local HTTP responsive
+
+- Question: can the local server answer while its OS browser request is pending,
+  and does termination during that request stop work and release the listener?
+- Inputs: TinyRust parent `b9430820883ef34da1ca540fd3f4d00c77b163f8`; exact pending
+  launcher/test/runbook identities are in the compact review receipt.
+- Method: forbid synchronous child execution, make a real asynchronous Node
+  child fetch the local page, terminate during a pending callback, and exercise
+  real child timeout/cancellation. Retain malformed URL and source-root negatives.
+- Result: the 48-test baseline passed. Two added launcher regressions failed;
+  after replacement all 120 focused checks pass. Launcher/server line coverage
+  is 91.27%/91.10%. Actual no-browser CLI still fails source admission.
+- Decision: use one structured readiness callback, asynchronous bounded OS
+  execution, disposable termination listeners and the actual OS-assigned port.
+  Remove terminal scraping and the redundant port reservation/release helper.
+- Reusable lesson: synchronously launching a browser can starve the local server
+  it needs. OS handoff success is a request acknowledgment, not rendering proof;
+  a stopped listener also makes its previously printed recovery URL unusable.
+- Uncertainty: actual GUI/browser-handler behavior is unverified; controlled
+  child and loopback tests do not qualify a model, external seed or deployment.
+  Existing blocked cleanup and release gates remain. No API key was read.
+- Evidence: `artifacts/ecosystem-cleanup-20260912/launcher-handoff-review.json`.
+
 ## C78: exact consumer admission and absolute readiness deadlines
 
 - Question: does the pending local server admit the real producer contract and
