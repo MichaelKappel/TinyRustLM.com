@@ -965,6 +965,111 @@ test("one basic click verifies caches and activates a listed P2P composition", a
   }
 });
 
+test("metadata cancellation leaves browser storage untouched before peer transfer", async ({ page }) => {
+  const pageErrors = [];
+  page.on("pageerror", (error) => pageErrors.push(error.message));
+  const fixture = createSyntheticFixture(
+    "metadata-cancellation", [37, 43, 31, 65800, 512, 896], 1
+  );
+  const documents = createDocuments(fixture, 40253);
+  await page.goto("/app/browser-model-admission.js", { waitUntil: "domcontentloaded" });
+  for (const scriptName of RUNTIME_SCRIPTS) {
+    await page.addScriptTag({ url: `/app/${scriptName}` });
+  }
+  const observed = await page.evaluate(async (fixture) => {
+    const admissionApi = globalThis.TinyRustLMBrowserModelAdmission;
+    const catalogApi = globalThis.TinyRustLMMiniModelCatalogV1;
+    const storeApi = globalThis.TinyRustLMModelCompositionStore;
+    const p2pApi = globalThis.TinyRustLMP2PCompositionInstall;
+    const entries = await catalogApi.buildVerifiedCatalogView(
+      fixture.catalog, fixture.peerFeed, { now: new Date(fixture.validationNowUtc) }
+    );
+    const admissionRecord = Object.freeze({
+      admission: admissionApi.parseAdmissionText(fixture.admissionText),
+      admissionText: fixture.admissionText,
+      admissionSha256: fixture.admissionSha256,
+      qualificationReceipt: Object.freeze(JSON.parse(fixture.qualificationReceiptText)),
+      qualificationReceiptText: fixture.qualificationReceiptText,
+      qualificationReceiptSha256: fixture.qualificationReceiptSha256
+    });
+    const actualStore = storeApi.createModelCompositionStore({
+      adapter: storeApi.createOpfsAdapter({
+        createSha256: globalThis.TinyRustLMIncrementalSha256.createSha256
+      }),
+      maximumCompositionBytes: 4 * 1024 * 1024
+    });
+    const storageRoot = await navigator.storage.getDirectory();
+    const before = [];
+    for await (const name of storageRoot.keys()) before.push(name);
+    const nativeDigest = crypto.subtle.digest;
+    const schedule = globalThis.setTimeout;
+    const results = [];
+    for (const ordinal of [1, 2, 3, 4]) {
+      for (const mode of ["cancel", "deadline"]) {
+        const entered = Promise.withResolvers();
+        const held = Promise.withResolvers();
+        const parent = new AbortController();
+        let digests = 0;
+        let storeCalls = 0;
+        let fetchCalls = 0;
+        let expire;
+        let observationTimer;
+        crypto.subtle.digest = (algorithm, bytes) => {
+          digests += 1;
+          if (digests !== ordinal) return nativeDigest.call(crypto.subtle, algorithm, bytes);
+          entered.resolve();
+          return held.promise;
+        };
+        globalThis.setTimeout = (callback, delay, ...args) => {
+          if (delay === 7777) expire = callback;
+          return schedule(callback, delay, ...args);
+        };
+        const pending = p2pApi.installP2pComposition({
+          entry: entries[0], admissionRecord,
+          manifest: fixture.manifest, admissionAuthority: fixture.admissionAuthority,
+          signal: parent.signal, timeoutMilliseconds: 7777,
+          store: { install(options) { storeCalls += 1; return actualStore.install(options); } },
+          fetch() { fetchCalls += 1; throw new Error("unexpected model transfer"); }
+        }).then(() => "unexpected-success", (error) => error.code);
+        try {
+          await entered.promise;
+          if (mode === "cancel") parent.abort();
+          else expire();
+          const result = await Promise.race([
+            pending,
+            new Promise((resolve) => {
+              observationTimer = schedule(() => resolve("still-pending"), 250);
+            })
+          ]);
+          held.reject(new Error("late browser digest failure"));
+          await new Promise((resolve) => schedule(resolve, 0));
+          results.push({ ordinal, mode, result, digests, storeCalls, fetchCalls });
+        } finally {
+          clearTimeout(observationTimer);
+          held.reject(new Error("browser fixture cleanup"));
+          await pending;
+          crypto.subtle.digest = nativeDigest;
+          globalThis.setTimeout = schedule;
+        }
+      }
+    }
+    const after = [];
+    for await (const name of storageRoot.keys()) after.push(name);
+    return { results, before: before.sort(), after: after.sort() };
+  }, browserFixture(fixture, documents));
+  expect(pageErrors).toEqual([]);
+  expect(observed.after).toEqual(observed.before);
+  expect(observed.results).toHaveLength(8);
+  for (const result of observed.results) {
+    expect(result).toEqual({
+      ordinal: result.ordinal, mode: result.mode,
+      result: result.mode === "cancel"
+        ? "p2p-composition-install-aborted" : "p2p-composition-install-timeout",
+      digests: result.ordinal, storeCalls: 0, fetchCalls: 0
+    });
+  }
+});
+
 test("direct P2P streams six members into persistent OPFS and cancels atomically", async ({}, testInfo) => {
   test.skip(testInfo.project.name !== "desktop", "The direct P2P proof runs in desktop Chromium");
   test.setTimeout(180_000);

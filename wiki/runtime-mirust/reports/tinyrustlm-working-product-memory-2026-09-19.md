@@ -16,6 +16,16 @@ Authority order is current owner instructions, inspected current contracts and b
 
 ## Current evidence and its limits
 
+**C58 install metadata cancellation:** all four P2P metadata hash waits now share
+the existing install deadline and caller signal. Late failures are observed and
+cancelled preparation starts no store or transfer. All 222 affected Node checks
+pass, with 89.57% installer line coverage; actual Edge verifies successful existing
+acquisition and eight injected hash scenarios at desktop and mobile viewports.
+OPFS roots stay unchanged and final hash checks report no page errors. Underlying
+WebCrypto is not aborted; durable postcommit behavior is preserved. See
+`artifacts/ecosystem-cleanup-20260912/p2p-metadata-cancellation-review.json`.
+The source scan, useful default model, public seed and NuGet release gates remain.
+
 **C57 Linux package execution:** the canonical Linux x64 native build and four ABI
 tests pass. Two-RID package audit, 86 core and 38 package checks, and both Windows
 and actual Linux .NET consumers pass. Windows compiled the canonical package-only

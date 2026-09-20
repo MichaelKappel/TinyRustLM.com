@@ -298,8 +298,9 @@ function (root, admissionApi, directPeerUrlAuthority) {
     return result;
   }
 
-  /** Hashes bounded metadata with the browser cryptography authority. */
-  async function sha256Hex(bytes) {
+  /** Hashes bounded metadata while the shared install state remains active. */
+  async function sha256Hex(bytes, state) {
+    checkActive(state);
     const cryptoValue = root && root.crypto;
     if (!(bytes instanceof Uint8Array) || !cryptoValue || !cryptoValue.subtle ||
         typeof cryptoValue.subtle.digest !== "function") {
@@ -307,7 +308,7 @@ function (root, admissionApi, directPeerUrlAuthority) {
     }
     let digest;
     try {
-      digest = await cryptoValue.subtle.digest("SHA-256", bytes);
+      digest = await waitWithCancellation(cryptoValue.subtle.digest("SHA-256", bytes), state);
     } catch (error) {
       throw typed(error, "p2p-composition-install-sha256");
     }
@@ -661,8 +662,8 @@ function (root, admissionApi, directPeerUrlAuthority) {
     });
   }
 
-  /** Binds catalog, admission, manifest, receipt identity, and receipt bytes exactly. */
-  async function buildPlan(entry, admissionRecord, manifest) {
+  /** Binds exact metadata identities under the shared install cancellation state. */
+  async function buildPlan(entry, admissionRecord, manifest, state) {
     const admission = admissionRecord.admission;
     const admissionText = admissionRecord.admissionText;
     const admissionBytes = textEncoder().encode(admissionText);
@@ -672,7 +673,7 @@ function (root, admissionApi, directPeerUrlAuthority) {
         admissionBytes.byteLength > admissionApi.maximumTextBytes) {
       reject("p2p-composition-install-admission-binding");
     }
-    const admissionSha256 = await sha256Hex(admissionBytes);
+    const admissionSha256 = await sha256Hex(admissionBytes, state);
     if (admissionSha256 !== manifest.admissionAuthority.admission.sha256 ||
         `sha256:${admissionSha256}` !== admissionRecord.admissionSha256 ||
         `sha256:${admissionSha256}` !== entry.browserAdmission.sha256 ||
@@ -688,7 +689,7 @@ function (root, admissionApi, directPeerUrlAuthority) {
       "p2p-composition-install-qualification-binding"
     );
     const receiptBytes = textEncoder().encode(admissionRecord.qualificationReceiptText);
-    const receiptSha256 = await sha256Hex(receiptBytes);
+    const receiptSha256 = await sha256Hex(receiptBytes, state);
     if (receiptBytes.byteLength !== receiptDescriptor.byteLength ||
         receiptSha256 !== receiptDescriptor.sha256 ||
         admission.qualification.receiptId !== entry.qualification.receiptId ||
@@ -727,8 +728,8 @@ function (root, admissionApi, directPeerUrlAuthority) {
     return Object.freeze({ entry, admission, admissionText, manifest, peer, urls });
   }
 
-  /** Binds the exact catalog and receipt bytes that must travel with a P2P install. */
-  async function normalizeStoreAdmissionAuthority(value, plan, admissionRecord) {
+  /** Binds stored authority bytes without outliving the shared install state. */
+  async function normalizeStoreAdmissionAuthority(value, plan, admissionRecord, state) {
     const code = "p2p-composition-install-admission-authority";
     exactObject(value, STORE_ADMISSION_AUTHORITY_INPUT_FIELDS, code);
     if (value.admissionText !== plan.admissionText ||
@@ -754,8 +755,8 @@ function (root, admissionApi, directPeerUrlAuthority) {
     const catalogBytes = textEncoder().encode(value.catalogText);
     if (receiptBytes.byteLength !== descriptors.qualificationReceipt.byteLength ||
         catalogBytes.byteLength !== descriptors.catalog.byteLength ||
-        await sha256Hex(receiptBytes) !== descriptors.qualificationReceipt.sha256 ||
-        await sha256Hex(catalogBytes) !== descriptors.catalog.sha256) {
+        await sha256Hex(receiptBytes, state) !== descriptors.qualificationReceipt.sha256 ||
+        await sha256Hex(catalogBytes, state) !== descriptors.catalog.sha256) {
       reject(code);
     }
     const catalogAuthority = exactObject(
@@ -837,37 +838,33 @@ function (root, admissionApi, directPeerUrlAuthority) {
 
   /** Races one pending operation against shared cancellation and removes its listener. */
   function waitWithCancellation(value, state, details) {
-    checkActive(state, details);
+    // Observe even an already-cancelled operation's later rejection.
+    const pending = Promise.resolve(value);
     return new Promise(
       // Owns the abort listener for this single awaited operation.
       (resolve, rejectPromise) => {
         const signal = state.controller.signal;
+        let settled = false;
+        /** Releases the listener and settles once, retaining the first terminal outcome. */
+        const finish = (settle, result) => {
+          if (settled) return;
+          settled = true;
+          signal.removeEventListener("abort", onAbort);
+          settle(result);
+        };
         // Rejects the wrapper with the first stable terminal reason on abort.
-        const onAbort = () => rejectPromise(state.error || new P2pCompositionInstallError(
+        const onAbort = () => finish(rejectPromise, state.error || new P2pCompositionInstallError(
           "p2p-composition-install-aborted",
           details
         ));
-        signal.addEventListener("abort", onAbort, { once: true });
-        if (signal.aborted) {
-          signal.removeEventListener("abort", onAbort);
-          rejectPromise(state.error || new P2pCompositionInstallError(
-            "p2p-composition-install-aborted",
-            details
-          ));
-          return;
-        }
-        Promise.resolve(value).then(
+        pending.then(
           // Resolves the wrapper and releases its abort listener.
-          (result) => {
-            signal.removeEventListener("abort", onAbort);
-            resolve(result);
-          },
+          (result) => finish(resolve, result),
           // Propagates the operation failure after releasing its abort listener.
-          (error) => {
-            signal.removeEventListener("abort", onAbort);
-            rejectPromise(error);
-          }
+          (error) => finish(rejectPromise, error)
         );
+        signal.addEventListener("abort", onAbort, { once: true });
+        if (state.error || signal.aborted) onAbort();
       }
     );
   }
@@ -1212,11 +1209,12 @@ function (root, admissionApi, directPeerUrlAuthority) {
       const admissionRecord = normalizeAdmissionRecord(options.admissionRecord);
       const entry = normalizeEntry(options.entry);
       const manifest = normalizeManifest(options.manifest);
-      const plan = await buildPlan(entry, admissionRecord, manifest);
+      const plan = await buildPlan(entry, admissionRecord, manifest, state);
       const admissionAuthority = await normalizeStoreAdmissionAuthority(
         options.admissionAuthority,
         plan,
-        admissionRecord
+        admissionRecord,
+        state
       );
       checkActive(state);
       const sources = createSources(

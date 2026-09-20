@@ -11,6 +11,30 @@ Keep useful findings and compact evidence identities in the owning canonical
 repository. Keep source history in Git and current model payloads only in
 `D:\LLMs\TinyRustLM`.
 
+## C58: a network deadline must also cover metadata hashing
+
+Question: does cancelling a P2P install finish while its metadata digest is pending?
+At the C57 source revision, all sixteen cases (four hash stages, caller/deadline,
+late success/failure) remained pending beyond the 150 ms observation window. The
+hash-failure control passed; this was an async lifetime defect rather than bad
+metadata or a model-quality failure. The revised installer uses its existing
+cancellation state for every hash and observes even a rejection returned after
+synchronous cancellation. It starts no further preparation, store work or transfer.
+
+All 222 affected Node checks pass. Real Edge passes the existing one-click and
+persistent-transfer tests plus eight injected hash scenarios at each desktop/mobile
+viewport. Final checks also observe page errors and unchanged OPFS roots. Deadlines
+are triggered deterministically through the actual timer callback; the 150/250 ms
+windows are test observation bounds, not performance measurements. WebCrypto may
+finish after cancellation, and browser suspension can delay timers. Preserve this
+distinction when describing cancellation guarantees. No model was qualified.
+
+Reusable lesson: race every asynchronous precommit stage against the same lifetime,
+observe late failure, and prove that cancellation prevents subsequent side effects.
+Preserve the separately tested committed-store result. Exact identities, commands,
+coverage and cleanup are in `p2p-metadata-cancellation-review.json` in the existing
+cleanup artifact directory; source history is in Git, with no copied source tree.
+
 ## C57: separate Linux execution proof from toolchain setup failures
 
 Question: can the current package run in Linux while hosted jobs cannot start?

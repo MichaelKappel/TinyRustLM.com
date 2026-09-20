@@ -1,5 +1,21 @@
 # Server-seeded startup
 
+## September 20 cancellation during install metadata verification
+
+The later P2P installer uses its existing whole-install deadline and linked caller
+signal for all four asynchronous metadata hashes: admission, qualification receipt,
+stored receipt authority and catalog authority. Cancelling or expiring while a hash
+is pending ends that wait before the hash settles. No subsequent hash, store install
+or member fetch starts. Hash failures retain their typed error; cancellation and
+timeout retain the first terminal reason.
+
+WebCrypto does not offer cancellation of the underlying digest. Its late result is
+ignored and its late rejection is observed. This is a bound on the installer's wait,
+not a guarantee that browser cryptographic work has stopped. The existing durable
+commit behavior is unchanged: cancellation after a committed install returns that
+committed result. See `p2p-metadata-cancellation-review.json` in the cleanup artifacts
+for synthetic Node and actual Edge evidence; no real model or live seed is qualified.
+
 ## September 19 bounded admission checks
 
 Before model transfer, `catalog-admission-loader.js` verifies the catalog-bound

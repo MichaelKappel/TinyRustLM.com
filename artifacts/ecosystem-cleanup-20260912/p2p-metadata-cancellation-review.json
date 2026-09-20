@@ -1,0 +1,208 @@
+{
+  "schema": "tinyrustlm.ecosystem_cleanup.p2p_metadata_cancellation_review.v1",
+  "checkpoint": "C58",
+  "recorded_at_utc": "2026-09-20T12:27:34Z",
+  "base_commit": "f31fed5738db2766dcdc715fa158a936001b8c51",
+  "classification": "Local implementation and synthetic acquisition evidence; not model qualification, public seed, release or deployment.",
+  "question": "Does the install lifetime cover pending metadata hashes before store or transfer side effects?",
+  "before": {
+    "installer_sha256": "55a53359bb7af64062eb8b7505251af6eab487bc94a8105a92698830ea6ae8e4",
+    "command": "node --test --test-name-pattern='metadata hash|metadata digest' tinyrustlm/tests/p2p-composition-install.test.js",
+    "tests": 18,
+    "passed": 1,
+    "failed": 17,
+    "skipped": 0,
+    "interpretation": "Sixteen stage/cancellation/late-outcome subcases and their parent failed; the independent hash-failure control passed. Each failed subcase remained pending after the 150 ms observation window. Recorded before the implementation change in this operation."
+  },
+  "change": {
+    "hash_stages": [
+      "admission",
+      "qualification receipt",
+      "stored receipt authority",
+      "catalog authority"
+    ],
+    "lifetime": "Use existing whole-install deadline and linked parent signal; no reset per stage.",
+    "late_result": "Observe rejected promises even when cancellation happened synchronously during the operation call; ignore late settlement after terminal outcome.",
+    "unchanged": [
+      "Exact admission and qualification identities",
+      "Six-member manifest and transfer validation",
+      "Committed-store success on cancellation after durable commit",
+      "Visual presentation"
+    ]
+  },
+  "tests": {
+    "node": {
+      "command": "node --experimental-test-coverage --test-coverage-include=**/app/p2p-composition-install.js --test tests/p2p-composition-install.test.js tests/direct-peer-url-authority.test.js tests/minimodel-catalog-v1.test.js tests/model-cache-custody-integration.test.js tests/model-acquisition.test.js tests/model-acquisition-boundary-regression.test.js tests/static-shell-parity.test.js tests/web-deployment-manifest.test.js",
+      "cwd": "tinyrustlm",
+      "passed": 222,
+      "failed": 0,
+      "skipped": 0,
+      "cancelled": 0,
+      "elapsed_ms": 1089,
+      "coverage": {
+        "file": "app/p2p-composition-install.js",
+        "lines_percent": 89.57,
+        "branches_percent": 77.74,
+        "functions_percent": 98.28
+      }
+    },
+    "browser": {
+      "engine": "installed Microsoft Edge",
+      "version": "153.0.4234.48",
+      "desktop_viewport": [
+        1365,
+        768
+      ],
+      "mobile_viewport": [
+        390,
+        844
+      ],
+      "mobile_scope": "Desktop Edge viewport/touch emulation, not physical mobile.",
+      "command": "node node_modules/@playwright/test/cli.js test --project=desktop --workers=1 --retries=0 --reporter=line --output=<owned>/browser e2e/direct-p2p-composition.spec.js",
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0,
+      "elapsed_ms": 40069,
+      "mobile_initial": {
+        "grep": "metadata cancellation",
+        "passed": 1,
+        "failed": 0
+      },
+      "final_checks": {
+        "reason": "Added explicit pageerror observation to the new hash test.",
+        "projects": [
+          "desktop",
+          "mobile"
+        ],
+        "grep": "metadata cancellation",
+        "passed": 2,
+        "failed": 0,
+        "scenarios_per_project": 8,
+        "observations": [
+          "All four pending hashes terminate on caller abort and deadline",
+          "No later hash, store call or fetch",
+          "OPFS root listing unchanged",
+          "Late digest rejection produces no pageerror"
+        ]
+      },
+      "fixture_boundaries": [
+        "Cryptographic hash holds and deterministic install-timer callbacks are injected.",
+        "Existing desktop transfer tests use synthetic six-member bytes and controlled loopback peers.",
+        "One-click activation uses a fixture runtime; no real model quality or public reachability follows."
+      ],
+      "warnings": [
+        "Node NO_COLOR/FORCE_COLOR warning, also rendered as NativeCommandError by Windows PowerShell redirection; CLI exit codes were zero."
+      ]
+    },
+    "memory": {
+      "command": "dotnet test dotnet/tests/TinyRustLM.Package.Tests/TinyRustLM.Package.Tests.csproj --configuration Release --no-build --no-restore --filter FullyQualifiedName~UaixMemoryConsolidationTests --verbosity minimal",
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0
+    },
+    "diff_check": "passed"
+  },
+  "limits": [
+    "Underlying WebCrypto is not cancelled. This bounds the installer's wait and next actions; browser suspension can delay timers.",
+    "150/250 ms values are observation windows, not measured product performance promises.",
+    "No complete visual screenshot comparison performed; shell diffs only replace the installer content hash.",
+    "No real model run, NuGet key read, NuGet push or production deployment."
+  ],
+  "source_authority": {
+    "command": "node tinyrustlm/tools/verify-single-source-authority.js",
+    "exit_code": 1,
+    "result": "source_authority_scan_incomplete",
+    "unreadable": [
+      "artifacts/verification/qwen3-environment-install/tinyrustlm-operation-C3ZUt9/install-temp/TmP6xn2evdh-b",
+      "artifacts/verification/qwen3-environment-install/tinyrustlm-operation-C3ZUt9/install-temp/TmPeq63_hr7-b"
+    ],
+    "boundary": "Previously policy-blocked links were not retried. This scan does not admit model execution or release."
+  },
+  "versions": {
+    "node": "v24.14.0",
+    "edge": "153.0.4234.48"
+  },
+  "source_inputs": [
+    {
+      "path": "tinyrustlm/app/p2p-composition-install.js",
+      "bytes": 50631,
+      "sha256": "3dc954f00dc9345ffc365a10c0c47efa5ba55ceb83caa8ff6009d31b73ccbe41"
+    },
+    {
+      "path": "tinyrustlm/tests/p2p-composition-install.test.js",
+      "bytes": 50066,
+      "sha256": "42eb2fee59a1a21039471540a0a281420b18c24f791761b1f70db748511d540e"
+    },
+    {
+      "path": "tinyrustlm/e2e/direct-p2p-composition.spec.js",
+      "bytes": 70945,
+      "sha256": "3cd91ff628ecc92ee68b3fb91c0c0b8f9b97e6e707415d28cfa52f0c9a523e61"
+    },
+    {
+      "path": "tinyrustlm/app/index.html",
+      "bytes": 48604,
+      "sha256": "89c598119052e18552e4897e410d7e848cc7c0ddbc13c4a473dc130b86f8df1f"
+    },
+    {
+      "path": "tinyrustlm/index.html",
+      "bytes": 48684,
+      "sha256": "f48b8892889ef894dfae5fa8b9ec380d04e3101bf1c8a1e3d99d2bc5a7458ffc"
+    },
+    {
+      "path": "docs/server-seeded-startup-2026-09-12.md",
+      "bytes": 16355,
+      "sha256": "03b0f8484c31754130a4ddc5d4331c5cf4a98318a162a306e25dc9d247eed0f9"
+    }
+  ],
+  "retired_log_identities": [
+    {
+      "path": "node.log",
+      "bytes": 19860,
+      "sha256": "cc3199d895012b453780ad2e599c8aac40736504423ba8ba2a3f10c44d4d2a91"
+    },
+    {
+      "path": "edge.log",
+      "bytes": 636,
+      "sha256": "ee42d54aeba77e9c58136573b0750bf4bb87b040769d00cc877171eff775fc87"
+    },
+    {
+      "path": "edge-mobile.log",
+      "bytes": 1396,
+      "sha256": "383ed6cd1c750bde2400854869c28a5fb316c93aec9eae96effb7813b66f706e"
+    },
+    {
+      "path": "edge-final.log",
+      "bytes": 2014,
+      "sha256": "069e5021a9f74330689564a237c11bcf03c88cc9b25c8ae534fac9786b987818"
+    },
+    {
+      "path": "memory.log",
+      "bytes": 688,
+      "sha256": "ff02f33e6d25d6d1cd2a2fd8c34cf7c261277005a966f82888e13c0532ea1768"
+    }
+  ],
+  "cleanup": {
+    "final_memory_recheck": {
+      "passed": 6,
+      "failed": 0,
+      "root": "artifacts/tests/p2p-metadata-cancellation/tinyrustlm-operation-r8umQ4",
+      "absence_verified": true,
+      "files_removed": 2,
+      "logical_bytes_removed": 1458
+    },
+    "root": "artifacts/tests/p2p-metadata-cancellation/tinyrustlm-operation-SNgINU",
+    "absence_verified": true,
+    "regular_files_removed": 31,
+    "directories_below_root": 14,
+    "logical_bytes_removed": 3914884,
+    "physical_space_recovered": "not measured",
+    "method": "Canonical ownership helper verified exact absolute target, ancestry, directory identity and marker, bounded ordinary-entry inventory and contained hard links before removal; absence observed.",
+    "excluded": "All prior policy-blocked paths, including the OFb8Tf Linux headers and ancestors."
+  },
+  "remaining": [
+    "Useful default model, real numerical/browser qualification and initial public MiniModel seed.",
+    "Real ARM64 packaged execution and complete clean NuGet release admission.",
+    "Source scan/blocked cleanup and hosted account/workflow constraints.",
+    "Full ecosystem cleanup and owner acceptance."
+  ]
+}

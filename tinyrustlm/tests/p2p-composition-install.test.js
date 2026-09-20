@@ -1096,6 +1096,119 @@ test("catalog, admission, and store identity drift fails before any fetch", asyn
   assert.equal(fetchCalls, 0);
 });
 
+test("metadata hashing stops on cancellation or deadline before store access", async (t) => {
+  for (const digestOrdinal of [1, 2, 3, 4]) {
+    for (const termination of ["cancel", "deadline"]) {
+      for (const lateOutcome of ["resolve", "reject"]) {
+        await t.test(`${digestOrdinal}/${termination}/${lateOutcome}`, async (t) => {
+          const value = await fixture(`hash-${digestOrdinal}-${termination}-${lateOutcome}`);
+          const parent = new AbortController();
+          const store = new ConsumingStore();
+          const fetchCalls = [];
+          const entered = Promise.withResolvers();
+          const held = Promise.withResolvers();
+          const digest = globalThis.crypto.subtle.digest.bind(globalThis.crypto.subtle);
+          const schedule = globalThis.setTimeout;
+          let digestCalls = 0;
+          let heldInput;
+          let expire;
+          let observationTimer;
+          t.mock.method(globalThis.crypto.subtle, "digest", (algorithm, bytes) => {
+            digestCalls += 1;
+            if (digestCalls !== digestOrdinal) return digest(algorithm, bytes);
+            heldInput = { algorithm, bytes };
+            entered.resolve();
+            return held.promise;
+          });
+          t.mock.method(globalThis, "setTimeout", (callback, delay, ...args) => {
+            if (delay === 7777) expire = callback;
+            return schedule(callback, delay, ...args);
+          });
+          const pending = installApi.installP2pComposition({
+            entry: value.entry,
+            admissionRecord: value.admissionRecord,
+            manifest: value.manifest,
+            admissionAuthority: value.admissionAuthority,
+            store,
+            fetch: successfulFetch(value, fetchCalls),
+            signal: parent.signal,
+            timeoutMilliseconds: 7777
+          }).then(
+            (result) => ({ kind: "resolved", result }),
+            (error) => ({ kind: "rejected", error })
+          );
+          try {
+            await entered.promise;
+            assert.equal(typeof expire, "function");
+            if (termination === "cancel") parent.abort();
+            else expire();
+            const observed = await Promise.race([
+              pending,
+              new Promise((resolve) => {
+                observationTimer = schedule(() => resolve({ kind: "pending" }), 150);
+              })
+            ]);
+            assert.equal(observed.kind, "rejected", "hash wait must end before digest settles");
+            assert.equal(observed.error.code, termination === "cancel"
+              ? "p2p-composition-install-aborted" : "p2p-composition-install-timeout");
+            if (lateOutcome === "reject") held.reject(new Error("late digest failure"));
+            else held.resolve(await digest(heldInput.algorithm, heldInput.bytes));
+            await new Promise(setImmediate);
+            assert.equal(digestCalls, digestOrdinal, "cancelled preparation starts no later hash");
+            assert.equal(store.calls.length, 0);
+            assert.equal(fetchCalls.length, 0);
+            assert.equal(await pending, observed, "late completion preserves the terminal result");
+          } finally {
+            clearTimeout(observationTimer);
+            held.reject(new Error("test cleanup"));
+            await pending;
+          }
+        });
+      }
+    }
+  }
+});
+
+test("a metadata digest failure stays a hash failure before store access", async (t) => {
+  const value = await fixture("hash-failure");
+  const store = new ConsumingStore();
+  const fetchCalls = [];
+  t.mock.method(globalThis.crypto.subtle, "digest", () => Promise.reject(new Error("hash failed")));
+  await assert.rejects(installApi.installP2pComposition({
+    entry: value.entry,
+    admissionRecord: value.admissionRecord,
+    manifest: value.manifest,
+    admissionAuthority: value.admissionAuthority,
+    store,
+    fetch: successfulFetch(value, fetchCalls)
+  }), { code: "p2p-composition-install-sha256" });
+  assert.equal(store.calls.length, 0);
+  assert.equal(fetchCalls.length, 0);
+});
+
+test("synchronous cancellation observes the digest's rejected promise", async (t) => {
+  const value = await fixture("hash-synchronous-cancellation");
+  const parent = new AbortController();
+  const store = new ConsumingStore();
+  const fetchCalls = [];
+  t.mock.method(globalThis.crypto.subtle, "digest", () => {
+    parent.abort();
+    return Promise.reject(new Error("digest rejected after synchronous cancellation"));
+  });
+  await assert.rejects(installApi.installP2pComposition({
+    entry: value.entry,
+    admissionRecord: value.admissionRecord,
+    manifest: value.manifest,
+    admissionAuthority: value.admissionAuthority,
+    store,
+    fetch: successfulFetch(value, fetchCalls),
+    signal: parent.signal
+  }), { code: "p2p-composition-install-aborted" });
+  await new Promise(setImmediate);
+  assert.equal(store.calls.length, 0);
+  assert.equal(fetchCalls.length, 0);
+});
+
 test("caller cancellation aborts the active fetch and remains terminal", async () => {
   const value = await fixture("cancel");
   const parent = new AbortController();

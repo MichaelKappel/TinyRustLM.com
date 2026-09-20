@@ -5,6 +5,31 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C58: cancel stalled install metadata hashing, September 20
+
+The P2P installer applied its deadline to network reads but awaited four WebCrypto
+metadata hashes directly. Sixteen controlled cases reproduced waits that remained
+pending after caller cancellation or deadline expiry. The existing shared install
+state now covers each hash, preserving the first terminal error and observing late
+rejections. No later hash, store call or transfer starts after cancellation. The
+postcommit behavior remains unchanged; this does not abort browser crypto itself.
+
+All 222 affected Node checks pass with 89.57% installer line coverage, 77.74% branch
+coverage and 98.28% function coverage. Three desktop Edge tests pass, including
+successful one-click installation and persistent six-member transfer/cancellation.
+The new hash test also passes at the mobile viewport. Its final desktop/mobile
+checks assert no page errors after late hash rejection, no store/fetch calls and
+unchanged OPFS roots. Mobile is desktop Edge emulation, not physical mobile proof.
+Both shell asset hashes match the revised installer; no presentation markup changed.
+All six memory checks pass. The exact owned test directory was retired after
+identity/containment checks: 31 files, 3,914,884 logical bytes; physical storage
+recovery was not measured. Compact result and source identities are retained.
+
+Evidence: `artifacts/ecosystem-cleanup-20260912/p2p-metadata-cancellation-review.json`.
+These are synthetic acquisition fixtures, not useful model or public seed evidence.
+The source scan still stops at the same two policy-blocked installer links. No
+blocked deletion, real model execution, NuGet push or production deployment occurred.
+
 ## C57: execute the packaged SDK on Linux x64, September 20
 
 The canonical native build now runs on installed WSL Ubuntu 24.04.4 x64 with
