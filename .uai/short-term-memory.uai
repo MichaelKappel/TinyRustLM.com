@@ -1,10 +1,10 @@
 profile: tinyrustlm.short-term-memory.current.v1
-updated_utc: 2026-09-20T01:13:03Z
+updated_utc: 2026-09-20T01:26:58Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
 now:
-  task: C49 fixes cancellable cache metadata reads while preserving authoritative pointer reconciliation; composition-read-cancellation-review.json records the source and tests. Continue signal-free startup lifetime, terminal orphan cleanup and independent model/hosting work. Ternary/Bonsai research stays deferred.
+  task: C50 bounds startup cache verification and makes open read-only; startup-cache-lifetime-review.json records source and tests. Continue terminal orphan cleanup, durable mutation/reconciliation lifetimes and independent model/hosting work. Ternary/Bonsai research stays deferred.
   maturity: Early alpha, never a working release; no code debt, obsolete code or legacy support before the owner's official acceptance of a fully working release.
   broader_goal: Ecosystem cleanup and usable release remain incomplete.
   manifest: docs/report-intake/2026-09-19/working-product-research/MANIFEST.md
@@ -12,7 +12,8 @@ now:
   scope: Local guidance/custody/validation only; no model run, qualification, public seed, deployment or live MemoryEndpoints operation.
 
 current_source_state:
-  cache_read_cancellation: Caller signals now reach file acquisition, metadata streams/hashes, enumeration, staging allocation and candidate validation. Cancelled reads do not become corruption or indeterminate-commit errors; late rejection is observed. Postcommit reconciliation drains and returns the committed candidate. All 317 affected checks, seven actual Edge tests and twelve direct smoke observations pass. Startup still supplies no cache signal; durable-mutation/initialization and terminal crash cleanup remain separate work.
+  cache_startup: Read-only open and per-operation OPFS root resolution support startup's 60-second cache deadline. Late results cannot activate; timeout copy is visible in the chooser; cache/activation errors require explicit action before replacement acquisition. Verified empty caches still bootstrap automatically. All 336 affected checks, nineteen actual Edge tests and twelve direct smoke observations pass. Real-model startup timing remains unmeasured; durable mutation/reconciliation and terminal crash cleanup remain open.
+  cache_read_cancellation: Caller signals reach file acquisition, metadata streams/hashes, enumeration, staging allocation and candidate validation. Cancelled reads do not become corruption or indeterminate-commit errors; late rejection is observed. Postcommit reconciliation drains and returns the committed candidate. C49's composition-read-cancellation-review.json retains its evidence; C50 adds startup's signal and read-only open.
   cache_readers: C48 adds shared per-composition read leases and exclusive write/retirement locks beneath the global writer lock. The app uses withRead for the full six-member worker transfer; companion validation requires that method. Scope exit/cancellation closes pending readers. Standalone member iterators pin until completion/disposal; metadata alone does not pin bytes. Real cross-tab Edge checks cover retirement and tab closure; no real model or public claim follows.
   cache_ownership: C47 requires a canonical staging marker, active pointer or hash-bound orphan manifest plus a bounded ten-file directory inventory before deletion. Unexpected entries are retained; candidate paths must be vacant. Recovery retains pointer ownership until content removal succeeds; failed candidate cleanup retains its marker. See composition-cleanup-ownership-review.json. This is synthetic storage evidence, not real model qualification or complete crash/reader lifecycle proof.
   cache_cancellation: Failed source cleanup uses the existing cancellable wait instead of an uninterruptible iterator return. The original failure and prior pointer remain authoritative; late cleanup errors are observed. Both shell hashes bind the new script. See composition-cleanup-cancellation-review.json; synthetic storage tests do not qualify a real model.

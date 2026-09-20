@@ -1,0 +1,306 @@
+{
+  "schema": "tinyrustlm.startup-cache-lifetime-review.v1",
+  "observedAtUtc": "2026-09-20T01:26:58Z",
+  "localDate": "2026-09-19",
+  "sourceParent": "50c0cbd954d28749196528e5f99ebe822fd23d7a",
+  "status": "local-startup-cache-lifetime-fixed-no-real-model-or-publication-claim",
+  "inputs": [
+    {
+      "path": "tinyrustlm/app/model-composition-store.js",
+      "bytes": 87381,
+      "sha256": "121a5a6fff370be642ad6b1efd7affdcaf1d3960097cb1007c7cd46eea7fa80c"
+    },
+    {
+      "path": "tinyrustlm/tests/model-composition-store.test.js",
+      "bytes": 135158,
+      "sha256": "57bf37b45dcb7ba4a74b841b234ae6691c9561ed5087d357a5e0569069eea72b"
+    },
+    {
+      "path": "tinyrustlm/e2e/composition-cache.spec.js",
+      "bytes": 71157,
+      "sha256": "e5d9b559d0bb332119372e29d21e068fed76f93199ce4891ac19c81d68c1f297"
+    },
+    {
+      "path": "tinyrustlm/app/index.html",
+      "bytes": 48604,
+      "sha256": "ea970348f92c831597c7c5ea3651f36ad3a5c0ec48a1a3e5455532eea0c7c447"
+    },
+    {
+      "path": "tinyrustlm/index.html",
+      "bytes": 48684,
+      "sha256": "939f02ef674acae954fc77d68818452fa1d9eaeb6f82d56b3a7983b7d961895f"
+    },
+    {
+      "path": "tinyrustlm/tests/model-cache-custody-integration.test.js",
+      "bytes": 29747,
+      "sha256": "a297825dc40a8dbc0e7ebcc38cdfcf13eaf3175cded674ff9f2a8035653f0f9c"
+    },
+    {
+      "path": "tinyrustlm/tests/p2p-composition-install.test.js",
+      "bytes": 45141,
+      "sha256": "356570a67bd3ea6354de021aac73a9ddd499019c3453f45329969503c37443da"
+    },
+    {
+      "path": "tinyrustlm/tests/companion-composition-install.test.js",
+      "bytes": 25654,
+      "sha256": "ef0938dbb20a0663f42af42719f8af0948bd7d702e703013fe08cf9f3e1dff34"
+    },
+    {
+      "path": "tinyrustlm/tests/static-shell-parity.test.js",
+      "bytes": 5127,
+      "sha256": "c20d60933c2f75bc60a243b2603545c26823a4aafdef4304c87e8e2bc634c89d"
+    },
+    {
+      "path": "tinyrustlm/tests/web-deployment-manifest.test.js",
+      "bytes": 11975,
+      "sha256": "4c68f345ff731af733f6a157d2b2d2ecd0b39544a2549f67a58d97fc672467fd"
+    },
+    {
+      "path": "tinyrustlm/app/p2p-composition-install.js",
+      "bytes": 50486,
+      "sha256": "55a53359bb7af64062eb8b7505251af6eab487bc94a8105a92698830ea6ae8e4"
+    },
+    {
+      "path": "tinyrustlm/app/companion-composition-install.js",
+      "bytes": 34585,
+      "sha256": "cbf8617b8467fe32d196788f69acd45a43e499dec31643675278f881c2b9b2b7"
+    },
+    {
+      "path": "tinyrustlm/app/browser-model-admission.js",
+      "bytes": 14858,
+      "sha256": "87cdc059e71435f1572b3ad03fcce17701d5b73e83c3a6172e078a3349e5b683"
+    },
+    {
+      "path": "tinyrustlm/app/minimodel-catalog-v1.js",
+      "bytes": 74274,
+      "sha256": "4868dba65b57197b68de6f3e74987602b9728c5fa0cf28ca05ec2a3166c35333"
+    },
+    {
+      "path": "tinyrustlm/app/incremental-sha256.js",
+      "bytes": 9404,
+      "sha256": "e28faf3a02617d3d6747a0061f10f20b756500ae727f5c02e18da9912c767095"
+    },
+    {
+      "path": "tinyrustlm/e2e/owned-browser-profile.js",
+      "bytes": 2432,
+      "sha256": "35a330243dbbd3c076eab57a6174dcd1a892b33af4774a37ec15bff7e697c4ff"
+    },
+    {
+      "path": "tinyrustlm/tools/static-shell-parity.js",
+      "bytes": 5964,
+      "sha256": "100ae82d9151f592db9607a6803d316d45934b3f349b3533d9c6df9d1e28fdeb"
+    },
+    {
+      "path": "tinyrustlm/tools/web-release-browser-smoke.js",
+      "bytes": 44097,
+      "sha256": "871da8e65d1f0b7ae6935a0a80d77d8409249dc025afac228905d70f8acb605b"
+    },
+    {
+      "path": "tinyrustlm/deploy/web-deployment-manifest.v2.json",
+      "bytes": 4802,
+      "sha256": "3c97a713670f119a978a1aea1611169dfb7d9cf1974ad8ae7c4a201454a04df8"
+    },
+    {
+      "path": "tinyrustlm/app/app.js",
+      "bytes": 462821,
+      "sha256": "c33278f13c23630d316ba2c57402f90fc6e68bbf4504ef93593de44825585361"
+    },
+    {
+      "path": "tinyrustlm/tests/model-acquisition.test.js",
+      "bytes": 127964,
+      "sha256": "57c715f29ee36b42070dbb5a0888d1ec35c8e4a76291d4fde06cfea39bca3824"
+    },
+    {
+      "path": "tinyrustlm/tests/model-acquisition-boundary-regression.test.js",
+      "bytes": 58516,
+      "sha256": "8b5700062cfa781dd95d0e0324bc130ffaefe41253b55e00bfb47e4e0abad216"
+    },
+    {
+      "path": "tinyrustlm/e2e/direct-p2p-composition.spec.js",
+      "bytes": 64545,
+      "sha256": "0bf79152816f86df9c550b11542b1db2255970386e0ed0ee3512b989b2252476"
+    },
+    {
+      "path": "docs/server-seeded-startup-2026-09-12.md",
+      "bytes": 13416,
+      "sha256": "54f4525df046d498138a80027bc2bff040f3c5f866bcf4e4c55656c1cd180532"
+    },
+    {
+      "path": "tinyrustlm/e2e/model-chooser.spec.js",
+      "bytes": 77325,
+      "sha256": "e767ea33fe706befdc386db6cbc7e22922706d667c6b251754d4fcbeecb683c2"
+    },
+    {
+      "path": "tinyrustlm/app/operation-lifetime.js",
+      "bytes": 2292,
+      "sha256": "4a9d907a3c62b679f896d859e843124bf4252e6d2be0f8aacc7e754113a9f570"
+    }
+  ],
+  "finding": "Startup omitted a cache-check deadline. openActive initialized directories before cancellable reads, and the OPFS adapter retained its root promise across operations, including pending/failing results.",
+  "contract": {
+    "startup": "Existing operation-lifetime helper supplies one 60000ms cache-verification deadline through openActive's signal. Late success/failure is ignored and observed; timer resources are disposed.",
+    "readOnly": "openActive performs no initialization; read resolution uses create:false. Writers still initialize with create:true. OPFS root resolution is independent per operation, with no shared rootPromise.",
+    "userOutcome": "Timeout appears in both the simple error panel and chooser. No cache bytes are removed. Cache or cached-activation failure suppresses automatic replacement acquisition pending explicit user action. Verified empty caches still use automatic eligible MiniModel seeding; successfully activated saved models return to chat.",
+    "unchanged": "Current six-member schemas, qualification gates, commit reconciliation, visual markup and runtime artifact bytes.",
+    "limits": "60000ms is an asynchronous-wait policy, not a measured real-model performance budget or preemption of synchronous/suspended execution. No new deadlines for durable mutation or postcommit reconciliation."
+  },
+  "developmentResults": [
+    {
+      "stage": "baseline-read-only-regressions",
+      "sourceSha256": "1f4e2bc0308ab45a2c5795ee21cbeba9f3b96287ca6aad45187135b128483ffb",
+      "tests": 150,
+      "passed": 148,
+      "failed": 2,
+      "result": "Empty open initialized directories; missing OPFS-root read took a creation path and raised storage failure."
+    },
+    {
+      "stage": "initial-affected",
+      "tests": 336,
+      "passed": 335,
+      "failed": 1,
+      "result": "Source-shape assertion demanded unconditional root creation. Replaced it with explicit create-parameter and writer-initialization assertions; read-only and creation behavior have dedicated tests."
+    },
+    {
+      "stage": "affected-before-chooser-copy",
+      "tests": 336,
+      "passed": 336,
+      "failed": 0
+    },
+    {
+      "stage": "initial-chooser",
+      "tests": 12,
+      "passed": 12,
+      "failed": 0,
+      "retries": 0,
+      "skipped": 0
+    },
+    {
+      "stage": "storage-p2p",
+      "tests": 7,
+      "passed": 7,
+      "failed": 0,
+      "retries": 0,
+      "skipped": 0,
+      "scope": "Actual desktop Edge OPFS/Web Locks; synthetic six-member compositions, ownership/cancellation/cross-tab/persistence and controlled P2P UI/transport."
+    },
+    {
+      "stage": "smoke-before-chooser-copy",
+      "status": "pass",
+      "observationCount": 12,
+      "reportSha256": "cd6cdae770f3b2495a38d39e3207f138812cb77086713f39b2bc332f461d11c9"
+    },
+    {
+      "stage": "final-affected",
+      "tests": 336,
+      "passed": 336,
+      "failed": 0,
+      "skipped": 0,
+      "coverage": {
+        "scope": "Node V8 whole-store coverage, not isolated changed lines. Production app helper/boot slices also execute through deterministic behavioral tests and actual Edge.",
+        "linePercent": 90.28,
+        "branchPercent": 86.3,
+        "functionPercent": 94.19
+      }
+    },
+    {
+      "stage": "final-chooser",
+      "tests": 12,
+      "passed": 12,
+      "failed": 0,
+      "retries": 0,
+      "skipped": 0,
+      "scope": "Installed Edge desktop and mobile viewport emulation, not physical mobile hardware.",
+      "observations": [
+        "Delayed first OPFS origin-root request times out after advancing the controlled browser clock.",
+        "No model admission/runtime transfer starts automatically despite a valid synthetic server-seed route.",
+        "Both simple error text and visible chooser status explain timeout/reload without technical setup.",
+        "Store locks release; late root success and failure cannot activate or create a model directory; explicit later read succeeds.",
+        "Normal empty-cache automatic seed acquisition and cancellation, runtime timeout/cancel and nonmodal chooser behavior still pass."
+      ]
+    },
+    {
+      "stage": "final-direct-release-smoke",
+      "status": "pass",
+      "observationCount": 12,
+      "reportSha256": "f67131e3a810c550eb034b0404c46579759873f18f4432f39c6b54b9283515df",
+      "temporaryOutputCleanup": "verified",
+      "scope": "Direct zero-argument Node invocation; npm package preflight remains blocked."
+    },
+    {
+      "stage": "memory",
+      "tests": 6,
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0
+    }
+  ],
+  "sourceGate": {
+    "status": "source_authority_scan_incomplete",
+    "remaining": [
+      "artifacts/verification/qwen3-environment-install/tinyrustlm-operation-C3ZUt9/install-temp/TmP6xn2evdh-b",
+      "artifacts/verification/qwen3-environment-install/tinyrustlm-operation-C3ZUt9/install-temp/TmPeq63_hr7-b"
+    ],
+    "blockedDeletionsRetried": false
+  },
+  "cleanup": {
+    "runs": [
+      {
+        "stage": "baseline-read-only",
+        "files": 2,
+        "logicalBytes": 499659
+      },
+      {
+        "stage": "initial-affected",
+        "files": 9,
+        "logicalBytes": 3101409
+      },
+      {
+        "stage": "affected-before-chooser-copy",
+        "files": 9,
+        "logicalBytes": 3096121
+      },
+      {
+        "stage": "initial-chooser",
+        "files": 13,
+        "logicalBytes": 1463690
+      },
+      {
+        "stage": "storage-p2p",
+        "files": 15,
+        "logicalBytes": 1342302
+      },
+      {
+        "stage": "initial-smoke",
+        "files": 3,
+        "logicalBytes": 2680689
+      },
+      {
+        "stage": "final-affected",
+        "files": 9,
+        "logicalBytes": 3096313
+      },
+      {
+        "stage": "final-chooser",
+        "files": 13,
+        "logicalBytes": 1465118
+      },
+      {
+        "stage": "final-smoke",
+        "files": 3,
+        "logicalBytes": 2681974
+      }
+    ],
+    "total": {
+      "files": 76,
+      "logicalBytes": 19427275
+    },
+    "physicalRecoveryBytes": null,
+    "note": "Only operation-owned scratch removed. Profile helpers remove their profiles before outer-harness counting; those bytes are excluded. Existing blocked deletions untouched."
+  },
+  "remaining": [
+    "Actual eligible model startup, quality, memory and latency remain unmeasured; no qualified default is established.",
+    "Durable mutation/commit-reconciliation lifetimes and terminal orphan-directory crash recovery remain open.",
+    "Two blocked installer links still stop the source-authority scan; material numerical/source/release gates remain closed.",
+    "No public initial seed or deployment claim. Other repositories and unrelated work preserved. Ternary research deferred; ecosystem goal incomplete."
+  ]
+}

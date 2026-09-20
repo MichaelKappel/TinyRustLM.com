@@ -682,7 +682,8 @@ test("direct P2P installs exactly six admitted members into the OPFS store", () 
   assert.match(modelCompositionStore, /value\.members\.length !== MEMBER_NAMES\.length/);
   assert.match(modelCompositionStore, /member\.fileName !== MEMBER_NAMES\[index\]/);
   assert.match(modelCompositionStore, /options\.storageManager\.getDirectory\(\)/);
-  assert.match(modelCompositionStore, /getDirectoryHandle\(OPFS_ROOT_NAME, \{ create: true \}\)/);
+  assert.match(modelCompositionStore, /getDirectoryHandle\(OPFS_ROOT_NAME, \{ create \}\)/);
+  assert.match(modelCompositionStore, /async function ensureDirectory\(path\) \{\s*await directory\(validatePath\(path\), true\);/);
   assert.match(modelCompositionStore, /await writeMember\(context, member, sources\[member\.fileName\]\);/);
   assert.match(
     modelCompositionStore,
@@ -1093,6 +1094,118 @@ test("runtime acquisition forwards cancellation and cannot publish a cancelled c
   await assert.rejects(ensure(controller.signal), /cancelled/);
 });
 
+// Run the production lifetime with a deterministic clock and the real startup helper.
+function startupCacheHarness(openActive, ensureFailure) {
+  const vm = require("node:vm");
+  const timers = new Map();
+  let lastSignal;
+  let sequence = 0;
+  const globals = { AbortController,
+    setTimeout(callback, milliseconds) {
+      assert.equal(milliseconds, 60000);
+      timers.set(++sequence, callback); return sequence;
+    }, clearTimeout(id) { timers.delete(id); } };
+  vm.runInNewContext(fs.readFileSync(path.join(__dirname, "../app/operation-lifetime.js"), "utf8"), globals);
+  const code = sourceSection(app, "  async function openStartupComposition", "  // Verifies cached state before allowing");
+  const open = Function("operationLifetimeApi", "catalogQualificationError", "ensureModelCompositionStore",
+    code + "; return openStartupComposition;")(
+    globals.TinyRustLMOperationLifetime,
+    (code, message) => Object.assign(new Error(message), { code }),
+    () => {
+      if (ensureFailure) throw ensureFailure;
+      return { openActive(options) { lastSignal = options.signal; return openActive(options); } };
+    });
+  return { open, timers, get signal() { return lastSignal; },
+    expire() { for (const callback of [...timers.values()]) callback(); } };
+}
+
+test("startup cache verification cleans its timer on empty, saved and failed reads", async t => {
+  for (const value of [null, { manifestSha256: "saved-identity" }, new Error("read failed")]) {
+    await t.test(value === null ? "empty" : value instanceof Error ? "failure" : "saved", async () => {
+      const harness = startupCacheHarness(() => {
+        if (value instanceof Error) throw value;
+        return value;
+      });
+      if (value instanceof Error) await assert.rejects(harness.open(), error => error === value);
+      else assert.equal(await harness.open(), value);
+      assert.equal(harness.signal.aborted, false);
+      assert.equal(harness.timers.size, 0);
+    });
+  }
+  const failure = new Error("OPFS unavailable");
+  const unavailable = startupCacheHarness(() => assert.fail("unavailable store read"), failure);
+  await assert.rejects(unavailable.open(), error => error === failure);
+  assert.equal(unavailable.timers.size, 0);
+});
+
+test("startup cache deadline aborts the read and rejects late success or failure", async t => {
+  for (const late of ["success", "failure"]) await t.test(late, async () => {
+    const pending = deferred();
+    let calls = 0;
+    const harness = startupCacheHarness(() => { calls++; return pending.promise; });
+    const result = harness.open();
+    await Promise.resolve(); await Promise.resolve();
+    assert.equal(calls, 1);
+    harness.expire();
+    await assert.rejects(result, error => error.code === "model-cache-open-timeout");
+    assert.equal(harness.signal.aborted, true);
+    assert.equal(harness.timers.size, 0);
+    if (late === "success") pending.resolve({ manifestSha256: "late-must-not-activate" });
+    else pending.reject(new Error("late storage failure"));
+    await new Promise(resolve => setImmediate(resolve));
+    assert.equal(calls, 1);
+  });
+});
+
+test("boot restores a verified cache, bootstraps an empty cache, and preserves an uncertain cache", async t => {
+  for (const outcome of ["saved", "empty", "timeout", "read-error", "activation-error"]) {
+    await t.test(outcome, async () => {
+      const state = {};
+      const saved = { manifestSha256: "saved" };
+      const failure = Object.assign(new Error("cache check failed"), {
+        code: outcome === "timeout" ? "model-cache-open-timeout" : "model-composition-store-read" });
+      const events = [];
+      const nodes = { runtimeStatus: "runtime", modelState: "model", errorState: "error",
+        appShell: { dataset: { mode: "simple" } } };
+      const bindings = { state, el: nodes, paths: { models: {} }, localModelKey: "local",
+        setInteractive() {}, setControls() {}, renderDiagnostics() {}, renderModelOptions() {},
+        setText(node, text) { events.push([node, text]); },
+        setSimpleModelPickerStatus(text) { events.push(["picker-error", text]); },
+        friendlyError: text => text,
+        openStartupComposition: async () => {
+          if (["timeout", "read-error"].includes(outcome)) throw failure;
+          return outcome === "empty" ? null : saved;
+        },
+        restoreStoredCatalogAuthority(value) { assert.equal(value, saved); events.push(["custody"]); },
+        loadSimpleModelCatalog: async () => { events.push(["catalog"]); },
+        activateStoredComposition: async value => {
+          assert.equal(value, saved); events.push(["activate"]);
+          if (outcome === "activation-error") throw failure;
+        },
+        discardRejectedStoredActivation() { events.push(["discard-worker"]); },
+        appendConsole() {}, errorMessage: error => error.message,
+        chooseBootstrapModelRoute: () => ({ entry: {} }), simpleModelRouteViews: () => [],
+        simpleModelAcquisitionIsActive: () => false,
+        selectSimpleModelEntry() {}, toggleModelPopover() {},
+        requestSimpleModelAcquisition: async () => { events.push(["acquire"]); },
+        maybePresentInitialModelChooser() { events.push(["chooser"]); }
+      };
+      const code = sourceSection(app, "  async function boot()", "  el.form.addEventListener");
+      const boot = Function(...Object.keys(bindings), code + "; return boot;")(...Object.values(bindings));
+      await boot();
+      assert.equal(state.initialModelBootComplete, true);
+      assert.equal(state.initialModelRestored, outcome === "saved");
+      assert.equal(events.filter(([name]) => name === "acquire").length, outcome === "empty" ? 1 : 0);
+      assert.equal(events.filter(([name]) => name === "activate").length,
+        ["saved", "activation-error"].includes(outcome) ? 1 : 0);
+      assert.equal(events.filter(([name]) => name === "chooser").length, outcome === "saved" ? 0 : 1);
+      if (["timeout", "read-error"].includes(outcome)) assert.equal(state.compositionStoreError, failure);
+      assert.equal(events.filter(([name]) => name === "picker-error").length,
+        ["timeout", "read-error", "activation-error"].includes(outcome) ? 1 : 0);
+    });
+  }
+});
+
 test("boot reopens and verifies the persistent active composition", () => {
   const boot = sourceSection(app, "  async function boot()", "  el.form.addEventListener");
   const openActive = sourceSection(
@@ -1112,7 +1225,7 @@ test("boot reopens and verifies the persistent active composition", () => {
   );
 
   assert.doesNotMatch(boot, /ensureBrowserRuntimeAsset/);
-  assert.match(boot, /cachedComposition = await ensureModelCompositionStore\(\)\.openActive\(\);/);
+  assert.match(boot, /cachedComposition = await openStartupComposition\(\);/);
   assert.match(
     boot,
     /if \(cachedComposition\) \{[\s\S]*?await activateStoredComposition\(\s*cachedComposition,\s*"Your saved model is verified and ready\."\s*\);\s*state\.initialModelRestored = true;\s*state\.initialModelBootComplete = true;\s*return;/
@@ -1123,8 +1236,9 @@ test("boot reopens and verifies the persistent active composition", () => {
   );
   assert.match(
     openActiveInternal,
-    /await initialize\(\);\s*const pointer = await readPointer\(options\.adapter, signal\);\s*if \(pointer === null\) return null;\s*await requireResolvedPointer\(options\.adapter, pointer, signal\);\s*return openPointerInternal\(pointer, signal\);/
+    /const pointer = await readPointer\(options\.adapter, signal\);\s*if \(pointer === null\) return null;\s*await requireResolvedPointer\(options\.adapter, pointer, signal\);\s*return openPointerInternal\(pointer, signal\);/
   );
+  assert.doesNotMatch(openActiveInternal, /initialize\(/);
   assert.match(
     openPointerInternal,
     /readInstalledManifest\([\s\S]*?readInstalledAdmissionAuthority\([\s\S]*?await verifyInstalled\(options, pointer, manifest, signal\);[\s\S]*?return openedComposition\(/

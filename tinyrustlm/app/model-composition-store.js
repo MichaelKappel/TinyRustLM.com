@@ -1744,8 +1744,8 @@ function (root, admissionApi, catalogApi) {
       return openedComposition(options, pointer, manifest, admissionAuthority);
     }
 
+    // Opening is read-only, so cancellation can release the lock even during root acquisition.
     async function openActiveInternal(signal) {
-      await initialize();
       const pointer = await readPointer(options.adapter, signal);
       if (pointer === null) return null;
       await requireResolvedPointer(options.adapter, pointer, signal);
@@ -2218,23 +2218,19 @@ function (root, admissionApi, catalogApi) {
 
   function createOpfsAdapter(value) {
     const options = normalizeOpfsOptions(value);
-    let rootPromise = null;
 
-    async function storeRoot() {
-      if (rootPromise === null) {
-        rootPromise = Promise.resolve(options.storageManager.getDirectory()).then((opfsRoot) => {
-          if (!opfsRoot || typeof opfsRoot.getDirectoryHandle !== "function") {
-            reject("model-composition-store-opfs-unavailable");
-          }
-          return opfsRoot.getDirectoryHandle(OPFS_ROOT_NAME, { create: true });
-        });
+    // Resolve each operation independently; reads must neither create roots nor inherit a stalled promise.
+    async function storeRoot(create) {
+      const opfsRoot = await options.storageManager.getDirectory();
+      if (!opfsRoot || typeof opfsRoot.getDirectoryHandle !== "function") {
+        reject("model-composition-store-opfs-unavailable");
       }
-      return rootPromise;
+      return opfsRoot.getDirectoryHandle(OPFS_ROOT_NAME, { create });
     }
 
     async function directory(path, create) {
       validatePath(path);
-      let handle = await storeRoot();
+      let handle = await storeRoot(create);
       for (const part of path) {
         handle = await handle.getDirectoryHandle(part, { create });
       }

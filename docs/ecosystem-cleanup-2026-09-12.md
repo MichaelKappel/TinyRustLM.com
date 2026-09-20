@@ -5,6 +5,45 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C50: bound the startup cache check, September 19
+
+Startup called `openActive` without a deadline, and opening the cache initialized
+directories before its cancellable reads. The first two regressions reproduced
+unwanted initialization/root creation: 148/150 checks passed. Opening now performs
+only reads; the OPFS adapter resolves each operation's root independently and
+creates directories only when explicitly requested by a writer. It no longer
+retains a stalled or failed root promise for later operations.
+
+Startup uses the existing lifetime helper with a 60-second cache-check deadline,
+including lock/root acquisition and verification. Timeout aborts the read, clears
+the timer and rejects late results. The chooser explains that checking the saved
+model timed out and offers reload; the check does not remove model bytes. Any
+cache-check or cached-activation error suppresses automatic replacement acquisition
+until an explicit user action. A successfully verified empty cache still takes
+the automatic MiniModel seed path; successful saved-model activation still returns
+directly to chat. Existing qualification and commit gates remain unchanged.
+
+All 336 affected checks pass. Whole-store Node coverage is 90.28% lines, 86.30%
+branches and 94.19% functions; app helper/boot branches are exercised as extracted
+production code and in Edge. Twelve desktop/mobile-viewport chooser tests and seven
+actual OPFS/P2P tests pass without retry or skip. They cover visible timeout copy,
+no automatic transfer after uncertainty, late success/failure, a released writer
+lock, no newly created model root, normal bootstrap, cache replacement and transfer.
+Twelve direct release-smoke observations pass. The intermediate affected failure
+(335/336) was an assertion demanding unconditional root creation; it now requires
+the explicit creation parameter and writer initialization.
+
+Evidence: `artifacts/ecosystem-cleanup-20260912/startup-cache-lifetime-review.json`.
+The timeout is a policy bound on asynchronous waits, not a measured real-model
+performance budget or preemption of synchronous work/suspended browser execution.
+Actual large-model verification and startup timing remain unmeasured. Durable
+write/reconciliation lifetime and terminal orphan-directory crash recovery remain
+open, along with real numerical/model qualification, public seeds and deployment.
+The same two policy-blocked installer links still stop the source scan; no blocked
+deletion was retried. All owned scratch was removed; logical totals are in the
+receipt and physical recovery is unmeasured. Other repositories/unrelated work
+are preserved; the goal remains incomplete and ternary research stays deferred.
+
 ## C49: cancel cache reads without losing commit truth, September 19
 
 A stalled active-pointer read retained the writer lock after caller cancellation.

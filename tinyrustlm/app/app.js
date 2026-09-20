@@ -36,6 +36,10 @@
   if (!catalogAdmissionLoaderApi || typeof catalogAdmissionLoaderApi.load !== "function") {
     throw new Error("TinyRustLM catalog admission loader is unavailable");
   }
+  const operationLifetimeApi = window.TinyRustLMOperationLifetime;
+  if (!operationLifetimeApi || typeof operationLifetimeApi.create !== "function") {
+    throw new Error("TinyRustLM operation lifetime module is unavailable");
+  }
   const companionCompositionInstallApi = window.TinyRustLMCompanionCompositionInstall;
   if (!companionCompositionInstallApi ||
       typeof companionCompositionInstallApi.installCompanionComposition !== "function") {
@@ -1334,6 +1338,9 @@
     }
     if (value === "browser-runtime-timeout") {
       return "Preparing the local runtime took too long. Check your connection and try again.";
+    }
+    if (value === "model-cache-open-timeout") {
+      return "Checking your saved model took too long. Reload to check again. Your saved model has not been removed.";
     }
     if (value.toLowerCase().includes("catalog")) {
       return "The model list could not be loaded. Check the URL or try a local JSON list.";
@@ -11153,6 +11160,21 @@ if (view.matches.length) {
     captureRun(promptText, resultText, Boolean(failure));
   }
 
+  // Bound the read-only cache check, including lock/root acquisition, without deleting timed-out bytes.
+  async function openStartupComposition() {
+    const lifetime = operationLifetimeApi.create({
+      timeoutMilliseconds: 60000,
+      timeoutError: catalogQualificationError("model-cache-open-timeout", "Checking the saved model timed out"),
+      abortError: catalogQualificationError("model-cache-open-aborted", "Checking the saved model was cancelled"),
+      optionsError: catalogQualificationError("model-cache-open-unavailable", "Browser cache timing is unavailable")
+    });
+    try {
+      return await lifetime.wait(() => ensureModelCompositionStore().openActive({ signal: lifetime.signal }));
+    } finally {
+      lifetime.dispose();
+    }
+  }
+
   // Verifies cached state before allowing the no-model path to auto-present the chooser.
   async function boot() {
     try {
@@ -11161,7 +11183,7 @@ if (view.matches.length) {
       let cachedComposition = null;
       let cacheError = null;
       try {
-        cachedComposition = await ensureModelCompositionStore().openActive();
+        cachedComposition = await openStartupComposition();
       } catch (error) {
         cacheError = error;
         state.compositionStoreError = error;
@@ -11196,15 +11218,18 @@ if (view.matches.length) {
       );
       setText(
         el.errorState,
-        cacheError ? friendlyError(errorMessage(cacheError)) : "none",
+        cacheError ? cacheError.code || errorMessage(cacheError) : "none",
         Boolean(cacheError)
       );
       setControls(false, Object.keys(paths.models).length > 0);
       renderDiagnostics();
+      if (cacheError) {
+        setSimpleModelPickerStatus(friendlyError(cacheError.code || errorMessage(cacheError)), true);
+      }
       state.initialModelRestored = false;
       state.initialModelBootComplete = true;
       const bootstrap = chooseBootstrapModelRoute(simpleModelRouteViews());
-      if (bootstrap && !simpleModelAcquisitionIsActive() && !state.modelLoaded &&
+      if (!cacheError && bootstrap && !simpleModelAcquisitionIsActive() && !state.modelLoaded &&
           !state.initialModelChooserAutoPresentSuppressed && el.appShell?.dataset.mode === "simple") {
         selectSimpleModelEntry(bootstrap.entry);
         setText(el.runtimeStatus, "Downloading your starter model from MiniModel.org", false);

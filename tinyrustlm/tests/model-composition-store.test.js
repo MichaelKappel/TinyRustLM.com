@@ -1695,6 +1695,88 @@ test("explicit recovery preserves a valid active composition exactly", async () 
   assert.equal((await store.openActive()).activationId, installed.activationId);
 });
 
+test("opening an empty or installed cache performs no directory initialization", async () => {
+  const adapter = new MemoryAdapter();
+  const store = createStore(adapter);
+  assert.equal(await store.openActive(), null);
+  assert.equal(adapter.operations.some(operation => operation.type === "ensure-directory"), false);
+  const value = fixture("read-only-open");
+  const active = await store.install({ manifest: value.manifest,
+    admissionAuthority: value.admissionAuthority, sources: sourceSet(value.members) });
+  adapter.operations.length = 0;
+  assert.equal((await createStore(adapter).openActive()).manifestSha256, active.manifestSha256);
+  assert.equal(adapter.operations.some(operation => operation.type === "ensure-directory"), false);
+});
+
+test("OPFS cache reads do not create a missing root", async () => {
+  const requests = [];
+  const adapter = storeApi.createOpfsAdapter({
+    createSha256: () => assert.fail("an absent cache has no bytes to hash"),
+    storageManager: { async getDirectory() { return {
+      async getDirectoryHandle(name, options) {
+        requests.push({ name, create: options.create });
+        throw Object.assign(new Error("absent root"), { name: "NotFoundError" });
+      }
+    }; } },
+    lockManager: { request: (_name, _options, callback) => callback() },
+    crypto: { getRandomValues: value => value }
+  });
+  assert.equal(await createStore(adapter).openActive(), null);
+  assert.deepEqual(requests, [{ name: "tinyrustlm-model-compositions-v2", create: false }]);
+});
+
+test("cancelled OPFS root acquisition releases the read lock and does not poison a later open", async t => {
+  for (const stage of ["origin", "composition-root"]) await t.test(stage, async () => {
+    const entered = Promise.withResolvers();
+    const pending = Promise.withResolvers();
+    const lockName = crypto.randomUUID();
+    let requests = 0;
+    let rootCalls = 0;
+    const origin = { getDirectoryHandle(_name, options) {
+      assert.equal(options.create, false);
+      rootCalls++;
+      if (stage === "composition-root" && rootCalls === 1) { entered.resolve(); return pending.promise; }
+      throw Object.assign(new Error("absent"), { name: "NotFoundError" });
+    } };
+    const adapter = storeApi.createOpfsAdapter({
+      createSha256: () => assert.fail("no installed bytes"),
+      storageManager: { getDirectory() {
+        requests++;
+        if (stage === "origin" && requests === 1) { entered.resolve(); return pending.promise; }
+        return Promise.resolve(origin);
+      } },
+      lockManager: { request: (_name, options, callback) => locks.request(lockName, options, callback) },
+      crypto: { getRandomValues: value => value }
+    });
+    const store = createStore(adapter);
+    const controller = new AbortController();
+    const observed = assert.rejects(store.openActive({ signal: controller.signal }),
+      errorCode("model-composition-store-aborted"));
+    try {
+      await settleWithin(entered.promise); controller.abort(); await settleWithin(observed);
+      assert.equal((await locks.query()).held.some(lock => lock.name === lockName), false);
+      assert.equal(await settleWithin(store.openActive()), null);
+      assert.equal(requests, 2);
+    } finally { pending.reject(new Error("late root failure")); await observed.catch(() => {}); }
+  });
+});
+
+test("OPFS root creation is explicit and invalid origin handles fail without cached errors", async () => {
+  const calls = [];
+  let invalid = true;
+  const child = { getDirectoryHandle(name, options) { calls.push([name, options.create]); return child; } };
+  const adapter = storeApi.createOpfsAdapter({
+    createSha256: () => assert.fail("directory operations do not hash"),
+    storageManager: { getDirectory: async () => invalid ? {} : child },
+    lockManager: { request: (_name, _options, callback) => callback() },
+    crypto: { getRandomValues: value => value }
+  });
+  await assert.rejects(adapter.ensureDirectory(["installed"]), errorCode("model-composition-store-opfs-unavailable"));
+  invalid = false;
+  await adapter.ensureDirectory(["installed"]);
+  assert.deepEqual(calls, [["tinyrustlm-model-compositions-v2", true], ["installed", true]]);
+});
+
 test("AbortSignal cancels while navigator.locks is still waiting", { timeout: 1000 }, async () => {
   const controller = new AbortController();
   let callbackCalled = false;

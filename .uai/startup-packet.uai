@@ -1,5 +1,5 @@
 profile: tinyrustlm.startup-packet.current.v1
-updated_utc: 2026-09-20T01:13:03Z
+updated_utc: 2026-09-20T01:26:58Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
@@ -10,7 +10,8 @@ startup_steps:
   - Preserve immutable failed operations and all campaign counters.
 
 current_truth:
-  cache_read_cancellation: C49 propagates supplied signals through metadata/member acquisition, metadata streams/hashes, enumeration and candidate validation. Cancellation remains distinct from corrupt data; pointer commit/readback still reconciles. All 317 affected checks, seven Edge tests and twelve direct smoke observations pass. See composition-read-cancellation-review.json. Signal-free startup, durable-mutation lifetimes, terminal orphan cleanup and real model/public gates remain open.
+  cache_startup: C50 gives startup cache verification one 60-second deadline. Open is read-only and OPFS root resolution is independent per operation. Timeout rejects late completion, releases the lock and shows recovery text; cache errors suppress automatic replacement pending explicit user action. Empty-cache bootstrap remains. All 336 affected checks, nineteen Edge tests and twelve direct smoke observations pass; see startup-cache-lifetime-review.json. Real-model timing, durable mutation/crash lifecycle and model/public gates remain open.
+  cache_read_cancellation: C49 propagates supplied signals through metadata/member acquisition, metadata streams/hashes, enumeration and candidate validation. Cancellation remains distinct from corrupt data; pointer commit/readback still reconciles. See composition-read-cancellation-review.json. C50 supplies startup's signal; general signal-free calls, durable mutations and terminal orphan cleanup retain their separate lifetime limits.
   cache_readers: C48 gives each composition shared read leases and exclusive write/retirement locks. The app pins all six cached files through worker activation; companion validation requires withRead. Scope cleanup and cancellation release readers; actual Edge tabs prove waiting and release on closure. See composition-read-lease-review.json. Remaining crash/metadata lifetime and real model/public gates stay open.
   cache_ownership: C47 rejects unknown staging/installed content, bounds ownership inventories and removes only recognized direct files. Recovery keeps invalid pointer authority until content deletion succeeds; failed candidates keep markers on failed cleanup. All 143 affected checks, three Edge storage tests and twelve direct smoke observations pass; see composition-cleanup-ownership-review.json. Reader/crash lifecycle and real model/public gates remain open.
   cache_cancellation: C46 fixes a stalled source-cleanup wait that ignored later cancellation. All 118 affected checks, two Edge OPFS/cache tests and twelve direct smoke observations pass. Previous installation and lock availability are preserved; supplied signals are required. See composition-cleanup-cancellation-review.json. Whole-cache review and real model/public gates remain open.

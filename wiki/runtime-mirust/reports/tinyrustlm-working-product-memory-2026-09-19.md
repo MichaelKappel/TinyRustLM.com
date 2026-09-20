@@ -143,9 +143,20 @@ late promise failures are observed. Pointer mutation and authoritative readback
 continue to settle, including after cancellation. All 317 affected checks, seven
 actual Edge storage/P2P tests and twelve direct smoke observations pass. See
 `artifacts/ecosystem-cleanup-20260912/composition-read-cancellation-review.json`.
-Signal-free startup still lacks a cache deadline; initialization/durable-mutation
-lifetimes and terminal orphan crash cleanup remain separate work. The source scan,
+C50 below supplies startup's cache deadline; durable-mutation lifetimes and
+terminal orphan crash cleanup remain separate work. The source scan,
 real-model qualification and public seed/deployment gates remain unresolved.
+
+**C50 startup cache lifetime:** the app now supplies a 60-second cache-check
+deadline through the existing lifetime helper. `openActive` is read-only; OPFS
+root resolution is independent per operation and only explicit writes create
+directories. Timeout releases the read lock, rejects late completion and displays
+recovery text in the chooser. Cache or cached-activation errors require explicit
+action before replacement acquisition; an empty verified cache still bootstraps.
+All 336 affected checks, nineteen actual Edge tests and twelve direct smoke
+observations pass. See `startup-cache-lifetime-review.json`. Real-model startup
+timing, durable mutation/reconciliation and terminal orphan crash recovery remain
+open; no source-scan, model, seed or deployment gate passed.
 
 ## Semantic and numerical diagnosis
 

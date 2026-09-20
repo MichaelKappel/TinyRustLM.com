@@ -127,8 +127,16 @@ Cached model read cancellation:
   reconciliation lifetime. Cancellation after commit cannot turn a committed
   installation into a reported precommit cancellation. See
   `composition-read-cancellation-review.json` for regression and actual OPFS evidence.
-- This does not add a deadline to callers without a signal, including current
-  startup cache restoration, or interrupt initialization and durable mutations.
+- General store calls still rely on their supplied signal; durable mutations and
+  commit reconciliation retain their own terminal lifetime.
+- Startup supplies one 60-second deadline for cache verification, including lock
+  and root acquisition. Opening is read-only, and every OPFS operation resolves
+  its root independently; a stalled prior root promise cannot poison a later call.
+  The chooser displays a timeout/reload message without removing saved bytes.
+- Cache or cached-activation errors suppress automatic replacement acquisition
+  until an explicit user action. A verified empty cache still automatically selects
+  an eligible MiniModel seed. This deadline is an asynchronous-wait policy, not a
+  measured performance budget for real model bytes. See `startup-cache-lifetime-review.json`.
 
 Not deployed or working-model proof:
 

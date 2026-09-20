@@ -1,5 +1,5 @@
 profile: tinyrustlm.architecture.current.v1
-updated_utc: 2026-09-20T01:13:03Z
+updated_utc: 2026-09-20T01:26:58Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
@@ -30,7 +30,8 @@ companion:
 
 browser:
   - C48 pins the six-member cached load with a scoped shared composition lock; candidate writes and retirement take the exclusive composition lock beneath the global writer lock. Readers never acquire the writer lock. The companion opened-result contract requires withRead. Pending streams close on scope exit/cancellation; metadata alone is not a pin. See composition-read-lease-review.json for synthetic cross-tab/closure evidence and caller obligations.
-  - C49 propagates supplied signals through cache read acquisition, metadata streams/hashes, enumeration and precommit validation. Cancellation is not corruption; abandoned read promises remain observed. Authoritative pointer mutation/readback is not raced against cancellation. See composition-read-cancellation-review.json; signal-free startup and durable mutation/initialization lifetimes remain explicit limits.
+  - C49 propagates supplied signals through cache read acquisition, metadata streams/hashes, enumeration and precommit validation. Cancellation is not corruption; abandoned read promises remain observed. Authoritative pointer mutation/readback is not raced against cancellation. See composition-read-cancellation-review.json; general signal-free calls and durable mutation lifetimes remain explicit limits.
+  - C50 makes openActive read-only and resolves OPFS roots independently per operation; only explicit writer initialization creates directories. Startup cache verification supplies a 60-second lifetime, rejects late results and presents timeout recovery in the chooser. Cache or cached-activation errors suppress automatic replacement until explicit action; verified empty caches still bootstrap. See startup-cache-lifetime-review.json; real model timing and terminal mutation/crash safety remain unproven.
   - C47 uses canonical marker/pointer or hash-bound manifest ownership plus a bounded direct-file closure for cache retirement. Unknown files/directories are preserved; only recognized direct files and then the empty directory may be deleted. Web Locks coordinate cooperating writers, not arbitrary same-origin code. See composition-cleanup-ownership-review.json; reader lifetime and terminal crash recovery remain under review.
   - C46 keeps composition-source cancellation active during iterator cleanup, preserving the primary failure and prior installation; supplied signals remain required. Real Edge OPFS and Web Locks pass synthetic regression checks. See composition-cleanup-cancellation-review.json; this does not qualify a model or prove every cache lifecycle path.
   - Dedicated worker owns composition, tokenizer, KV cache, generation, and cancellation.

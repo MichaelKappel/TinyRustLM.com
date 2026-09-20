@@ -1627,6 +1627,34 @@ and the incomplete source scan are unchanged.
   Releasing a lock after abandoning a read is different from abandoning a pending
   commit. Cancellation must never be misclassified as corrupt stored evidence.
 
+## C50: startup deadlines require a read-only cache boundary
+
+- Question: can startup leave a stalled cache check safely, without creating
+  storage, poisoning the next attempt or silently acquiring another model?
+- Exact inputs: C49 parent `50c0cbd954d28749196528e5f99ebe822fd23d7a`, current
+  store/app/chooser code and fixtures bound in `startup-cache-lifetime-review.json`.
+- Method: reproduce initialization on empty open, then remove it from the read
+  path. Delay origin/root acquisition and cancel; verify a released lock and an
+  independent later read. Run the production lifetime/helper/boot with a controlled
+  clock; exercise empty/saved/error/late-result paths. In actual Edge desktop and
+  mobile viewports, delay OPFS acquisition, advance the clock, inspect visible
+  recovery copy, lock release, no created model root and zero model transfer.
+- Result: baseline 148/150 with both read-only regressions failing. Initial
+  affected run 335/336 exposed an assertion requiring unconditional root creation;
+  update it to enforce explicit creation. Final affected 336/336, Edge 19/19,
+  direct smoke twelve observations. Whole-store coverage: 90.28/86.30/94.19 percent
+  for lines/branches/functions; app slices run as production code in behavioral tests.
+- Decision: one 60-second startup cache lifetime through the existing helper;
+  read-only open and independent OPFS root acquisition; reject late completion;
+  no automatic replacement after cache or cached-activation error. Keep normal
+  empty-cache bootstrap and saved-model restoration. No alternate schema or retry.
+- Uncertainty: synthetic fixtures cannot establish real model quality or startup
+  speed. The policy timer does not preempt synchronous work or a suspended browser.
+  Durable mutations/reconciliation and terminal orphan crash recovery remain open.
+- Reusable lesson: a timeout is safe only when the abandoned operation cannot
+  later mutate authoritative state. An unknown cache is not an empty cache, and
+  a rejected or stalled cached promise must not govern every later explicit attempt.
+
 ## Continue the review
 
 Before deleting an experiment that is not covered above, record its purpose,

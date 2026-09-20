@@ -473,6 +473,75 @@ async function expectChooserContentContained(page, selectors) {
 }
 
 test.describe("compact model chooser", () => {
+  for (const late of ["success", "failure"]) {
+    test("startup cache deadline preserves storage and ignores late " + late, async ({ page }) => {
+      const entry = catalogEntry({ entryId: "cache-deadline", displayName: "Starter",
+        compositionSha: sha256("5"), revisionCharacter: "5", peerId: "cache-deadline-peer" });
+      browserAdmissionFixture(entry);
+      const announcement = peerAnnouncementFixture({ announcementId: "cache-deadline-peer",
+        compositionId: entry.composition.composition_id, pieceSetSha256: sha256("8") });
+      announcement.peer_base_url = "https://minimodel.org/";
+      announcement.signature = nodeCrypto.sign(null,
+        Buffer.from(catalogApi.peerAnnouncementSigningBytes(announcement)), peerKeyPair.privateKey).toString("base64url");
+      const errors = [];
+      const modelRequests = [];
+      page.on("pageerror", error => errors.push(error.message));
+      page.on("request", request => {
+        if (request.url().includes(entry.browser_admission.route) ||
+            request.url().includes("/browser-runtime/")) modelRequests.push(request.url());
+      });
+      await page.clock.install({ time: fixtureNow });
+      await page.addInitScript(() => {
+        const original = navigator.storage.getDirectory.bind(navigator.storage);
+        const pending = Promise.withResolvers();
+        window.cacheDeadlineTest = { entered: false, original, pending };
+        // Delay only this page's first origin-root request; actual OPFS remains available afterward.
+        Object.defineProperty(navigator.storage, "getDirectory", { configurable: true,
+          value() {
+            if (!window.cacheDeadlineTest.entered) {
+              window.cacheDeadlineTest.entered = true;
+              return pending.promise;
+            }
+            return original();
+          } });
+      });
+      await routeCatalog(page, { entries: [entry], announcements: [announcement] });
+      await page.goto("/app/", { waitUntil: "domcontentloaded" });
+      await expect.poll(() => page.evaluate(() => window.cacheDeadlineTest.entered)).toBe(true);
+      await expect(page.locator("#runtimeStatus")).toHaveText("Checking browser model cache");
+      await page.clock.fastForward(61_000);
+      await expect(page.locator("#simpleDiscoveryPanel")).toBeVisible();
+      await expect(page.locator("#simpleErrorMessage")).toHaveText(
+        "Checking your saved model took too long. Reload to check again. Your saved model has not been removed.");
+      await expect(page.locator("#simpleModelPickerStatus")).toBeVisible();
+      await expect(page.locator("#simpleModelPickerStatus")).toHaveText(
+        "Checking your saved model took too long. Reload to check again. Your saved model has not been removed.");
+      await expect(page.locator("#errorState")).toHaveText("model-cache-open-timeout");
+      await expect(page.locator("#generateButton")).toBeDisabled();
+      await expect(page.locator("#simpleModelList")).toHaveAttribute("aria-busy", "false");
+      const after = await page.evaluate(async late => {
+        const before = await navigator.locks.query();
+        const held = before.held.filter(lock => lock.name.startsWith("tinyrustlm-model-compositions-v2"));
+        if (late === "success") window.cacheDeadlineTest.pending.resolve(await window.cacheDeadlineTest.original());
+        else window.cacheDeadlineTest.pending.reject(new Error("synthetic late origin failure"));
+        const api = window.TinyRustLMModelCompositionStore;
+        const store = api.createModelCompositionStore({ adapter: api.createOpfsAdapter({
+          createSha256: window.TinyRustLMIncrementalSha256.createSha256 }) });
+        const opened = await store.openActive();
+        const origin = await window.cacheDeadlineTest.original();
+        const names = [];
+        for await (const name of origin.keys()) names.push(name);
+        return { held: held.length, empty: opened === null,
+          createdModelRoot: names.includes("tinyrustlm-model-compositions-v2") };
+      }, late);
+      await page.clock.runFor(1);
+      expect(after).toEqual({ held: 0, empty: true, createdModelRoot: false });
+      expect(modelRequests).toEqual([]);
+      expect(errors).toEqual([]);
+      await expect(page.locator("#generateButton")).toBeDisabled();
+    });
+  }
+
   test("opens the empty chooser without fetching the browser runtime", async ({ page }) => {
     let requests = 0;
     await page.route("**/browser-runtime/**", route => { requests++; return route.abort(); });
