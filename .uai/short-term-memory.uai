@@ -1,9 +1,10 @@
 profile: tinyrustlm.short-term-memory.current.v1
-updated_utc: 2026-09-20T16:15:05Z
+updated_utc: 2026-09-20T16:28:57Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
 now:
+  candidate_selection: C69 defaults only omitted limits, rejects invalid explicit values and validates the entire selected slice before acquisition. All 48 affected and three gate checks pass; three suites now have discoverable filenames. See candidate-selection-limits-review.json. Metadata screening is not converter support or model quality; only the Qwen3/Qwen-tokenizer conversion chain is exposed today. Preserve unrelated work and blocked cleanup cohorts.
   nuget_native_binding: C68 closes a real missing-package-DLL false pass caused by inherited TINYRUSTLM_NATIVE_PATH. The verifier binds its own asset/output layout and Core tests bind actual fixture output. All 105 Node and 124 managed checks pass, plus Windows audit/native smoke. See nuget-consumer-native-binding-review.json. Linux/ARM64 and publication gates remain; preserve unrelated and blocked cleanup cohorts.
   nuget_consumers: C67 requires all three platform consumers of the same package bytes before publication, and corrects eleven executable Git modes. All 103 Node and 38 managed checks pass with independent YAML/Bash validation. Read nuget-prepublish-consumer-review.json. Real hosted ARM64 and release/source-authority gates remain; no credential read or push. Preserve unrelated work.
   terminal_prefill: C66 fixes worker/client fatal rejection when prefill already fills context. The result is empty context-limit output, with no extra sampling/cancel call and the model still active. All 113 final checks pass; Edge boundary and desktop/mobile status presentation checks pass within their fixture/DOM limits. Historical hashes are checked against their recorded Git revision, not rewritten. See browser-terminal-prefill-review.json; real-model, mobile status visibility and broader visual evidence remain separate limits.

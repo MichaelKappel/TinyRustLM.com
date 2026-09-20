@@ -86,7 +86,7 @@ function normalizeLicenseUrl(value) {
   return url.toString();
 }
 
-// Returns one declared Rust source profile or fails before network access.
+// Select a metadata screening profile; this does not establish converter support or quality.
 function requireProfile(profileId) {
   const id = String(profileId || "").trim();
   invariant(Object.hasOwn(profiles, id), `unsupported source profile: ${id || "missing"}`);
@@ -109,7 +109,7 @@ function requireRevision(value) {
 
 // Builds the bounded primary Hugging Face search endpoint.
 function buildSearchUrl(baseUrl, search, limit) {
-  const boundedLimit = Number(limit);
+  const boundedLimit = limit;
   invariant(Number.isSafeInteger(boundedLimit) && boundedLimit >= 1 && boundedLimit <= maximumSearchLimit,
     "search limit is invalid");
   const url = new URL("/api/models", normalizeBaseUrl(baseUrl));
@@ -143,7 +143,7 @@ function searchLicenseId(model) {
   return licenses.length === 1 ? licenses[0].slice("license:".length).toLowerCase() : "";
 }
 
-// Rejects package families the Rust full-weight converter does not consume.
+// Exclude quantized packaging from this full-weight source metadata screen.
 function hasUnsupportedPackaging(modelId) {
   return /(?:^|[-_.])(gguf|awq|gptq|mlx|onnx|openvino|exl2|hqq|bnb|bitsandbytes|fp8|nvfp4|int\d+|\d+bit|quantized|w\d+a\d+)(?:$|[-_.])/i
     .test(modelId);
@@ -199,7 +199,7 @@ function searchRejectionCode(model, profile) {
   return "";
 }
 
-// Verifies fetched configuration dimensions against the selected Rust profile.
+// Verify configuration dimensions against the selected metadata screening profile.
 function validateConfig(config, profile) {
   invariant(config && typeof config === "object" && !Array.isArray(config), "config.json is invalid");
   invariant(config.model_type === profile.modelType, "shape mismatch");
@@ -385,7 +385,8 @@ async function inspectCandidate(model, settings) {
   }
 }
 
-// Discovers one profile roster; requestTimeoutMs bounds each metadata request, never model execution.
+// Discover one metadata roster; only omitted search/candidate limits use defaults.
+// requestTimeoutMs bounds each metadata request, never model execution or qualification.
 async function discoverCandidates(options = {}) {
   const fetchImpl = options.fetchImpl || globalThis.fetch;
   invariant(typeof fetchImpl === "function", "fetch implementation is required");
@@ -394,8 +395,8 @@ async function discoverCandidates(options = {}) {
   const licenseUrl = normalizeLicenseUrl(options.licenseUrl || defaultLicenseUrl);
   const search = String(options.search || profile.defaultSearch).trim();
   invariant(search.length >= 3 && search.length <= 120, "search is invalid");
-  const searchLimit = Number(options.searchLimit || 300);
-  const candidateLimit = Number(options.candidateLimit || 40);
+  const searchLimit = options.searchLimit === undefined ? 300 : options.searchLimit;
+  const candidateLimit = options.candidateLimit === undefined ? 40 : options.candidateLimit;
   invariant(Number.isSafeInteger(candidateLimit) && candidateLimit >= 1 && candidateLimit <= maximumCandidateLimit,
     "candidate limit is invalid");
   const metadata = createMetadataReader(fetchImpl, options.requestTimeoutMs);
@@ -440,8 +441,10 @@ async function main(argv) {
   const [outputPath, profileId, candidateLimitText, searchLimitText, ...searchParts] = argv;
   invariant(outputPath && profileId,
     "usage: node tools/huggingface-supported-candidates.js <output.json> <profile-id> [candidate-limit] [search-limit] [search]");
-  const candidateLimit = candidateLimitText ? Number(candidateLimitText) : 40;
-  const searchLimit = searchLimitText ? Number(searchLimitText) : 300;
+  const candidateLimit = candidateLimitText === undefined ? undefined :
+    (candidateLimitText.trim() ? Number(candidateLimitText) : NaN);
+  const searchLimit = searchLimitText === undefined ? undefined :
+    (searchLimitText.trim() ? Number(searchLimitText) : NaN);
   const search = searchParts.length ? searchParts.join(" ") : undefined;
   const report = await discoverCandidates({ candidateLimit, profileId, search, searchLimit });
   const target = writeReport(outputPath, report);

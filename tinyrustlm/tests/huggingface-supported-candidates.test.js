@@ -4,6 +4,7 @@ const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
 const test = require("node:test");
+const { spawnSync } = require("node:child_process");
 
 const discovery = require("../tools/huggingface-supported-candidates.js");
 const acquire = require("../tools/huggingface-candidate-acquire.js");
@@ -12,6 +13,15 @@ const { createSourceAcquisitionFixture } = require("./helpers/source-acquisition
 const revision = "a".repeat(40);
 const weightSha = "b".repeat(64);
 const chatTemplate = "{% for message in messages %}<|im_start|>{{ message.role }}\n{{ message.content }}<|im_end|>{% endfor %}<|im_start|>assistant\n";
+
+test("candidate discovery, acquisition and rejection suites participate in the standard gate", () => {
+  const { discoverStandardUnitTestFiles } = require("../tools/run-vnext-unit-test-gate.js");
+  const files = discoverStandardUnitTestFiles();
+  for (const name of ["huggingface-supported-candidates", "huggingface-candidate-acquire",
+    "huggingface-candidate-storage", "huggingface-metadata", "source-candidate-exclusions"]) {
+    assert.ok(files.includes(`tests/${name}.test.js`), name);
+  }
+});
 
 // Builds a bounded fetch double for primary-source-shaped HTTP responses.
 function fixtureFetch(routes) {
@@ -39,7 +49,7 @@ function qwen3Config() {
   };
 }
 
-// Returns exact SmolLM2-360M dimensions supported by the Rust converter.
+// Returns the SmolLM2-360M metadata profile; conversion support is a separate gate.
 function smollmConfig() {
   return {
     architectures: ["LlamaForCausalLM"],
@@ -102,6 +112,48 @@ function revisionInfo(modelId, config, weightBytes) {
     config
   };
 }
+
+test("invalid explicit discovery limits fail before metadata requests", async () => {
+  let requests = 0;
+  const fetchImpl = async () => { requests++; return new Response("[]"); };
+  for (const [field, maximum] of [["candidateLimit", 100], ["searchLimit", 500]]) {
+    for (const value of [0, NaN, null, false, "", "1", -1, 1.5, Infinity, maximum + 1]) {
+      await assert.rejects(discovery.discoverCandidates({ profileId: "qwen3-0.6b-bpe", fetchImpl, [field]: value }),
+        field === "candidateLimit" ? /candidate limit is invalid/ : /search limit is invalid/,
+        `${field}=${String(value)}`);
+    }
+  }
+  assert.equal(requests, 0);
+});
+
+test("discovery applies omitted limits and admits both inclusive limit boundaries", async () => {
+  for (const options of [{}, { candidateLimit: 1, searchLimit: 1 }, { candidateLimit: 100, searchLimit: 500 }]) {
+    const urls = [];
+    const report = await discovery.discoverCandidates({ profileId: "qwen3-0.6b-bpe", ...options,
+      fetchImpl: async url => { urls.push(String(url)); return new Response("[]"); } });
+    assert.equal(report.requestedCandidateLimit, options.candidateLimit ?? 40);
+    assert.equal(report.searchLimit, options.searchLimit ?? 300);
+    assert.equal(new URL(urls[0]).searchParams.get("limit"), String(options.searchLimit ?? 300));
+    assert.equal(urls.length, 1);
+  }
+});
+
+test("discovery CLI rejects invalid explicit limits before producing a report", () => {
+  const { createOwnedTemporaryDirectory, removeOwnedTemporaryDirectory } = require("../tools/canonical-operation-scratch.js");
+  const owned = createOwnedTemporaryDirectory({ temporaryParent: path.resolve(__dirname, "../../artifacts/tests/candidate-selection-cli") });
+  const output = path.join(owned.rootPath, "inventory.json");
+  try {
+    for (const [candidates, search, message] of [["0", "1", "candidate"], ["NaN", "1", "candidate"],
+      ["", "1", "candidate"], ["1", "0", "search"], ["1", "NaN", "search"], ["1", "", "search"]]) {
+      const result = spawnSync(process.execPath, [path.resolve(__dirname, "../tools/huggingface-supported-candidates.js"),
+        output, "qwen3-0.6b-bpe", candidates, search], { encoding: "utf8", windowsHide: true, timeout: 10000,
+        env: { ...process.env, NODE_V8_COVERAGE: "" } });
+      assert.equal(result.status, 1);
+      assert.match(result.stderr, new RegExp(`${message} limit is invalid`));
+      assert.equal(fs.existsSync(output), false);
+    }
+  } finally { removeOwnedTemporaryDirectory(owned); }
+});
 
 test("discovers distinct immutable Qwen3 full-weight conversation candidates", async () => {
   const base = "https://huggingface.co";

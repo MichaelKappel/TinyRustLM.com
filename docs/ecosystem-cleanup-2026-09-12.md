@@ -5,6 +5,31 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C69: honor explicit candidate download limits, September 20
+
+Candidate acquisition used truthy defaults, so an explicit zero or NaN count
+became the inventory length and started source requests. Discovery similarly
+replaced invalid limits with its defaults. Both APIs now default only omitted
+arguments, require bounded integer values and reject invalid CLI arguments before
+network or candidate-directory work. The downloader validates the complete
+selected slice before acquiring its first entry. Valid partial selections still
+download at most the requested count; candidates outside that slice are untouched.
+
+Three regressions failed before the fix. All 48 affected checks now pass, including
+real CLI rejection, actual loopback transfer/decompression bounds, deterministic
+selection and existing rejected-source controls. Line coverage is 93.27% for
+acquisition and 93.83% for discovery. Three standard-gate checks also pass. Existing
+metadata, storage and source-exclusion suites had `_test.js` names and were absent
+from that gate; they now have discoverable `.test.js` names with unchanged bytes.
+
+Source inspection also corrected misleading comments: the three discovery
+profiles are metadata screens, while the current Rust converter only exposes its
+Qwen3/Qwen-tokenizer entry points. This work does not supply missing converter
+support or qualify a model. No public model requests, real weight downloads,
+NuGet push, site publication or policy-blocked deletion occurred. See
+`candidate-selection-limits-review.json` for identities, final memory/secret
+checks, temporary-output retirement and remaining integration limits.
+
 ## C68: bind the NuGet consumer to its packaged native library, September 20
 
 A real Windows package consumer passed after its installed native DLL was removed:

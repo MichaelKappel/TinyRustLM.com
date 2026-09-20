@@ -16,6 +16,14 @@ Authority order is current owner instructions, inspected current contracts and b
 
 ## Current evidence and its limits
 
+**C69 candidate selection:** explicit invalid limits now reject instead of becoming
+default-sized discovery/download batches. The complete selected slice is validated
+before acquisition. All 48 affected checks and three unit-gate checks pass; three
+unchanged suites are now discoverable. Profiles are metadata screens, not proof
+of converter support: the Rust CLI currently exposes the Qwen3/Qwen-tokenizer
+chain. Read `candidate-selection-limits-review.json`. No real model or public
+result follows; missing conversion and model qualification remain open.
+
 **C68 package binding:** the consumer now forces its own installed native path,
 so an inherited developer override cannot make a missing DLL pass. A real Windows
 false pass was reproduced before the fix and rejected afterward; intact bytes

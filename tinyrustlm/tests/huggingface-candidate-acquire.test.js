@@ -7,6 +7,8 @@ const http = require("node:http");
 const path = require("node:path");
 const test = require("node:test");
 const zlib = require("node:zlib");
+const { spawnSync } = require("node:child_process");
+const { createOwnedTemporaryDirectory, removeOwnedTemporaryDirectory } = require("../tools/canonical-operation-scratch.js");
 
 const acquire = require("../tools/huggingface-candidate-acquire.js");
 const { createSourceAcquisitionFixture } = require("./helpers/source-acquisition-fixture.js");
@@ -15,6 +17,101 @@ const { createSourceAcquisitionFixture } = require("./helpers/source-acquisition
 function sha256(bytes) {
   return crypto.createHash("sha256").update(bytes).digest("hex");
 }
+
+// Bind a tiny synthetic source so selection tests can distinguish validation from I/O.
+function selectionCandidate(name = "One") {
+  const template = "{% for message in messages %}<|im_start|>{{ message.role }} {{ message.content }}<|im_end|>{% endfor %}";
+  const bodies = { "config.json": Buffer.from('{}'), "tokenizer.json": Buffer.from('{}'),
+    "tokenizer_config.json": Buffer.from(JSON.stringify({ chat_template: template })),
+    "model.safetensors": Buffer.from("selection fixture only"),
+    LICENSE: Buffer.from("Apache License\nVersion 2.0\n") };
+  const file = filename => ({ filename, byteCount: bodies[filename].length, sha256: sha256(bodies[filename]), gitBlobId: null });
+  const weight = file("model.safetensors");
+  return { bodies, candidate: { sourceTemplate: "qwen3-0.6b-bpe", modelId: `Example/Selection-${name}`,
+    revision: "a".repeat(40), licenseId: "apache-2.0",
+    licenseEvidenceKind: "revision-metadata-plus-apache-authority-text",
+    licenseSourceUrl: "https://example.invalid/LICENSE", licenseSha256: sha256(bodies.LICENSE),
+    configSha256: sha256(bodies["config.json"]), tokenizer: file("tokenizer.json"),
+    tokenizerConfig: file("tokenizer_config.json"), chatTemplateKind: "revision-chatml-template-v1",
+    chatTemplateSha256: sha256(Buffer.from(template)), sourceWeightByteCount: weight.byteCount,
+    weightIdentity: sha256(Buffer.from(`${weight.filename}:${weight.byteCount}:${weight.sha256}`)), weightFiles: [weight] } };
+}
+
+test("invalid explicit acquisition selection never falls back to downloading candidates", async () => {
+  const storage = createSourceAcquisitionFixture();
+  const inventory = { schema: "tinyrustlm.huggingface_supported_candidate_inventory.v2",
+    candidates: [selectionCandidate().candidate] };
+  let requests = 0;
+  const fetchImpl = async () => { requests++; throw Error("unexpected source request"); };
+  try {
+    for (const count of [0, NaN, null, false, "", "1", -1, 1.5, Infinity, 101]) {
+      await assert.rejects(acquire.acquireInventory(inventory, storage.rootPath, { count, fetchImpl }),
+        /candidate count is invalid/, `count=${String(count)}`);
+    }
+    for (const start of [NaN, null, false, "", "0", -1, 1.5, Infinity]) {
+      await assert.rejects(acquire.acquireInventory(inventory, storage.rootPath, { start, fetchImpl }),
+        /candidate start is invalid/, `start=${String(start)}`);
+    }
+    assert.equal(requests, 0);
+    assert.deepEqual(fs.readdirSync(storage.rootPath), [".fixture-owner"]);
+  } finally { storage.remove(); }
+});
+
+test("every selected candidate is validated before the first source request", async () => {
+  const storage = createSourceAcquisitionFixture();
+  let requests = 0;
+  try {
+    for (const tail of [{ ...selectionCandidate("Two").candidate, revision: "main" }, null, undefined]) {
+      const candidates = [selectionCandidate().candidate];
+      candidates.length = 2;
+      if (tail !== undefined) candidates[1] = tail;
+      await assert.rejects(acquire.acquireInventory({ schema: "tinyrustlm.huggingface_supported_candidate_inventory.v2", candidates },
+        storage.rootPath, { fetchImpl: async () => { requests++; throw Error("unexpected source request"); } }),
+      /candidate revision is not immutable|candidate is invalid/);
+    }
+    assert.equal(requests, 0);
+    assert.deepEqual(fs.readdirSync(storage.rootPath), [".fixture-owner"]);
+  } finally { storage.remove(); }
+});
+
+test("acquisition CLI rejects zero, nonnumeric and empty explicit limits without output", () => {
+  const metadata = createOwnedTemporaryDirectory({ temporaryParent: path.resolve(__dirname, "../../artifacts/tests/candidate-selection-cli") });
+  const storage = createSourceAcquisitionFixture();
+  try {
+    const inventory = path.join(metadata.rootPath, "inventory.json");
+    fs.writeFileSync(inventory, JSON.stringify({ schema: "tinyrustlm.huggingface_supported_candidate_inventory.v2",
+      candidates: [{ modelId: "invalid candidate must never be reached" }] }));
+    for (const [start, count, message] of [["0", "0", "count"], ["0", "NaN", "count"],
+      ["0", "", "count"], ["", "1", "start"], ["NaN", "1", "start"]]) {
+      const result = spawnSync(process.execPath, [path.resolve(__dirname, "../tools/huggingface-candidate-acquire.js"),
+        inventory, storage.rootPath, start, count], { encoding: "utf8", windowsHide: true, timeout: 10000,
+        env: { ...process.env, NODE_V8_COVERAGE: "" } });
+      assert.equal(result.status, 1);
+      assert.match(result.stderr, new RegExp(`candidate ${message} is invalid`));
+      assert.deepEqual(fs.readdirSync(storage.rootPath), [".fixture-owner"]);
+    }
+  } finally { storage.remove(); removeOwnedTemporaryDirectory(metadata); }
+});
+
+test("acquisition honors explicit slices and omitted selection defaults", async () => {
+  for (const [options, expected] of [[{}, ["One", "Two"]], [{ start: 1 }, ["Two"]],
+    [{ count: 1 }, ["One"]], [{ start: 1, count: 100 }, ["Two"]]]) {
+    const storage = createSourceAcquisitionFixture();
+    const one = selectionCandidate("One"), two = selectionCandidate("Two");
+    const requests = [];
+    try {
+      const receipts = await acquire.acquireInventory({ schema: "tinyrustlm.huggingface_supported_candidate_inventory.v2",
+        candidates: [one.candidate, two.candidate] }, storage.rootPath, { ...options,
+        fetchImpl: async url => { requests.push(String(url)); return new Response(one.bodies[new URL(url).pathname.split('/').at(-1)]); } });
+      assert.deepEqual(receipts.map(receipt => receipt.modelId), expected.map(name => `Example/Selection-${name}`));
+      assert.equal(requests.length, expected.length * 5);
+      for (const name of ["One", "Two"].filter(name => !expected.includes(name))) {
+        assert.ok(requests.every(url => !url.includes(`/Selection-${name}/`)));
+        assert.equal(fs.existsSync(acquire.candidateDirectory(storage.rootPath, selectionCandidate(name).candidate)), false);
+      }
+    } finally { storage.remove(); }
+  }
+});
 
 // Starts a loopback fixture that supports exact byte ranges and records requests.
 async function startFixture(routes) {

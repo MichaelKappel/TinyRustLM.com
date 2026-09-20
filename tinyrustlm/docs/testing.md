@@ -50,6 +50,28 @@ The clean-cut test proves the registered obsolete executable closure remains
 physically absent, scans active source for superseded tokens, verifies the
 sole deployed browser artifact, and checks canonical Rust workspace ownership.
 
+## Candidate selection checks
+
+The discovery and acquisition suites, together with metadata bounds, storage and
+source exclusions, use `.test.js` filenames and participate in the standard gate.
+Focused runs can select those five `huggingface-*` / `source-candidate-exclusions`
+suites directly without making a public model request.
+
+Discovery defaults to 300 search rows and at most 40 candidates only when those
+arguments are omitted. Explicit limits must be integers in 1..500 and 1..100,
+respectively. Acquisition defaults to start 0 and the inventory's candidate count;
+an explicit count must be in 1..100. It takes at most that count from the selected
+start, validates the entire slice, then begins source requests. Zero, nonnumeric,
+empty or otherwise invalid explicit limits are errors, never requests for a
+default-sized download. JavaScript callers supply numbers; the CLIs parse numeric
+arguments before invoking those APIs.
+
+Profiles describe source metadata to screen. They do not establish converter
+support, provenance approval or useful answers. The current Rust CLI exposes
+Qwen3 model/composition and Qwen tokenizer conversion; a SmolLM2 or Qwen2.5 roster
+entry still needs its own source/reference and converter work. Acquired source
+hashes are not a qualified composition or an installed browser model.
+
 ## Owned temporary output
 
 `tools/canonical-operation-scratch.js` creates bounded output beneath canonical

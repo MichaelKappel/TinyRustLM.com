@@ -1,0 +1,340 @@
+{
+  "schema": "tinyrustlm.ecosystem-cleanup.candidate-selection-limits-review.v1",
+  "checkpoint": "C69",
+  "parent": "6cc98e1c218d21c3477c027121b10ce9cfe2b902",
+  "reviewedUtc": "2026-09-20T16:33:40.065Z",
+  "status": "implemented-and-tested; owned-output-removed",
+  "previousGoalTurn": "Progress: C68 fixed package native binding and output paths, passed tests and owned cleanup, and was committed/pushed with fresh remote equality. C69 continues the full ecosystem goal.",
+  "findings": [
+    "Truthy defaults replaced zero and NaN selection controls with default batch sizes; an observed zero count issued a source request.",
+    "Acquisition started earlier entries before validating an invalid later selected revision.",
+    "Array.map skipped sparse selected entries, also allowing earlier source requests before rejection.",
+    "Three existing metadata/storage/exclusion suites did not match standard test discovery filenames.",
+    "The discovery profiles include SmolLM2 and Qwen2.5 metadata, but source inspection finds only Qwen3/Qwen-tokenizer entry points in the current Rust converter."
+  ],
+  "implementation": [
+    "Default only omitted API options; require integer bounded counts/starts, and parse/reject invalid explicit CLI controls.",
+    "Validate the entire selected slice using Array.from before candidate acquisition, including null and sparse entries.",
+    "Preserve at-most-count selection and independent source exclusions, hashes, acquisition receipts and canonical storage policy.",
+    "Rename three test files to .test.js without changing bytes; assert their presence in the actual standard inventory.",
+    "Correct comments/current guidance so metadata matching is not presented as Rust conversion support."
+  ],
+  "verification": {
+    "initial": {
+      "log": "baseline.log",
+      "tests": 12,
+      "pass": 9,
+      "fail": 3,
+      "result": "Zero acquisition/discovery counts and late selected-revision validation failed."
+    },
+    "focused": {
+      "log": "focused.log",
+      "tests": 12,
+      "pass": 12,
+      "fail": 0
+    },
+    "expanded": {
+      "log": "affected.log",
+      "tests": 47,
+      "pass": 47,
+      "fail": 0
+    },
+    "discoveryGate": {
+      "log": "final.log",
+      "tests": 48,
+      "pass": 48,
+      "fail": 0
+    },
+    "sparseBaseline": {
+      "log": "sparse-baseline.log",
+      "tests": 1,
+      "pass": 0,
+      "fail": 1,
+      "result": "Array.map skipped the hole; first source request occurred. Array.from now validates it."
+    },
+    "final": {
+      "log": "selection-final.log",
+      "tests": 48,
+      "pass": 48,
+      "fail": 0,
+      "skipped": 0,
+      "command": "node --test --experimental-test-coverage --test-coverage-include=tinyrustlm/tools/huggingface-candidate-acquire.js --test-coverage-include=tinyrustlm/tools/huggingface-supported-candidates.js tinyrustlm/tests/huggingface-supported-candidates.test.js tinyrustlm/tests/huggingface-candidate-acquire.test.js tinyrustlm/tests/huggingface-candidate-storage.test.js tinyrustlm/tests/huggingface-metadata.test.js tinyrustlm/tests/source-candidate-exclusions.test.js",
+      "coverage": {
+        "acquire": {
+          "line": 93.27,
+          "branch": 90.38,
+          "function": 86.36
+        },
+        "discovery": {
+          "line": 93.83,
+          "branch": 73.76,
+          "function": 90.91
+        }
+      }
+    },
+    "gate": {
+      "log": "gate.log",
+      "tests": 3,
+      "pass": 3,
+      "fail": 0,
+      "command": "node --test tinyrustlm/tests/vnext-unit-test-gate.test.js"
+    },
+    "memoryFinal": {
+      "log": "memory-final.log",
+      "tests": 9,
+      "pass": 9,
+      "fail": 0,
+      "skipped": 0,
+      "command": "dotnet test dotnet/tests/TinyRustLM.Package.Tests/TinyRustLM.Package.Tests.csproj -c Release --no-build --artifacts-path <owned>/dotnet -p:UseSharedCompilation=false --filter FullyQualifiedName~UaixMemoryConsolidationTests|FullyQualifiedName~ReportIntakeMemoryTests"
+    },
+    "selectionCases": "Invalid zero/NaN/null/boolean/string/fractional/infinite/out-of-range controls; omitted defaults; boundary limits; start/count slices; actual CLI rejection; invalid later revision/null/sparse entries before I/O.",
+    "transportCases": "Existing actual loopback HTTP, decompression, truncation, deadlines, canonical storage, resumption and excluded source identities remain passing.",
+    "counting": "Runs overlap; totals are not additive unique cases. Standard inventory checks do not mean the full standard suite or source-authority gate ran."
+  },
+  "testRenames": [
+    {
+      "Name": "huggingface-candidate-storage",
+      "Old": "huggingface-candidate-storage_test.js",
+      "New": "huggingface-candidate-storage.test.js",
+      "Sha256": "9ae772e98768cebd43a2cd7cdc48970791a8f3dabeb56905e13c94ee1790ed12",
+      "Bytes": 28249
+    },
+    {
+      "Name": "huggingface-metadata",
+      "Old": "huggingface-metadata_test.js",
+      "New": "huggingface-metadata.test.js",
+      "Sha256": "a4471b6eb5af82a1207e1809a3403489bfa864ea6e6afd2992c3d9a4246519c6",
+      "Bytes": 10932
+    },
+    {
+      "Name": "source-candidate-exclusions",
+      "Old": "source-candidate-exclusions_test.js",
+      "New": "source-candidate-exclusions.test.js",
+      "Sha256": "a90b086a48e2d09f8d73e335d5a6407c7268ed28fb7fcef3c88cec704f05eb54",
+      "Bytes": 7125
+    }
+  ],
+  "standardDiscovery": [
+    {
+      "path": "tests/huggingface-candidate-storage.test.js",
+      "discovered": true
+    },
+    {
+      "path": "tests/huggingface-metadata.test.js",
+      "discovered": true
+    },
+    {
+      "path": "tests/source-candidate-exclusions.test.js",
+      "discovered": true
+    }
+  ],
+  "sources": [
+    {
+      "path": "tinyrustlm/tools/huggingface-candidate-acquire.js",
+      "bytes": 29167,
+      "sha256": "296ca21abe1364f56a9aaa866a3585587e3dbbddf07013a90444f4637e374226"
+    },
+    {
+      "path": "tinyrustlm/tools/huggingface-supported-candidates.js",
+      "bytes": 21017,
+      "sha256": "617a53112828c2c20f835264059df9e62a87212d8d371dd40ae09736f2db8538"
+    },
+    {
+      "path": "tinyrustlm/tests/huggingface-candidate-acquire.test.js",
+      "bytes": 17299,
+      "sha256": "e5132ac8618a4ae6e28196ce2a1771108f21659c73b225fb195c65e60e8fb5e3"
+    },
+    {
+      "path": "tinyrustlm/tests/huggingface-supported-candidates.test.js",
+      "bytes": 15419,
+      "sha256": "2a2b8bcad16e76fccdd33559ea12014cfa3571d78f10892dbfa613e80ecd6003"
+    },
+    {
+      "path": "tinyrustlm/tests/huggingface-candidate-storage.test.js",
+      "bytes": 28249,
+      "sha256": "9ae772e98768cebd43a2cd7cdc48970791a8f3dabeb56905e13c94ee1790ed12"
+    },
+    {
+      "path": "tinyrustlm/tests/huggingface-metadata.test.js",
+      "bytes": 10932,
+      "sha256": "a4471b6eb5af82a1207e1809a3403489bfa864ea6e6afd2992c3d9a4246519c6"
+    },
+    {
+      "path": "tinyrustlm/tests/source-candidate-exclusions.test.js",
+      "bytes": 7125,
+      "sha256": "a90b086a48e2d09f8d73e335d5a6407c7268ed28fb7fcef3c88cec704f05eb54"
+    },
+    {
+      "path": "tinyrustlm/docs/testing.md",
+      "bytes": 10504,
+      "sha256": "8ddd94648ece59b7097fed639219b593c45a354da3a45eaafd2ffdd5d34bc32b"
+    },
+    {
+      "path": ".uai/startup-packet.uai",
+      "bytes": 15912,
+      "sha256": "70ccf3a78c9412152bf7a0ebde30f4e525a64a3afaec13c236130491117ce83d"
+    },
+    {
+      "path": ".uai/operations.uai",
+      "bytes": 24558,
+      "sha256": "689f5f1fb593ab616a8dc170bb8efaff010928fbdef419a04252cf5dcdd7bf0f"
+    },
+    {
+      "path": ".uai/short-term-memory.uai",
+      "bytes": 19584,
+      "sha256": "040c9e3e085a391df3e9d698335e7654c98f36e23bec3716717d547c6b114ec3"
+    },
+    {
+      "path": ".uai/long-term-memory.uai",
+      "bytes": 8851,
+      "sha256": "d5d31bdcff8674f3c2872dcde9981c60a6ccc927f177a5f16ec865164ffd59e7"
+    },
+    {
+      "path": "docs/ecosystem-cleanup-2026-09-12.md",
+      "bytes": 136576,
+      "sha256": "2907a4021b725a1060388bac36e9cc8e6c7778ec0f79a7d3c15a8c3f888e2233"
+    },
+    {
+      "path": "wiki/runtime-mirust/reports/ecosystem-experiment-lessons-2026-09-12.md",
+      "bytes": 166414,
+      "sha256": "2f62a99ec1ca0d97e05dc2d43041890a8050c062a5c149ea0ebd87ed6f25fc72"
+    },
+    {
+      "path": "wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md",
+      "bytes": 59328,
+      "sha256": "aca2435c5f5cc39771bb11d5aec5ceb8696e8526d4543ae5819062730f14e35a"
+    }
+  ],
+  "converterBoundaryInputs": [
+    {
+      "path": "rust/crates/tinyrustlm-convert/src/main.rs",
+      "bytes": 8749,
+      "sha256": "a1c5602ef776f032ca83000714900f89008d4b9a5377b7758c474dcea94124db"
+    },
+    {
+      "path": "rust/crates/tinyrustlm-convert/src/lib.rs",
+      "bytes": 1038,
+      "sha256": "26d38df9c953443725797accfd76f8ccb50521f33e7b7a2ffe6e88cc904d5547"
+    }
+  ],
+  "logs": [
+    {
+      "path": "artifacts/tests/candidate-selection/tinyrustlm-operation-DNyQc9/affected.log",
+      "bytes": 12224,
+      "sha256": "b74776aa96e7fffeebe323024bb5f61f7ea893700b705d9740a1ed7507a514a3"
+    },
+    {
+      "path": "artifacts/tests/candidate-selection/tinyrustlm-operation-DNyQc9/baseline.log",
+      "bytes": 9490,
+      "sha256": "9506fc9e17486a8c4b466a2a5876a04e155a0eb11f1aa1b648b91b894cd7e071"
+    },
+    {
+      "path": "artifacts/tests/candidate-selection/tinyrustlm-operation-DNyQc9/final.log",
+      "bytes": 12444,
+      "sha256": "8e62c029abeb98a122c3282fc02fa5eb4ec5bda78dfdb5b17cbf0dbca5aa24e9"
+    },
+    {
+      "path": "artifacts/tests/candidate-selection/tinyrustlm-operation-DNyQc9/focused.log",
+      "bytes": 5774,
+      "sha256": "716e98ff07476f8fd1f2bc1c2b18dcb253d64268daefefdcf5ff8d7c3358590b"
+    },
+    {
+      "path": "artifacts/tests/candidate-selection/tinyrustlm-operation-DNyQc9/gate.log",
+      "bytes": 668,
+      "sha256": "a0e7e50d4b9ff4afd80537c088ab8c8b59e3ed44c12921f08e153a4f596f0fc6"
+    },
+    {
+      "path": "artifacts/tests/candidate-selection/tinyrustlm-operation-DNyQc9/memory-final.log",
+      "bytes": 790,
+      "sha256": "be548b1636d53bedd6c1eb822170273b0d1324a1bc225a58c562fbbc83953b75"
+    },
+    {
+      "path": "artifacts/tests/candidate-selection/tinyrustlm-operation-DNyQc9/memory.log",
+      "bytes": 2234,
+      "sha256": "79e1f485dea71b1fabdee4834dff0faa47f7d1e5590218c2a95bfde80dc884a0"
+    },
+    {
+      "path": "artifacts/tests/candidate-selection/tinyrustlm-operation-DNyQc9/selection-final.log",
+      "bytes": 12282,
+      "sha256": "565dc3e041ccb08b42a2a7e8f078e9878ab7893efb4889d2475ba8753a56617d"
+    },
+    {
+      "path": "artifacts/tests/candidate-selection/tinyrustlm-operation-DNyQc9/sparse-baseline.log",
+      "bytes": 3082,
+      "sha256": "554604f8573edc024f0b9ed4784f3a4d8f0f5970e2c1db3fdbc33f74e61181db"
+    }
+  ],
+  "repositories": [
+    {
+      "repository": "LMComposer.com",
+      "head": "618e081b510ad75411f2d7bec1d60a8e4f98cbbf",
+      "branch": "main",
+      "changedEntries": 0
+    },
+    {
+      "repository": "MiniModel.MiRust.com",
+      "head": "b437611c34ad4f80312016f4bf9aa1a08398d07a",
+      "branch": "master",
+      "changedEntries": 0
+    },
+    {
+      "repository": "MiniModel.org",
+      "head": "4b815cbb877a709e8d3060c2039c13e993c334eb",
+      "branch": "master",
+      "changedEntries": 0
+    },
+    {
+      "repository": "MiRust.com",
+      "head": "b9420a10feb0819ca6bbf89d92c9199ba89d7c86",
+      "branch": "master",
+      "changedEntries": 0
+    },
+    {
+      "repository": "Runtime.MiRust.com",
+      "head": "8623dcf5603ab419d02ffd0809e9ae987fb5b2a0",
+      "branch": "master",
+      "changedEntries": 15
+    },
+    {
+      "repository": "TinyRustLM.com",
+      "head": "6cc98e1c218d21c3477c027121b10ce9cfe2b902",
+      "branch": "codex/model-acquisition-v2",
+      "changedEntries": 44
+    },
+    {
+      "repository": "TinyRustLM.MiRust.com",
+      "head": "d17f77af652e9ac086482414a5bd0b6eb2250a50",
+      "branch": "master",
+      "changedEntries": 1
+    }
+  ],
+  "limitations": [
+    "No public Hugging Face/model requests, real weights, material registration, conversion, numerical trace or quality qualification.",
+    "Qwen2.5/SmolLM2 conversion support remains an actual integration gap; the profiles are source-metadata screens only.",
+    "No browser/UI change, site deployment, NuGet credential read or package push. C68 release limitations persist.",
+    "Known source-authority and policy-blocked cleanup cohorts remain untouched; no complete ecosystem or full test-gate claim.",
+    "An initial read-only search used nonexistent src/crates paths and was corrected from Cargo.toml to rust/crates."
+  ],
+  "retirement": {
+    "status": "removed-and-absence-verified",
+    "root": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\candidate-selection\\tinyrustlm-operation-DNyQc9",
+    "marker": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\candidate-selection\\tinyrustlm-operation-DNyQc9.owner.v2",
+    "files": 152,
+    "directories": 40,
+    "logicalBytes": 5636419,
+    "markerBytes": 65,
+    "physicalBytesRecovered": null,
+    "sourceFixtures": "Each test retired its owned synthetic D: fixture; fresh direct source-acquisition bucket listing has zero children. No recovered-byte measurement for those fixtures.",
+    "processEvidence": "All launch handles are terminal; fresh process inspection found no process naming the owned root or package-test assembly.",
+    "scope": "Only original C69 output and marker; no previously blocked cohort.",
+    "completedUtc": "2026-09-20T16:34:32.300Z"
+  },
+  "secretScan": {
+    "status": "pass",
+    "scannedArtifacts": 18,
+    "secretFindings": 0,
+    "scopeComplete": false,
+    "reportBytes": 9705,
+    "reportSha256": "78a1a3e9b1da6a8b86783fdb85e5497a08f831b10940463cdd596f471ce5044a"
+  }
+}

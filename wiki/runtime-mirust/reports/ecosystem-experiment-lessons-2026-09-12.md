@@ -11,6 +11,29 @@ Keep useful findings and compact evidence identities in the owning canonical
 repository. Keep source history in Git and current model payloads only in
 `D:\LLMs\TinyRustLM`.
 
+## C69: a zero download limit must not turn into the default batch
+
+- Question: do explicit selection controls bound network and storage work?
+- Exact inputs: parent `6cc98e1c218d21c3477c027121b10ce9cfe2b902`, current
+  discovery/acquisition owners, pinned synthetic metadata and tiny source fixtures.
+- Method: pass zero, NaN, null, booleans, strings, fractional and out-of-range
+  numbers; exercise actual CLI arguments; verify omitted defaults and slices with
+  exact request/receipt counts. Put an invalid revision after a valid candidate
+  and require rejection before any source request or candidate-directory mutation.
+- Result: three baseline failures exposed hidden defaults and late validation.
+  All 48 final affected checks and three unit-gate checks pass. Acquisition and
+  discovery line coverage is 93.27%/93.83%. Three unchanged suites now participate
+  in the standard gate after their filename corrections.
+- Decision: default only omitted controls, validate bounded integers and validate
+  all selected entries before I/O. Preserve at-most-count selection semantics.
+- Uncertainty: synthetic bytes and loopback transport do not establish usable
+  model behavior or conversion support. Current discovery profiles are screening
+  metadata; only the Qwen3 conversion chain is exposed by the Rust CLI.
+- Reusable lesson: `value || default` silently expands invalid resource requests;
+  a green manually invoked suite can still be absent from the routine test gate.
+- Evidence identity: `candidate-selection-limits-review.json`; no real model
+  download, publication or policy-blocked retirement.
+
 ## C68: a developer native override can invalidate package verification
 
 - Question: does a successful consumer actually execute the packaged library?

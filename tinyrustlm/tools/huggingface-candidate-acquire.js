@@ -574,16 +574,17 @@ async function acquireCandidate(candidateValue, outputRoot, options = {}) {
   });
 }
 
-// Acquires a bounded contiguous selection from one validated discovery inventory.
+// Acquire at most count entries from start; only omitted limits use defaults.
+// Validate the entire selected slice before any download or candidate-directory mutation.
 async function acquireInventory(inventory, outputRoot, options = {}) {
   invariant(isPlainObject(inventory) && inventory.schema === inventorySchema,
     "candidate inventory schema is invalid");
   invariant(Array.isArray(inventory.candidates), "candidate inventory list is invalid");
-  const start = Number(options.start || 0);
-  const count = Number(options.count || inventory.candidates.length);
+  const start = options.start === undefined ? 0 : options.start;
+  const count = options.count === undefined ? inventory.candidates.length : options.count;
   invariant(Number.isSafeInteger(start) && start >= 0, "candidate start is invalid");
   invariant(Number.isSafeInteger(count) && count >= 1 && count <= 100, "candidate count is invalid");
-  const selected = inventory.candidates.slice(start, start + count);
+  const selected = Array.from(inventory.candidates.slice(start, start + count), requireCandidate);
   invariant(selected.length > 0, "candidate selection is empty");
   const receipts = [];
   for (const candidate of selected) {
@@ -603,8 +604,8 @@ async function main(argv) {
   const bytes = readBoundedFile(path.resolve(inventoryPath), 16 * 1024 * 1024);
   const inventory = JSON.parse(bytes.toString("utf8"));
   await acquireInventory(inventory, outputRoot, {
-    start: startText ? Number(startText) : 0,
-    count: countText ? Number(countText) : inventory.candidates.length
+    start: startText === undefined ? undefined : (startText.trim() ? Number(startText) : NaN),
+    count: countText === undefined ? undefined : (countText.trim() ? Number(countText) : NaN)
   });
 }
 
