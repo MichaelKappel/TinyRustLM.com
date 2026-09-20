@@ -1,0 +1,688 @@
+{
+  "schema": "tinyrustlm.ecosystem-cleanup.browser-terminal-prefill-review.v1",
+  "checkpoint": "C66",
+  "parent": "e2277a168c18332b4a4b355bb8e42bfec10c16fb",
+  "status": "implemented-and-affected-checks-passed; owned-output-removed",
+  "previousGoalTurn": "C66 implementation/testing made progress. The intervening confirmation of an already-recorded credential path was no progress toward the broad goal; this continuation completes the concrete pending change.",
+  "defect": {
+    "baseline": {
+      "tests": 2,
+      "pass": 0,
+      "fail": 2,
+      "log": "baseline-corrected.log",
+      "worker": "Fatal rejection of the Rust terminal-output-ready state after prefill.",
+      "client": "model-runtime-client-event-authority rejected generation-complete on begin."
+    }
+  },
+  "implementation": [
+    "Worker accepts the existing terminal-output-ready state after prefill and finishes once without stepping.",
+    "Validate exact output identity/reason, empty generated text/token IDs and unchanged committed prefill KV.",
+    "Client accepts generation-complete on begin and retains the active model, without cancelling an already-terminal request.",
+    "Keep replay and malformed result rejection, ordinary step/cancel and later valid requests.",
+    "Preserve raw output and use the existing status card for Context limit reached / Start a new chat.",
+    "Refresh both shell script hashes; no styles, component structure, protocol field sets or Rust/WASM bytes changed.",
+    "Verify historical worker evidence at its recorded Git commit/tree; do not rewrite frozen August hashes.",
+    "Replace an obsolete setup sentence in the current testing guide with current profile ownership guidance."
+  ],
+  "verification": {
+    "final": {
+      "tests": 113,
+      "pass": 113,
+      "fail": 0,
+      "skip": 0,
+      "log": "complete-final.log",
+      "command": "node --test tinyrustlm/tests/model-runtime-worker.test.js tinyrustlm/tests/model-runtime-client.test.js tinyrustlm/tests/model-acquisition-boundary-regression.test.js tinyrustlm/tests/static-shell-parity.test.js tinyrustlm/tests/browser-runtime-wasm-clean-cut-preregistration.test.js tinyrustlm/tests/active-conversation.test.js"
+    },
+    "coverage": {
+      "log": "runtime-complete.log",
+      "tests": 81,
+      "pass": 81,
+      "worker": {
+        "line": 81.91,
+        "branch": 69.88,
+        "function": 93.98
+      },
+      "client": {
+        "line": 81.03,
+        "branch": 66.52,
+        "function": 88.33
+      },
+      "limitation": "Line target exceeded; branch coverage remains below 75%. Page tests execute extracted production boundaries, not the full application conversation."
+    },
+    "joined": {
+      "log": "joined.log",
+      "pass": 1,
+      "scope": "Production client plus production worker over structured-clone transport and a synthetic ABI; no real model."
+    },
+    "browserRelated": {
+      "log": "browser-related.log",
+      "tests": 33,
+      "pass": 32,
+      "fail": 1,
+      "scope": "Two installed Edge tests exercise real compiled WASM initialization, release and terminal boundary rejection across fresh profiles; no model activated or generated.",
+      "failure": "Historical implementation bytes compared to evolving source.",
+      "correction": {
+        "log": "historical-contract-corrected.log",
+        "tests": 11,
+        "pass": 11,
+        "fail": 0,
+        "commit": "6ff375bc3ef4177ebcf0a3e3c1129e1d6902cb25",
+        "tree": "1230988c18391d1cc0a3fa776a1d4b1443eb7ca1"
+      }
+    },
+    "releaseRelated": {
+      "log": "release-contracts.log",
+      "tests": 23,
+      "pass": 22,
+      "fail": 1,
+      "failure": "Preexisting obsolete runtime term in current testing guide.",
+      "correction": {
+        "log": "clean-cut-corrected.log",
+        "tests": 7,
+        "pass": 7,
+        "fail": 0
+      },
+      "scope": "Deployment manifest, current-only source/docs, prompt contract and reproducible local runtime artifact checks."
+    },
+    "memory": {
+      "log": "memory.log",
+      "tests": 9,
+      "pass": 9,
+      "fail": 0,
+      "skip": 0,
+      "command": "dotnet test dotnet/tests/TinyRustLM.Package.Tests/TinyRustLM.Package.Tests.csproj -c Release --artifacts-path <owned>/dotnet -p:UseSharedCompilation=false --filter FullyQualifiedName~UaixMemoryConsolidationTests|FullyQualifiedName~ReportIntakeMemoryTests"
+    },
+    "counting": "Runs overlap; totals must not be added as unique tests."
+  },
+  "setupCorrections": [
+    "Initial baseline client fixture omitted its required signal; baseline-corrected.log reproduces both actual defects.",
+    "focused-initial.log expected continued usability after fatal stale replay. Corrected test orders valid requests before stale rejection.",
+    "focused.log attempted stale replay during an active request and hit the earlier active-generation guard. Corrected second request to complete first; focused-final.log passes all eleven.",
+    "runtime-tests.log joined fixture preassigned composition before initialize; runtime-tests-final.log passed activate an object instead of the actual artifact array. Corrected joined.log and complete-final.log pass without production relaxations.",
+    "Initial DOM probe used a nonexistent #systemStatus selector; corrected existing .local-status-card probe, with failed profile cleaned.",
+    "A read-only log summarizer failed because PowerShell ASCII piping changed a Unicode regex symbol; rerun used an escaped code point. No source or experiment outcome changed."
+  ],
+  "limitations": [
+    "No real source checkpoint load, numerical parity, qualified model, useful browser conversation or live initial seed is established.",
+    "The desktop/mobile presentation probe directly sets existing DOM status fields; it does not exercise actual generation. Compact mobile CSS already hides that card; mobile context-limit messaging is not established.",
+    "Existing historical visual baseline still has fifteen differences; this is not a claim of broad visual parity.",
+    "No NuGet key was read and no package was pushed. Real ARM64 and clean release/source-authority gates remain.",
+    "No site was published and no previously policy-blocked deletion was retried.",
+    "Unrelated work remains in TinyRustLM, Runtime.MiRust.com and TinyRustLM.MiRust.com."
+  ],
+  "reviewedUtc": "2026-09-20T15:42:02.577Z",
+  "sources": [
+    {
+      "path": ".uai/startup-packet.uai",
+      "bytes": 14613,
+      "sha256": "1d9279e616da0a3d2ed1d29f9fa3be15f424d66a21ecdb1e891d80917e9cf562"
+    },
+    {
+      "path": ".uai/operations.uai",
+      "bytes": 23080,
+      "sha256": "aad15a43e43209f770dc9622e2db7cd55ccc99b915766117ffa3d214fe173fd8"
+    },
+    {
+      "path": ".uai/short-term-memory.uai",
+      "bytes": 18316,
+      "sha256": "04930f50e0dcf4bf65a15b8ce8dbffadafd186da1e4de6cf3e09a01a978c2fc1"
+    },
+    {
+      "path": ".uai/long-term-memory.uai",
+      "bytes": 8868,
+      "sha256": "94bf28c1f8541825f0e84b2b106c921974bc02131087ca4380f5bcea030af674"
+    },
+    {
+      "path": "tinyrustlm/app/model-runtime-worker.js",
+      "bytes": 54452,
+      "sha256": "5309a68a5c9e22bb581970aa0ffb1d209475f84edff47f839a4c7d5902e77fb2"
+    },
+    {
+      "path": "tinyrustlm/app/model-runtime-client.js",
+      "bytes": 41095,
+      "sha256": "10da2c66df5693c7611279e85f86dc7ff357107deb6955ef25d6c47306393527"
+    },
+    {
+      "path": "tinyrustlm/app/app.js",
+      "bytes": 465955,
+      "sha256": "02d85d572117dc5026b0f601008d4f41bd33a97a024e256d51ac0e12c13bcdbb"
+    },
+    {
+      "path": "tinyrustlm/app/index.html",
+      "bytes": 48604,
+      "sha256": "69159a4d9f5eeaac8bb1d30b3780bf655f6296e23f757b627ee066e91a00d277"
+    },
+    {
+      "path": "tinyrustlm/index.html",
+      "bytes": 48684,
+      "sha256": "65f9e9ee5eb0e2c51703d729d2f9fde7b067b7fcae261427c5717e9d7a4bd84f"
+    },
+    {
+      "path": "tinyrustlm/tests/model-runtime-worker.test.js",
+      "bytes": 33851,
+      "sha256": "1797745a51782d7392c8d3c50884c85e1949e38afce72ed10ef9e2709472453c"
+    },
+    {
+      "path": "tinyrustlm/tests/model-runtime-client.test.js",
+      "bytes": 22255,
+      "sha256": "1e809a1445a1061404558b607cd8d7c2c9d22715ced84b3954cbe7233aeb3885"
+    },
+    {
+      "path": "tinyrustlm/tests/model-acquisition-boundary-regression.test.js",
+      "bytes": 60941,
+      "sha256": "b2ba3464bc46b8e41e313edb50fcb4c3e0d177db12cebe96db3e774e4cc00904"
+    },
+    {
+      "path": "tinyrustlm/tests/browser-runtime-wasm-clean-cut-preregistration.test.js",
+      "bytes": 19748,
+      "sha256": "330a1f0c7f3082c29fe609830a810e45efc537efce1f83cec8ab4890cb4f8da4"
+    },
+    {
+      "path": "tinyrustlm/docs/browser-runtime.md",
+      "bytes": 9071,
+      "sha256": "868400a8a19c8bf4cce50ab3265b95ab61e86e7bc0d85a276858c9c1a3abf87a"
+    },
+    {
+      "path": "tinyrustlm/docs/testing.md",
+      "bytes": 9181,
+      "sha256": "b7961a18fd48b580a4e6e504859212b65b2ed58f2f3d5298c3a28d39eec1c502"
+    },
+    {
+      "path": "docs/architecture/browser-runtime-verification.md",
+      "bytes": 4022,
+      "sha256": "0c2534efacf7f0217fa57546420dfa851b3a3083b549d13e8cee2fbef194bd5c"
+    },
+    {
+      "path": "docs/ecosystem-cleanup-2026-09-12.md",
+      "bytes": 131279,
+      "sha256": "7a957602f06fcc18af339ca22bf4866b79f002d90ebacee591069eabad252fd1"
+    },
+    {
+      "path": "wiki/runtime-mirust/reports/ecosystem-experiment-lessons-2026-09-12.md",
+      "bytes": 161273,
+      "sha256": "3e9c4326865ef6dc2eb9848240b416d1473677f8651001ac30430c01741e81ee"
+    },
+    {
+      "path": "wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md",
+      "bytes": 57607,
+      "sha256": "9b5bf38c0e15443ed482529bfe8f5ebfacde870e240b972d538805ef17878e6d"
+    }
+  ],
+  "unchangedArtifacts": [
+    {
+      "path": "tinyrustlm/browser-runtime/tinyrustlm-browser-runtime.wasm",
+      "bytes": 576621,
+      "sha256": "80cc1e2ce69c19485ae52965dd93051cb007253168a98e9e38871ab34a7c78ac",
+      "unchangedFromParent": true
+    },
+    {
+      "path": "tinyrustlm/browser-runtime/tinyrustlm-browser-runtime.wasm.manifest.json",
+      "bytes": 1209,
+      "sha256": "80eaffc3eb5a77a416eb5a2c34910793e89c9c1a6077a779e095d1bcdd67ace6",
+      "unchangedFromParent": true
+    },
+    {
+      "path": "contracts/vnext/browser-runtime-wasm-clean-cut-preregistration.v1.json",
+      "bytes": 30058,
+      "sha256": "db6c31a0cc5862cdd8a351a740ec5db18bdec0764b1962373a29d623955eef97",
+      "unchangedFromParent": true
+    }
+  ],
+  "logs": [
+    {
+      "path": "baseline-corrected.log",
+      "bytes": 3268,
+      "sha256": "a3578f0dc082be9a2cdb8ee3b74e1ed99abb8cd3afa530c53097c8ec56096589",
+      "testSummary": [
+        "ℹ tests 2",
+        "ℹ pass 0",
+        "ℹ fail 2",
+        "ℹ skipped 0"
+      ]
+    },
+    {
+      "path": "baseline.log",
+      "bytes": 3828,
+      "sha256": "dec3ee36cbedf385bde358088b459faf80306a580812d625c078e9a35cd2ac49",
+      "testSummary": [
+        "ℹ tests 2",
+        "ℹ pass 0",
+        "ℹ fail 2",
+        "ℹ skipped 0"
+      ]
+    },
+    {
+      "path": "browser-related.log",
+      "bytes": 7616,
+      "sha256": "e59d42f4a3e897542ade941632464c404db52aa552475a8d9cf90a52ffffde18",
+      "testSummary": [
+        "ℹ tests 33",
+        "ℹ pass 32",
+        "ℹ fail 1",
+        "ℹ skipped 0"
+      ]
+    },
+    {
+      "path": "clean-cut-corrected.log",
+      "bytes": 1376,
+      "sha256": "15d76bc03b1fb269a9ff7cfdac61736467291642f7a0fb833d0b267531fc305c",
+      "testSummary": [
+        "ℹ tests 7",
+        "ℹ pass 7",
+        "ℹ fail 0",
+        "ℹ skipped 0"
+      ]
+    },
+    {
+      "path": "complete-final.log",
+      "bytes": 18954,
+      "sha256": "575c8ea7d1cee93520cad918ad36ecafc7344467cb8aca005a13cfcac82852b6",
+      "testSummary": [
+        "ℹ tests 113",
+        "ℹ pass 113",
+        "ℹ fail 0",
+        "ℹ skipped 0"
+      ]
+    },
+    {
+      "path": "focused-final.log",
+      "bytes": 1992,
+      "sha256": "fe77ca97929025e2f9873ca353a7ebf4e07b590d8b9980fa745b80e7a35a7ca7",
+      "testSummary": [
+        "ℹ tests 11",
+        "ℹ pass 11",
+        "ℹ fail 0",
+        "ℹ skipped 0"
+      ]
+    },
+    {
+      "path": "focused-initial.log",
+      "bytes": 3522,
+      "sha256": "870028a63ed8d667511341f81bdbcd1e5760d90070de818f7a0bd1b2890f35e9",
+      "testSummary": [
+        "ℹ tests 2",
+        "ℹ pass 1",
+        "ℹ fail 1",
+        "ℹ skipped 0"
+      ]
+    },
+    {
+      "path": "focused.log",
+      "bytes": 3366,
+      "sha256": "21f4822315ef84071d9025725be4b6c56af610c869b9af407558344129155d44",
+      "testSummary": [
+        "ℹ tests 11",
+        "ℹ pass 10",
+        "ℹ fail 1",
+        "ℹ skipped 0"
+      ]
+    },
+    {
+      "path": "historical-contract-corrected.log",
+      "bytes": 1884,
+      "sha256": "303a8a1951ba52da5e4511173efdad0d682737780d367f87ae526af7915b5726",
+      "testSummary": [
+        "ℹ tests 11",
+        "ℹ pass 11",
+        "ℹ fail 0",
+        "ℹ skipped 0"
+      ]
+    },
+    {
+      "path": "joined.log",
+      "bytes": 404,
+      "sha256": "b6c63145ef171cce71e01097ac97b91c9463426b808d27d1ddba3e79907fbaea",
+      "testSummary": [
+        "ℹ tests 1",
+        "ℹ pass 1",
+        "ℹ fail 0",
+        "ℹ skipped 0"
+      ]
+    },
+    {
+      "path": "memory.log",
+      "bytes": 2212,
+      "sha256": "047a618dd0b14b6baab56b7ca972dc0734311899ce08269a569a2db18b1e4b17",
+      "testSummary": [
+        "Passed!  - Failed:     0, Passed:     9, Skipped:     0, Total:     9, Duration: 140 ms - TinyRustLM.Package.Tests.dll (net8.0)"
+      ]
+    },
+    {
+      "path": "Microsoft.NET.Workload_16040_20260920_083836_323.log",
+      "bytes": 1409,
+      "sha256": "20ea26ab5f35872edad694727de2eb44a2bdf4c3c213761a0995c3e001008701",
+      "testSummary": []
+    },
+    {
+      "path": "release-contracts.log",
+      "bytes": 6352,
+      "sha256": "82170f40e7fa6b6c2ac4ffb254b8ab43e68ecaa558469ea29581384a41f686aa",
+      "testSummary": [
+        "ℹ tests 23",
+        "ℹ pass 22",
+        "ℹ fail 1",
+        "ℹ skipped 0"
+      ]
+    },
+    {
+      "path": "runtime-complete.log",
+      "bytes": 23110,
+      "sha256": "8737b6ac37161c411b9603368da80826bdf93eae8ceda91c63455eceda779456",
+      "testSummary": [
+        "ℹ tests 81",
+        "ℹ pass 81",
+        "ℹ fail 0",
+        "ℹ skipped 0"
+      ]
+    },
+    {
+      "path": "runtime-tests-final.log",
+      "bytes": 17222,
+      "sha256": "8115f5ba9450c15594267e6d24abdbbb0b6a00b56a2ea27286c37597205827e9",
+      "testSummary": [
+        "ℹ tests 35",
+        "ℹ pass 34",
+        "ℹ fail 1",
+        "ℹ skipped 0"
+      ]
+    },
+    {
+      "path": "runtime-tests.log",
+      "bytes": 16418,
+      "sha256": "4dc317aa0ca9025a1397997e98b70ce770f8f2be2f584c694f66ef4687c5bb0d",
+      "testSummary": [
+        "ℹ tests 35",
+        "ℹ pass 34",
+        "ℹ fail 1",
+        "ℹ skipped 0"
+      ]
+    },
+    {
+      "path": "status-final.log",
+      "bytes": 1196,
+      "sha256": "d37de6cd4da26304bc403b2c9574c32336de90c0c2705163d63ec8ca4cb3cb50",
+      "testSummary": [
+        "ℹ tests 5",
+        "ℹ pass 5",
+        "ℹ fail 0",
+        "ℹ skipped 0"
+      ]
+    }
+  ],
+  "presentation": {
+    "observations": [
+      {
+        "viewport": {
+          "name": "desktop",
+          "width": 1365,
+          "height": 768,
+          "mobile": false
+        },
+        "browser": "153.0.4234.48",
+        "probe": "Existing DOM status presentation only; no model loaded or inference simulated",
+        "outputs": [
+          {
+            "phase": "ready",
+            "geometry": {
+              "width": 1365,
+              "rects": {
+                ".left-sidebar": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 280,
+                  "height": 768
+                },
+                ".main-workspace": {
+                  "x": 280,
+                  "y": 0,
+                  "width": 1021,
+                  "height": 768
+                },
+                ".advanced-options-panel": {
+                  "x": 1301,
+                  "y": 0,
+                  "width": 64,
+                  "height": 768
+                },
+                ".local-status-card": {
+                  "x": 10,
+                  "y": 597.65625,
+                  "width": 259,
+                  "height": 94.75
+                }
+              },
+              "status": "Ready",
+              "detail": "Ready"
+            },
+            "screenshot": "desktop-ready.png",
+            "sha256": "a8acd995a314b322588b32e04cb4bed162d74736d2b19921f697c7a7b5f1f318"
+          },
+          {
+            "phase": "context-limit",
+            "geometry": {
+              "width": 1365,
+              "rects": {
+                ".left-sidebar": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 280,
+                  "height": 768
+                },
+                ".main-workspace": {
+                  "x": 280,
+                  "y": 0,
+                  "width": 1021,
+                  "height": 768
+                },
+                ".advanced-options-panel": {
+                  "x": 1301,
+                  "y": 0,
+                  "width": 64,
+                  "height": 768
+                },
+                ".local-status-card": {
+                  "x": 10,
+                  "y": 597.65625,
+                  "width": 259,
+                  "height": 94.75
+                }
+              },
+              "status": "Context limit reached",
+              "detail": "Start a new chat"
+            },
+            "screenshot": "desktop-context-limit.png",
+            "sha256": "e9c596e8e14ad4a4f3754937502f374c3f7796cf26a57d7714ab5ce653c53fa5"
+          }
+        ],
+        "pageErrors": []
+      },
+      {
+        "viewport": {
+          "name": "mobile",
+          "width": 390,
+          "height": 844,
+          "mobile": true
+        },
+        "browser": "153.0.4234.48",
+        "probe": "Existing DOM status presentation only; no model loaded or inference simulated",
+        "outputs": [
+          {
+            "phase": "ready",
+            "geometry": {
+              "width": 390,
+              "rects": {
+                ".left-sidebar": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 390,
+                  "height": 63
+                },
+                ".main-workspace": {
+                  "x": 0,
+                  "y": 63,
+                  "width": 390,
+                  "height": 784
+                },
+                ".advanced-options-panel": {
+                  "x": 390,
+                  "y": 0,
+                  "width": 340,
+                  "height": 844
+                },
+                ".local-status-card": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 0,
+                  "height": 0
+                }
+              },
+              "status": "Ready",
+              "detail": "Ready"
+            },
+            "screenshot": "mobile-ready.png",
+            "sha256": "16aea953736a095a5eade3a8b435172a2243435a353009001bd746c3e9762d51"
+          },
+          {
+            "phase": "context-limit",
+            "geometry": {
+              "width": 390,
+              "rects": {
+                ".left-sidebar": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 390,
+                  "height": 63
+                },
+                ".main-workspace": {
+                  "x": 0,
+                  "y": 63,
+                  "width": 390,
+                  "height": 784
+                },
+                ".advanced-options-panel": {
+                  "x": 390,
+                  "y": 0,
+                  "width": 340,
+                  "height": 844
+                },
+                ".local-status-card": {
+                  "x": 0,
+                  "y": 0,
+                  "width": 0,
+                  "height": 0
+                }
+              },
+              "status": "Context limit reached",
+              "detail": "Start a new chat"
+            },
+            "screenshot": "mobile-context-limit.png",
+            "sha256": "16aea953736a095a5eade3a8b435172a2243435a353009001bd746c3e9762d51"
+          }
+        ],
+        "pageErrors": []
+      }
+    ],
+    "report": {
+      "path": "status-layout.json",
+      "bytes": 4772,
+      "sha256": "19115a22f2b36b2327b59756b35394c4d0c5ed38b8a42410fa3c733d92d14785"
+    },
+    "inspection": "Desktop and mobile context-limit images reviewed; desktop label fits existing card, mobile card stays hidden. PNGs retired with owned output after preserving identities."
+  },
+  "secretScan": {
+    "status": "pass",
+    "scannedArtifactCount": 19,
+    "scannedInputByteCount": 1232895,
+    "secretFindingCount": 0,
+    "scopeComplete": false,
+    "scopeManifestSha256": "a198d26c7377c53fb29c335c604a4af0ce4385a8403cee94cf23eda178a31469",
+    "scannerSourceClosureSha256": "05cefc2bb03b448c3c54d688e7f10b05b1eaf21befa5cb602334c11aae68c5ac",
+    "report": {
+      "path": "source-secret-scan.json",
+      "bytes": 10060,
+      "sha256": "7092f6ab3783a6c206767906ee8d994e3b1f11cebfd16359f8d3a24513d988db"
+    },
+    "keyContentsRead": false
+  },
+  "repositories": [
+    {
+      "repository": "LMComposer.com",
+      "head": "618e081b510ad75411f2d7bec1d60a8e4f98cbbf",
+      "branch": "main",
+      "changedInThisCheckpoint": false,
+      "worktreeEntryCount": 0
+    },
+    {
+      "repository": "MiniModel.MiRust.com",
+      "head": "b437611c34ad4f80312016f4bf9aa1a08398d07a",
+      "branch": "master",
+      "changedInThisCheckpoint": false,
+      "worktreeEntryCount": 0
+    },
+    {
+      "repository": "MiniModel.org",
+      "head": "4b815cbb877a709e8d3060c2039c13e993c334eb",
+      "branch": "master",
+      "changedInThisCheckpoint": false,
+      "worktreeEntryCount": 0
+    },
+    {
+      "repository": "MiRust.com",
+      "head": "b9420a10feb0819ca6bbf89d92c9199ba89d7c86",
+      "branch": "master",
+      "changedInThisCheckpoint": false,
+      "worktreeEntryCount": 0
+    },
+    {
+      "repository": "Runtime.MiRust.com",
+      "head": "8623dcf5603ab419d02ffd0809e9ae987fb5b2a0",
+      "branch": "master",
+      "changedInThisCheckpoint": false,
+      "worktreeEntryCount": 15
+    },
+    {
+      "repository": "TinyRustLM.com",
+      "head": "e2277a168c18332b4a4b355bb8e42bfec10c16fb",
+      "branch": "codex/model-acquisition-v2",
+      "changedInThisCheckpoint": true,
+      "worktreeEntryCount": 45
+    },
+    {
+      "repository": "TinyRustLM.MiRust.com",
+      "head": "d17f77af652e9ac086482414a5bd0b6eb2250a50",
+      "branch": "master",
+      "changedInThisCheckpoint": false,
+      "worktreeEntryCount": 1
+    }
+  ],
+  "intake": {
+    "Content": [
+      ".gitkeep"
+    ],
+    "Improvement": [
+      ".gitkeep"
+    ],
+    "disposition": "Both active buckets remain placeholder-only."
+  },
+  "hygiene": {
+    "diffCheckExitCode": 0,
+    "unrelatedWorkPreserved": true
+  },
+  "retirement": {
+    "rootPath": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\context-terminal\\tinyrustlm-operation-tiKHLh",
+    "markerPath": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\context-terminal\\tinyrustlm-operation-tiKHLh.owner.v2",
+    "status": "removed-and-absence-verified",
+    "physicalStorageRecovered": null,
+    "blockedCohorts": "Untouched; do not retry blocked paths or remove their ancestors.",
+    "inventory": {
+      "files": 1252,
+      "directories": 305,
+      "logicalFileBytes": 283173772,
+      "markerBytes": 65
+    },
+    "writers": "All known tool sessions terminal; process query found no node/Edge/Rust/.NET process referencing this root.",
+    "completedUtc": "2026-09-20T15:42:36.653Z",
+    "rootAbsent": true,
+    "markerAbsent": true
+  }
+}

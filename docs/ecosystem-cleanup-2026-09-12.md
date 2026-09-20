@@ -5,6 +5,37 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C66: carry terminal prefill through the browser, September 20
+
+The Rust runtime already returns a terminal result when prefill fills the admitted
+context. The worker instead required `generating`, and the client accepted only
+`generation-begun`. Two regressions reproduced a fatal worker rejection and a
+client event-authority failure. The sole worker/client now accept immediate empty
+`context-limit` completion without sampling or cancelling an already-terminal
+result. Output reason, identities, empty generated text/IDs and unchanged prefill
+KV are checked; replay and malformed-output rejection remain. Subsequent valid
+requests retain the active composition.
+
+The page preserves raw answers and reports `Context limit reached` with `Start a
+new chat` in the existing status card. Both shell asset identities are current;
+styles, layout and component structure are unchanged. A desktop/mobile Edge DOM
+presentation probe found identical outer geometry and no page errors. The status
+card remains hidden in the existing compact mobile layout; this probe does not
+prove a real generated conversation or broad visual parity.
+
+All 113 final runtime, page-boundary, shell, conversation and contract tests pass.
+The worker/client coverage run measured 81.91%/81.03% line coverage. Real Edge
+worker/client checks passed in the broader run. Its one failing historical check
+compared evolving source with August implementation hashes; it now reads the exact
+recorded commit/tree in memory. All eleven corrected contract checks pass, and the
+historical JSON remains unchanged. Test-fixture setup mistakes and their corrected
+outcomes are retained in `browser-terminal-prefill-review.json` with final related
+checks and cleanup evidence. Related release checks passed 22 cases and found a
+historical setup sentence in the current testing guide; replacing it with current
+profile ownership guidance made all seven clean-cut checks pass. No real model,
+NuGet push, seed or site publication is claimed; previous policy-blocked deletion
+cohorts remain untouched.
+
 ## C65: retain ownership through failed scratch cleanup, September 20
 
 A real Windows exclusive file lock reproduced C64's cleanup defect: recursive

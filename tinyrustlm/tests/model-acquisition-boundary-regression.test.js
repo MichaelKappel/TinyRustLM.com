@@ -28,6 +28,50 @@ function catalogText(value) {
   return typeof value === "string" ? value.trim() : "";
 }
 
+test("context exhaustion keeps the status ready and gives the existing new-chat action", () => {
+  const { systemStateForText } = evaluateProductionSection(sourceSection(app,
+    "  function systemStateForText", "  function updateSystemStatus"), ["systemStateForText"], {});
+  assert.deepEqual(systemStateForText("Context limit reached", false), ["ready", "Start a new chat"]);
+  assert.deepEqual(systemStateForText("Context limit reached", true), ["error", "Error"]);
+  assert.deepEqual(systemStateForText("Ready", false), ["ready", "Ready"]);
+});
+
+for (const [kind, text, label] of [
+  ["context-limit", "", "Context limit reached"],
+  ["context-limit", "retained answer", "Context limit reached"],
+  ["stop-token", "ordinary answer", "Ready"],
+  ["cancelled", "partial answer", "Stopped"]
+]) {
+  test(`terminal delivery preserves ${kind} output and shows ${label}: ${text || "empty"}`, async () => {
+    const state = { generation: { sequence: 7 }, runtimeState: {}, modelLoaded: true };
+    const el = { runtimeStatus: {}, errorState: {} };
+    const updates = [];
+    const ui = [];
+    const bindings = { state, el, paths: { models: {} },
+      updateAssistantMessage: (id, value) => updates.push({ id, ...value }),
+      setText: (node, value) => { node.textContent = value; },
+      setGenerationUi: value => ui.push(value), setControls() {}, renderDiagnostics() {},
+      runPendingGenerationAction() {} };
+    const { deliverGeneratedOutput } = evaluateProductionSection(sourceSection(app,
+      "  async function deliverGeneratedOutput", "  // Fetch only for a model operation"),
+    ["deliverGeneratedOutput"], bindings);
+    const output = { text, tokenIds: text ? [9] : [], status: { kind }, committedKvBytes: 4096 };
+    await deliverGeneratedOutput("assistant", output, null, 7);
+    assert.equal(updates.length, 1);
+    assert.equal(updates[0].text, text);
+    assert.equal(updates[0].status, kind === "cancelled" ? "stopped" : "completed");
+    assert.equal(el.runtimeStatus.textContent, label);
+    assert.equal(el.errorState.textContent, "none");
+    assert.equal(state.generation.rawOutput, output);
+    assert.equal(state.modelLoaded, true);
+    assert.equal(state.runtimeState.committedKvBytes, 4096);
+    assert.equal(state.hasContext, kind !== "cancelled");
+    assert.deepEqual(ui, ["idle"]);
+    await deliverGeneratedOutput("stale", output, null, 6);
+    assert.equal(updates.length, 1);
+  });
+}
+
 function deferred() {
   let resolve;
   let reject;

@@ -11,6 +11,31 @@ Keep useful findings and compact evidence identities in the owning canonical
 repository. Keep source history in Git and current model payloads only in
 `D:\LLMs\TinyRustLM`.
 
+## C66: prefill can be terminal before any generation step
+
+- Question: does the browser preserve Rust's context-limit result when the prompt
+  already fills the admitted session, and can the user issue another request?
+- Exact inputs: parent `e2277a168c18332b4a4b355bb8e42bfec10c16fb`, production worker
+  and client with a synthetic ABI returning `terminal-output-ready`, empty output,
+  `context-limit` and 4,096 committed KV bytes. Source and run identities are in
+  `browser-terminal-prefill-review.json`.
+- Method: reproduce each side's rejection, test the production state machines
+  together, reject invented initial text/tokens/KV changes and wrong reasons,
+  check cancellation precedence and replay, and issue another valid generation.
+- Result: baseline worker terminated and client rejected event authority. Corrected
+  paths finish once without a step. All 113 final checks pass; worker/client line
+  coverage is 81.91%/81.03%. The page preserves raw output and labels exhaustion in
+  the existing status card. Real Edge lifecycle checks and a bounded DOM layout
+  probe pass; neither executes a real model.
+- Uncertainty: full real-composition inference remains blocked by separate gates;
+  compact mobile layout hides the existing status card. The older visual baseline
+  remains unresolved. Local source and fixture evidence do not establish release.
+- Decision: admit both existing initial outcomes through one protocol, without a
+  fake step, retry, answer rewrite, new backend or compatibility path.
+- Reusable lesson: verify terminal transitions across every layer, including the
+  zero-step case. Historical evidence hashes belong to their recorded Git commit,
+  not whichever current implementation happens to occupy the same path.
+
 ## C65: cleanup authority must outlive the disposable directory
 
 - Question: can a locked file or failed terminal removal destroy the authority

@@ -105,7 +105,7 @@
     activate: Object.freeze(["composition-active"]),
     "advance-operation": Object.freeze(["operation-advanced"]),
     "set-transcript": Object.freeze(["transcript-updated"]),
-    "begin-generation": Object.freeze(["generation-begun"]),
+    "begin-generation": Object.freeze(["generation-begun", "generation-complete"]),
     "step-generation": Object.freeze(["generation-step", "generation-complete"]),
     "cancel-generation": Object.freeze(["generation-complete"]),
     release: Object.freeze(["runtime-released"])
@@ -727,19 +727,20 @@
           oneChunk(promptRequest),
           context
         );
-        const begun = await this.send("begin-generation", {}, context);
-        validateState(
-          begun.payload.state,
-          this.operationId,
-          this.compositionId,
-          true
-        );
-        if (begun.payload.state.state !== "generating") {
-          fail("model-runtime-client-generation-state", { terminal: true });
+        let event = await this.send("begin-generation", {}, context);
+        const completedOnBegin = event.kind === "generation-complete";
+        if (!completedOnBegin) {
+          validateState(event.payload.state, this.operationId, this.compositionId, true);
+          if (event.payload.state.state !== "generating") {
+            fail("model-runtime-client-generation-state", { terminal: true });
+          }
         }
         for (;;) {
-          const kind = generation.cancelRequested ? "cancel-generation" : "step-generation";
-          const event = await this.send(kind, {}, context);
+          // Immediate context exhaustion has no step to execute or cancel.
+          if (event.kind !== "generation-complete") {
+            const kind = generation.cancelRequested ? "cancel-generation" : "step-generation";
+            event = await this.send(kind, {}, context);
+          }
           if (event.kind === "generation-step") {
             const step = validateStep(event.payload.step);
             if (source.onStep) {
@@ -753,6 +754,10 @@
             this.compositionId,
             this.policy.maximumSequenceTokens
           );
+          if (completedOnBegin && (output.status.kind !== "context-limit" ||
+              output.text !== "" || output.tokenIds.length !== 0)) {
+            fail("model-runtime-client-initial-output", { terminal: true });
+          }
           this.completedGenerationIds.add(context.generationId);
           this.activeGeneration = null;
           this.status = "active";

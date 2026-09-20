@@ -1002,6 +1002,7 @@
       }, false);
     }
 
+    // A prompt that fills the admitted context is already terminal after prefill.
     beginGeneration(command) {
       this.requireActiveIdle(command);
       if (this.completedGenerationIds.has(command.generationId)) {
@@ -1018,7 +1019,8 @@
         [],
         validateState
       );
-      if (state.state !== "generating" || state.operationId !== command.operationId) {
+      if ((state.state !== "generating" && state.state !== "terminal-output-ready") ||
+          state.operationId !== command.operationId) {
         commandRejection(STATUS_INTERNAL_FAILURE,
           "model-runtime-worker-generation-state", true);
       }
@@ -1028,6 +1030,9 @@
         turnId: command.turnId,
         generationId: command.generationId
       });
+      if (state.state === "terminal-output-ready") {
+        return this.finishGeneration(command, "context-limit", state.committedKvBytes);
+      }
       return this.eventResult(command, "generation-begun", {
         commandMessageId: command.messageId,
         state
@@ -1059,7 +1064,8 @@
       return this.finishGeneration(command, step.status.kind);
     }
 
-    finishGeneration(command, terminalKind) {
+    // An initial terminal result must contain no sampled output or additional KV writes.
+    finishGeneration(command, terminalKind, initialKvBytes = null) {
       this.stageOperation(1, command.operationId);
       let output;
       try {
@@ -1081,6 +1087,11 @@
       if (output.committedKvBytes > this.policy.maximumKvBytes) {
         commandRejection(STATUS_INTERNAL_FAILURE,
           "model-runtime-worker-output-memory-policy", true);
+      }
+      if (initialKvBytes !== null && (output.text !== "" || output.tokenIds.length !== 0 ||
+          output.committedKvBytes !== initialKvBytes)) {
+        commandRejection(STATUS_INTERNAL_FAILURE,
+          "model-runtime-worker-initial-output", true);
       }
       this.completedGenerationIds.add(command.generationId);
       this.activeGeneration = null;

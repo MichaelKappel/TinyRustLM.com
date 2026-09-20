@@ -132,7 +132,7 @@ class FakeWorker {
       case "activate": return "composition-active";
       case "advance-operation": return "operation-advanced";
       case "set-transcript": return "transcript-updated";
-      case "begin-generation": return "generation-begun";
+      case "begin-generation": return this.options.fullPrompt ? "generation-complete" : "generation-begun";
       case "cancel-generation": return "generation-complete";
       case "release": return "runtime-released";
       case "step-generation": {
@@ -221,15 +221,16 @@ class FakeWorker {
         };
       case "generation-complete": {
         const cancelled = command.kind === "cancel-generation";
+        const fullPrompt = command.kind === "begin-generation";
         return {
           commandMessageId,
           output: {
             schema: "tinyrustlm.browser_runtime_wasm.output/1",
-            text: cancelled ? "partial" : "echo echo",
-            tokenIds: cancelled ? [17] : [17, 17],
+            text: fullPrompt ? "" : cancelled ? "partial" : "echo echo",
+            tokenIds: fullPrompt ? [] : cancelled ? [17] : [17, 17],
             status: {
-              kind: cancelled ? "cancelled" : "stop-token",
-              stopTokenId: cancelled ? null : 2
+              kind: fullPrompt ? "context-limit" : cancelled ? "cancelled" : "stop-token",
+              stopTokenId: fullPrompt || cancelled ? null : 2
             },
             composition: compositionIdentity(command),
             operationId: command.operationId,
@@ -432,6 +433,65 @@ test("top-window client advances operation authority before one transactional mo
   assert.equal(switched.activeComposition.graphIdentitySha256, nextCompositionId);
   assert.equal(client.status, "active");
   assert.equal(fake.commands.filter((command) => command.kind === "advance-operation").length, 1);
+});
+
+test("a full prompt completes on begin without another command and preserves client usability", async () => {
+  const fake = new FakeWorker({ fullPrompt: true });
+  const client = createClient(fake);
+  await initialize(client);
+  await activate(client);
+  const request = () => ({ conversationId: id("full-conversation"), turnId: id("full-turn"),
+    generationId: id("full-generation"), promptRequest: promptRequest().buffer, signal: null,
+    onStep: () => assert.fail("A full prompt cannot emit a sampled step") });
+  const output = await client.generate(request());
+  assert.equal(output.status.kind, "context-limit");
+  assert.equal(output.text, "");
+  assert.deepEqual(output.tokenIds, []);
+  assert.equal(client.status, "active");
+  assert.equal(client.activeGeneration, null);
+  assert.equal(fake.terminated, false);
+  assert.equal(fake.commands.filter(c => /^(step|cancel)-generation$/.test(c.kind)).length, 0);
+  await assert.rejects(client.generate(request()), error => error.code === "model-runtime-client-generation-replay");
+  fake.options.fullPrompt = false;
+  const next = await client.generate({ ...request(), generationId: id("next-after-full"), onStep: null });
+  assert.equal(next.text, "echo echo");
+  assert.equal(client.status, "active");
+  await client.release();
+});
+
+for (const defect of ["status", "text", "tokens"]) {
+  test(`client rejects ${defect} in an initial context completion`, async () => {
+    const fake = new FakeWorker({ fullPrompt: true, mutateEvent(event, command) {
+      if (command.kind !== "begin-generation") return;
+      if (defect === "status") event.payload.output.status = { kind: "cancelled", stopTokenId: null };
+      if (defect === "text") event.payload.output.text = "unexpected";
+      if (defect === "tokens") event.payload.output.tokenIds = [1];
+    } });
+    const client = createClient(fake);
+    await initialize(client);
+    await activate(client);
+    await assert.rejects(client.generate({ conversationId: id("initial-conversation"),
+      turnId: id("initial-turn"), generationId: id("initial-generation"),
+      promptRequest: promptRequest().buffer, signal: null, onStep: null
+    }), error => error.code === "model-runtime-client-initial-output");
+    assert.equal(fake.terminated, true);
+    assert.equal(fake.commands.filter(c => /^(step|cancel)-generation$/.test(c.kind)).length, 0);
+  });
+}
+
+test("an already-aborted full prompt preserves the runtime's terminal context result", async () => {
+  const fake = new FakeWorker({ fullPrompt: true });
+  const client = createClient(fake);
+  await initialize(client);
+  await activate(client);
+  const signal = AbortSignal.abort();
+  const output = await client.generate({ conversationId: id("full-cancel-conversation"),
+    turnId: id("full-cancel-turn"), generationId: id("full-cancel-generation"),
+    promptRequest: promptRequest().buffer, signal, onStep: null });
+  assert.equal(output.status.kind, "context-limit");
+  assert.equal(fake.commands.filter(c => /^(step|cancel)-generation$/.test(c.kind)).length, 0);
+  assert.equal(client.status, "active");
+  await client.release();
 });
 
 test("an already-aborted generation performs one real cancel command and no normal step", async () => {

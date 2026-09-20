@@ -110,6 +110,18 @@ inject expected terms, finish partial output, select a better seed, or retry a
 failed answer. One terminal result contains token IDs, exact decoded text,
 termination reason, and the resulting runtime state.
 
+If prefill fills the admitted context, Rust returns `terminal-output-ready`
+immediately. The worker finishes it once and replies to `begin-generation` with
+`generation-complete`, `context-limit`, empty text and no generated token IDs.
+It must preserve prefill's committed KV byte count. The client accepts this
+terminal response without sending a step or cancellation, keeps the composition
+active, and records the generation ID as completed. Ordinary starts still return
+`generation-begun`; stale identities and invalid immediate output remain fatal.
+An already-requested cancellation cannot replace an already-terminal context
+result. The existing runtime status displays `Context limit reached` for context
+exhaustion, including partial answers, and its existing detail offers `Start a
+new chat`. Model output is never rewritten.
+
 ## Cancellation And Faults
 
 Cancellation targets one active generation ID. Cooperative cancellation is

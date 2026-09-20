@@ -16,6 +16,16 @@ Authority order is current owner instructions, inspected current contracts and b
 
 ## Current evidence and its limits
 
+**C66 terminal prefill:** the worker/client now preserve an immediate empty
+`context-limit` result when prefill fills the session, keeping the composition
+active without sampling. They reject wrong initial reasons, text/tokens and KV
+changes; cancellation cannot replace an already-terminal result. All 113 final
+checks pass, with actual Edge lifecycle checks and a desktop/mobile DOM geometry
+probe recorded separately. The existing status card identifies the limit and
+new-chat action; it remains hidden in compact mobile layout. Historical worker
+evidence is checked against its recorded Git commit without rewriting the record.
+See `browser-terminal-prefill-review.json`; no real model or publication follows.
+
 **C65 scratch retirement:** operation ownership now lives beside the disposable
 root and survives locked files, partial deletion and final-directory failures.
 The sole helper inventories bounded ordinary output and checks identities before

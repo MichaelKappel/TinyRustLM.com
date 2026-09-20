@@ -165,7 +165,7 @@ repository root:
 node tinyrustlm/tools/capture-ui-lock.js <url> <new-canonical-artifact-directory> [baseline-json|-] [empty|active|long] [composition-directory]
 ```
 
-The debug-port argument and implicit SLM1 fixture are retired. Empty mode accepts
+The command owns its Playwright profile and browser lifetime. Empty mode accepts
 current deferred-runtime startup or completed qualified-default activation;
 it means no conversation yet. Active/long modes require an explicit
 directory under `D:\LLMs\TinyRustLM` with all six current members and exactly one

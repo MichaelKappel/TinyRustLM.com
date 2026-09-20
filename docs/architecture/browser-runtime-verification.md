@@ -31,6 +31,14 @@ forward and aborting the turn. The scalar/controller regression covers this
 boundary. Exact-full prompts terminate without sampling. Actual qualified
 six-member conversation and real-model browser evidence remain separate gates.
 
+The browser worker and client also accept the terminal prefill result directly:
+`begin-generation` can complete with empty `context-limit` output. Tests require
+no sampled step, no KV increase, one finish, replay rejection and a reusable
+client/composition. They reject a different terminal reason or invented initial
+output. A joined test executes both production JavaScript state machines with a
+synthetic ABI; it is not real model execution. The page preserves raw output and
+uses its existing status field to identify context exhaustion.
+
 The September 20 local artifact refresh is reproducible from the corrected
 source in two fresh offline builds. Its manifest and checked identity change
 together. This is a development artifact change, not public deployment or

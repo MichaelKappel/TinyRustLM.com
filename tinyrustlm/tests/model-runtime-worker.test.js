@@ -104,6 +104,9 @@ class FakeAbi {
     this.transcriptRevisionHigh = 0;
     this.activeCompositionId = null;
     this.state = "empty";
+    this.beginState = "generating";
+    this.stepCalls = 0;
+    this.finishCalls = 0;
     this.stepQueue = [];
     this.output = null;
     this.nextFailure = null;
@@ -278,12 +281,13 @@ class FakeAbi {
     assert.equal(this.takeOperation(1), this.operationId);
     assert.ok(this.committed.has(9));
     this.committed.delete(9);
-    this.state = "generating";
+    this.state = this.beginState;
     this.writeResult(this.stateReport());
     return 0;
   }
 
   step(cancelled) {
+    this.stepCalls += 1;
     const failure = this.maybeFail("step");
     if (failure !== null) return failure;
     assert.equal(this.takeOperation(1), this.operationId);
@@ -308,6 +312,7 @@ class FakeAbi {
   }
 
   finish() {
+    this.finishCalls += 1;
     const failure = this.maybeFail("finish");
     if (failure !== null) return failure;
     assert.equal(this.takeOperation(1), this.operationId);
@@ -699,6 +704,118 @@ test("active and terminal steps produce one ordered completion with raw repeated
     /stale-generation/u
   );
 });
+
+test("a full prompt completes on begin without sampling and leaves the worker reusable", async () => {
+  const api = moduleApi();
+  const fake = new FakeAbi();
+  const builder = new CommandBuilder();
+  const controller = await initialize(api, fake, builder);
+  await stageActivation(controller, builder, fake);
+  fake.beginState = "terminal-output-ready";
+  fake.output = {
+    schema: "tinyrustlm.browser_runtime_wasm.output/1",
+    text: "", tokenIds: [], status: { kind: "context-limit", stopTokenId: null },
+    composition: fake.stateReport().activeComposition,
+    operationId: builder.operationId, committedKvBytes: 4096
+  };
+  await transferArtifact(controller, builder, "prompt-request", new ArrayBuffer(16));
+  const command = builder.make("begin-generation");
+  const result = await controller.process(command);
+  assert.equal(result.terminate, false);
+  assert.equal(result.event.kind, "generation-complete");
+  assert.equal(result.event.payload.commandMessageId, command.messageId);
+  assert.deepEqual(result.event.payload.output, fake.output);
+  assert.equal(fake.stepCalls, 0);
+  assert.equal(fake.finishCalls, 1);
+  assert.equal(controller.activeGeneration, null);
+  assert.ok(controller.completedGenerationIds.has(builder.generationId));
+  const completedGenerationId = builder.generationId;
+  builder.generationId = id("next-generation-after-full-prompt");
+  await transferArtifact(controller, builder, "prompt-request", new ArrayBuffer(16));
+  const next = await controller.process(builder.make("begin-generation"));
+  assert.equal(next.event.kind, "generation-complete");
+  assert.equal(fake.finishCalls, 2);
+  await assert.rejects(controller.process(builder.make("begin-generation", {}, {
+    generationId: completedGenerationId
+  })), /stale-generation/u);
+});
+
+test("production client and worker complete a full prompt through their shared protocol", async () => {
+  const clientApi = require("../app/model-runtime-client.js");
+  const fake = new FakeAbi();
+  const controller = controllerWithFake(moduleApi(), fake);
+  const commands = [];
+  const transport = {
+    // Exercise actual command/event validation and transfer detachment, using only a synthetic ABI.
+    postMessage(command, transfer) {
+      const copied = structuredClone(command, { transfer });
+      commands.push(copied.kind);
+      controller.enqueue(copied).then(result => transport.onmessage({ data: result.event }))
+        .catch(() => transport.onerror({}));
+    },
+    terminate() { controller.invalidate(); }
+  };
+  const client = new clientApi.ModelRuntimeClient({ workerUrl: "./model-runtime-worker.js",
+    workerFactory: () => transport, commandTimeoutMilliseconds: 5000 });
+  const { wasmBytes, wasmSha256, transcriptRevisionLow, transcriptRevisionHigh,
+    ...policy } = initializePayload();
+  const operationId = id("joined-full-operation");
+  const compositionId = id("joined-full-composition");
+  try {
+    await client.initialize({ operationId, compositionId,
+      wasmBytes, wasmSha256, policy, transcriptRevision: 0 });
+    fake.activeCompositionId = compositionId;
+    const lengths = [4, 2, 2, 65800, 512, 896];
+    await client.activate(clientApi.ACTIVATION_ROLES.map((role, index) => ({
+      role, byteLength: lengths[index], chunks: clientApi.oneChunk(new ArrayBuffer(lengths[index]))
+    })));
+    fake.beginState = "terminal-output-ready";
+    fake.output = { schema: "tinyrustlm.browser_runtime_wasm.output/1", text: "", tokenIds: [],
+      status: { kind: "context-limit", stopTokenId: null },
+      composition: fake.stateReport().activeComposition, operationId, committedKvBytes: 4096 };
+    const output = await client.generate({ conversationId: id("joined-full-conversation"),
+      turnId: id("joined-full-turn"), generationId: id("joined-full-generation"),
+      promptRequest: new ArrayBuffer(16), signal: null, onStep: null });
+    assert.deepEqual(output, fake.output);
+    assert.equal(client.status, "active");
+    assert.equal(fake.state, "active-idle");
+    assert.equal(fake.stepCalls, 0);
+    assert.equal(fake.finishCalls, 1);
+    assert.equal(commands.filter(c => /^(step|cancel)-generation$/.test(c)).length, 0);
+    await client.release();
+  } finally { client.terminate("joined-full-test-finished"); }
+});
+
+for (const defect of ["status", "text", "tokens", "kv", "finish-failure"]) {
+  test(`initial context completion rejects ${defect} without a second step`, async () => {
+    const api = moduleApi();
+    const fake = new FakeAbi();
+    const builder = new CommandBuilder();
+    const controller = await initialize(api, fake, builder);
+    await stageActivation(controller, builder, fake);
+    fake.beginState = "terminal-output-ready";
+    fake.output = {
+      schema: "tinyrustlm.browser_runtime_wasm.output/1",
+      text: "", tokenIds: [], status: { kind: "context-limit", stopTokenId: null },
+      composition: fake.stateReport().activeComposition,
+      operationId: builder.operationId, committedKvBytes: 4096
+    };
+    if (defect === "status") fake.output.status.kind = "cancelled";
+    if (defect === "text") fake.output.text = "unexpected";
+    if (defect === "tokens") fake.output.tokenIds = [1];
+    if (defect === "kv") fake.output.committedKvBytes += 4;
+    if (defect === "finish-failure") fake.failNext("finish", 2, "prompt2-tokenizer");
+    await transferArtifact(controller, builder, "prompt-request", new ArrayBuffer(16));
+    const result = await controller.process(builder.make("begin-generation"));
+    assert.equal(result.event.kind, "command-rejected");
+    assert.equal(result.event.payload.code, defect === "status"
+      ? "model-runtime-worker-output-identity" : defect === "finish-failure"
+        ? "prompt2-tokenizer" : "model-runtime-worker-initial-output");
+    assert.equal(result.terminate, true);
+    assert.equal(fake.stepCalls, 0);
+    assert.equal(fake.finishCalls, 1);
+  });
+}
 
 test("cancellation is a real terminal step and finishes exactly once", async () => {
   const api = moduleApi();

@@ -2,6 +2,7 @@
 
 const assert = require("node:assert/strict");
 const crypto = require("node:crypto");
+const { execFileSync } = require("node:child_process");
 const fs = require("node:fs");
 const path = require("node:path");
 const test = require("node:test");
@@ -16,8 +17,12 @@ function sha256(bytes) {
   return crypto.createHash("sha256").update(bytes).digest("hex");
 }
 
-function readBoundFile(identity) {
-  const bytes = fs.readFileSync(path.join(repositoryRoot, identity.path));
+/** Verify current contracts or immutable implementation bytes at their recorded Git revision. */
+function readBoundFile(identity, revision = null) {
+  const bytes = revision === null ? fs.readFileSync(path.join(repositoryRoot, identity.path))
+    : execFileSync("git", ["show", `${revision}:${identity.path}`], {
+      cwd: repositoryRoot, maxBuffer: 2 * 1024 * 1024, timeout: 30000, windowsHide: true
+    });
   if (Object.hasOwn(identity, "byteLength")) {
     assert.equal(bytes.length, identity.byteLength, identity.path);
   }
@@ -42,7 +47,7 @@ test("binds the clean source parent and sole browser runtime owners", () => {
   assert.equal(profile.authority.uiPath, "tinyrustlm/app/app.js");
   readBoundFile(profile.authority.cleanCutContract);
   readBoundFile(profile.authority.cleanCutArchitecture);
-  profile.authority.canonicalFormatAuthorities.forEach(readBoundFile);
+  profile.authority.canonicalFormatAuthorities.forEach(identity => readBoundFile(identity));
   assert.deepEqual(profile.correction, {
     observedAtUtc: "2026-08-27T23:23:50Z",
     stage: "raw-wasm-real-artifact-preflight-before-worker-implementation",
@@ -100,7 +105,11 @@ test("binds the clean source parent and sole browser runtime owners", () => {
     "6ff375bc3ef4177ebcf0a3e3c1129e1d6902cb25");
   assert.equal(profile.workerImplementationEvidence.implementationTree,
     "1230988c18391d1cc0a3fa776a1d4b1443eb7ca1");
-  profile.workerImplementationEvidence.boundFiles.forEach(readBoundFile);
+  const workerEvidence = profile.workerImplementationEvidence;
+  assert.equal(execFileSync("git", ["rev-parse", `${workerEvidence.implementationCommit}^{tree}`], {
+    cwd: repositoryRoot, encoding: "utf8", timeout: 30000, windowsHide: true
+  }).trim(), workerEvidence.implementationTree);
+  workerEvidence.boundFiles.forEach(identity => readBoundFile(identity, workerEvidence.implementationCommit));
   assert.deepEqual(profile.workerImplementationEvidence.focusedNodeTests, {
     command: "node --test tests/browser-runtime-wasm-clean-cut-preregistration.test.js tests/browser-runtime-wasm-raw-abi.test.js tests/model-runtime-worker.test.js tests/model-runtime-worker-browser.test.js",
     passed: 31,

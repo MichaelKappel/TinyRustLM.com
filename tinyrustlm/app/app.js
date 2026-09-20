@@ -1310,6 +1310,9 @@
     if (value.includes("loading") || value.includes("assembling") || value.includes("applying")) {
       return ["loading", "Loading model"];
     }
+    if (value === "context limit reached") {
+      return ["ready", "Start a new chat"];
+    }
     if (value === "ready") {
       return ["ready", "Ready"];
     }
@@ -10538,6 +10541,7 @@ if (view.matches.length) {
       setText(el.errorState, code, true);
     } else {
       const cancelled = output.status.kind === "cancelled";
+      const contextLimited = output.status.kind === "context-limit";
       state.generation.rawOutput = output;
       state.lastMeasuredTokens = output.tokenIds.length;
       state.hasContext = !cancelled && output.committedKvBytes > 0;
@@ -10552,7 +10556,7 @@ if (view.matches.length) {
         text: output.text,
         errorCode: cancelled ? "stopped_by_user" : ""
       });
-      setText(el.runtimeStatus, cancelled ? "Stopped" : "Ready", false);
+      setText(el.runtimeStatus, cancelled ? "Stopped" : contextLimited ? "Context limit reached" : "Ready", false);
       setText(el.errorState, "none", false);
     }
     setGenerationUi("idle");
