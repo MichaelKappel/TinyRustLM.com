@@ -342,6 +342,8 @@
     modelCatalogV1PeerExpiryTimer: null,
     compositionStore: null,
     compositionStoreError: null,
+    compositionCleanupPromise: null,
+    compositionCleanup: { status: "not-started", passes: 0, removed_installed: 0, removed_staging: 0, error: null },
     activeAcquisitionAbort: null,
     modelAcquisitionCommand: null,
     modelAcquisitionRoute: "",
@@ -6781,6 +6783,7 @@
     const rawOutput = state.generation.rawOutput;
     const diagnostics = {
       schema: "tinyrustlm.browser-worker-diagnostics/1",
+      cache_cleanup: { ...state.compositionCleanup },
       runtime_variant: state.runtimeVariant,
       worker_status: state.runtimeClient ? state.runtimeClient.status : "not-created",
       operation_id: runtimeState ? runtimeState.operationId : null,
@@ -11160,6 +11163,57 @@ if (view.matches.length) {
     captureRun(promptText, resultText, Boolean(failure));
   }
 
+  // Run once after safe startup; cancellation stops new work but awaits any durable mutation already issued.
+  function scheduleCompositionCleanup() {
+    if (state.compositionCleanupPromise) return state.compositionCleanupPromise;
+    state.compositionCleanupPromise = Promise.resolve().then(async () => {
+      const progress = { status: "running", passes: 0, removed_installed: 0, removed_staging: 0, error: null };
+      state.compositionCleanup = progress;
+      let lifetime = null;
+      // Keep a stalled durable operation visible until storage settles and releases its lock.
+      const onStop = () => {
+        progress.status = "stopping";
+        progress.error = lifetime.signal.reason.code;
+        renderDiagnostics();
+      };
+      try {
+        lifetime = operationLifetimeApi.create({
+          timeoutMilliseconds: 60000,
+          timeoutError: catalogQualificationError("model-cache-cleanup-timeout", "Finishing model storage cleanup timed out"),
+          abortError: catalogQualificationError("model-cache-cleanup-aborted", "Model storage cleanup was cancelled"),
+          optionsError: catalogQualificationError("model-cache-cleanup-unavailable", "Model storage cleanup timing is unavailable")
+        });
+        lifetime.signal.addEventListener("abort", onStop, { once: true });
+        renderDiagnostics();
+        // Bound work per visit even if another tab keeps creating candidates between cleanup passes.
+        for (let pass = 0; pass < 16; pass += 1) {
+          const result = await ensureModelCompositionStore().cleanup({ signal: lifetime.signal });
+          progress.passes += 1;
+          progress.removed_installed += result.removedInstalled;
+          progress.removed_staging += result.removedStaging;
+          if (lifetime.signal.aborted) throw lifetime.signal.reason;
+          if (!result.truncated && result.remainingStaging === 0) {
+            progress.status = "complete";
+            return;
+          }
+        }
+        throw catalogQualificationError("model-cache-cleanup-limit", "Model storage cleanup reached its pass limit");
+      } catch (error) {
+        const failure = lifetime && lifetime.signal.aborted ? lifetime.signal.reason : error;
+        progress.status = "incomplete";
+        progress.error = failure.code || errorMessage(failure);
+        appendConsole(`model storage cleanup incomplete: ${progress.error}`);
+      } finally {
+        if (lifetime) {
+          lifetime.signal.removeEventListener("abort", onStop);
+          lifetime.dispose();
+        }
+        renderDiagnostics();
+      }
+    });
+    return state.compositionCleanupPromise;
+  }
+
   // Bound the read-only cache check, including lock/root acquisition, without deleting timed-out bytes.
   async function openStartupComposition() {
     const lifetime = operationLifetimeApi.create({
@@ -11200,6 +11254,7 @@ if (view.matches.length) {
           );
           state.initialModelRestored = true;
           state.initialModelBootComplete = true;
+          scheduleCompositionCleanup();
           return;
         } catch (error) {
           cacheError = error;
@@ -11228,6 +11283,7 @@ if (view.matches.length) {
       }
       state.initialModelRestored = false;
       state.initialModelBootComplete = true;
+      if (!cacheError) scheduleCompositionCleanup();
       const bootstrap = chooseBootstrapModelRoute(simpleModelRouteViews());
       if (!cacheError && bootstrap && !simpleModelAcquisitionIsActive() && !state.modelLoaded &&
           !state.initialModelChooserAutoPresentSuppressed && el.appShell?.dataset.mode === "simple") {

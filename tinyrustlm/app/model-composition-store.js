@@ -2155,7 +2155,6 @@ function (root, admissionApi, catalogApi) {
         "model-composition-store-cleanup-options"
       );
       return withExclusiveLock(options.adapter, async () => {
-        await initialize();
         return cleanupInternal(options, limit, signal);
       }, signal);
     }

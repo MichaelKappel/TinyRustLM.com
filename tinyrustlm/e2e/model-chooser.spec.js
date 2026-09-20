@@ -385,6 +385,12 @@ async function openApplication(page, routes = {}) {
   if (routes.advanced) await openAdvancedChooser(page);
 }
 
+// A freshly reloaded document has no diagnostic JSON until the application renders its first state.
+async function readCleanupDiagnostics(page) {
+  const text = await page.locator("#diagnostics").textContent();
+  return text.trim() ? JSON.parse(text).cache_cleanup : null;
+}
+
 // Exercises explicit Advanced entry before testing optional conversion workflows.
 async function openAdvancedChooser(page) {
   await page.locator("#simpleOpenAdvancedDiscoveryButton").click();
@@ -473,6 +479,92 @@ async function expectChooserContentContained(page, selectors) {
 }
 
 test.describe("compact model chooser", () => {
+  test("startup cleanup completes without creating an empty model store", async ({ page }) => {
+    await openApplication(page);
+    await expect.poll(() => readCleanupDiagnostics(page))
+      .toEqual({ status: "complete", passes: 1, removed_installed: 0, removed_staging: 0, error: null });
+    expect(await page.evaluate(async () => {
+      const names = [];
+      for await (const name of (await navigator.storage.getDirectory()).keys()) names.push(name);
+      return names.includes("tinyrustlm-model-compositions-v2");
+    })).toBe(false);
+    await expect(page.locator("#simpleDiscoveryPanel")).toBeVisible();
+  });
+
+  test("startup cleanup preserves unknown files and reports failure without blocking the chooser", async ({ page }) => {
+    await openApplication(page);
+    await expect.poll(async () => (await readCleanupDiagnostics(page))?.status).toBe("complete");
+    await page.evaluate(async () => {
+      const root = await (await navigator.storage.getDirectory()).getDirectoryHandle("tinyrustlm-model-compositions-v2", { create: true });
+      const staging = await root.getDirectoryHandle("staging", { create: true });
+      const writer = await (await staging.getFileHandle("notes.txt", { create: true })).createWritable();
+      await writer.write("preserve unknown browser bytes");
+      await writer.close();
+    });
+    await page.reload({ waitUntil: "domcontentloaded" });
+    await expect.poll(() => readCleanupDiagnostics(page))
+      .toEqual({ status: "incomplete", passes: 0, removed_installed: 0, removed_staging: 0,
+        error: "model-composition-store-cleanup-ownership" });
+    await expect(page.locator("#simpleDiscoveryPanel")).toBeVisible();
+    await expect(page.locator("#simpleOpenAdvancedDiscoveryButton")).toBeEnabled();
+    expect(await page.evaluate(async () => {
+      const root = await (await navigator.storage.getDirectory()).getDirectoryHandle("tinyrustlm-model-compositions-v2");
+      return (await (await (await root.getDirectoryHandle("staging")).getFileHandle("notes.txt")).getFile()).text();
+    })).toBe("preserve unknown browser bytes");
+  });
+
+  test("startup cleanup deadline waits for pending OPFS mutation and recovers on reload", async ({ page }) => {
+    const errors = [];
+    page.on("pageerror", error => errors.push(error.message));
+    await page.clock.install({ time: fixtureNow });
+    await openApplication(page);
+    await expect.poll(async () => (await readCleanupDiagnostics(page))?.status).toBe("complete");
+    await page.evaluate(async () => {
+      const root = await (await navigator.storage.getDirectory()).getDirectoryHandle("tinyrustlm-model-compositions-v2", { create: true });
+      await (await root.getDirectoryHandle("installed", { create: true })).getDirectoryHandle("d".repeat(64), { create: true });
+      const staging = await root.getDirectoryHandle("staging", { create: true });
+      const writer = await (await staging.getFileHandle(`${"b".repeat(64)}.json`, { create: true })).createWritable();
+      await writer.write(`${JSON.stringify({ schema: "tinyrustlm.model-composition-store.staging/2",
+        stagingId: "b".repeat(64), manifestSha256: "d".repeat(64) })}\n`);
+      await writer.close();
+    });
+    await page.addInitScript(() => {
+      if (sessionStorage.getItem("cleanup-mutation-released")) return;
+      const original = FileSystemDirectoryHandle.prototype.removeEntry;
+      const pending = Promise.withResolvers();
+      window.cleanupMutation = { entered: false, pending };
+      // Hold one actual mutation; the production scheduler must keep its terminal ownership.
+      FileSystemDirectoryHandle.prototype.removeEntry = async function (name, options) {
+        if (this.name === "installed" && name === "d".repeat(64)) {
+          window.cleanupMutation.entered = true;
+          await pending.promise;
+        }
+        return original.call(this, name, options);
+      };
+    });
+    await page.reload({ waitUntil: "domcontentloaded" });
+    await expect.poll(() => page.evaluate(() => window.cleanupMutation.entered)).toBe(true);
+    await page.clock.fastForward(61_000);
+    await expect.poll(async () => (await readCleanupDiagnostics(page))?.status).toBe("stopping");
+    await expect(page.locator("#simpleDiscoveryPanel")).toBeVisible();
+    await expect(page.locator("#simpleOpenAdvancedDiscoveryButton")).toBeEnabled();
+    expect(await page.evaluate(async () => (await navigator.locks.query()).held
+      .filter(lock => lock.name === "tinyrustlm-model-compositions-v2-writer").length)).toBe(1);
+    await page.evaluate(() => {
+      sessionStorage.setItem("cleanup-mutation-released", "true");
+      window.cleanupMutation.pending.resolve();
+    });
+    await expect.poll(() => readCleanupDiagnostics(page))
+      .toEqual({ status: "incomplete", passes: 0, removed_installed: 0, removed_staging: 0,
+        error: "model-cache-cleanup-timeout" });
+    expect(await page.evaluate(async () => (await navigator.locks.query()).held
+      .filter(lock => lock.name.startsWith("tinyrustlm-model-compositions-v2")).length)).toBe(0);
+    await page.reload({ waitUntil: "domcontentloaded" });
+    await expect.poll(() => readCleanupDiagnostics(page))
+      .toEqual({ status: "complete", passes: 1, removed_installed: 1, removed_staging: 1, error: null });
+    expect(errors).toEqual([]);
+  });
+
   for (const late of ["success", "failure"]) {
     test("startup cache deadline preserves storage and ignores late " + late, async ({ page }) => {
       const entry = catalogEntry({ entryId: "cache-deadline", displayName: "Starter",

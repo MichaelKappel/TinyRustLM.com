@@ -1094,6 +1094,103 @@ test("runtime acquisition forwards cancellation and cannot publish a cancelled c
   await assert.rejects(ensure(controller.signal), /cancelled/);
 });
 
+// Exercise the production cleanup scheduler with a deterministic timer and observable storage settlement.
+function startupCleanupHarness(cleanup, setupFailure) {
+  const vm = require("node:vm");
+  const timers = new Map(), log = [], snapshots = [];
+  let sequence = 0, signal;
+  const state = { compositionCleanupPromise: null, compositionStoreError: null, modelLoaded: true };
+  const globals = { AbortController,
+    setTimeout(callback, milliseconds) {
+      assert.equal(milliseconds, 60000); timers.set(++sequence, callback); return sequence;
+    }, clearTimeout(id) { timers.delete(id); } };
+  vm.runInNewContext(fs.readFileSync(path.join(__dirname, "../app/operation-lifetime.js"), "utf8"), globals);
+  const code = sourceSection(app, "  function scheduleCompositionCleanup", "  // Bound the read-only cache check");
+  const schedule = Function("state", "operationLifetimeApi", "catalogQualificationError",
+    "ensureModelCompositionStore", "renderDiagnostics", "appendConsole", "errorMessage",
+    code + "; return scheduleCompositionCleanup;")(
+    state, globals.TinyRustLMOperationLifetime,
+    (code, message) => Object.assign(new Error(message), { code }),
+    () => {
+      if (setupFailure) throw setupFailure;
+      return { cleanup(options) { signal = options.signal; return cleanup(options); } };
+    }, () => snapshots.push({ ...state.compositionCleanup }), message => log.push(message), error => error.message);
+  return { state, schedule, timers, log, snapshots, get signal() { return signal; },
+    expire() { for (const callback of [...timers.values()]) callback(); } };
+}
+
+test("startup cleanup runs once, drains bounded residue and preserves ready model state", async () => {
+  const pending = deferred();
+  let calls = 0;
+  const harness = startupCleanupHarness(() => {
+    calls += 1;
+    return calls === 1 ? pending.promise :
+      { removedInstalled: 2, removedStaging: 1, remainingStaging: 0, truncated: false };
+  });
+  const result = harness.schedule();
+  assert.equal(harness.schedule(), result);
+  await Promise.resolve();
+  assert.equal(harness.state.compositionCleanup.status, "running");
+  assert.equal(harness.state.modelLoaded, true);
+  pending.resolve({ removedInstalled: 16, removedStaging: 3, remainingStaging: 1, truncated: true });
+  await result;
+  assert.deepEqual(harness.state.compositionCleanup,
+    { status: "complete", passes: 2, removed_installed: 18, removed_staging: 4, error: null });
+  assert.equal(harness.state.compositionStoreError, null);
+  assert.equal(harness.state.modelLoaded, true);
+  assert.equal(harness.schedule(), result);
+  assert.equal(calls, 2);
+  assert.equal(harness.timers.size, 0);
+  assert.deepEqual(harness.log, []);
+});
+
+test("startup cleanup reports timeout while retaining ownership until durable storage settles", async t => {
+  for (const late of ["success", "failure"]) await t.test(late, async () => {
+    const pending = deferred();
+    let settled = false, calls = 0;
+    const harness = startupCleanupHarness(() => { calls++; return pending.promise; });
+    const result = harness.schedule().then(() => { settled = true; });
+    await Promise.resolve();
+    harness.expire();
+    await Promise.resolve();
+    assert.equal(harness.signal.aborted, true);
+    assert.equal(harness.state.compositionCleanup.status, "stopping");
+    assert.equal(harness.state.compositionCleanup.error, "model-cache-cleanup-timeout");
+    assert.equal(settled, false);
+    assert.equal(harness.state.modelLoaded, true);
+    if (late === "success") pending.resolve({ removedInstalled: 1, removedStaging: 1, remainingStaging: 0, truncated: false });
+    else pending.reject(new Error("late mutation failure"));
+    await result;
+    assert.equal(harness.state.compositionCleanup.status, "incomplete");
+    assert.equal(harness.state.compositionCleanup.error, "model-cache-cleanup-timeout");
+    assert.equal(harness.state.compositionStoreError, null);
+    assert.equal(calls, 1);
+    assert.equal(harness.timers.size, 0);
+    assert.equal(harness.log.length, 1);
+  });
+});
+
+test("startup cleanup bounds passes and records storage failures without corrupt-cache recovery", async t => {
+  for (const fault of ["pass-limit", "storage", "setup"]) await t.test(fault, async () => {
+    const failure = Object.assign(new Error("unowned entry"), { code: "model-composition-store-cleanup-ownership" });
+    let calls = 0;
+    const harness = startupCleanupHarness(() => {
+      calls++;
+      if (fault === "storage") throw failure;
+      return { removedInstalled: 0, removedStaging: 0, remainingStaging: 1, truncated: false };
+    }, fault === "setup" ? failure : null);
+    await harness.schedule();
+    assert.equal(calls, fault === "pass-limit" ? 16 : fault === "storage" ? 1 : 0);
+    assert.equal(harness.state.compositionCleanup.status, "incomplete");
+    assert.equal(harness.state.compositionCleanup.error, fault === "pass-limit"
+      ? "model-cache-cleanup-limit" : failure.code);
+    assert.equal(harness.state.compositionStoreError, null);
+    assert.equal(harness.state.modelLoaded, true);
+    assert.equal(harness.timers.size, 0);
+    assert.equal(harness.log.length, 1);
+  });
+});
+
 // Run the production lifetime with a deterministic clock and the real startup helper.
 function startupCacheHarness(openActive, ensureFailure) {
   const vm = require("node:vm");
@@ -1178,6 +1275,7 @@ test("boot restores a verified cache, bootstraps an empty cache, and preserves a
         },
         restoreStoredCatalogAuthority(value) { assert.equal(value, saved); events.push(["custody"]); },
         loadSimpleModelCatalog: async () => { events.push(["catalog"]); },
+        scheduleCompositionCleanup() { events.push(["cleanup"]); return new Promise(() => {}); },
         activateStoredComposition: async value => {
           assert.equal(value, saved); events.push(["activate"]);
           if (outcome === "activation-error") throw failure;
@@ -1195,6 +1293,8 @@ test("boot restores a verified cache, bootstraps an empty cache, and preserves a
       await boot();
       assert.equal(state.initialModelBootComplete, true);
       assert.equal(state.initialModelRestored, outcome === "saved");
+      assert.equal(events.filter(([name]) => name === "cleanup").length,
+        ["saved", "empty"].includes(outcome) ? 1 : 0);
       assert.equal(events.filter(([name]) => name === "acquire").length, outcome === "empty" ? 1 : 0);
       assert.equal(events.filter(([name]) => name === "activate").length,
         ["saved", "activation-error"].includes(outcome) ? 1 : 0);
@@ -1228,7 +1328,7 @@ test("boot reopens and verifies the persistent active composition", () => {
   assert.match(boot, /cachedComposition = await openStartupComposition\(\);/);
   assert.match(
     boot,
-    /if \(cachedComposition\) \{[\s\S]*?await activateStoredComposition\(\s*cachedComposition,\s*"Your saved model is verified and ready\."\s*\);\s*state\.initialModelRestored = true;\s*state\.initialModelBootComplete = true;\s*return;/
+    /if \(cachedComposition\) \{[\s\S]*?await activateStoredComposition\(\s*cachedComposition,\s*"Your saved model is verified and ready\."\s*\);\s*state\.initialModelRestored = true;\s*state\.initialModelBootComplete = true;\s*scheduleCompositionCleanup\(\);\s*return;/
   );
   assert.match(
     openActive,
@@ -3113,7 +3213,7 @@ test("fresh boot presents the nonmodal chooser only when no installed model was 
   assert.match(presentation, /!state\.initialModelBootComplete \|\| state\.initialModelRestored \|\| state\.modelLoaded/);
   assert.match(presentation, /!state\.modelCatalogV1Loaded \|\| state\.modelCatalogV1Loading/);
   assert.match(presentation, /toggleModelPopover\(true, opener\)/);
-  assert.match(boot, /state\.initialModelRestored = true;\s*state\.initialModelBootComplete = true;\s*return;/);
+  assert.match(boot, /state\.initialModelRestored = true;\s*state\.initialModelBootComplete = true;\s*scheduleCompositionCleanup\(\);\s*return;/);
   assert.match(boot, /state\.initialModelRestored = false;\s*state\.initialModelBootComplete = true;\s*maybePresentInitialModelChooser\(\);/);
   assert.match(
     picker,

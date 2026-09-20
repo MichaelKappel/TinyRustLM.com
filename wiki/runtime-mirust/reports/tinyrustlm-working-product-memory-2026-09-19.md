@@ -167,8 +167,19 @@ ID. All 369 affected checks, nine actual Edge tests and twelve smoke observation
 pass; two Edge cases close a tab at final directory removal and finish cleanup
 from a fresh tab without invalidating the current model. See
 `composition-retirement-recovery-review.json`. This is synthetic storage evidence,
-not power-loss or model proof. Startup remains read-only; pending retirement is
-completed by the next bounded cleanup, including cleanup before installation.
+not power-loss or model proof. Cache opening remains read-only; C52 schedules a
+separate bounded cleanup during successful startup as well as cleanup before installation.
+
+**C52 startup cleanup:** a successful saved-model activation or check finding no
+active installation schedules one background cleanup per page. It performs at
+most sixteen bounded store passes and signals cancellation after 60 seconds;
+read/lock waits may stop, but already-issued durable mutations drain with their
+locks retained. Advanced `cache_cleanup` diagnostics distinguish running,
+stopping, complete and incomplete, with counts from completed passes only.
+Unknown entries are preserved, active-model errors do not trigger automatic
+cleanup, and a physically empty store creates no model directories. See
+`startup-composition-cleanup-review.json`. Neither useful conversation nor
+power-loss durability follows from this storage/UI evidence.
 
 ## Semantic and numerical diagnosis
 

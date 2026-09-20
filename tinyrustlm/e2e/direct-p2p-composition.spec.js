@@ -913,8 +913,30 @@ test("one basic click verifies caches and activates a listed P2P composition", a
 
     for (const mode of ["empty", "unavailable"]) {
       catalogMode = mode;
+      // A returning user must retire interrupted storage without starting another acquisition.
+      await page.evaluate(async mode => {
+        const root = await (await navigator.storage.getDirectory()).getDirectoryHandle("tinyrustlm-model-compositions-v2");
+        const stagingId = (mode === "empty" ? "b" : "c").repeat(64);
+        const manifestSha256 = (mode === "empty" ? "d" : "e").repeat(64);
+        await (await root.getDirectoryHandle("installed")).getDirectoryHandle(manifestSha256, { create: true });
+        const writer = await (await (await root.getDirectoryHandle("staging"))
+          .getFileHandle(`${stagingId}.json`, { create: true })).createWritable();
+        await writer.write(`${JSON.stringify({ schema: "tinyrustlm.model-composition-store.staging/2",
+          stagingId, manifestSha256 })}\n`);
+        await writer.close();
+      }, mode);
       await page.reload({ waitUntil: "domcontentloaded" });
       await expect(page.locator("#runtimeStatus")).toHaveText("Ready", { timeout: 90_000 });
+      await expect.poll(async () => JSON.parse(await page.locator("#diagnostics").textContent()).cache_cleanup)
+        .toEqual({ status: "complete", passes: 1, removed_installed: 1, removed_staging: 1, error: null });
+      const retained = await page.evaluate(async () => {
+        const root = await (await navigator.storage.getDirectory()).getDirectoryHandle("tinyrustlm-model-compositions-v2");
+        const installed = [], staging = [];
+        for await (const name of (await root.getDirectoryHandle("installed")).keys()) installed.push(name);
+        for await (const name of (await root.getDirectoryHandle("staging")).keys()) staging.push(name);
+        return { installed, staging };
+      });
+      expect(retained).toEqual({ installed: [fixture.manifestSha256], staging: [] });
       await page.locator("#modelEditButton").click();
       const installedCard = page.locator(
         `#simpleModelList [data-composition-id="${fixture.compositionId}"]`

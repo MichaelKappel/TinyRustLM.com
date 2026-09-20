@@ -1824,6 +1824,13 @@ test("AbortSignal cancels while navigator.locks is still waiting", { timeout: 10
   assert.equal(callbackCalled, false);
 });
 
+test("empty cleanup performs no storage initialization or mutation", async () => {
+  const adapter = new MemoryAdapter();
+  const result = await createStore(adapter).cleanup();
+  assert.deepEqual(result, { removedStaging: 0, removedInstalled: 0, remainingStaging: 0, truncated: false });
+  assert.equal(adapter.operations.some(op => ["ensure-directory", "atomic-write", "remove"].includes(op.type)), false);
+});
+
 test("bounded restart cleanup removes incomplete staging but preserves active content", async () => {
   const adapter = new MemoryAdapter();
   const store = createStore(adapter, { cleanupLimit: 3 });

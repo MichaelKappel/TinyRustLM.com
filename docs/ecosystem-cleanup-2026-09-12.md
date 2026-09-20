@@ -5,6 +5,50 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C52: finish pending storage cleanup on a returning visit, September 19
+
+The app never invoked `cleanup` during startup, so interrupted retirement could
+persist until another installation. The baseline checks reproduced missing
+scheduling on successful restore and no-active-model startup, plus unnecessary
+directory initialization on empty cleanup: 366/370 passed, with those three cases
+and their enclosing boot test failing.
+
+After successful saved-model activation or a successful check finding no active
+installation, startup now schedules one separate background cleanup. Chat readiness
+and chooser presentation do not await it. Cache-check and activation failures
+suppress it. An empty cleanup no longer initializes directories; `openActive`
+remains read-only. The scheduler admits at most sixteen bounded passes per page
+under one 60-second cancellation signal. A pending durable mutation keeps its
+lock until storage settles; timeout does not abandon a write and declare success.
+Advanced diagnostics expose running/stopping/complete/incomplete state, typed
+failure and completed-pass counts. They do not turn cleanup failure into active
+cache corruption or measure bytes recovered.
+
+All 378 affected checks pass. Whole-store coverage is 90.42% lines, 86.83%
+branches and 94.22% functions; the production scheduler also runs in deterministic
+timer tests. Eighteen Edge desktop/mobile-viewport chooser tests and nine Edge
+storage/P2P tests pass without retry/skip. Browser evidence covers empty-store
+noncreation, unknown-file preservation, a delayed real OPFS removal retaining
+the writer lock after timeout, terminal release and cleanup on reload. The basic
+P2P test now seeds pending retirement before return with an empty/unavailable
+catalog and observes automatic cleanup while the saved model remains ready.
+The direct release smoke passes all twelve observations.
+
+The initial affected run passed 377/378; an old source assertion required return
+immediately after boot flags and was updated for the new scheduling call. Initial
+chooser run passed 15/18: three new assertions parsed an empty diagnostics element
+before first render after reload. They now wait for JSON without swallowing
+malformed nonempty JSON. These failures remain recorded in
+`artifacts/ecosystem-cleanup-20260912/startup-composition-cleanup-review.json`.
+
+The time/pass limits are policy bounds, not real-model performance measurements.
+Permanently stalled durable writes, power-loss behavior, model qualification,
+actual browser inference and public seeding/deployment remain open. The source
+scan still fails on the same two blocked installer links; no blocked deletion was
+retried. Owned output was removed, with logical totals in the receipt and physical
+recovery unmeasured. Other repositories/unrelated work remain intact; the broad
+goal is incomplete and ternary research remains deferred.
+
 ## C51: retain retirement ownership across terminal cleanup interruption, September 19
 
 An orphan's hash-bound manifest was its only durable ownership evidence. Cleanup

@@ -1682,6 +1682,35 @@ and the incomplete source scan are unchanged.
   creates an unrecoverable ambiguity. External authority must survive partial
   deletion, and a record serving cleanup must not impersonate an active commit.
 
+## C52: recovery needs a product invocation and truthful cancellation state
+
+- Question: does a returning user retire pending storage without installing
+  another model, and can a cleanup deadline preserve durable mutation ownership?
+- Exact inputs: parent `39b30203dd33166e81f22212e1ab62c80faafe27`; current app,
+  store, tests and shell identities in `startup-composition-cleanup-review.json`.
+- Method: execute the real boot/scheduler with deterministic timers and blocked
+  storage promises. Check one invocation, pass limits, completed-pass counts,
+  late completion/failure and cache-error suppression. Use actual Edge OPFS to
+  delay a directory removal beyond deadline, inspect retained locks/status,
+  release it and reload. Seed pending retirement before saved-model restoration
+  with empty and unavailable catalogs. Preserve unknown files and empty origins.
+- Result: baseline 366/370; initial affected 377/378 exposed an obsolete source
+  assertion. Final affected 378/378; store line/branch/function coverage
+  90.42/86.83/94.22 percent. Initial chooser 15/18 had diagnostics-read timing
+  failures; wait for initial JSON, preserving rejection of malformed content.
+  Final Edge chooser 18/18 and storage/P2P 9/9 pass without retries/skips;
+  all twelve direct release-smoke observations pass.
+- Decision: one background startup cleanup after a successful cache/activation
+  result, capped at sixteen passes with a 60-second cancellation signal. Retain
+  pending durable-write ownership; expose stopping until settlement. Keep cache
+  opening read-only and avoid empty-cleanup directory creation.
+- Uncertainty: counts cover completed passes, not partial removal or reclaimed
+  storage. A timer cannot force a durable browser write to settle. Viewport tests
+  are not physical mobile, power-loss or useful-model evidence.
+- Reusable lesson: a correct recovery primitive cannot retire anything if the
+  product never calls it. A nonblocking UI may coexist with a still-owned mutation;
+  reporting timeout is different from proving that mutation has stopped.
+
 ## Continue the review
 
 Before deleting an experiment that is not covered above, record its purpose,

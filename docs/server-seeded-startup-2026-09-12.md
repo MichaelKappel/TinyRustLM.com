@@ -122,10 +122,25 @@ Cached model readers and replacement:
   marker already provides this authority for its own recovery path.
 - Marker allocation reserves the current activation ID and respects the bounded
   staging inventory. Unknown entries still block deletion. Interrupted retirement
-  resumes when bounded cleanup runs, including before the next installation;
-  read-only startup does not itself run cleanup. Actual Edge tab closure/reopen is
-  tested, but power-loss durability is not established. See
+  resumes when bounded cleanup runs, including before the next installation.
+  Startup now schedules a separate background cleanup after successful saved-model
+  activation or a successful check finding no active installation. The cache-open
+  operation stays read-only. Actual Edge tab closure/reopen is tested, but
+  power-loss durability is not established. See
   `composition-retirement-recovery-review.json`.
+- Startup cleanup runs once per page, for at most sixteen bounded store passes
+  under a 60-second cancellation signal. Neither chat readiness nor the chooser
+  awaits it. Cache-check/activation failures suppress this automatic cleanup.
+  An empty store needs no directory initialization, so a first visit creates no
+  model root merely to clean it.
+- Advanced diagnostics expose `cache_cleanup` status, error and completed-pass
+  counts. Counts exclude partial passes that failed; they are not a whole-store
+  inventory or recovered-byte measurement. Timeout stops new work and shows
+  `stopping` while an already-issued durable mutation settles, retaining its lock.
+  Terminal failure shows `incomplete` without declaring the active cache corrupt;
+  another page startup can attempt pending cleanup. A permanently stalled browser
+  write has no demonstrated forced-termination guarantee. See
+  `startup-composition-cleanup-review.json`.
 
 Cached model read cancellation:
 

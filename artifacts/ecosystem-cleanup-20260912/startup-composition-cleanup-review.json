@@ -1,0 +1,309 @@
+{
+  "schema": "tinyrustlm.startup-composition-cleanup-review.v1",
+  "observedAtUtc": "2026-09-20T01:57:39Z",
+  "localDate": "2026-09-19",
+  "sourceParent": "39b30203dd33166e81f22212e1ab62c80faafe27",
+  "status": "local-startup-cleanup-scheduled-no-real-model-or-publication-claim",
+  "inputs": [
+    {
+      "path": "tinyrustlm/app/model-composition-store.js",
+      "bytes": 89171,
+      "sha256": "dd57705dadf0d46674cb8f61e0a94b347c0a1f1f4adfc88c9a0312f446546534"
+    },
+    {
+      "path": "tinyrustlm/tests/model-composition-store.test.js",
+      "bytes": 148027,
+      "sha256": "cbffe24dbb2a5a45598c8ff6ac902476ace3fb2f411ae2812ee21a80e907ed94"
+    },
+    {
+      "path": "tinyrustlm/e2e/composition-cache.spec.js",
+      "bytes": 77576,
+      "sha256": "d6b8f05ab0f3456bf0bb277eaeaf0745c12cbad4ceb6e3be9fdbc1326e38c988"
+    },
+    {
+      "path": "tinyrustlm/app/index.html",
+      "bytes": 48604,
+      "sha256": "68869dc26fcd8c45ebb193be958eb79f7fbba835ef9cc548595adc4a4f035de9"
+    },
+    {
+      "path": "tinyrustlm/index.html",
+      "bytes": 48684,
+      "sha256": "9f7597881299302e007cedcd51331f9bf1018b415028667498c7d07b73899b19"
+    },
+    {
+      "path": "tinyrustlm/tests/model-cache-custody-integration.test.js",
+      "bytes": 29747,
+      "sha256": "a297825dc40a8dbc0e7ebcc38cdfcf13eaf3175cded674ff9f2a8035653f0f9c"
+    },
+    {
+      "path": "tinyrustlm/tests/p2p-composition-install.test.js",
+      "bytes": 45141,
+      "sha256": "356570a67bd3ea6354de021aac73a9ddd499019c3453f45329969503c37443da"
+    },
+    {
+      "path": "tinyrustlm/tests/companion-composition-install.test.js",
+      "bytes": 25654,
+      "sha256": "ef0938dbb20a0663f42af42719f8af0948bd7d702e703013fe08cf9f3e1dff34"
+    },
+    {
+      "path": "tinyrustlm/tests/static-shell-parity.test.js",
+      "bytes": 5127,
+      "sha256": "c20d60933c2f75bc60a243b2603545c26823a4aafdef4304c87e8e2bc634c89d"
+    },
+    {
+      "path": "tinyrustlm/tests/web-deployment-manifest.test.js",
+      "bytes": 11975,
+      "sha256": "4c68f345ff731af733f6a157d2b2d2ecd0b39544a2549f67a58d97fc672467fd"
+    },
+    {
+      "path": "tinyrustlm/app/p2p-composition-install.js",
+      "bytes": 50486,
+      "sha256": "55a53359bb7af64062eb8b7505251af6eab487bc94a8105a92698830ea6ae8e4"
+    },
+    {
+      "path": "tinyrustlm/app/companion-composition-install.js",
+      "bytes": 34585,
+      "sha256": "cbf8617b8467fe32d196788f69acd45a43e499dec31643675278f881c2b9b2b7"
+    },
+    {
+      "path": "tinyrustlm/app/browser-model-admission.js",
+      "bytes": 14858,
+      "sha256": "87cdc059e71435f1572b3ad03fcce17701d5b73e83c3a6172e078a3349e5b683"
+    },
+    {
+      "path": "tinyrustlm/app/minimodel-catalog-v1.js",
+      "bytes": 74274,
+      "sha256": "4868dba65b57197b68de6f3e74987602b9728c5fa0cf28ca05ec2a3166c35333"
+    },
+    {
+      "path": "tinyrustlm/app/incremental-sha256.js",
+      "bytes": 9404,
+      "sha256": "e28faf3a02617d3d6747a0061f10f20b756500ae727f5c02e18da9912c767095"
+    },
+    {
+      "path": "tinyrustlm/e2e/owned-browser-profile.js",
+      "bytes": 2432,
+      "sha256": "35a330243dbbd3c076eab57a6174dcd1a892b33af4774a37ec15bff7e697c4ff"
+    },
+    {
+      "path": "tinyrustlm/tools/static-shell-parity.js",
+      "bytes": 5964,
+      "sha256": "100ae82d9151f592db9607a6803d316d45934b3f349b3533d9c6df9d1e28fdeb"
+    },
+    {
+      "path": "tinyrustlm/tools/web-release-browser-smoke.js",
+      "bytes": 44097,
+      "sha256": "871da8e65d1f0b7ae6935a0a80d77d8409249dc025afac228905d70f8acb605b"
+    },
+    {
+      "path": "tinyrustlm/deploy/web-deployment-manifest.v2.json",
+      "bytes": 4802,
+      "sha256": "3c97a713670f119a978a1aea1611169dfb7d9cf1974ad8ae7c4a201454a04df8"
+    },
+    {
+      "path": "tinyrustlm/app/app.js",
+      "bytes": 465748,
+      "sha256": "d639ceb5a84703205a3c360f806296f51dda04c7ae0aa7c58b1cf8e6bc8093c7"
+    },
+    {
+      "path": "tinyrustlm/tests/model-acquisition.test.js",
+      "bytes": 133417,
+      "sha256": "6dfc85eb10dfea4619a8e60e91ca8c39e80d3aaba8471d84623100d26438f365"
+    },
+    {
+      "path": "tinyrustlm/tests/model-acquisition-boundary-regression.test.js",
+      "bytes": 58516,
+      "sha256": "8b5700062cfa781dd95d0e0324bc130ffaefe41253b55e00bfb47e4e0abad216"
+    },
+    {
+      "path": "tinyrustlm/e2e/direct-p2p-composition.spec.js",
+      "bytes": 66211,
+      "sha256": "d8c3b95864092d1b314c5306698ae0c91a8146fc8b8805c4ccfc1bb73e7ce7a0"
+    },
+    {
+      "path": "docs/server-seeded-startup-2026-09-12.md",
+      "bytes": 15322,
+      "sha256": "e643856d168bfbd020dd006e3e120ba4a415053cd74812b82a6a3ecfe2df11a9"
+    },
+    {
+      "path": "tinyrustlm/e2e/model-chooser.spec.js",
+      "bytes": 82920,
+      "sha256": "45de47d6aba377f76e8d3bafc01de721b319300a6f9af69371b6b3bdebcb5e8e"
+    },
+    {
+      "path": "tinyrustlm/app/operation-lifetime.js",
+      "bytes": 2292,
+      "sha256": "4a9d907a3c62b679f896d859e843124bf4252e6d2be0f8aacc7e754113a9f570"
+    }
+  ],
+  "finding": "Cleanup ran before installation but was never scheduled on ordinary startup. Returning users could retain interrupted retirement indefinitely unless they installed another model. Empty cleanup also initialized unnecessary directories.",
+  "contract": {
+    "invocation": "One background invocation per page after successful saved-model activation or a successful open with no active installation. Cache/activation errors suppress automatic cleanup. Chat readiness and chooser presentation do not await the invocation.",
+    "bounds": "At most 16 bounded store passes under one 60000ms cancellation signal. These are policy bounds, not measured real-model performance budgets.",
+    "mutation": "Do not race durable cleanup against the lifetime's rejection promise. Signal cancellation stops cancellable reads/lock waits and further work; an issued mutation retains its lock until storage settles. Diagnostics report stopping while pending and incomplete after timeout settlement.",
+    "observability": "Advanced cache_cleanup diagnostics report status, typed error, pass count and removal counts from completed passes only. Partial failed-pass removals are excluded; these counters do not measure storage recovered. Cleanup failure does not classify the active cache as corrupt.",
+    "empty": "cleanup no longer initializes directories. Actual Edge confirms physically empty startup creates no model root. openActive remains read-only.",
+    "unchanged": "Existing current six-member admission/qualification, retirement ownership, active-pointer reconciliation, visual markup and runtime artifact bytes."
+  },
+  "developmentResults": [
+    {
+      "stage": "baseline",
+      "tests": 370,
+      "passed": 366,
+      "failed": 4,
+      "sourceIdentities": [
+        {
+          "path": "tinyrustlm/app/model-composition-store.js",
+          "bytes": 89199,
+          "sha256": "57a21147dd892b45ed63bca7e3a8be95fb85f6148c4813d939bb5ffe391ec576"
+        },
+        {
+          "path": "tinyrustlm/app/app.js",
+          "bytes": 462821,
+          "sha256": "c33278f13c23630d316ba2c57402f90fc6e68bbf4504ef93593de44825585361"
+        }
+      ],
+      "result": "Saved/no-active boot scheduling and empty cleanup nonmutation regressions failed, plus the enclosing boot test."
+    },
+    {
+      "stage": "initial-affected",
+      "tests": 378,
+      "passed": 377,
+      "failed": 1,
+      "result": "An older source-shape assertion required immediate return after boot flags; updated to require the cleanup scheduling call."
+    },
+    {
+      "stage": "final-affected",
+      "tests": 378,
+      "passed": 378,
+      "failed": 0,
+      "skipped": 0,
+      "coverage": {
+        "scope": "Node V8 whole-store coverage, not isolated changed-line coverage. The production app scheduler/boot also execute through extracted-source deterministic tests and actual browser tests; no separate app coverage percentage is asserted.",
+        "linePercent": 90.42,
+        "branchPercent": 86.83,
+        "functionPercent": 94.22
+      },
+      "cases": [
+        "One invocation retained through pending and terminal states; bounded passes and completed-pass aggregation",
+        "Deadline signals cancellation while waiting for late durable success/failure instead of abandoning ownership",
+        "Cache/activation error suppression and ready-model preservation",
+        "Empty cleanup has no ensure-directory/write/removal operations",
+        "Existing acquisition/custody/P2P/companion and shell/deployment checks"
+      ]
+    },
+    {
+      "stage": "initial-chooser",
+      "tests": 18,
+      "passed": 15,
+      "failed": 3,
+      "retries": 0,
+      "skipped": 0,
+      "result": "Three new post-reload assertions parsed empty diagnostic text before first app render. Added a read helper that returns pending for empty text; malformed nonempty JSON remains an error."
+    },
+    {
+      "stage": "final-chooser",
+      "tests": 18,
+      "passed": 18,
+      "failed": 0,
+      "retries": 0,
+      "skipped": 0,
+      "scope": "Installed Edge desktop and mobile viewport emulation, not physical mobile devices",
+      "observations": [
+        "Empty startup completes cleanup without creating model directories",
+        "Unknown staging files remain intact and produce incomplete diagnostics while the chooser remains usable",
+        "A held actual OPFS directory removal stays owned after timeout, with stopping diagnostics and the writer lock retained",
+        "Releasing that mutation yields incomplete/timeout and releases locks; page reload completes retained-marker cleanup",
+        "Previous startup cache/runtime timeout, automatic bootstrap and chooser checks continue to pass"
+      ]
+    },
+    {
+      "stage": "storage-p2p",
+      "tests": 9,
+      "passed": 9,
+      "failed": 0,
+      "retries": 0,
+      "skipped": 0,
+      "scope": "Actual desktop Edge OPFS/Web Locks and controlled P2P; synthetic storage/model/runtime fixtures",
+      "observations": [
+        "The basic-click acquisition test now seeds terminal retirement before restoring a saved composition with both empty and unavailable catalogs",
+        "Startup automatically removes its marker/directory while the admitted fixture remains ready, with only the current installation retained",
+        "Existing tab-closure, cross-tab readers, cancellation, ownership and persistence tests pass"
+      ]
+    },
+    {
+      "stage": "direct-release-smoke",
+      "status": "pass",
+      "observationCount": 12,
+      "reportSha256": "62b5525f0544c529a5688428fc68202e696b88be4ae3770f9f0275d5c54f9957",
+      "temporaryOutputCleanup": "verified",
+      "scope": "Direct zero-argument Node invocation; npm source-authority preflight remains blocked"
+    },
+    {
+      "stage": "memory",
+      "tests": 6,
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0
+    }
+  ],
+  "sourceGate": {
+    "status": "source_authority_scan_incomplete",
+    "remaining": [
+      "artifacts/verification/qwen3-environment-install/tinyrustlm-operation-C3ZUt9/install-temp/TmP6xn2evdh-b",
+      "artifacts/verification/qwen3-environment-install/tinyrustlm-operation-C3ZUt9/install-temp/TmPeq63_hr7-b"
+    ],
+    "blockedDeletionsRetried": false
+  },
+  "cleanup": {
+    "runs": [
+      {
+        "stage": "baseline",
+        "files": 9,
+        "logicalBytes": 3115908
+      },
+      {
+        "stage": "initial-affected",
+        "files": 9,
+        "logicalBytes": 3115846
+      },
+      {
+        "stage": "final-affected",
+        "files": 9,
+        "logicalBytes": 3110448
+      },
+      {
+        "stage": "initial-chooser",
+        "files": 19,
+        "logicalBytes": 2407472
+      },
+      {
+        "stage": "final-chooser",
+        "files": 13,
+        "logicalBytes": 1499596
+      },
+      {
+        "stage": "storage-p2p",
+        "files": 15,
+        "logicalBytes": 1392030
+      },
+      {
+        "stage": "smoke",
+        "files": 3,
+        "logicalBytes": 2680858
+      }
+    ],
+    "total": {
+      "files": 77,
+      "logicalBytes": 17322158
+    },
+    "physicalRecoveryBytes": null,
+    "note": "Only operation-owned scratch removed. Profile helpers remove their profiles before the outer harness count; those bytes are excluded. Blocked deletions untouched."
+  },
+  "remaining": [
+    "A permanently stalled durable write can retain a lock; the scheduler exposes stopping and keeps the UI available, not a forced storage-termination guarantee.",
+    "Power-loss durability and every mutation/commit outcome remain unproved. Cleanup errors/budget exhaustion preserve remaining ownership for a later explicit page startup/installation.",
+    "No qualified default, real numerical/browser usefulness, public initial seed or deployment claim. Source scan remains incomplete.",
+    "Other repositories and 30 unrelated Tiny worktree entries are preserved. Ternary research deferred; the full ecosystem objective remains active and incomplete."
+  ]
+}
