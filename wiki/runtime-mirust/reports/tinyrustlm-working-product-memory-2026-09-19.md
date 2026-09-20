@@ -16,6 +16,16 @@ Authority order is current owner instructions, inspected current contracts and b
 
 ## Current evidence and its limits
 
+**C60 companion socket ownership:** cancelled/failed connection setup now disposes
+its owned socket before rethrow; success transfers ownership to the stream. Eight
+real IPv4/IPv6 socket cases and the complete 228-test companion suite pass without
+skips. The new ownership helper has 100% line/branch coverage. Five fixture-path
+guesses are replaced by current-build bindings for the two executable tools; the
+DLL-only wire fixture retains its normal reference. See
+`artifacts/ecosystem-cleanup-20260912/companion-socket-ownership-review.json` for
+baseline failures and harness corrections. No external DNS/TLS, model, package
+publication or release readiness is established; all blocked cleanup stays intact.
+
 **C59 companion hash cancellation:** the optional caller signal now reaches all
 five preparation hashes and each chunk hash. Late rejections are observed, chunk
 context is preserved, and committed-store success remains intact. All 367 affected

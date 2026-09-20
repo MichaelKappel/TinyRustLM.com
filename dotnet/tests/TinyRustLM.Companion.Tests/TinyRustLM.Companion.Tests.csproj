@@ -15,14 +15,25 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\TinyRustLM.Companion\TinyRustLM.Companion.csproj" />
-    <ProjectReference Include="..\..\tools\TinyRustLM.ConversionFixtureTool\TinyRustLM.ConversionFixtureTool.csproj"
-                      ReferenceOutputAssembly="false" />
-    <ProjectReference Include="..\..\tools\TinyRustLM.P2PSeedFixtureTool\TinyRustLM.P2PSeedFixtureTool.csproj"
-                      ReferenceOutputAssembly="false" />
-    <ProjectReference Include="..\..\tools\TinyRustLM.DirectSeedWireFixtureTool\TinyRustLM.DirectSeedWireFixtureTool.csproj"
-                      ReferenceOutputAssembly="false" />
+    <CompanionFixtureProject Include="..\..\tools\TinyRustLM.ConversionFixtureTool\TinyRustLM.ConversionFixtureTool.csproj" />
+    <CompanionFixtureProject Include="..\..\tools\TinyRustLM.P2PSeedFixtureTool\TinyRustLM.P2PSeedFixtureTool.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\TinyRustLM.Companion\TinyRustLM.Companion.csproj" />
+    <ProjectReference Include="@(CompanionFixtureProject)" ReferenceOutputAssembly="false" />
+    <ProjectReference Include="..\..\tools\TinyRustLM.DirectSeedWireFixtureTool\TinyRustLM.DirectSeedWireFixtureTool.csproj" ReferenceOutputAssembly="false" />
+  </ItemGroup>
+  <!-- Bind fixtures to the actual project outputs, including owned artifacts builds. -->
+  <Target Name="BindCompanionFixtureAssemblies" BeforeTargets="GetAssemblyAttributes">
+    <MSBuild Projects="@(CompanionFixtureProject)" Targets="GetTargetPath"
+             Properties="Configuration=$(Configuration)">
+      <Output TaskParameter="TargetOutputs" ItemName="CompanionFixtureAssembly" />
+    </MSBuild>
+    <ItemGroup>
+      <AssemblyMetadata Include="TinyRustLM.Fixture.%(CompanionFixtureAssembly.Filename)"
+                        Value="%(CompanionFixtureAssembly.FullPath)" />
+    </ItemGroup>
+  </Target>
   <ItemGroup>
     <None Include="..\..\..\contracts\vnext\companion-source-operation-vectors.v1.json"
           Link="companion-source-operation-vectors.v1.json"

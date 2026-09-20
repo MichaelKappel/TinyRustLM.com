@@ -1,3 +1,5 @@
+using System.Reflection;
+
 namespace TinyRustLM.Companion.Tests;
 
 /// <summary>Owns bounded non-product fixtures beneath the single canonical repository.</summary>
@@ -37,6 +39,29 @@ internal sealed class CanonicalTestScratch : IDisposable
     }
 
     internal string Path { get; }
+
+    /// <summary>Resolves a declared fixture from this build's generated binding, never a guessed old output.</summary>
+    internal static string FixtureExecutable(string project)
+    {
+        var assembly = typeof(CanonicalTestScratch).Assembly.GetCustomAttributes<AssemblyMetadataAttribute>()
+            .Single(attribute => attribute.Key == $"TinyRustLM.Fixture.{project}").Value
+            ?? throw new InvalidOperationException("Fixture assembly binding is missing.");
+        if (!System.IO.Path.IsPathFullyQualified(assembly) ||
+            !assembly.StartsWith(CanonicalRoot + "\\", StringComparison.OrdinalIgnoreCase) ||
+            System.IO.Path.GetFileName(assembly) != project + ".dll")
+        {
+            throw new InvalidOperationException("Fixture assembly binding is outside canonical output.");
+        }
+        var directory = System.IO.Path.GetDirectoryName(assembly)!;
+        AssertDirectAncestry(directory);
+        var executable = System.IO.Path.Combine(directory, project + ".exe");
+        var file = new FileInfo(executable);
+        if (!file.Exists || file.Length == 0 || (file.Attributes & FileAttributes.ReparsePoint) != 0)
+        {
+            throw new IOException("Bound fixture executable is missing or linked.");
+        }
+        return executable;
+    }
 
     /// <summary>Rejects linked or non-directory ancestors, including the drive and source roots.</summary>
     private static void AssertDirectAncestry(string directory)

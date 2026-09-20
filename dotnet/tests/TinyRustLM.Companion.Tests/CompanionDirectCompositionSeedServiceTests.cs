@@ -1,6 +1,5 @@
 using System.Diagnostics;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Text;
 using TinyRustLM.Companion;
 using Xunit;
@@ -377,21 +376,6 @@ public sealed class CompanionDirectCompositionSeedServiceTests : IDisposable
     private static CompanionDirectCompositionSeedStopRequest StopRequest() => new(
         CompanionLoopbackWire.DirectCompositionSeedStopRequestSchema);
 
-    private static string RepositoryRoot()
-    {
-        var current = new DirectoryInfo(AppContext.BaseDirectory);
-        while (current is not null)
-        {
-            if (File.Exists(Path.Combine(current.FullName, "Cargo.toml")) &&
-                File.Exists(Path.Combine(current.FullName, "dotnet", "TinyRustLM.sln")))
-            {
-                return current.FullName;
-            }
-            current = current.Parent;
-        }
-        throw new DirectoryNotFoundException("Cannot locate repository root.");
-    }
-
     public void Dispose()
     {
         _scratch.Dispose();
@@ -612,54 +596,11 @@ internal sealed class CompanionDirectCompositionSeedTestHarness : IAsyncDisposab
         }
     }
 
-    private static string FixtureToolPath()
-    {
-        var configuration = new DirectoryInfo(AppContext.BaseDirectory).Parent?.Name
-            ?? throw new InvalidOperationException("Cannot determine test configuration.");
-        var fileName = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
-            ? "TinyRustLM.P2PSeedFixtureTool.exe"
-            : "TinyRustLM.P2PSeedFixtureTool";
-        return Path.Combine(
-            RepositoryRoot(),
-            "dotnet",
-            "tools",
-            "TinyRustLM.P2PSeedFixtureTool",
-            "bin",
-            configuration,
-            "net8.0",
-            fileName);
-    }
+    /// <summary>Uses the current build's declared fixture output.</summary>
+    private static string FixtureToolPath() =>
+        CanonicalTestScratch.FixtureExecutable("TinyRustLM.P2PSeedFixtureTool");
 
-    private static string ConversionFixtureToolPath()
-    {
-        var configuration = new DirectoryInfo(AppContext.BaseDirectory).Parent?.Name
-            ?? throw new InvalidOperationException("Cannot determine test configuration.");
-        var fileName = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
-            ? "TinyRustLM.ConversionFixtureTool.exe"
-            : "TinyRustLM.ConversionFixtureTool";
-        return Path.Combine(
-            RepositoryRoot(),
-            "dotnet",
-            "tools",
-            "TinyRustLM.ConversionFixtureTool",
-            "bin",
-            configuration,
-            "net8.0",
-            fileName);
-    }
-
-    private static string RepositoryRoot()
-    {
-        var current = new DirectoryInfo(AppContext.BaseDirectory);
-        while (current is not null)
-        {
-            if (File.Exists(Path.Combine(current.FullName, "Cargo.toml")) &&
-                File.Exists(Path.Combine(current.FullName, "dotnet", "TinyRustLM.sln")))
-            {
-                return current.FullName;
-            }
-            current = current.Parent;
-        }
-        throw new DirectoryNotFoundException("Cannot locate repository root.");
-    }
+    /// <summary>Uses the current build's declared fixture output.</summary>
+    private static string ConversionFixtureToolPath() =>
+        CanonicalTestScratch.FixtureExecutable("TinyRustLM.ConversionFixtureTool");
 }

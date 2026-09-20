@@ -1,5 +1,5 @@
 profile: tinyrustlm.startup-packet.current.v1
-updated_utc: 2026-09-20T12:42:06Z
+updated_utc: 2026-09-20T13:00:05Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
@@ -10,6 +10,7 @@ startup_steps:
   - Preserve immutable failed operations and all campaign counters.
 
 current_truth:
+  companion_sockets: C60 releases owned sockets on cancellation or any failed connect, retaining success ownership in the stream. All 228 companion tests pass, including eight real IPv4/IPv6 socket cases; the socket helper has 100% line/branch coverage. Five fixture-path guesses now use current-build bindings. See companion-socket-ownership-review.json. No external TLS/DNS, model or publication proof.
   companion_hashes: C59 propagates cancellation through all five preparation and every chunk hash. All 367 affected Node checks (93.43% line coverage) and nine Edge tests pass. Real OPFS fixtures retain the prior pointer, clean candidates, release the writer and accept a subsequent install. No-signal and committed-store semantics remain; this is not real model, .NET acquisition or publication proof. See companion-hash-cancellation-review.json.
   p2p_metadata: C58 bounds all four install metadata hash waits by the existing deadline/caller signal; late rejections are observed and no later hash, store or fetch starts. All 222 affected Node checks pass (89.57% installer line coverage), with three desktop Edge acquisition tests and final desktop/mobile hash checks passing. See p2p-metadata-cancellation-review.json; synthetic fixtures do not qualify a model or seed.
   nuget_linux: C57 passes Linux x64 native build/four ABI tests, two-RID package audit, 124 managed checks and Windows/Linux packaged consumers. Windows compiled the consumer; actual Linux .NET ran it. ARM64 and clean release/publication gates remain open. Read nuget-linux-consumer-review.json and operations.uai for the blocked temporary header deletion; do not retry it or delete its parent.

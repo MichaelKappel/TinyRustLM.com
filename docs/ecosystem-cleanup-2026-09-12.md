@@ -5,6 +5,31 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C60: release cancelled connection sockets and bind current test tools, September 20
+
+The companion's source transport disposed failed connection sockets only for
+socket/I/O errors. Cancellation escaped that filter and retained the handle until
+collection. A small ownership helper now transfers a connected socket into its
+stream, or disposes it before rethrowing any failure. Cancellation stays terminal;
+the existing public-address checks and address fallback policy are unchanged.
+
+Eight real IPv4/IPv6 loopback cases cover pre-cancelled connection, invalid port,
+connection refusal and successful byte transfer/stream disposal. Four cases failed
+against the extracted old exception filter and all eight pass after the fix.
+The complete companion suite passes 228/228, with no skips. The new socket helper
+has 100% measured line/branch coverage; this does not prove external DNS/TLS,
+midflight remote cancellation, real model acquisition or public seed availability.
+
+Owned build output also exposed five test helpers guessing old tool directories.
+MSBuild now binds the two executable fixtures to their actual current outputs,
+using one shared resolver. The DLL-only wire fixture remains a normal project
+reference. Three unused root-search helpers were removed. Initial harness errors,
+exact inputs, coverage and retained lessons are in
+`artifacts/ecosystem-cleanup-20260912/companion-socket-ownership-review.json`.
+No dependency, UI, package version or public package changed; the companion is
+explicitly non-packable. Source-authority scanning still reports the two blocked
+installer links, and all other model, seed, ARM64 and release gates remain open.
+
 ## C59: cancel companion preparation and chunk hashing, September 20
 
 Companion imports had the same lifetime gap across five preparation hashes and

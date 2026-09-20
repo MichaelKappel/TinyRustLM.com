@@ -1,6 +1,5 @@
 using System.Diagnostics;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using TinyRustLM.Companion;
 using Xunit;
 
@@ -302,23 +301,9 @@ public sealed class CompanionDirectCompositionSeedLauncherTests : IDisposable
         public void Dispose() => Fixture.Dispose();
     }
 
-    private static string FixtureToolPath()
-    {
-        var configuration = new DirectoryInfo(AppContext.BaseDirectory).Parent?.Name
-            ?? throw new InvalidOperationException("Cannot determine test configuration.");
-        var fileName = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
-            ? "TinyRustLM.P2PSeedFixtureTool.exe"
-            : "TinyRustLM.P2PSeedFixtureTool";
-        return Path.Combine(
-            RepositoryRoot(),
-            "dotnet",
-            "tools",
-            "TinyRustLM.P2PSeedFixtureTool",
-            "bin",
-            configuration,
-            "net8.0",
-            fileName);
-    }
+    /// <summary>Uses the seed fixture built with this test assembly.</summary>
+    private static string FixtureToolPath() =>
+        CanonicalTestScratch.FixtureExecutable("TinyRustLM.P2PSeedFixtureTool");
 
     private static async Task RequireRecordedProcessExitedAsync(string root, string fileName)
     {
@@ -357,21 +342,6 @@ public sealed class CompanionDirectCompositionSeedLauncherTests : IDisposable
             await Task.Delay(TimeSpan.FromMilliseconds(20));
         }
         Assert.Fail($"Fixture process {processId} remained alive.");
-    }
-
-    private static string RepositoryRoot()
-    {
-        var current = new DirectoryInfo(AppContext.BaseDirectory);
-        while (current is not null)
-        {
-            if (File.Exists(Path.Combine(current.FullName, "Cargo.toml")) &&
-                File.Exists(Path.Combine(current.FullName, "dotnet", "TinyRustLM.sln")))
-            {
-                return current.FullName;
-            }
-            current = current.Parent;
-        }
-        throw new DirectoryNotFoundException("Cannot locate repository root.");
     }
 
     public void Dispose()

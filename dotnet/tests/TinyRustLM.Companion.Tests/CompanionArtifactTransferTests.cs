@@ -1,4 +1,3 @@
-using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using TinyRustLM.Companion;
 using Xunit;
@@ -251,23 +250,9 @@ public sealed class CompanionArtifactTransferTests : IDisposable
             }
         }
 
-        private static string FixtureToolPath()
-        {
-            var configuration = new DirectoryInfo(AppContext.BaseDirectory).Parent?.Name
-                ?? throw new InvalidOperationException("Cannot determine test configuration.");
-            var fileName = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
-                ? "TinyRustLM.ConversionFixtureTool.exe"
-                : "TinyRustLM.ConversionFixtureTool";
-            return Path.Combine(
-                RepositoryRoot(),
-                "dotnet",
-                "tools",
-                "TinyRustLM.ConversionFixtureTool",
-                "bin",
-                configuration,
-                "net8.0",
-                fileName);
-        }
+        /// <summary>Uses the current build's declared fixture output.</summary>
+        private static string FixtureToolPath() =>
+            CanonicalTestScratch.FixtureExecutable("TinyRustLM.ConversionFixtureTool");
 
         private static string RepositoryRoot()
         {

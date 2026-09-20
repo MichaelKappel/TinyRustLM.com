@@ -4,6 +4,18 @@ namespace TinyRustLM.Companion.Tests;
 
 public sealed class CanonicalTestScratch_test
 {
+    /// <summary>Apphost fixture references resolve to executable outputs from the current build.</summary>
+    [Theory]
+    [InlineData("TinyRustLM.ConversionFixtureTool")]
+    [InlineData("TinyRustLM.P2PSeedFixtureTool")]
+    public void FixtureBindingNamesCurrentExecutable(string project)
+    {
+        var executable = CanonicalTestScratch.FixtureExecutable(project);
+        Assert.Equal(project + ".exe", Path.GetFileName(executable));
+        Assert.True(File.Exists(Path.ChangeExtension(executable, ".dll")));
+        Assert.True(File.Exists(Path.ChangeExtension(executable, ".runtimeconfig.json")));
+    }
+
     /// <summary>Fixture data stays canonical and disappears after an idempotent owned cleanup.</summary>
     [Fact]
     public void OwnsCanonicalDataAndRemovesNestedOutput()

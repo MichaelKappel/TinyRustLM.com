@@ -11,6 +11,37 @@ Keep useful findings and compact evidence identities in the owning canonical
 repository. Keep source history in Git and current model payloads only in
 `D:\LLMs\TinyRustLM`.
 
+## C60: connection ownership includes cancellation and test tools belong to the build
+
+Question: does every failed source connection relinquish its allocated socket?
+Exact input was parent `c1a73483d5add83b6824dd778ab398b3c4ee4af4`; the review receipt
+binds the extracted old-filter variant, new source and tests. Real local IPv4/IPv6
+sockets, a pre-cancelled token, invalid ports, reserved non-listening ports and one
+byte of stream traffic avoid external-network timing assumptions. The old filter
+failed four of eight cases by leaving handles open. Unconditional disposal before
+rethrow passes all eight; successful streams retain ownership until disposed.
+
+The broader run initially passed 31/33: two failures came from fixture executable
+paths guessed from the old output layout. While replacing those helpers, an XML
+comment containing a double hyphen caused one pre-build failure. The first full
+suite passed 212/229: sixteen remaining launcher lookups still used the old path,
+and one newly added binding assertion incorrectly expected an apphost for the
+explicitly DLL-only wire fixture. These were harness failures, not model failures.
+Bind only the two apphost tools, retain the DLL-only project reference, move binding
+checks beside the shared resolver, and remove the remaining guessed paths. Final
+full suite: 228/228, no skips, with actual child startup/teardown and HTTP tests.
+The removed assertion was inapplicable; no existing behavioral test was removed.
+
+Decision: keep narrow socket ownership transfer and generated fixture bindings.
+The changed socket helper has 100% measured line/branch coverage; the resolver has
+11/13 executable lines covered. The tests do not establish midflight remote TCP
+cancellation, external TLS/DNS, real-model quality or release readiness. Preserve
+this distinction and inspect resource ownership after cancellation, not only its
+returned exception. Use build output identity rather than configuration-directory
+guesses. Exact commands, failed outcomes and identities are retained in
+`companion-socket-ownership-review.json` in the cleanup artifacts; generated output
+is temporary and source history stays in Git.
+
 ## C59: cancellation must reach companion chunk verification too
 
 Question: can the Advanced companion path release an interrupted import while

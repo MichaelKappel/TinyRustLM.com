@@ -1,0 +1,319 @@
+{
+  "schema": "tinyrustlm.ecosystem_cleanup.companion_socket_ownership_review.v1",
+  "checkpoint": "C60",
+  "recorded_at_utc": "2026-09-20T13:00:05Z",
+  "base_commit": "c1a73483d5add83b6824dd778ab398b3c4ee4af4",
+  "scope": "Advanced companion source connection ownership and current-build native fixture resolution.",
+  "baseline": {
+    "source_sha256": "f1bd9a064e71cdf743a0faec7a8c2366edd099ace258809475f950b30075bdfb",
+    "extracted_old_filter_sha256": "85490c375d643f120472eeeba3fd218457db36afc2f33794824b3971f0cd4de6",
+    "command": "dotnet test dotnet/tests/TinyRustLM.Companion.Tests/TinyRustLM.Companion.Tests.csproj --configuration Release --artifacts-path=<owned>/build --filter FullyQualifiedName~CompanionProductionSourceAcquisitionTests --verbosity minimal --results-directory=<owned>/results --logger trx;LogFileName=baseline.trx -p:UseSharedCompilation=false -p:RestoreSources=https://api.nuget.org/v3/index.json",
+    "passed": 4,
+    "failed": 4,
+    "skipped": 0,
+    "observation": "Both pre-cancelled connect cases and both invalid-port cases retained open socket handles under the extracted old SocketException/IOException filter. Connection refusal and successful stream ownership controls passed."
+  },
+  "changes": {
+    "transport": "ConnectOwnedSocketAsync transfers ownership into a connected NetworkStream; every failure disposes the socket before rethrow. ConnectPublicAsync retains public-address admission and SocketException/IOException fallback, while cancellation remains terminal.",
+    "tests": "Five old output-path guesses replaced by one shared resolver using MSBuild GetTargetPath assembly metadata for the two apphost fixtures. DLL-only wire fixture remains a normal project reference. Three unused root-search helpers removed.",
+    "unchanged": [
+      "Public-address, origin, byte and digest admission",
+      "Existing cancellation token, timeout and address fallback policy",
+      "Product UI and dependencies",
+      "Package version; TinyRustLM.Companion is IsPackable=false"
+    ]
+  },
+  "intermediate_outcomes": [
+    {
+      "stage": "Affected transport/executor/loopback suite after socket fix",
+      "passed": 31,
+      "failed": 2,
+      "total": 33,
+      "cause": "Two loopback tests could not locate conversion/seed executables under the owned artifacts output layout."
+    },
+    {
+      "stage": "First full-suite build attempt",
+      "tests_started": false,
+      "cause": "Invalid double hyphen in new XML comment; corrected before build."
+    },
+    {
+      "stage": "Full suite during fixture binding",
+      "passed": 212,
+      "failed": 17,
+      "total": 229,
+      "cause": "Sixteen remaining launcher cases still guessed old paths; one newly added assertion incorrectly expected an executable apphost for explicitly DLL-only DirectSeedWireFixtureTool."
+    },
+    {
+      "stage": "Binding correction",
+      "passed": 228,
+      "failed": 0,
+      "total": 228,
+      "explanation": "Existing behavioral tests retained. Removed the newly introduced inapplicable DLL-only apphost assertion; two apphost binding tests moved beside CanonicalTestScratch. Remaining guessed path replaced."
+    }
+  ],
+  "tests": {
+    "companion": {
+      "command": "dotnet test dotnet/tests/TinyRustLM.Companion.Tests/TinyRustLM.Companion.Tests.csproj --configuration Release --artifacts-path=<owned>/build --no-restore --verbosity minimal --results-directory=<owned>/results --logger trx;LogFileName=final-current.trx --collect Code Coverage;Format=Cobertura -p:UseSharedCompilation=false",
+      "passed": 228,
+      "failed": 0,
+      "skipped": 0,
+      "reported_duration_seconds": 10,
+      "new_cases": 8,
+      "new_fixture_binding_cases": 2,
+      "socket_cases": [
+        "Pre-cancelled connect, IPv4 and IPv6, token preserved and safe handle closed",
+        "Ports -1 and 65536 reject without retaining the socket",
+        "Reserved non-listening IPv4 and IPv6 endpoints refuse and close",
+        "IPv4 and IPv6 stream transfers 0x5a, keeps socket open until stream disposal"
+      ],
+      "coverage": {
+        "collector": "Microsoft built-in Code Coverage, Cobertura",
+        "socket_helper": {
+          "covered_lines": 6,
+          "executable_lines": 6,
+          "line_percent": 100,
+          "branch_percent": 100
+        },
+        "fixture_resolver": {
+          "covered_lines": 11,
+          "executable_lines": 13,
+          "line_percent": 84.61538461538461,
+          "branch_percent": 50
+        }
+      },
+      "boundary": "Windows .NET net8.0 on SDK 10.0.401; loopback networking and fixture child processes are real. No external DNS/TLS, midflight remote cancellation, physical ARM64, real model or live seed result."
+    },
+    "memory": {
+      "command": "dotnet test dotnet/tests/TinyRustLM.Package.Tests/TinyRustLM.Package.Tests.csproj --configuration Release --no-build --no-restore --filter FullyQualifiedName~UaixMemoryConsolidationTests --verbosity minimal",
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0
+    },
+    "diff_check": "passed"
+  },
+  "source_authority": {
+    "command": "node tinyrustlm/tools/verify-single-source-authority.js",
+    "exit_code": 1,
+    "result": "source_authority_scan_incomplete",
+    "unreadable": [
+      "artifacts/verification/qwen3-environment-install/tinyrustlm-operation-C3ZUt9/install-temp/TmP6xn2evdh-b",
+      "artifacts/verification/qwen3-environment-install/tinyrustlm-operation-C3ZUt9/install-temp/TmPeq63_hr7-b"
+    ],
+    "policy": "No blocked deletion retried or ancestor removed. Asked the owner about the existing reviewed cleanup script; no response or removal assumed."
+  },
+  "ecosystem_inspection": {
+    "repository_count": 7,
+    "tinyrustlm_unrelated_entries_preserved": 30,
+    "other_repositories": "No changes in this checkpoint; Runtime's 15 existing edits and portal's one existing manifest edit preserved."
+  },
+  "source_inputs": [
+    {
+      "path": ".uai/long-term-memory.uai",
+      "bytes": 8953,
+      "sha256": "d372654dd5c6becafcb18da6b6f6079eda2d08cf1bd48c4e19b0b01b445d9701"
+    },
+    {
+      "path": ".uai/operations.uai",
+      "bytes": 20375,
+      "sha256": "9ec70cb74225f36822094ecf2b14cc48ac9cd957fce7120287a243b6795826c6"
+    },
+    {
+      "path": ".uai/short-term-memory.uai",
+      "bytes": 15483,
+      "sha256": "f40d64ff52ff956ffaa9687b7b71fcdf87fe3a63e5efc7d8f376deda88e38d93"
+    },
+    {
+      "path": ".uai/startup-packet.uai",
+      "bytes": 12120,
+      "sha256": "e2e9780562e1fb8740f44962b01244828e8e38f00d33053e62fce6f38fc9b882"
+    },
+    {
+      "path": "docs/ecosystem-cleanup-2026-09-12.md",
+      "bytes": 116881,
+      "sha256": "eb22fdac13651abadfa8ce5f67e493c6844adffaadd00319be05dbc0d9407cd9"
+    },
+    {
+      "path": "dotnet/src/TinyRustLM.Companion/CompanionProductionSourceAcquisition.cs",
+      "bytes": 31926,
+      "sha256": "bcb438d8473e0f0ba6742156d2a3ca72a1e6d979e2fe6ac5070d1c6bfbda488d"
+    },
+    {
+      "path": "dotnet/tests/TinyRustLM.Companion.Tests/CanonicalTestScratch.cs",
+      "bytes": 6399,
+      "sha256": "199e3b1a8aefc9120f771f2af45f19c181adb4848042fa05dab9ec3c9021e708"
+    },
+    {
+      "path": "dotnet/tests/TinyRustLM.Companion.Tests/CanonicalTestScratch_test.cs",
+      "bytes": 3244,
+      "sha256": "53747df93f9178ee49f70a49fc9a32061d6c562e7bde8162f19d6769bbe9f896"
+    },
+    {
+      "path": "dotnet/tests/TinyRustLM.Companion.Tests/CompanionArtifactTransferTests.cs",
+      "bytes": 11543,
+      "sha256": "4bd64ebbd9a31a70a99327e88c07c0653d08ef78943bee2ee82a33bb7fc5c58e"
+    },
+    {
+      "path": "dotnet/tests/TinyRustLM.Companion.Tests/CompanionDirectCompositionSeedLauncherTests.cs",
+      "bytes": 15909,
+      "sha256": "a9e47fa1e6cd3e663d7c86bf23eb4bab8815f143252a19f43ac232a89c7ddc19"
+    },
+    {
+      "path": "dotnet/tests/TinyRustLM.Companion.Tests/CompanionDirectCompositionSeedServiceTests.cs",
+      "bytes": 25937,
+      "sha256": "fb5156ae697deccde8bc1e9114772cb33f551133b8f062c2b581a6dbd86732b7"
+    },
+    {
+      "path": "dotnet/tests/TinyRustLM.Companion.Tests/CompanionProductionSourceAcquisition_test.cs",
+      "bytes": 4094,
+      "sha256": "896a605bdda6842156472f51f19a78e7e5ce626ab0f4b99189edc21e94488f41"
+    },
+    {
+      "path": "dotnet/tests/TinyRustLM.Companion.Tests/CompanionSourceConversionTests.cs",
+      "bytes": 30023,
+      "sha256": "43e7b5f1a794b1f49034362f48040c5cdd31190e9e59cda817dd048627d4bd12"
+    },
+    {
+      "path": "dotnet/tests/TinyRustLM.Companion.Tests/TinyRustLM.Companion.Tests.csproj",
+      "bytes": 2542,
+      "sha256": "1d4e375298e3e6d7774fb91d7442624859b44bbf4e57f4942711a8d20e6b3f62"
+    },
+    {
+      "path": "wiki/runtime-mirust/reports/ecosystem-experiment-lessons-2026-09-12.md",
+      "bytes": 147862,
+      "sha256": "6e19a89a31fe6c1a7d358d89dd1083e21716d118b34806f222735d94fd299e90"
+    },
+    {
+      "path": "wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md",
+      "bytes": 53398,
+      "sha256": "4df1ba5e3488044098a998d1718ddc0a711deae9eb34361d932333dd8cdbe3a3"
+    }
+  ],
+  "evidence_output_identities": [
+    {
+      "path": "baseline.log",
+      "bytes": 12630,
+      "sha256": "0e0d65fd650593e9593a92c0c6e2a155de45eed965412a2fd327f2cb1f1bd305"
+    },
+    {
+      "path": "complete-bound-fixtures.log",
+      "bytes": 4866,
+      "sha256": "4ab4e8594a24813910f4bfe8e44de71523f0b7afbf9bd635939ab1b6ff55b538"
+    },
+    {
+      "path": "complete-fixed.log",
+      "bytes": 72216,
+      "sha256": "749f6e5d039f3a0e72c944d5466630e0a1001f6953344a676f1f974f800048e8"
+    },
+    {
+      "path": "complete.log",
+      "bytes": 526,
+      "sha256": "1584c77bc1e16b3809f912dda016c97149f72dcec690e7653231375b135526e5"
+    },
+    {
+      "path": "final-current.log",
+      "bytes": 4846,
+      "sha256": "d7aada7627de730c7c41eba82bb622cedd0a8007e7ea6cc4d42c2258c8242874"
+    },
+    {
+      "path": "final.log",
+      "bytes": 11338,
+      "sha256": "17047d22eb4da29b178353c181ad670e95e148ed899cfaee2607aedb198c2ceb"
+    },
+    {
+      "path": "memory.log",
+      "bytes": 958,
+      "sha256": "761558f245757c2203af18d0ccd5631aa07f8932922f3b7355f1bd5ff3fac343"
+    },
+    {
+      "path": "results/baseline.trx",
+      "bytes": 19787,
+      "sha256": "37540d2e60e4e89cc5c557224e6d15ca8c106705653e04596618d75b1bc86eb7"
+    },
+    {
+      "path": "results/complete-bound-fixtures.trx",
+      "bytes": 371949,
+      "sha256": "e85b378c9d1e3eed78001f19243568e977cee105296551e1138c7a24347c9b2b"
+    },
+    {
+      "path": "results/complete-fixed.trx",
+      "bytes": 438908,
+      "sha256": "b8d3b1d776575bb642e64622335663ad5f280c1e8da254e621d34103b8f728da"
+    },
+    {
+      "path": "results/final-current.trx",
+      "bytes": 371949,
+      "sha256": "7af443e7e4e4e13b918aea54137ad1e176832f934add117b2e31d1eece95dd55"
+    },
+    {
+      "path": "results/final.trx",
+      "bytes": 60020,
+      "sha256": "61b2aa9edc0569b059dc4cdceea6d92522744aa4024d695e84586ca739f2c5cb"
+    },
+    {
+      "path": "results/memory.trx",
+      "bytes": 10762,
+      "sha256": "f8c34291d86dd851ca13fa2d387ce7ac4ee1178bffd64670f0e96ebe54aac4df"
+    },
+    {
+      "path": "results/Michael_PLUTO_2026-09-20_06_00_31/In/PLUTO/Michael_PLUTO_2026-09-20.06_00_41.cobertura.xml",
+      "bytes": 3634607,
+      "sha256": "be75bdd1170676088b1880f79ade5da67fc1acfa5adaa523daf205ad8177dac2"
+    },
+    {
+      "path": "results/Michael_PLUTO_2026-09-20_05_59_10/In/PLUTO/Michael_PLUTO_2026-09-20.05_59_20.cobertura.xml",
+      "bytes": 3638428,
+      "sha256": "87f4087aa4bee62378b29175a57eafcf2eaeb34ee8e8ccef2c84b903d45bd076"
+    },
+    {
+      "path": "results/Michael_PLUTO_2026-09-20_05_53_31/In/PLUTO/Michael_PLUTO_2026-09-20.05_53_42.cobertura.xml",
+      "bytes": 3643343,
+      "sha256": "626210b7ba6fa3503e1276ed43d2acf023b102d03f7e633af6d2bae20c59455a"
+    },
+    {
+      "path": "results/Michael_PLUTO_2026-09-20_05_50_37/In/PLUTO/Michael_PLUTO_2026-09-20.05_50_41.cobertura.xml",
+      "bytes": 3545388,
+      "sha256": "9b8c94ae983a5c829d7f07d85d1e45a2d479e497c19ac6660ca5369c1b55ec94"
+    },
+    {
+      "path": "results/885ee962-a03d-4c69-aa44-bcff0ad798df/Michael_PLUTO_2026-09-20.05_50_41.cobertura.xml",
+      "bytes": 3545388,
+      "sha256": "9b8c94ae983a5c829d7f07d85d1e45a2d479e497c19ac6660ca5369c1b55ec94"
+    },
+    {
+      "path": "results/7f72bba3-92bc-4628-b90e-d88765c8b761/Michael_PLUTO_2026-09-20.05_53_42.cobertura.xml",
+      "bytes": 3643343,
+      "sha256": "626210b7ba6fa3503e1276ed43d2acf023b102d03f7e633af6d2bae20c59455a"
+    },
+    {
+      "path": "results/7c5d3c01-f38d-47ac-83e2-0792248ba21c/Michael_PLUTO_2026-09-20.06_00_41.cobertura.xml",
+      "bytes": 3634607,
+      "sha256": "be75bdd1170676088b1880f79ade5da67fc1acfa5adaa523daf205ad8177dac2"
+    },
+    {
+      "path": "results/1215f646-69b9-46e0-9a90-c1922be1fe98/Michael_PLUTO_2026-09-20.05_59_20.cobertura.xml",
+      "bytes": 3638428,
+      "sha256": "87f4087aa4bee62378b29175a57eafcf2eaeb34ee8e8ccef2c84b903d45bd076"
+    }
+  ],
+  "cleanup": {
+    "root": "artifacts/tests/companion-socket-ownership/tinyrustlm-operation-3vtXp2",
+    "absence_verified": true,
+    "files_removed": 821,
+    "directories_below_root": 311,
+    "logical_bytes_removed": 183804003,
+    "physical_storage_recovered": "not measured",
+    "verification": "Original directory and marker device/inode/bytes, exact canonical containment and bounded ordinary entry inventory verified; absence checked after existing owned-tree cleanup."
+  },
+  "limits": [
+    "No external source model acquisition or real inference",
+    "No browser/UI change; screenshots not required for this nonvisual companion/test change",
+    "No credential contents read, key validity checked, NuGet push or deployment",
+    "No previously blocked deletion retried"
+  ],
+  "remaining": [
+    "Qualified default, numerical/browser evidence and live initial seed",
+    "Policy-blocked cleanup and incomplete source scan",
+    "Real ARM64 package execution and clean three-RID release admission; hosted account/default-branch constraints",
+    "Full ecosystem cleanup and owner acceptance"
+  ]
+}

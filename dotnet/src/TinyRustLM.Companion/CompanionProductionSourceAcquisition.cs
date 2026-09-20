@@ -650,17 +650,34 @@ internal sealed class CompanionHuggingFaceSourceTransport : ICompanionSourceTran
             };
             try
             {
-                await socket.ConnectAsync(address, endpoint.Port, cancellationToken)
+                return await ConnectOwnedSocketAsync(socket, address, endpoint.Port, cancellationToken)
                     .ConfigureAwait(false);
-                return new NetworkStream(socket, ownsSocket: true);
             }
             catch (Exception error) when (error is SocketException or IOException)
             {
                 lastError = error;
-                socket.Dispose();
             }
         }
         throw new HttpRequestException("source-connect-failed", lastError);
+    }
+
+    /// <summary>Transfers a supplied socket to its connected stream or disposes it on connection failure.</summary>
+    internal static async ValueTask<Stream> ConnectOwnedSocketAsync(
+        Socket socket,
+        IPAddress address,
+        int port,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            await socket.ConnectAsync(address, port, cancellationToken).ConfigureAwait(false);
+            return new NetworkStream(socket, ownsSocket: true);
+        }
+        catch
+        {
+            socket.Dispose();
+            throw;
+        }
     }
 
     /// <summary>Appends exactly the expected bytes at the verified partial offset and flushes them.</summary>
