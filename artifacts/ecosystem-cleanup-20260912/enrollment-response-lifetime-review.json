@@ -1,0 +1,152 @@
+{
+  "schema": "ecosystem.enrollment-response-lifetime-review/1",
+  "reviewedUtc": "2026-09-20T21:16:38Z",
+  "sourceParent": "237224d2914f529d33fa1c0587aeae65fc655624",
+  "purpose": "Bound enrollment response allocation and the complete discovery/claim-or-reconnect operation without changing presentation or server protocol.",
+  "previousTurn": "progress: C82 was implemented, verified, committed and pushed",
+  "repositoryInventory": {
+    "root": "E:\\Source\\Rust",
+    "repositories": 7,
+    "newRepositories": 0,
+    "otherRepositories": "No modifications made; existing Runtime and developer-portal work preserved.",
+    "activeIntake": "TinyRustLM Content and Improvement contain only placeholders."
+  },
+  "findings": [
+    "Content-Length could reject a known oversized body, but absent or misleading headers reached arrayBuffer before the one-MiB check.",
+    "Fetch and body reads had no deadline or caller cancellation.",
+    "An in-flight shared contract promise could couple independent callers when cancellation was added.",
+    "Existing UI generates a new claim idempotency key on each click; client recovery alone does not solve that separate behavior."
+  ],
+  "baseline": {
+    "regressions": 4,
+    "passed": 0,
+    "failed": 4,
+    "observations": [
+      "Oversized response consumed whole-body API and reported invalid_response after allocation.",
+      "A delayed Fetch completed despite a requested short deadline.",
+      "Discovery and claim exceeded the operation budget without failure.",
+      "A pre-aborted caller still fetched."
+    ]
+  },
+  "implementation": {
+    "sharedOwner": "Existing app/operation-lifetime.js, unchanged.",
+    "defaultTimeoutMilliseconds": 30000,
+    "maximumTimeoutMilliseconds": 120000,
+    "budgetScope": "One caller operation across contract discovery and its dependent claim or reconnect, including every body read.",
+    "signal": "Optional options.signal on discover, request, claim and reconnect; validated before work. Fetch receives the derived signal.",
+    "maximumDecodedResponseBytes": 1048576,
+    "maximumChunks": 4096,
+    "body": "Require ReadableStream; reject declared oversize, bound each decoded chunk before copying, preserve split UTF-8, cancel failures and release readers. No arrayBuffer/text fallback.",
+    "lateCompletion": "Abort Fetch on terminal failure and discard late returned bodies. Cancellation promises are observed without extending the deadline.",
+    "cache": "Cache only a successfully validated contract; concurrent discovery operations have independent lifetimes.",
+    "mutation": "No automatic POST retry. An explicit client call with the same idempotency key preserves its identity for recovery; server persistence can remain unknown after timeout.",
+    "shells": "Move the existing lifetime script before enrollment in the canonical shell and regenerate both current asset-hashed shells.",
+    "unchanged": "No model, schema, styling, visible copy, dependency or NuGet package version change."
+  },
+  "tests": {
+    "affectedNode": {
+      "passed": 64,
+      "failed": 0,
+      "skipped": 0,
+      "files": [
+        "memory-endpoints-enrollment.test.js",
+        "memory-endpoints-enrollment-fixture.test.js",
+        "memory-endpoints-sync.test.js",
+        "memory-endpoints-distributed-sync-authority.test.js",
+        "memory-endpoints-portable-memory-policy.test.js",
+        "static-shell-parity.test.js",
+        "web-deployment-manifest.test.js"
+      ],
+      "linePercent": 88.66,
+      "branchPercent": 75.14,
+      "functionPercent": 97.22
+    },
+    "browser": {
+      "passed": 5,
+      "failed": 0,
+      "skipped": 3,
+      "retries": 0,
+      "browser": "Installed Microsoft Edge 153 via Playwright 1.61.1",
+      "realFetchCases": 4,
+      "configurations": [
+        "desktop 1365x768",
+        "narrow desktop 1024x768",
+        "mobile emulation 390x844",
+        "reduced motion 1365x768"
+      ],
+      "realFetchObservations": [
+        "Stalled response reports enrollment_timeout.",
+        "Caller abort reports enrollment_cancelled.",
+        "Oversized response reports response_too_large.",
+        "Subsequent independent request succeeds.",
+        "Loopback server observes timeout/cancel response closure."
+      ],
+      "continuity": "Existing desktop-only two-profile explicit-save/restore/replay/credential-nonpersistence case passes against the loopback service. Three other-project skips remain declared.",
+      "boundary": "Local test services and synthetic inference only. No real account or live service operation."
+    },
+    "managed": {
+      "passed": 38,
+      "failed": 0,
+      "skipped": 0,
+      "evidence": {
+        "path": "results/package.trx",
+        "bytes": 61213,
+        "sha256": "5160b77292dc644687567630b4fb16efb703f026f3c54ba1378a2d6bd9c650f7"
+      }
+    },
+    "visual": {
+      "beforeCapturePassed": 1,
+      "afterCapturePassed": 1,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "beforeSha256": "cda885d7f1b918dc57d6a8b234df3fe5cb7b08964d936f0dcb6f1517150e608e",
+          "afterSha256": "cda885d7f1b918dc57d6a8b234df3fe5cb7b08964d936f0dcb6f1517150e608e",
+          "byteEqual": true,
+          "stateEqual": true
+        },
+        {
+          "viewport": "mobile",
+          "beforeSha256": "16aea953736a095a5eade3a8b435172a2243435a353009001bd746c3e9762d51",
+          "afterSha256": "16aea953736a095a5eade3a8b435172a2243435a353009001bd746c3e9762d51",
+          "byteEqual": true,
+          "stateEqual": true
+        }
+      ],
+      "boundary": "Exact empty-state desktop/mobile screenshot bytes and recorded fields match, without masks. This does not remove the older C63/C82 historical-baseline differences."
+    }
+  },
+  "limits": [
+    "Abort does not undo an already persisted server mutation.",
+    "The UI must still retain a pending claim identity for same-key user retry. No such UI recovery is claimed by these client tests.",
+    "Separate memory submit/search/outbox calls retain their existing request lifetime limitations.",
+    "A dependency that ignores cancellation may keep running, but its late result is not admitted.",
+    "No real model, live seed, live memory, Linux ARM64 package proof, NuGet push or deployment.",
+    "Known policy-blocked deletions and source-admission limitations remain; none were retried."
+  ],
+  "secretScan": {
+    "status": "pass",
+    "scannedArtifactCount": 14,
+    "secretFindingCount": 0,
+    "scopeComplete": false,
+    "report": {
+      "path": "scan-report.json",
+      "bytes": 7371,
+      "sha256": "a17701aedc34291fc3cddfdf170b21522b9c4d99372062d7ba103b3f3a9577c9"
+    },
+    "boundary": "Checkpoint files only; scan preceded final scan/cleanup accounting fields. No NuGet key contents read."
+  },
+  "ownedOutput": {
+    "root": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\enrollment-response-lifetime\\tinyrustlm-operation-7duS6P",
+    "files": 167,
+    "childDirectories": 51,
+    "logicalBytes": 7676002,
+    "externalMarkerBytes": 65,
+    "originalOwnershipVerified": true,
+    "status": "removed",
+    "rootAbsent": true,
+    "externalMarkerAbsent": true,
+    "method": "Confirmed no matching live writers, verified original ownership, inventoried exact bounded output, removed through the shared ownership helper and verified absence.",
+    "physicalReclaimedBytesMeasured": false
+  }
+}

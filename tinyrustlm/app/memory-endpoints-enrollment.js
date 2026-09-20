@@ -1,19 +1,24 @@
 (function (root, factory) {
   "use strict";
 
-  const api = factory();
+  const lifetimeApi = typeof module === "object" && module.exports
+    ? require("./operation-lifetime.js") : root.TinyRustLMOperationLifetime;
+  const api = factory(lifetimeApi);
   if (typeof module === "object" && module.exports) {
     module.exports = api;
   }
   if (root) {
     root.TinyRustLMMemoryEndpointsEnrollment = api;
   }
-})(typeof globalThis !== "undefined" ? globalThis : this, function () {
+})(typeof globalThis !== "undefined" ? globalThis : this, function (lifetimeApi) {
   "use strict";
 
   const contractSchema = "memoryendpoints.single_agent_enrollment_contract.v1";
   const connectorContractPath = "/api/matm/connector-contract";
   const maximumResponseBytes = 1024 * 1024;
+  const maximumResponseChunks = 4096;
+  const defaultTimeoutMilliseconds = 30_000;
+  const maximumTimeoutMilliseconds = 120_000;
   const requiredFlags = Object.freeze([
     "singleUseUrl",
     "postClaimOnly",
@@ -141,17 +146,55 @@
     return `MemoryEndpoints enrollment returned HTTP ${status}`;
   }
 
-  async function boundedJson(response, label) {
-    const contentLength = Number(response.headers && response.headers.get
-      ? response.headers.get("Content-Length")
-      : 0);
-    if (Number.isFinite(contentLength) && contentLength > maximumResponseBytes) {
-      throw enrollmentError("response_too_large", `${label} exceeded the response limit`);
-    }
-    const bytes = new Uint8Array(await response.arrayBuffer());
-    if (bytes.byteLength === 0 || bytes.byteLength > maximumResponseBytes) {
+  /** Cancel abandoned bytes without letting an uncooperative cancel promise hold enrollment open. */
+  function cancelBody(body) {
+    try { Promise.resolve(body && body.cancel()).catch(() => {}); } catch (_error) { /* Already closed/locked. */ }
+  }
+
+  /** Enforce decoded-byte and chunk limits before retention, using the operation's one deadline. */
+  async function boundedJson(response, label, lifetime) {
+    const declared = response.headers && response.headers.get
+      ? response.headers.get("Content-Length") : null;
+    if (declared !== null && (!/^\d+$/.test(declared) || !Number.isSafeInteger(Number(declared)))) {
+      cancelBody(response.body);
       throw enrollmentError("invalid_response", `${label} returned an invalid response length`);
     }
+    if (declared !== null && Number(declared) > maximumResponseBytes) {
+      cancelBody(response.body);
+      throw enrollmentError("response_too_large", `${label} exceeded the response limit`);
+    }
+    if (!response.body || typeof response.body.getReader !== "function") {
+      cancelBody(response.body);
+      throw enrollmentError("invalid_response", `${label} requires a readable response body`);
+    }
+    const reader = response.body.getReader();
+    const chunks = [];
+    let length = 0;
+    let count = 0;
+    let complete = false;
+    try {
+      while (true) {
+        const item = await lifetime.wait(() => reader.read());
+        if (item.done) { complete = true; break; }
+        if (!(item.value instanceof Uint8Array)) {
+          throw enrollmentError("invalid_response", `${label} returned invalid response bytes`);
+        }
+        if (++count > maximumResponseChunks || item.value.byteLength > maximumResponseBytes - length) {
+          throw enrollmentError("response_too_large", `${label} exceeded the response limit`);
+        }
+        length += item.value.byteLength;
+        if (item.value.byteLength) chunks.push(item.value.slice());
+      }
+    } finally {
+      if (!complete) cancelBody(reader);
+      try { reader.releaseLock(); } catch (_error) { /* Cancellation owns any pending read. */ }
+    }
+    if (length === 0) {
+      throw enrollmentError("invalid_response", `${label} returned an invalid response length`);
+    }
+    const bytes = new Uint8Array(length);
+    let offset = 0;
+    for (const chunk of chunks) { bytes.set(chunk, offset); offset += chunk.byteLength; }
     let text;
     try {
       text = new TextDecoder("utf-8", { fatal: true }).decode(bytes);
@@ -224,6 +267,7 @@
   }
 
   class MemoryEndpointsEnrollmentClient {
+    /** Bind the service, Fetch implementation and finite budget; retain only a completed contract. */
     constructor(options) {
       const settings = options || {};
       this.baseUrl = normalizeBaseUrl(settings.baseUrl);
@@ -231,10 +275,44 @@
       if (typeof this.fetch !== "function") {
         throw enrollmentError("fetch_unavailable", "Fetch is required for MemoryEndpoints enrollment");
       }
-      this.contractPromise = null;
+      this.timeoutMilliseconds = settings.timeoutMilliseconds === undefined
+        ? defaultTimeoutMilliseconds : settings.timeoutMilliseconds;
+      if (!Number.isInteger(this.timeoutMilliseconds) || this.timeoutMilliseconds < 1 ||
+          this.timeoutMilliseconds > maximumTimeoutMilliseconds) {
+        throw enrollmentError("invalid_timeout", "Enrollment timeout must be between 1 and 120000 milliseconds");
+      }
+      this.contract = null;
     }
 
+    /** Keep discovery and its dependent mutation under the same cancellation/deadline owner. */
+    async #operation(options, action) {
+      const signal = options && options.signal;
+      if (signal !== undefined && (!signal || typeof signal.aborted !== "boolean" ||
+          typeof signal.addEventListener !== "function" || typeof signal.removeEventListener !== "function")) {
+        throw enrollmentError("invalid_signal", "Enrollment cancellation signal is invalid");
+      }
+      const unavailable = enrollmentError("enrollment_unavailable", "Enrollment request lifetime is unavailable");
+      if (!lifetimeApi || typeof lifetimeApi.create !== "function") throw unavailable;
+      const lifetime = lifetimeApi.create({ signal, timeoutMilliseconds: this.timeoutMilliseconds,
+        optionsError: unavailable,
+        abortError: enrollmentError("enrollment_cancelled", "MemoryEndpoints enrollment was cancelled"),
+        timeoutError: enrollmentError("enrollment_timeout", "MemoryEndpoints enrollment timed out") });
+      let failure;
+      try { return await lifetime.wait(() => action(lifetime)); }
+      catch (error) {
+        failure = error instanceof MemoryEndpointsEnrollmentError ? error
+          : enrollmentError("enrollment_network_error", "MemoryEndpoints enrollment request failed");
+        throw failure;
+      } finally { lifetime.dispose(failure); }
+    }
+
+    /** Expose a finite request for callers that already know their current enrollment route. */
     async request(method, route, options) {
+      return this.#operation(options, lifetime => this.#requestWithin(method, route, options, lifetime));
+    }
+
+    /** Transfer and validate one response; discard a late Fetch response after cancellation. */
+    async #requestWithin(method, route, options, lifetime) {
       const settings = options || {};
       const headers = {
         Accept: "application/json",
@@ -247,18 +325,23 @@
       }
       let response;
       try {
-        response = await this.fetch(`${this.baseUrl}${route}`, {
+        response = await lifetime.wait(() => Promise.resolve(this.fetch(`${this.baseUrl}${route}`, {
           method,
           cache: "no-store",
           credentials: "omit",
           redirect: "error",
           headers,
-          body
-        });
-      } catch (_error) {
+          body,
+          signal: lifetime.signal
+        })).then(value => {
+          if (lifetime.signal.aborted) cancelBody(value && value.body);
+          return value;
+        }));
+      } catch (error) {
+        if (error instanceof MemoryEndpointsEnrollmentError) throw error;
         throw enrollmentError("enrollment_network_error", "MemoryEndpoints enrollment request failed");
       }
-      const payload = await boundedJson(response, settings.label || "MemoryEndpoints enrollment");
+      const payload = await boundedJson(response, settings.label || "MemoryEndpoints enrollment", lifetime);
       assertRedacted(payload, settings.label || "MemoryEndpoints enrollment");
       const allowed = Array.isArray(settings.allowedStatuses)
         ? settings.allowedStatuses
@@ -273,33 +356,41 @@
       return Object.freeze({ status: response.status, payload });
     }
 
-    async discover() {
-      if (!this.contractPromise) {
-        this.contractPromise = this.request("GET", connectorContractPath, {
+    /** Cache successful discovery only; concurrent callers own independent cancellable requests. */
+    async #discoverWithin(lifetime) {
+      if (!this.contract) {
+        const result = await this.#requestWithin("GET", connectorContractPath, {
           label: "connector contract",
           allowedStatuses: [200]
-        }).then((result) => normalizeContract(result.payload, this.baseUrl));
+        }, lifetime);
+        this.contract = await lifetime.wait(() => normalizeContract(result.payload, this.baseUrl));
       }
-      try {
-        return await this.contractPromise;
-      } catch (error) {
-        this.contractPromise = null;
-        throw error;
-      }
+      return this.contract;
     }
 
+    /** Discover without starting an enrollment mutation. */
+    async discover(options) {
+      return this.#operation(options, lifetime => this.#discoverWithin(lifetime));
+    }
+
+    /** Claim at most once in this call; cancellation never retries a possibly committed POST. */
     async claim(options) {
       const settings = options || {};
-      const contract = await this.discover();
+      return this.#operation(settings, lifetime => this.#claimWithin(settings, lifetime));
+    }
+
+    /** Validate the caller before discovery and accept only the server's persisted claim. */
+    async #claimWithin(settings, lifetime) {
       const invitationUrl = normalizeInvitationUrl(settings.invitationUrl, this.baseUrl);
       const agreedAgentName = normalizeIdentifier(settings.agreedAgentName, "Agent name", 96);
       const idempotencyKey = normalizeIdempotencyKey(settings.idempotencyKey);
-      const result = await this.request("POST", contract.routes.claimInvitation, {
+      const contract = await this.#discoverWithin(lifetime);
+      const result = await this.#requestWithin("POST", contract.routes.claimInvitation, {
         label: "enrollment claim",
         headers: { "Idempotency-Key": idempotencyKey },
         payload: { invitationUrl, agreedAgentName },
         allowedStatuses: [200, 201]
-      });
+      }, lifetime);
       const value = result.payload;
       if (value.persisted !== true || value.urlConsumed !== true) {
         throw enrollmentError("claim_not_persisted", "Enrollment claim was not atomically persisted");
@@ -320,9 +411,14 @@
       });
     }
 
+    /** Reconnect by the selected agent identity under one finite discovery/restore operation. */
     async reconnect(options) {
       const settings = options || {};
-      const contract = await this.discover();
+      return this.#operation(settings, lifetime => this.#reconnectWithin(settings, lifetime));
+    }
+
+    /** Validate agent/token input and require a complete restore bound to that same agent. */
+    async #reconnectWithin(settings, lifetime) {
       const canonicalAgentName = normalizeIdentifier(
         settings.canonicalAgentName,
         "Canonical agent name",
@@ -332,12 +428,13 @@
       if (agentToken.length < 24 || agentToken.length > 4096 || /\s/.test(agentToken)) {
         throw enrollmentError("invalid_agent_token", "Agent token is invalid");
       }
-      const result = await this.request("POST", contract.routes.reconnect, {
+      const contract = await this.#discoverWithin(lifetime);
+      const result = await this.#requestWithin("POST", contract.routes.reconnect, {
         label: "agent reconnect",
         headers: { Authorization: `Bearer ${agentToken}` },
         payload: { agentName: canonicalAgentName },
         allowedStatuses: [200]
-      });
+      }, lifetime);
       const value = result.payload;
       const returnedAgentName = normalizeIdentifier(
         value.canonicalAgentName,
@@ -371,6 +468,9 @@
     contractSchema,
     connectorContractPath,
     maximumResponseBytes,
+    maximumResponseChunks,
+    defaultTimeoutMilliseconds,
+    maximumTimeoutMilliseconds,
     normalizeBaseUrl
   });
 });

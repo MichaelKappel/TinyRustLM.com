@@ -44,6 +44,211 @@ function liveContract() {
   };
 }
 
+test("bounded enrollment stops oversized streams before whole-body buffering", async () => {
+  let reads = 0;
+  let cancelled = false;
+  let released = false;
+  let wholeBodyRead = false;
+  const client = new enrollment.MemoryEndpointsEnrollmentClient({
+    baseUrl: serviceBaseUrl,
+    fetch: async () => ({ status: 200, headers: new Headers(), body: { getReader: () => ({
+      read: async () => { reads += 1; return { value: new Uint8Array(enrollment.maximumResponseBytes + 1), done: false }; },
+      cancel: async () => { cancelled = true; }, releaseLock: () => { released = true; }
+    }) }, arrayBuffer: async () => { wholeBodyRead = true; return new ArrayBuffer(enrollment.maximumResponseBytes + 1); } })
+  });
+  await assert.rejects(client.discover(), { code: "response_too_large" });
+  assert.equal(reads, 1);
+  assert.equal(cancelled, true);
+  assert.equal(released, true);
+  assert.equal(wholeBodyRead, false);
+});
+
+test("bounded enrollment ends a stalled fetch and disposes its late response", async () => {
+  let signal;
+  let cancelled = false;
+  const client = new enrollment.MemoryEndpointsEnrollmentClient({
+    baseUrl: serviceBaseUrl, timeoutMilliseconds: 10,
+    fetch: (_url, options) => { signal = options.signal; return new Promise(resolve => setTimeout(() => {
+      const response = jsonResponse(200, liveContract());
+      const cancel = response.body.cancel.bind(response.body);
+      response.body.cancel = reason => { cancelled = true; return cancel(reason); };
+      resolve(response);
+    }, 60)); }
+  });
+  await assert.rejects(client.discover(), { code: "enrollment_timeout" });
+  assert.equal(signal.aborted, true);
+  await new Promise(resolve => setTimeout(resolve, 80));
+  assert.equal(cancelled, true);
+});
+
+test("bounded enrollment uses one deadline across discovery and claim", async () => {
+  let calls = 0;
+  const client = new enrollment.MemoryEndpointsEnrollmentClient({
+    baseUrl: serviceBaseUrl, timeoutMilliseconds: 35,
+    fetch: async () => {
+      calls += 1;
+      await new Promise(resolve => setTimeout(resolve, 25));
+      return calls === 1 ? jsonResponse(200, liveContract()) : jsonResponse(201, {
+        persisted: true, urlConsumed: true, canonicalAgentName: "fixture-agent", agentToken: "fixture_" + "a".repeat(32)
+      });
+    }
+  });
+  await assert.rejects(client.claim({ invitationUrl: serviceBaseUrl + "/enroll/" + "a".repeat(48),
+    agreedAgentName: "fixture-agent", idempotencyKey: "test-one-deadline" }), { code: "enrollment_timeout" });
+  assert.equal(calls, 2);
+});
+
+test("bounded enrollment honours a pre-aborted caller without starting a request", async () => {
+  const controller = new AbortController();
+  controller.abort();
+  let calls = 0;
+  const client = new enrollment.MemoryEndpointsEnrollmentClient({ baseUrl: serviceBaseUrl,
+    fetch: async () => { calls += 1; return jsonResponse(200, liveContract()); } });
+  for (const run of [
+    () => client.discover({ signal: controller.signal }),
+    () => client.request("GET", "/api/matm/test", { signal: controller.signal }),
+    () => client.claim({ signal: controller.signal }),
+    () => client.reconnect({ signal: controller.signal })
+  ]) await assert.rejects(run(), { code: "enrollment_cancelled" });
+  assert.equal(calls, 0);
+});
+
+/** Feed controlled reader outcomes without permitting a whole-response fallback. */
+function streamedClient(read, options = {}) {
+  const observed = { cancelled: 0, released: 0 };
+  const client = new enrollment.MemoryEndpointsEnrollmentClient({ baseUrl: serviceBaseUrl,
+    timeoutMilliseconds: options.timeoutMilliseconds,
+    fetch: async () => ({ status: options.status || 200, headers: new Headers(options.headers),
+      body: { getReader: () => ({ read,
+        cancel: () => { observed.cancelled += 1; return options.cancel ? options.cancel() : Promise.resolve(); },
+        releaseLock: () => { observed.released += 1; }
+      }) } }) });
+  return { client, observed };
+}
+
+for (const [name, bytes] of [["empty", new Uint8Array()], ["invalid UTF-8", new Uint8Array([255])],
+  ["invalid JSON", new TextEncoder().encode("{")], ["nonobject JSON", new TextEncoder().encode("[]")]]) {
+  test(`bounded enrollment rejects ${name} without disclosing response text`, async () => {
+    let done = false;
+    const { client, observed } = streamedClient(async () => {
+      if (done) return { done: true }; done = true; return { value: bytes, done: false };
+    });
+    await assert.rejects(client.request("GET", "/api/matm/test"), { code: "invalid_response" });
+    assert.equal(observed.released, 1);
+  });
+}
+
+test("bounded enrollment handles fragmented Unicode and accepts exactly the byte limit", async () => {
+  const json = JSON.stringify({ text: "é😀" });
+  const exact = new TextEncoder().encode(json + " ".repeat(enrollment.maximumResponseBytes - Buffer.byteLength(json)));
+  let offset = 0;
+  const { client } = streamedClient(async () => offset === exact.length ? { done: true }
+    : { done: false, value: exact.subarray(offset, offset = Math.min(offset + 1024, exact.length)) });
+  assert.deepEqual((await client.request("GET", "/api/matm/test")).payload, { text: "é😀" });
+});
+
+for (const declared of ["-1", "bad", "9007199254740992", String(enrollment.maximumResponseBytes + 1)]) {
+  test(`bounded enrollment rejects invalid or oversized declared length ${declared}`, async () => {
+    let cancelled = false;
+    const client = new enrollment.MemoryEndpointsEnrollmentClient({ baseUrl: serviceBaseUrl,
+      fetch: async () => ({ status: 200, headers: new Headers({ "Content-Length": declared }),
+        body: { cancel: () => { cancelled = true; return Promise.resolve(); }, getReader: () => assert.fail("body must not be read") } }) });
+    await assert.rejects(client.request("GET", "/api/matm/test"),
+      { code: declared === String(enrollment.maximumResponseBytes + 1) ? "response_too_large" : "invalid_response" });
+    assert.equal(cancelled, true);
+  });
+}
+
+test("bounded enrollment limits empty chunks and ignores a never-ending cancel promise", async () => {
+  let reads = 0;
+  const { client, observed } = streamedClient(async () => {
+    reads += 1; return { done: false, value: new Uint8Array() };
+  }, { cancel: () => new Promise(() => {}) });
+  await assert.rejects(client.request("GET", "/api/matm/test"), { code: "response_too_large" });
+  assert.equal(reads, enrollment.maximumResponseChunks + 1);
+  assert.deepEqual(observed, { cancelled: 1, released: 1 });
+});
+
+test("bounded enrollment cancels a stalled body and sanitizes reader failures", async () => {
+  const stalled = streamedClient(() => new Promise(() => {}), { timeoutMilliseconds: 10 });
+  await assert.rejects(stalled.client.request("GET", "/api/matm/test"), { code: "enrollment_timeout" });
+  // The rejected read continuation releases ownership after the outer deadline settles.
+  await new Promise(resolve => setImmediate(resolve));
+  assert.deepEqual(stalled.observed, { cancelled: 1, released: 1 });
+  const failed = streamedClient(async () => { throw new Error("private response detail"); });
+  await assert.rejects(failed.client.request("GET", "/api/matm/test"), error =>
+    error.code === "enrollment_network_error" && !error.message.includes("private response detail"));
+  assert.deepEqual(failed.observed, { cancelled: 1, released: 1 });
+});
+
+test("bounded enrollment rejects missing streams and nonbyte chunks", async () => {
+  const missing = new enrollment.MemoryEndpointsEnrollmentClient({ baseUrl: serviceBaseUrl,
+    fetch: async () => ({ status: 200, headers: new Headers(), arrayBuffer: () => assert.fail("unbounded fallback") }) });
+  await assert.rejects(missing.request("GET", "/api/matm/test"), { code: "invalid_response" });
+  const invalid = streamedClient(async () => ({ done: false, value: "not bytes" }));
+  await assert.rejects(invalid.client.request("GET", "/api/matm/test"), { code: "invalid_response" });
+  assert.deepEqual(invalid.observed, { cancelled: 1, released: 1 });
+});
+
+test("bounded enrollment validates budgets and signals before any fetch", async () => {
+  for (const timeoutMilliseconds of [null, 0, -1, 1.5, "30", NaN, Infinity, 120001]) {
+    assert.throws(() => new enrollment.MemoryEndpointsEnrollmentClient({ baseUrl: serviceBaseUrl, timeoutMilliseconds }),
+      { code: "invalid_timeout" });
+  }
+  let requests = 0;
+  const client = new enrollment.MemoryEndpointsEnrollmentClient({ baseUrl: serviceBaseUrl,
+    fetch: async () => { requests += 1; return jsonResponse(200, liveContract()); } });
+  assert.equal(client.timeoutMilliseconds, 30000);
+  for (const signal of [null, true, {}, { aborted: false }]) {
+    await assert.rejects(client.discover({ signal }), { code: "invalid_signal" });
+  }
+  assert.equal(requests, 0);
+});
+
+test("bounded enrollment isolates concurrent discovery cancellation and retains only success", async () => {
+  const controller = new AbortController();
+  let completeFirst;
+  let requests = 0;
+  const client = new enrollment.MemoryEndpointsEnrollmentClient({ baseUrl: serviceBaseUrl,
+    fetch: () => ++requests === 1 ? new Promise(resolve => { completeFirst = resolve; })
+      : Promise.resolve(jsonResponse(200, liveContract())) });
+  const first = client.discover({ signal: controller.signal });
+  await new Promise(resolve => setImmediate(resolve));
+  const second = client.discover();
+  controller.abort();
+  await assert.rejects(first, { code: "enrollment_cancelled" });
+  assert.equal((await second).schemaVersion, enrollment.contractSchema);
+  completeFirst(jsonResponse(200, liveContract()));
+  assert.equal((await client.discover()).schemaVersion, enrollment.contractSchema);
+  assert.equal(requests, 2);
+});
+
+test("bounded enrollment never retries a cancelled claim and allows explicit recovery with the same key", async () => {
+  const controller = new AbortController();
+  const bodies = [];
+  let claimStarted;
+  const started = new Promise(resolve => { claimStarted = resolve; });
+  const client = new enrollment.MemoryEndpointsEnrollmentClient({ baseUrl: serviceBaseUrl,
+    fetch: async (url, options) => {
+      if (url.endsWith("/connector-contract")) return jsonResponse(200, liveContract());
+      bodies.push({ body: options.body, key: options.headers["Idempotency-Key"] });
+      claimStarted();
+      if (bodies.length === 1) return new Promise(() => {});
+      return jsonResponse(200, { persisted: true, urlConsumed: true, canonicalAgentName: "fixture-agent",
+        agentToken: "fixture_" + "a".repeat(32), claimReceiptId: "fixture-recovered" });
+    } });
+  const input = { invitationUrl: serviceBaseUrl + "/enroll/" + "b".repeat(48),
+    agreedAgentName: "fixture-agent", idempotencyKey: "test-explicit-recovery" };
+  const first = client.claim({ ...input, signal: controller.signal });
+  await started;
+  controller.abort();
+  await assert.rejects(first, { code: "enrollment_cancelled" });
+  assert.equal(bodies.length, 1);
+  const recovered = await client.claim(input);
+  assert.equal(recovered.claimReceiptId, "fixture-recovered");
+  assert.deepEqual(bodies[0], bodies[1]);
+});
+
 test("discovers only a complete live single-agent enrollment contract", async () => {
   const client = new enrollment.MemoryEndpointsEnrollmentClient({
     baseUrl: serviceBaseUrl,

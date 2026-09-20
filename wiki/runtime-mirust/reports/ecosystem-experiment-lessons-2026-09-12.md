@@ -11,6 +11,28 @@ Keep useful findings and compact evidence identities in the owning canonical
 repository. Keep source history in Git and current model payloads only in
 `D:\LLMs\TinyRustLM`.
 
+## C83: response limits must apply before buffering and across every awaited stage
+
+- **Question:** Can enrollment remain pending or buffer an oversized response
+  despite its nominal one-MiB limit?
+- **Inputs/method:** Exact C82 parent `237224d2914f529d33fa1c0587aeae65fc655624`,
+  controlled response streams, delayed discovery/claim responses, caller aborts,
+  actual loopback Fetch in four Edge projects, and the existing continuity test.
+- **Result:** Four baseline regressions fail. After the change, 64 affected Node
+  checks and five browser cases pass; three existing desktop-only skips remain.
+  Node line/branch coverage is 88.66%/75.14%. Desktop/mobile screenshot bytes match.
+- **Decision:** Use the existing lifetime owner for one complete enrollment
+  operation. Enforce decoded bytes/chunks while reading, cancel without awaiting
+  an uncooperative cleanup promise, and cache only completed discovery. Never
+  replay a possibly committed POST automatically.
+- **Uncertainty:** Abort does not undo server-side persistence. Client same-key
+  recovery is tested, while the UI still generates a new claim key per click.
+  Other memory operations and live service compatibility require separate work.
+- **Reusable lesson:** A limit checked after whole-body allocation is too late;
+  a Fetch-only timer misses stalled bodies, and a timer reset between discovery
+  and mutation does not bound the operation the caller asked for.
+- **Evidence:** `artifacts/ecosystem-cleanup-20260912/enrollment-response-lifetime-review.json`.
+
 ## C82: exercise the actual import contract before interpreting browser conversation results
 
 - Question: can the unfinished conversation check exercise current SLM2 import,

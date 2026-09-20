@@ -3,6 +3,7 @@
 const fs = require("node:fs");
 const crypto = require("node:crypto");
 const path = require("node:path");
+const http = require("node:http");
 const { chromium, test, expect } = require("@playwright/test");
 const admissionAuthority = require("../app/browser-model-admission.js");
 const catalogAuthority = require("../app/minimodel-catalog-v1.js");
@@ -23,6 +24,57 @@ const TEST_ONLY_MODEL_ID =
 const TEST_ONLY_SCOPE =
   "test-only/never-live/e2e/memory-endpoints-enrollment";
 const RESOLVED_MEMBER_LENGTHS = Object.freeze([8704, 7459, 1403, 65800, 512]);
+
+test("enrollment bounds real Fetch streams and closes cancelled requests", async ({ page, context }) => {
+  const applicationOrigin = test.info().project.use.baseURL;
+  const closed = [];
+  const errors = [];
+  page.on("pageerror", error => errors.push(error.message));
+  const server = http.createServer((request, response) => {
+    response.setHeader("Access-Control-Allow-Origin", applicationOrigin);
+    response.setHeader("Content-Type", "application/json");
+    response.setHeader("Cache-Control", "no-store");
+    const mode = request.url.split("/").pop();
+    response.on("close", () => closed.push(mode));
+    if (mode === "oversized") response.end(Buffer.alloc(1024 * 1024 + 1, 32));
+    else if (mode === "success") response.end('{"ok":true}');
+    else response.write('{"waiting":');
+  });
+  try {
+    await new Promise((resolve, reject) => {
+      server.once("error", reject); server.listen(0, "127.0.0.1", resolve);
+    });
+    const serviceOrigin = `http://127.0.0.1:${server.address().port}`;
+    await context.route("**/*", route => {
+      const origin = new URL(route.request().url()).origin;
+      return origin === applicationOrigin || origin === serviceOrigin ? route.continue()
+        : route.fulfill({ status: 503, body: "External services are unavailable in this test" });
+    });
+    await page.goto("/", { waitUntil: "load" });
+    const results = await page.evaluate(async baseUrl => {
+      const Client = window.TinyRustLMMemoryEndpointsEnrollment.MemoryEndpointsEnrollmentClient;
+      const output = {};
+      for (const mode of ["deadline", "cancelled", "oversized", "success"]) {
+        const controller = new AbortController();
+        const timer = mode === "cancelled" ? setTimeout(() => controller.abort(), 75) : null;
+        try {
+          const result = await new Client({ baseUrl, timeoutMilliseconds: 300 })
+            .request("GET", `/api/matm/${mode}`, { signal: controller.signal });
+          output[mode] = result.payload.ok;
+        } catch (error) { output[mode] = error.code; }
+        finally { if (timer !== null) clearTimeout(timer); }
+      }
+      return output;
+    }, serviceOrigin);
+    expect(results).toEqual({ deadline: "enrollment_timeout", cancelled: "enrollment_cancelled",
+      oversized: "response_too_large", success: true });
+    await expect.poll(() => closed.includes("deadline") && closed.includes("cancelled")).toBe(true);
+    expect(errors).toEqual([]);
+  } finally {
+    server.closeAllConnections();
+    await new Promise(resolve => server.close(resolve));
+  }
+});
 
 /** Scan a closed owned profile for the supplied test credentials without reporting their values. */
 function secretOccurrences(root, secrets) {

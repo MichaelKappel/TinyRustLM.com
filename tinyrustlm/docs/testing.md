@@ -164,6 +164,21 @@ an operating-system lock does not authorize bypassing an automatic-policy denial
 
 ## Memory Continuity Browser Check
 
+Enrollment requests use the shared operation lifetime. The default 30-second
+budget covers discovery and its claim/reconnect request together; constructor
+`timeoutMilliseconds` accepts integers in 1..120000. `discover`, `request`,
+`claim` and `reconnect` accept an optional `signal` in their options. Cancellation
+and timeout are typed errors, never evidence that a server-side POST was undone.
+The client does not retry automatically. Explicit recovery must retain the
+same idempotency key; the current UI does not yet retain that key across clicks.
+
+Streamed JSON is limited to one MiB and 4,096 chunks before retention. Unit checks
+cover absent/false length headers, exact limits, split Unicode, stalled reads,
+uncooperative cancellation, late Fetch responses and independent concurrent
+discovery. The browser spec additionally uses real loopback Fetch in each project
+to verify timeout/cancellation closes requests, rejects oversized bodies, and
+permits a subsequent successful request. No live endpoint is called.
+
 The MemoryEndpoints enrollment browser scenario uses Advanced local import with
 current hash-bound catalog/receipt fixtures, synthetic inference, real browser
 storage, and a loopback memory service. Run it with

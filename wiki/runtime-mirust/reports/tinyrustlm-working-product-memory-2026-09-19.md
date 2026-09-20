@@ -16,6 +16,13 @@ Authority order is current owner instructions, inspected current contracts and b
 
 ## Current evidence and its limits
 
+**C83 enrollment lifetime:** the client now bounds discovery plus claim/reconnect
+with one cancellable deadline and checks streamed response bytes before retention.
+All 64 affected Node checks and five Edge cases pass, with three explicit skips;
+desktop/mobile screenshots match exactly. Read `enrollment-response-lifetime-review.json`.
+No live service or publication proof; UI claim-key recovery and other memory
+request lifetimes remain unresolved.
+
 **C82 conversation/capture:** current Advanced import, catalog membership and
 real worker rendering now have eight passing Edge cases using explicitly
 synthetic weights. A test-only Rust example uses the existing writer; no frozen

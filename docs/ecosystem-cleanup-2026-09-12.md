@@ -5,6 +5,32 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C83: finite enrollment responses and request ownership, September 20
+
+The enrollment client checked response size only after `arrayBuffer()` and had
+no request deadline. Four new regressions failed against that implementation.
+The client now shares the existing operation-lifetime owner across discovery
+and the dependent claim or reconnect: 30 seconds by default, a validated maximum
+of 120 seconds, and optional caller cancellation. Stream reads enforce one MiB
+and 4,096 chunks before retention, cancel abandoned bodies, and release readers.
+Late Fetch responses are discarded. Only successful discovery is cached, so one
+caller's cancellation cannot poison another. A possibly committed POST is never
+automatically retried; explicit same-key client recovery is tested.
+
+All 64 affected Node checks pass with 88.66% line and 75.14% branch coverage.
+Actual Edge Fetch checks pass at four viewport/interaction configurations,
+including server-observed closure of stalled and cancelled requests. The existing
+desktop memory-continuity scenario also passes; its three other-project skips
+remain explicit. Desktop/mobile empty-state screenshots exactly match before
+and after. Both HTML shells now load the existing lifetime owner before enrollment
+and bind the changed script hash; no visual component or style changed.
+
+Evidence: `artifacts/ecosystem-cleanup-20260912/enrollment-response-lifetime-review.json`.
+This does not bound the separate submit/search/outbox operations or provide live
+enrollment, model, NuGet or deployment evidence. The UI's preservation of a claim
+idempotency key across user retries still needs work; client same-key recovery
+does not establish that UI behavior. Existing blocked cleanup is untouched.
+
 ## C82: current conversation browser path and active capture, September 20
 
 The pending conversation test used an obsolete model input, waited for eager
