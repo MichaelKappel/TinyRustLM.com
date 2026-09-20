@@ -393,10 +393,13 @@ function (root, admissionApi, catalogApi) {
     }
   }
 
-  async function hashBytes(adapter, bytes) {
+  // Hash bounded metadata without retaining a read operation after caller cancellation.
+  async function hashBytes(adapter, bytes, signal) {
+    checkCancelled(signal);
     const hasher = createHasher(adapter);
-    await updateHasher(hasher, bytes);
-    return finishHasher(hasher);
+    await nextWithCancellation(updateHasher(hasher, bytes), signal);
+    checkCancelled(signal);
+    return nextWithCancellation(finishHasher(hasher), signal);
   }
 
   function normalizeSignal(value) {
@@ -415,18 +418,24 @@ function (root, admissionApi, catalogApi) {
     }
   }
 
+  // Observe late settlements even when the operation synchronously aborts before returning its promise.
   function nextWithCancellation(promise, signal, stagingId) {
-    if (!signal) return Promise.resolve(promise);
-    checkCancelled(signal, stagingId);
+    const pending = Promise.resolve(promise);
+    if (!signal) return pending;
+    if (signal.aborted) {
+      pending.catch(() => {});
+      checkCancelled(signal, stagingId);
+    }
     return new Promise((resolve, rejectPromise) => {
       const onAbort = () => {
+        signal.removeEventListener("abort", onAbort);
         rejectPromise(new ModelCompositionStoreError(
           "model-composition-store-aborted",
           { stagingId }
         ));
       };
       signal.addEventListener("abort", onAbort, { once: true });
-      Promise.resolve(promise).then(
+      pending.then(
         (value) => {
           signal.removeEventListener("abort", onAbort);
           resolve(value);
@@ -640,9 +649,12 @@ function (root, admissionApi, catalogApi) {
     }
   }
 
-  async function openReadable(adapter, path, code, details) {
+  // Read acquisition has no durable mutation; a cancelled caller may safely stop waiting.
+  async function openReadable(adapter, path, code, details, signal) {
+    checkCancelled(signal, details && details.stagingId);
     try {
-      const readable = await adapter.openReadable(path);
+      const readable = await nextWithCancellation(adapter.openReadable(path), signal,
+        details && details.stagingId);
       if (readable === null) return null;
       if (!readable || !Number.isSafeInteger(readable.byteLength) ||
           readable.byteLength < 0 || readable.stream === undefined) {
@@ -660,7 +672,8 @@ function (root, admissionApi, catalogApi) {
       context.adapter,
       [INSTALLED_DIRECTORY, context.manifestSha256, member.fileName],
       "model-composition-store-read",
-      details
+      details,
+      context.signal
     );
     if (!readable || readable.byteLength !== member.byteLength) {
       reject("model-composition-store-stored-length", details);
@@ -678,8 +691,9 @@ function (root, admissionApi, catalogApi) {
     });
   }
 
-  async function readSmallFile(adapter, path, maximumBytes, code) {
-    const readable = await openReadable(adapter, path, code);
+  // Keep one caller signal through file acquisition, bounded streaming and iterator disposal.
+  async function readSmallFile(adapter, path, maximumBytes, code, signal) {
+    const readable = await openReadable(adapter, path, code, undefined, signal);
     if (readable === null) return null;
     if (readable.byteLength < 1 || readable.byteLength > maximumBytes) reject(code);
     const bytes = new Uint8Array(readable.byteLength);
@@ -687,7 +701,7 @@ function (root, admissionApi, catalogApi) {
     for await (const chunk of boundedChunks(
       readable.stream,
       Math.min(DEFAULT_CHUNK_BYTES, maximumBytes),
-      null,
+      signal,
       null,
       code
     )) {
@@ -748,10 +762,12 @@ function (root, admissionApi, catalogApi) {
     }
   }
 
-  async function listEntries(adapter, path, limit) {
+  // Enumeration is read-only; mutation callers still wait for each actual write/removal to settle.
+  async function listEntries(adapter, path, limit, signal) {
+    checkCancelled(signal);
     let entries;
     try {
-      entries = await adapter.listEntries(path, limit);
+      entries = await nextWithCancellation(adapter.listEntries(path, limit), signal);
     } catch (error) {
       throw typed(error, "model-composition-store-cleanup", { cause: error });
     }
@@ -851,12 +867,14 @@ function (root, admissionApi, catalogApi) {
     return source;
   }
 
-  async function readPointer(adapter) {
+  // Omit signal only for authoritative reconciliation after a pointer write has begun.
+  async function readPointer(adapter, signal) {
     const bytes = await readSmallFile(
       adapter,
       [ACTIVE_POINTER_FILE],
       MAXIMUM_METADATA_BYTES,
-      "model-composition-store-active-pointer"
+      "model-composition-store-active-pointer",
+      signal
     );
     return bytes === null
       ? null
@@ -899,24 +917,28 @@ function (root, admissionApi, catalogApi) {
     return result;
   }
 
-  async function readStaging(adapter, name) {
+  // Read canonical staging authority with the operation's precommit cancellation lifetime.
+  async function readStaging(adapter, name, signal) {
     const bytes = await readSmallFile(
       adapter,
       [STAGING_DIRECTORY, name],
       MAXIMUM_METADATA_BYTES,
-      "model-composition-store-staging"
+      "model-composition-store-staging",
+      signal
     );
     return bytes === null
       ? null
       : parseCanonical(bytes, normalizeStaging, "model-composition-store-staging");
   }
 
-  async function requireResolvedPointer(adapter, pointer) {
+  // Cancellation is not corruption or an indeterminate commit; postcommit callers omit the signal.
+  async function requireResolvedPointer(adapter, pointer, signal) {
     if (pointer === null) return;
     let marker;
     try {
-      marker = await readStaging(adapter, `${pointer.stagingId}.json`);
+      marker = await readStaging(adapter, `${pointer.stagingId}.json`, signal);
     } catch (error) {
+      checkCancelled(signal, pointer.stagingId);
       throw activationIndeterminate(pointer, error);
     }
     if (marker !== null) {
@@ -924,15 +946,17 @@ function (root, admissionApi, catalogApi) {
     }
   }
 
-  async function readInstalledManifest(options, manifestSha256) {
+  // Bind and parse stored metadata only while its calling read/validation operation remains live.
+  async function readInstalledManifest(options, manifestSha256, signal) {
     const bytes = await readSmallFile(
       options.adapter,
       [INSTALLED_DIRECTORY, manifestSha256, INSTALLED_MANIFEST_FILE],
       MAXIMUM_METADATA_BYTES,
-      "model-composition-store-installed-manifest"
+      "model-composition-store-installed-manifest",
+      signal
     );
     if (bytes === null) return null;
-    if (await hashBytes(options.adapter, bytes) !== manifestSha256) {
+    if (await hashBytes(options.adapter, bytes, signal) !== manifestSha256) {
       reject("model-composition-store-installed-manifest");
     }
     return parseCanonical(
@@ -1247,17 +1271,19 @@ function (root, admissionApi, catalogApi) {
     });
   }
 
-  async function readInstalledAdmission(options, manifestSha256, manifest) {
+  // Validate admission bytes under the same cancellable lifetime as the installed manifest.
+  async function readInstalledAdmission(options, manifestSha256, manifest, signal) {
     const code = "model-composition-store-stored-admission";
     const bytes = await readSmallFile(
       options.adapter,
       [INSTALLED_DIRECTORY, manifestSha256, INSTALLED_ADMISSION_FILE],
       admissionByteLimit(),
-      code
+      code,
+      signal
     );
     const descriptor = manifest.admissionAuthority.admission;
     if (bytes === null || bytes.byteLength !== descriptor.byteLength ||
-        await hashBytes(options.adapter, bytes) !== descriptor.sha256) {
+        await hashBytes(options.adapter, bytes, signal) !== descriptor.sha256) {
       reject(code);
     }
     let text;
@@ -1270,11 +1296,13 @@ function (root, admissionApi, catalogApi) {
     return Object.freeze({ text, bytes, admission });
   }
 
+  // Preserve cancellation while reading and hashing the exact qualification receipt.
   async function readInstalledQualificationReceipt(
     options,
     manifestSha256,
     manifest,
-    admission
+    admission,
+    signal
   ) {
     const code = "model-composition-store-stored-qualification-receipt";
     const descriptor = manifest.admissionAuthority.qualificationReceipt;
@@ -1282,10 +1310,11 @@ function (root, admissionApi, catalogApi) {
       options.adapter,
       [INSTALLED_DIRECTORY, manifestSha256, INSTALLED_QUALIFICATION_RECEIPT_FILE],
       MAXIMUM_QUALIFICATION_RECEIPT_BYTES,
-      code
+      code,
+      signal
     );
     if (bytes === null || bytes.byteLength !== descriptor.byteLength ||
-        await hashBytes(options.adapter, bytes) !== descriptor.sha256) {
+        await hashBytes(options.adapter, bytes, signal) !== descriptor.sha256) {
       reject(code);
     }
     let text;
@@ -1298,12 +1327,14 @@ function (root, admissionApi, catalogApi) {
     return Object.freeze({ text, bytes, receipt });
   }
 
+  // Catalog custody shares the caller lifetime and retains exact descriptor validation.
   async function readInstalledCatalog(
     options,
     manifestSha256,
     manifest,
     admission,
-    receipt
+    receipt,
+    signal
   ) {
     const code = "model-composition-store-stored-catalog";
     const descriptor = manifest.admissionAuthority.catalog;
@@ -1311,10 +1342,11 @@ function (root, admissionApi, catalogApi) {
       options.adapter,
       [INSTALLED_DIRECTORY, manifestSha256, INSTALLED_CATALOG_FILE],
       catalogByteLimit(),
-      code
+      code,
+      signal
     );
     if (bytes === null || bytes.byteLength !== descriptor.byteLength ||
-        await hashBytes(options.adapter, bytes) !== descriptor.sha256) {
+        await hashBytes(options.adapter, bytes, signal) !== descriptor.sha256) {
       reject(code);
     }
     let text;
@@ -1333,20 +1365,23 @@ function (root, admissionApi, catalogApi) {
     });
   }
 
-  async function readInstalledAdmissionAuthority(options, manifestSha256, manifest) {
-    const admission = await readInstalledAdmission(options, manifestSha256, manifest);
+  // All three authority documents belong to one cancellable read, with no partial acceptance.
+  async function readInstalledAdmissionAuthority(options, manifestSha256, manifest, signal) {
+    const admission = await readInstalledAdmission(options, manifestSha256, manifest, signal);
     const receipt = await readInstalledQualificationReceipt(
       options,
       manifestSha256,
       manifest,
-      admission.admission
+      admission.admission,
+      signal
     );
     const catalog = await readInstalledCatalog(
       options,
       manifestSha256,
       manifest,
       admission.admission,
-      receipt.receipt
+      receipt.receipt,
+      signal
     );
     return openedAdmissionAuthority(manifest, admission, receipt, catalog);
   }
@@ -1354,7 +1389,8 @@ function (root, admissionApi, catalogApi) {
   async function verifyInstalled(options, pointer, manifest, signal) {
     const authoritySha256 = await hashBytes(
       options.adapter,
-      canonicalBytes(manifest.admissionAuthority)
+      canonicalBytes(manifest.admissionAuthority),
+      signal
     );
     if (pointer.admissionAuthoritySha256 !== authoritySha256) {
       reject("model-composition-store-active-pointer");
@@ -1432,12 +1468,13 @@ function (root, admissionApi, catalogApi) {
         checkCancelled(signal, pointer.stagingId);
         const member = manifest.members[MEMBER_NAMES.indexOf(fileName)];
         const details = { stagingId: pointer.stagingId, memberName: fileName };
-        const readable = await nextWithCancellation(openReadable(
+        const readable = await openReadable(
           options.adapter,
           [INSTALLED_DIRECTORY, pointer.manifestSha256, fileName],
           "model-composition-store-read",
-          details
-        ), signal, pointer.stagingId);
+          details,
+          signal
+        );
         if (!readable || readable.byteLength !== member.byteLength) {
           reject("model-composition-store-stored-length", details);
         }
@@ -1521,13 +1558,14 @@ function (root, admissionApi, catalogApi) {
   }
 
   // Require a canonical marker bound to its filename before using its cleanup authority.
-  async function ownedStaging(adapter, entry) {
+  async function ownedStaging(adapter, entry, signal) {
     const code = "model-composition-store-cleanup-ownership";
     if (entry.kind !== "file" || !/^[0-9a-f]{64}\.json$/u.test(entry.name)) reject(code);
     let staging;
     try {
-      staging = await readStaging(adapter, entry.name);
+      staging = await readStaging(adapter, entry.name, signal);
     } catch (error) {
+      checkCancelled(signal);
       throw new ModelCompositionStoreError(code, { cause: error });
     }
     if (!staging || entry.name !== `${staging.stagingId}.json`) reject(code);
@@ -1535,8 +1573,8 @@ function (root, admissionApi, catalogApi) {
   }
 
   // Admit a complete bounded parent inventory; a file must never masquerade as a composition directory.
-  async function installedEntry(options, manifestSha256) {
-    const entries = await listEntries(options.adapter, [INSTALLED_DIRECTORY], INSTALLED_SCAN_LIMIT);
+  async function installedEntry(options, manifestSha256, signal) {
+    const entries = await listEntries(options.adapter, [INSTALLED_DIRECTORY], INSTALLED_SCAN_LIMIT, signal);
     if (entries.length === INSTALLED_SCAN_LIMIT) reject("model-composition-store-cleanup-ownership");
     const entry = entries.find(value => value.name === manifestSha256);
     if (entry && entry.kind !== "directory") reject("model-composition-store-cleanup-ownership");
@@ -1544,21 +1582,22 @@ function (root, admissionApi, catalogApi) {
   }
 
   // A marker, pointer or this installation proves ownership; orphans need a hash-bound manifest.
-  async function ownedInstalledEntries(options, manifestSha256, identityKnown) {
+  async function ownedInstalledEntries(options, manifestSha256, identityKnown, signal) {
     const code = "model-composition-store-cleanup-ownership";
     if (!SHA256_PATTERN.test(manifestSha256)) reject(code);
-    await installedEntry(options, manifestSha256);
+    await installedEntry(options, manifestSha256, signal);
     if (!identityKnown) {
       let manifest;
       try {
-        manifest = await readInstalledManifest(options, manifestSha256);
+        manifest = await readInstalledManifest(options, manifestSha256, signal);
       } catch (error) {
+        checkCancelled(signal);
         throw new ModelCompositionStoreError(code, { cause: error });
       }
       if (!manifest) reject(code);
     }
     const entries = await listEntries(options.adapter,
-      [INSTALLED_DIRECTORY, manifestSha256], INSTALLED_FILES.length + 1);
+      [INSTALLED_DIRECTORY, manifestSha256], INSTALLED_FILES.length + 1, signal);
     if (entries.length > INSTALLED_FILES.length || entries.some(entry =>
       entry.kind !== "file" || !INSTALLED_FILES.includes(entry.name))) reject(code);
     return entries;
@@ -1567,7 +1606,7 @@ function (root, admissionApi, catalogApi) {
   // Delete only admitted direct files, manifest last; never recursively consume a late extra entry.
   async function removeInstalled(options, manifestSha256, identityKnown, signal) {
     return withCompositionLock(options.adapter, manifestSha256, "exclusive", async () => {
-      const entries = await ownedInstalledEntries(options, manifestSha256, identityKnown);
+      const entries = await ownedInstalledEntries(options, manifestSha256, identityKnown, signal);
       const names = new Set(entries.map(entry => entry.name));
       for (const name of INSTALLED_FILES) {
         checkCancelled(signal);
@@ -1591,26 +1630,27 @@ function (root, admissionApi, catalogApi) {
   }
 
   // Bound the complete parent inventory before creating a candidate in an unowned existing path.
-  async function requireVacantInstalledPath(options, manifestSha256) {
-    if (await installedEntry(options, manifestSha256)) {
+  async function requireVacantInstalledPath(options, manifestSha256, signal) {
+    if (await installedEntry(options, manifestSha256, signal)) {
       reject("model-composition-store-cleanup-ownership");
     }
   }
 
   // Retire only identified compositions and canonical markers within the caller's bounded budget.
   async function cleanupInternal(options, limit, signal) {
-    const pointer = await readPointer(options.adapter);
-    await requireResolvedPointer(options.adapter, pointer);
+    const pointer = await readPointer(options.adapter, signal);
+    await requireResolvedPointer(options.adapter, pointer, signal);
     const stagingEntries = await listEntries(
       options.adapter,
       [STAGING_DIRECTORY],
-      options.maximumStagingEntries + 1
+      options.maximumStagingEntries + 1,
+      signal
     );
     let removedStaging = 0;
     let removedInstalled = 0;
     for (const entry of stagingEntries.slice(0, limit)) {
       checkCancelled(signal);
-      const staging = await ownedStaging(options.adapter, entry);
+      const staging = await ownedStaging(options.adapter, entry, signal);
       if (!pointer || staging.manifestSha256 !== pointer.manifestSha256) {
         await removeInstalled(options, staging.manifestSha256, true, signal);
         removedInstalled += 1;
@@ -1622,11 +1662,12 @@ function (root, admissionApi, catalogApi) {
     const remainingEntries = await listEntries(
       options.adapter,
       [STAGING_DIRECTORY],
-      options.maximumStagingEntries + 1
+      options.maximumStagingEntries + 1,
+      signal
     );
     const protectedManifests = new Set(pointer ? [pointer.manifestSha256] : []);
     for (const entry of remainingEntries) {
-      const staging = await ownedStaging(options.adapter, entry);
+      const staging = await ownedStaging(options.adapter, entry, signal);
       protectedManifests.add(staging.manifestSha256);
     }
 
@@ -1634,7 +1675,8 @@ function (root, admissionApi, catalogApi) {
     const installedEntries = await listEntries(
       options.adapter,
       [INSTALLED_DIRECTORY],
-      remainingBudget + protectedManifests.size + 1
+      remainingBudget + protectedManifests.size + 1,
+      signal
     );
     for (const entry of installedEntries) {
       if (removedInstalled >= limit) break;
@@ -1653,11 +1695,13 @@ function (root, admissionApi, catalogApi) {
     });
   }
 
-  async function allocateStagingId(options) {
+  // Allocation reads may be cancelled before any staging marker is persisted.
+  async function allocateStagingId(options, signal) {
     for (let attempt = 0; attempt < 4; attempt += 1) {
       let bytes;
       try {
-        bytes = await options.adapter.randomBytes(32);
+        checkCancelled(signal);
+        bytes = await nextWithCancellation(options.adapter.randomBytes(32), signal);
       } catch (error) {
         throw typed(error, "model-composition-store-random");
       }
@@ -1668,7 +1712,9 @@ function (root, admissionApi, catalogApi) {
       const existing = await openReadable(
         options.adapter,
         [STAGING_DIRECTORY, `${stagingId}.json`],
-        "model-composition-store-storage"
+        "model-composition-store-storage",
+        undefined,
+        signal
       );
       if (existing === null) return stagingId;
     }
@@ -1686,12 +1732,13 @@ function (root, admissionApi, catalogApi) {
 
     async function openPointerInternal(pointer, signal) {
       checkCancelled(signal, pointer.stagingId);
-      const manifest = await readInstalledManifest(options, pointer.manifestSha256);
+      const manifest = await readInstalledManifest(options, pointer.manifestSha256, signal);
       if (manifest === null) reject("model-composition-store-installed-manifest");
       const admissionAuthority = await readInstalledAdmissionAuthority(
         options,
         pointer.manifestSha256,
-        manifest
+        manifest,
+        signal
       );
       await verifyInstalled(options, pointer, manifest, signal);
       return openedComposition(options, pointer, manifest, admissionAuthority);
@@ -1699,9 +1746,9 @@ function (root, admissionApi, catalogApi) {
 
     async function openActiveInternal(signal) {
       await initialize();
-      const pointer = await readPointer(options.adapter);
+      const pointer = await readPointer(options.adapter, signal);
       if (pointer === null) return null;
-      await requireResolvedPointer(options.adapter, pointer);
+      await requireResolvedPointer(options.adapter, pointer, signal);
       return openPointerInternal(pointer, signal);
     }
 
@@ -1784,11 +1831,13 @@ function (root, admissionApi, catalogApi) {
       const signal = normalizeSignal(call.signal);
       const manifest = normalizeManifest(call.manifest, options.maximumCompositionBytes);
       const sources = normalizeSources(call.sources);
-      const suppliedAuthority = await prepareAdmissionAuthority(
+      checkCancelled(signal);
+      // Input preparation is bounded and read-only; never enter storage after its caller cancels.
+      const suppliedAuthority = await nextWithCancellation(prepareAdmissionAuthority(
         options.adapter,
         call.admissionAuthority,
         manifest
-      );
+      ), signal);
       let committedResult = null;
       const installLocked = async () => {
         await initialize();
@@ -1797,19 +1846,21 @@ function (root, admissionApi, catalogApi) {
         const stagingCount = (await listEntries(
           options.adapter,
           [STAGING_DIRECTORY],
-          options.maximumStagingEntries + 1
+          options.maximumStagingEntries + 1,
+          signal
         )).length;
         if (stagingCount >= options.maximumStagingEntries) {
           reject("model-composition-store-staging-limit");
         }
 
         const manifestBytes = canonicalBytes(manifest);
-        const manifestSha256 = await hashBytes(options.adapter, manifestBytes);
+        const manifestSha256 = await hashBytes(options.adapter, manifestBytes, signal);
         const admissionAuthoritySha256 = await hashBytes(
           options.adapter,
-          canonicalBytes(manifest.admissionAuthority)
+          canonicalBytes(manifest.admissionAuthority),
+          signal
         );
-        const previousPointer = await readPointer(options.adapter);
+        const previousPointer = await readPointer(options.adapter, signal);
         if (previousPointer && previousPointer.manifestSha256 === manifestSha256) {
           const current = await openActiveInternal(signal);
           if (!current ||
@@ -1829,8 +1880,8 @@ function (root, admissionApi, catalogApi) {
           return current;
         }
 
-        const existingManifest = await readInstalledManifest(options, manifestSha256);
-        if (existingManifest === null) await requireVacantInstalledPath(options, manifestSha256);
+        const existingManifest = await readInstalledManifest(options, manifestSha256, signal);
+        if (existingManifest === null) await requireVacantInstalledPath(options, manifestSha256, signal);
         let reuseInstalled = false;
         if (existingManifest !== null) {
           if (!bytesEqual(canonicalBytes(existingManifest), manifestBytes)) {
@@ -1838,7 +1889,7 @@ function (root, admissionApi, catalogApi) {
           }
           const existingPointer = Object.freeze({
             schema: POINTER_SCHEMA,
-            stagingId: await allocateStagingId(options),
+            stagingId: await allocateStagingId(options, signal),
             manifestSha256,
             admissionAuthoritySha256
           });
@@ -1846,7 +1897,8 @@ function (root, admissionApi, catalogApi) {
             const existingAuthority = await readInstalledAdmissionAuthority(
               options,
               manifestSha256,
-              existingManifest
+              existingManifest,
+              signal
             );
             if (existingAuthority.admissionText !== suppliedAuthority.opened.admissionText ||
                 existingAuthority.qualificationReceiptText !==
@@ -1863,7 +1915,7 @@ function (root, admissionApi, catalogApi) {
           reuseInstalled = true;
         }
 
-        const stagingId = await allocateStagingId(options);
+        const stagingId = await allocateStagingId(options, signal);
         const staging = Object.freeze({
           schema: STAGING_SCHEMA,
           stagingId,
@@ -1904,7 +1956,7 @@ function (root, admissionApi, catalogApi) {
           if (!reuseInstalled) {
             await withCompositionLock(options.adapter, manifestSha256, "exclusive", async () => {
               checkCancelled(signal, stagingId);
-              await requireVacantInstalledPath(options, manifestSha256);
+              await requireVacantInstalledPath(options, manifestSha256, signal);
               await ensureDirectory(
                 options.adapter,
                 [INSTALLED_DIRECTORY, manifestSha256]
@@ -1956,14 +2008,15 @@ function (root, admissionApi, catalogApi) {
             }, signal);
           }
 
-          const storedManifest = await readInstalledManifest(options, manifestSha256);
+          const storedManifest = await readInstalledManifest(options, manifestSha256, signal);
           if (!storedManifest || !bytesEqual(canonicalBytes(storedManifest), manifestBytes)) {
             reject("model-composition-store-installed-manifest", { stagingId });
           }
           const storedAuthority = await readInstalledAdmissionAuthority(
             options,
             manifestSha256,
-            storedManifest
+            storedManifest,
+            signal
           );
           if (storedAuthority.admissionText !== suppliedAuthority.opened.admissionText) {
             reject("model-composition-store-stored-admission", { stagingId });
@@ -1986,9 +2039,9 @@ function (root, admissionApi, catalogApi) {
             signal
           );
           checkCancelled(signal, stagingId);
-          await ownedInstalledEntries(options, manifestSha256, true);
+          await ownedInstalledEntries(options, manifestSha256, true, signal);
           if (previousPointer) {
-            await ownedInstalledEntries(options, previousPointer.manifestSha256, true);
+            await ownedInstalledEntries(options, previousPointer.manifestSha256, true, signal);
           }
           await requireCommitAuthorization(
             call.authorizeCommit,
@@ -2095,9 +2148,9 @@ function (root, admissionApi, catalogApi) {
         let pointer = null;
         let failure = null;
         try {
-          pointer = await readPointer(options.adapter);
+          pointer = await readPointer(options.adapter, signal);
           if (pointer === null) return false;
-          await requireResolvedPointer(options.adapter, pointer);
+          await requireResolvedPointer(options.adapter, pointer, signal);
           await openPointerInternal(pointer, signal);
           return false;
         } catch (error) {

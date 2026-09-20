@@ -116,6 +116,20 @@ Cached model readers and replacement:
   useful model quality. See `composition-read-lease-review.json` in the existing
   ecosystem-cleanup artifacts for source and synthetic browser evidence.
 
+Cached model read cancellation:
+
+- `openActive`, `discardInvalidActive`, `cleanup` and precommit installation
+  validation propagate a supplied signal through file acquisition, bounded metadata
+  streams, hashes and directory enumeration. Cancelling these reads does not
+  authorize deletion or mean metadata is corrupt. Late read/disposal
+  failures are observed after releasing the operation's locks.
+- Pointer writes and authoritative postcommit readback retain their existing
+  reconciliation lifetime. Cancellation after commit cannot turn a committed
+  installation into a reported precommit cancellation. See
+  `composition-read-cancellation-review.json` for regression and actual OPFS evidence.
+- This does not add a deadline to callers without a signal, including current
+  startup cache restoration, or interrupt initialization and durable mutations.
+
 Not deployed or working-model proof:
 
 - The local catalog has zero entries and zero seed announcements. Its September

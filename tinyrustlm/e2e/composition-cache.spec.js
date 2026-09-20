@@ -365,6 +365,105 @@ test("late source cancellation releases the real OPFS writer lock and preserves 
   }
 });
 
+test("cancelled OPFS metadata reads release the writer lock without discarding the installed composition", async ({}, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop", "The metadata lifetime contract runs in desktop Chromium");
+  const fixture = createSyntheticFixture("metadata-lifetime", 127);
+  const profileRoot = createOwnedBrowserProfile("cache-metadata-lifetime");
+  let context = null;
+  try {
+    context = await launchProfile(profileRoot);
+    const page = await openRuntimePage(context, String(testInfo.project.use.baseURL));
+    const errors = [];
+    page.on("pageerror", error => errors.push(error.message));
+    const result = await page.evaluate(async ({ fixture, rootName, lockName }) => {
+      const api = globalThis.TinyRustLMModelCompositionStore;
+      const adapter = api.createOpfsAdapter({ createSha256: globalThis.TinyRustLMIncrementalSha256.createSha256 });
+      const store = api.createModelCompositionStore({ adapter });
+      // Real OPFS contains only this synthetic six-member storage fixture, never a qualified model.
+      const active = await store.install({ manifest: fixture.manifest,
+        admissionAuthority: fixture.admissionAuthority, activate: async () => true,
+        authorizeCommit: async () => true,
+        sources: Object.fromEntries(api.memberNames.map(name => [name, {
+          async *[Symbol.asyncIterator]() {
+            yield Uint8Array.from(atob(fixture.members[name]), value => value.charCodeAt(0));
+          }
+        }])) });
+      const root = await (await navigator.storage.getDirectory()).getDirectoryHandle(rootName);
+      const pointerText = async () => (await (await root.getFileHandle("active.json")).getFile()).text();
+      const before = await pointerText();
+      const observations = [];
+      const cases = [
+        ["openActive", "active.json", "body"],
+        ["openActive", `staging/${active.activationId}.json`, "open"],
+        ["openActive", `installed/${active.manifestSha256}/manifest.json`, "open"],
+        ["discardInvalidActive", `installed/${active.manifestSha256}/qualification-receipt.json`, "body"],
+        ["cleanup", "staging", "list"]
+      ];
+      for (const [method, target, phase] of cases) {
+        const entered = Promise.withResolvers();
+        const pending = Promise.withResolvers();
+        const disposing = Promise.withResolvers();
+        let armed = true;
+        let disposed = false;
+        const wrapped = { ...adapter,
+          async openReadable(parts) {
+            if (!armed || phase === "list" || parts.join("/") !== target) return adapter.openReadable(parts);
+            armed = false;
+            if (phase === "open") { entered.resolve(); return pending.promise; }
+            const readable = await adapter.openReadable(parts);
+            return { byteLength: readable.byteLength, stream: {
+              [Symbol.asyncIterator]: () => ({
+                next() { entered.resolve(); return pending.promise; },
+                return() { disposed = true; return disposing.promise; }
+              })
+            } };
+          },
+          listEntries(parts, limit) {
+            if (armed && phase === "list" && parts.join("/") === target) {
+              armed = false; entered.resolve(); return pending.promise;
+            }
+            return adapter.listEntries(parts, limit);
+          }
+        };
+        const controller = new AbortController();
+        const operation = api.createModelCompositionStore({ adapter: wrapped })[method]({ signal: controller.signal });
+        const outcome = operation.then(() => "unexpected-success", error => error.code);
+        try {
+          await entered.promise; controller.abort();
+          let timer;
+          const code = await Promise.race([outcome, new Promise((_, reject) => {
+            timer = setTimeout(() => reject(new Error("cancelled metadata read retained its lock")), 2000);
+          })]).finally(() => clearTimeout(timer));
+          const locks = await navigator.locks.query();
+          const held = locks.held.filter(lock => lock.name.startsWith(lockName));
+          const reopened = await store.openActive();
+          observations.push({ method, phase, code, held: held.length, disposed,
+            unchanged: await pointerText() === before, identity: reopened.manifestSha256 });
+        } finally {
+          pending.reject(new Error("synthetic late metadata failure"));
+          if (disposed) disposing.reject(new Error("synthetic late disposal failure"));
+          else disposing.resolve();
+          await outcome;
+        }
+      }
+      const installed = [];
+      for await (const name of (await root.getDirectoryHandle("installed")).keys()) installed.push(name);
+      await new Promise(resolve => setTimeout(resolve, 0));
+      return { observations, installed };
+    }, { fixture, rootName: OPFS_ROOT_NAME, lockName: LOCK_NAME });
+    expect(result.observations).toHaveLength(5);
+    for (const value of result.observations) {
+      expect(value).toMatchObject({ code: "model-composition-store-aborted", held: 0,
+        unchanged: true, identity: fixture.manifestSha256, disposed: value.phase === "body" });
+    }
+    expect(result.installed).toEqual([fixture.manifestSha256]);
+    expect(errors).toEqual([]);
+  } finally {
+    if (context !== null) await context.close();
+    removeOwnedBrowserProfile(profileRoot);
+  }
+});
+
 test("OPFS cleanup preserves unexpected files and refuses unsafe recovery", async ({}, testInfo) => {
   test.skip(testInfo.project.name !== "desktop", "The OPFS ownership contract runs in desktop Chromium");
   const fixtures = { prior: createSyntheticFixture("ownership-prior", 127),

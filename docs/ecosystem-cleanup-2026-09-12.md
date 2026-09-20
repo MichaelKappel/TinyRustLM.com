@@ -5,6 +5,44 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C49: cancel cache reads without losing commit truth, September 19
+
+A stalled active-pointer read retained the writer lock after caller cancellation.
+The initial regression reproduced the defect: 77/78 tests passed, with the new
+case still pending at its 500 ms observation bound. Metadata file acquisition,
+streaming, hashing and directory enumeration now receive the caller's signal
+through restore, recovery, cleanup and candidate validation. Staging-identity
+allocation and input-authority preparation also respect cancellation. Cancelled
+reads remain cancellation errors, not corrupt-cache or indeterminate-commit errors.
+
+The shared wait helper observes late rejection even when an adapter aborts the
+signal synchronously before returning its promise. Abort listeners detach on
+cancellation; stalled stream disposal cannot retain the store lock. Durable
+pointer writes and their authoritative reconciliation still drain to a known
+outcome. A dedicated postcommit test cancels during staging readback and verifies
+that the committed candidate is returned. No storage schema or visual design changes.
+
+All 317 affected checks pass, with whole-store Node coverage of 88.87% lines,
+86.40% branches and 90.70% functions. Seven actual Edge storage/P2P tests pass
+without retry or skip, including five injected read/enumeration stalls over real
+OPFS that preserve pointer bytes and release Web Locks. Twelve direct release-smoke
+observations pass. The intermediate affected run passed 315/316; its one failure
+was an old source-shape assertion, now updated to require signal propagation.
+Synthetic composition bytes establish storage behavior only.
+
+Evidence: `artifacts/ecosystem-cleanup-20260912/composition-read-cancellation-review.json`.
+Owned temporary output was removed: 42 files, 11,651,894 logical bytes; physical
+space recovery is unmeasured. Browser profiles were separately removed by their
+owned-profile helper. The seven-repository inventory is unchanged; this checkpoint
+changes only TinyRustLM and preserves unrelated work.
+
+Signal-free startup restoration still has no new deadline. Initialization and
+durable mutation/reconciliation waits are not made interruptible by this change.
+Terminal orphan-directory crash cleanup, real model qualification, a live initial
+seed and publication remain open. The same two blocked installer links still stop
+the source-authority scan; no blocked deletion was retried. Ternary research remains
+deferred, and the broader goal is incomplete.
+
 ## C48: keep composition bytes alive while readers use them, September 19
 
 The store released its global lock before callers consumed `streamMember`.

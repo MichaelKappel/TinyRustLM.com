@@ -2245,6 +2245,361 @@ test("cancelled recovery stops waiting for readers without deleting bytes or poi
   } finally { release.resolve(); await read; }
 });
 
+test("cancelling a stalled active-pointer read releases the writer lock without changing the installation", async () => {
+  const adapter = new MemoryAdapter();
+  const value = fixture("metadata-cancellation");
+  const store = createStore(adapter);
+  const active = await store.install({ manifest: value.manifest,
+    admissionAuthority: value.admissionAuthority, sources: sourceSet(value.members) });
+  const pointer = adapter.readFile(["active.json"]);
+  const entered = Promise.withResolvers();
+  const pending = Promise.withResolvers();
+  const openReadable = adapter.openReadable.bind(adapter);
+  adapter.openReadable = parts => {
+    if (key(parts) === "active.json") { entered.resolve(); return pending.promise; }
+    return openReadable(parts);
+  };
+  const controller = new AbortController();
+  const observed = assert.rejects(store.openActive({ signal: controller.signal }),
+    errorCode("model-composition-store-aborted"));
+  try {
+    await settleWithin(entered.promise);
+    controller.abort();
+    await settleWithin(observed);
+    adapter.openReadable = openReadable;
+    const reopened = await settleWithin(store.openActive());
+    assert.equal(reopened.manifestSha256, active.manifestSha256);
+    assert.deepEqual(adapter.readFile(["active.json"]), pointer);
+  } finally {
+    adapter.openReadable = openReadable;
+    pending.reject(new Error("late metadata failure"));
+    await observed.catch(() => {});
+  }
+});
+
+// Hold exactly one read boundary, then expose late rejection without blocking subsequent store calls.
+function stallRead(adapter, target, phase) {
+  const entered = Promise.withResolvers();
+  const pending = Promise.withResolvers();
+  const cleanup = Promise.withResolvers();
+  const original = adapter.openReadable.bind(adapter);
+  let armed = true;
+  let disposed = false;
+  adapter.openReadable = async parts => {
+    if (!armed || key(parts) !== target) return original(parts);
+    armed = false;
+    if (phase === "open") { entered.resolve(); return pending.promise; }
+    const readable = await original(parts);
+    return { byteLength: readable ? readable.byteLength : 1,
+      stream: { [Symbol.asyncIterator]: () => ({
+        next() { entered.resolve(); return pending.promise; },
+        return() { disposed = true; return cleanup.promise; }
+      }) } };
+  };
+  return { entered: entered.promise, get disposed() { return disposed; },
+    restore() {
+      adapter.openReadable = original;
+      pending.reject(new Error("late read rejection"));
+      if (disposed) cleanup.reject(new Error("late reader cleanup rejection"));
+      else cleanup.resolve();
+    } };
+}
+
+test("restore and recovery cancellation preserve metadata and release every stalled read", async t => {
+  for (const method of ["openActive", "discardInvalidActive"]) {
+    for (const name of ["active.json", "staging", "manifest.json", "admission.json",
+      "qualification-receipt.json", "catalog.json", "model.slm2"]) {
+      for (const phase of ["open", "body"]) {
+        await t.test(`${method} ${name} ${phase}`, async () => {
+          const adapter = new MemoryAdapter();
+          const value = fixture("read-cancel-matrix");
+          const store = createStore(adapter);
+          const active = await store.install({ manifest: value.manifest,
+            admissionAuthority: value.admissionAuthority, sources: sourceSet(value.members) });
+          const target = name === "active.json" ? name : name === "staging"
+            ? `staging/${active.activationId}.json` : `installed/${active.manifestSha256}/${name}`;
+          const before = new Map(adapter.files);
+          const controller = new AbortController();
+          const stalled = stallRead(adapter, target, phase);
+          const observed = assert.rejects(store[method]({ signal: controller.signal }),
+            errorCode("model-composition-store-aborted"));
+          try {
+            await settleWithin(stalled.entered);
+            controller.abort();
+            await settleWithin(observed);
+            assert.equal(stalled.disposed, phase === "body");
+            assert.deepEqual(adapter.files, before);
+            assert.equal((await settleWithin(store.openActive())).manifestSha256, active.manifestSha256);
+          } finally { stalled.restore(); await observed.catch(() => {}); }
+        });
+      }
+    }
+  }
+});
+
+test("cleanup cancellation retains authority while reading staged and orphaned metadata", async t => {
+  for (const ownership of ["staged", "orphan"]) for (const phase of ["open", "body"]) {
+    await t.test(`${ownership} ${phase}`, async () => {
+      const adapter = new MemoryAdapter();
+      const value = fixture("cleanup-metadata-cancel");
+      const identity = sha256(canonical(value.manifest));
+      adapter.seedFile(["installed", identity, "manifest.json"], canonical(value.manifest));
+      const marker = { schema: STAGING_SCHEMA, stagingId: identity, manifestSha256: identity };
+      if (ownership === "staged") adapter.seedFile(["staging", `${identity}.json`], canonical(marker));
+      const target = ownership === "staged" ? `staging/${identity}.json` : `installed/${identity}/manifest.json`;
+      const before = new Map(adapter.files);
+      const controller = new AbortController();
+      const stalled = stallRead(adapter, target, phase);
+      const store = createStore(adapter);
+      const observed = assert.rejects(store.cleanup({ signal: controller.signal }),
+        errorCode("model-composition-store-aborted"));
+      try {
+        await settleWithin(stalled.entered); controller.abort();
+        await settleWithin(observed);
+        assert.deepEqual(adapter.files, before);
+        assert.equal(await settleWithin(store.openActive()), null);
+      } finally { stalled.restore(); await observed.catch(() => {}); }
+    });
+  }
+});
+
+test("cancelled candidate metadata validation never activates or replaces the saved installation", async t => {
+  for (const name of ["manifest.json", "admission.json", "qualification-receipt.json", "catalog.json"]) {
+    for (const phase of ["open", "body"]) await t.test(`${name} ${phase}`, async () => {
+      const adapter = new MemoryAdapter();
+      const store = createStore(adapter);
+      const prior = fixture("read-cancel-prior");
+      const active = await store.install({ manifest: prior.manifest,
+        admissionAuthority: prior.admissionAuthority, sources: sourceSet(prior.members) });
+      const value = fixture("read-cancel-candidate");
+      const identity = sha256(canonical(value.manifest));
+      const target = `installed/${identity}/${name}`;
+      const atomicWrite = adapter.atomicWrite.bind(adapter);
+      let stalled;
+      const armed = Promise.withResolvers();
+      // Arm only after the candidate's last metadata write, so this exercises persisted readback.
+      adapter.atomicWrite = async (parts, bytes) => {
+        await atomicWrite(parts, bytes);
+        if (key(parts) === `installed/${identity}/catalog.json`) {
+          stalled = stallRead(adapter, target, phase);
+          armed.resolve();
+        }
+      };
+      const controller = new AbortController();
+      let activated = false;
+      const observed = assert.rejects(store.install({ manifest: value.manifest,
+        admissionAuthority: value.admissionAuthority, sources: sourceSet(value.members),
+        signal: controller.signal, activate: async () => { activated = true; return true; } }),
+      errorCode("model-composition-store-aborted"));
+      try {
+        await settleWithin(armed.promise);
+        await settleWithin(stalled.entered); controller.abort();
+        await settleWithin(observed);
+        assert.equal(activated, false);
+        assert.equal(adapter.hasPath(["installed", identity]), false);
+        assert.deepEqual(adapter.entriesUnder(["staging"]), []);
+        assert.equal((await settleWithin(store.openActive())).manifestSha256, active.manifestSha256);
+      } finally { if (stalled) stalled.restore(); await observed.catch(() => {}); }
+    });
+  }
+});
+
+test("cancellation interrupts metadata hashing without changing custody or retaining abort listeners", async t => {
+  for (const field of ["manifest", "admissionText", "qualificationReceiptText", "catalogText", "authority"]) {
+    for (const phase of ["update", "digest"]) await t.test(`${field} ${phase}`, async () => {
+      const adapter = new MemoryAdapter();
+      const store = createStore(adapter);
+      const value = fixture("hash-cancel");
+      const active = await store.install({ manifest: value.manifest,
+        admissionAuthority: value.admissionAuthority, sources: sourceSet(value.members) });
+      const target = field === "manifest" ? canonical(value.manifest) : field === "authority"
+        ? canonical(value.manifest.admissionAuthority) : Buffer.from(value[field]);
+      const entered = Promise.withResolvers();
+      const pending = Promise.withResolvers();
+      const original = adapter.createSha256.bind(adapter);
+      let armed = true;
+      adapter.createSha256 = () => {
+        const hasher = original();
+        let match = false;
+        return {
+          update(bytes) {
+            match = armed && Buffer.from(bytes).equals(Buffer.from(target));
+            if (match) armed = false;
+            if (match && phase === "update") { entered.resolve(); return pending.promise; }
+            return hasher.update(bytes);
+          },
+          digest() {
+            if (match && phase === "digest") { entered.resolve(); return pending.promise; }
+            return hasher.digest();
+          }
+        };
+      };
+      const controller = new AbortController();
+      const observed = assert.rejects(store.openActive({ signal: controller.signal }),
+        errorCode("model-composition-store-aborted"));
+      try {
+        await settleWithin(entered.promise); controller.abort();
+        await settleWithin(observed);
+        assert.equal(require("node:events").getEventListeners(controller.signal, "abort").length, 0);
+        assert.equal((await settleWithin(store.openActive())).manifestSha256, active.manifestSha256);
+      } finally {
+        adapter.createSha256 = original;
+        pending.reject(new Error("late hash failure"));
+        await observed.catch(() => {});
+      }
+    });
+  }
+});
+
+test("cleanup enumeration cancellation preserves the orphan and releases both locks", async t => {
+  for (const [directory, occurrence] of [["staging", 1], ["staging", 2], ["installed", 1],
+    ["installed", 2], ["composition", 1]]) await t.test(`${directory} ${occurrence}`, async () => {
+    const adapter = new MemoryAdapter();
+    const value = fixture("list-cancel");
+    const identity = sha256(canonical(value.manifest));
+    adapter.seedFile(["installed", identity, "manifest.json"], canonical(value.manifest));
+    const before = new Map(adapter.files);
+    const original = adapter.listEntries.bind(adapter);
+    const entered = Promise.withResolvers();
+    const pending = Promise.withResolvers();
+    let count = 0;
+    const target = directory === "composition" ? `installed/${identity}` : directory;
+    adapter.listEntries = (parts, limit) => {
+      if (key(parts) === target && ++count === occurrence) { entered.resolve(); return pending.promise; }
+      return original(parts, limit);
+    };
+    const controller = new AbortController();
+    const store = createStore(adapter);
+    const observed = assert.rejects(store.cleanup({ signal: controller.signal }),
+      errorCode("model-composition-store-aborted"));
+    try {
+      await settleWithin(entered.promise); controller.abort(); await settleWithin(observed);
+      assert.deepEqual(adapter.files, before);
+      assert.equal(await settleWithin(store.openActive()), null);
+      assert.equal((await locks.query()).held.some(lock => lock.name.endsWith(identity)), false);
+    } finally {
+      adapter.listEntries = original; pending.reject(new Error("late enumeration failure"));
+      await observed.catch(() => {});
+    }
+  });
+});
+
+test("candidate admission inventories and staging identity allocation honor cancellation", async t => {
+  for (const boundary of [1, 2, 3, 4, "random", "collision-read"]) await t.test(String(boundary), async () => {
+    const adapter = new MemoryAdapter();
+    const store = createStore(adapter);
+    const prior = fixture("admission-read-prior");
+    const active = await store.install({ manifest: prior.manifest,
+      admissionAuthority: prior.admissionAuthority, sources: sourceSet(prior.members) });
+    const value = fixture("admission-read-next");
+    const identity = sha256(canonical(value.manifest));
+    const entered = Promise.withResolvers();
+    const pending = Promise.withResolvers();
+    const originalList = adapter.listEntries.bind(adapter);
+    const originalRandom = adapter.randomBytes.bind(adapter);
+    const originalRead = adapter.openReadable.bind(adapter);
+    let count = 0;
+    // The parent admission inventory uses 130 entries; ordinary bounded cleanup uses its own limit.
+    adapter.listEntries = (parts, limit) => {
+      if (key(parts) === "installed" && limit === 130 && ++count === boundary) {
+        entered.resolve(); return pending.promise;
+      }
+      return originalList(parts, limit);
+    };
+    adapter.randomBytes = length => {
+      if (boundary === "random") { entered.resolve(); return pending.promise; }
+      if (boundary === "collision-read") {
+        const bytes = originalRandom(length);
+        const target = `staging/${Buffer.from(bytes).toString("hex")}.json`;
+        adapter.openReadable = parts => {
+          if (key(parts) === target) { entered.resolve(); return pending.promise; }
+          return originalRead(parts);
+        };
+        return bytes;
+      }
+      return originalRandom(length);
+    };
+    const controller = new AbortController();
+    const observed = assert.rejects(store.install({ manifest: value.manifest,
+      admissionAuthority: value.admissionAuthority, sources: sourceSet(value.members), signal: controller.signal }),
+    errorCode("model-composition-store-aborted"));
+    try {
+      await settleWithin(entered.promise); controller.abort(); await settleWithin(observed);
+      assert.equal(adapter.hasPath(["installed", identity]), false);
+      assert.equal((await settleWithin(store.openActive())).manifestSha256, active.manifestSha256);
+    } finally {
+      adapter.listEntries = originalList; adapter.randomBytes = originalRandom;
+      adapter.openReadable = originalRead; pending.reject(new Error("late admission read failure"));
+      await observed.catch(() => {});
+    }
+  });
+});
+
+test("a synchronous abort inside read acquisition observes its late rejection", async () => {
+  const adapter = new MemoryAdapter();
+  const controller = new AbortController();
+  const pending = Promise.withResolvers();
+  adapter.openReadable = () => { controller.abort(); return pending.promise; };
+  await assert.rejects(createStore(adapter).openActive({ signal: controller.signal }),
+    errorCode("model-composition-store-aborted"));
+  pending.reject(new Error("synchronous-abort late failure"));
+  // The test runner fails on an unhandled rejection from an already-aborted await.
+  await new Promise(resolve => setImmediate(resolve));
+});
+
+test("cancelled authority preparation never acquires storage and observes late hash failure", async () => {
+  const adapter = new MemoryAdapter();
+  const store = createStore(adapter);
+  const value = fixture("prepare-cancel");
+  const entered = Promise.withResolvers();
+  const pending = Promise.withResolvers();
+  const original = adapter.createSha256.bind(adapter);
+  let first = true;
+  adapter.createSha256 = () => {
+    if (!first) return original();
+    first = false;
+    return { update() { entered.resolve(); return pending.promise; },
+      digest() { assert.fail("cancelled metadata update reached digest"); } };
+  };
+  const controller = new AbortController();
+  const observed = assert.rejects(store.install({ manifest: value.manifest,
+    admissionAuthority: value.admissionAuthority, sources: sourceSet(value.members), signal: controller.signal }),
+  errorCode("model-composition-store-aborted"));
+  try {
+    await settleWithin(entered.promise); controller.abort(); await settleWithin(observed);
+    assert.deepEqual(adapter.operations, []);
+  } finally { pending.reject(new Error("late preparation failure")); await observed.catch(() => {}); }
+  await new Promise(resolve => setImmediate(resolve));
+});
+
+test("postcommit metadata readback drains despite cancellation and returns the committed candidate", async () => {
+  const adapter = new MemoryAdapter();
+  const store = createStore(adapter);
+  const controller = new AbortController();
+  const value = fixture("postcommit-metadata-cancel");
+  const entered = Promise.withResolvers();
+  const pending = Promise.withResolvers();
+  const original = adapter.openReadable.bind(adapter);
+  adapter.onAfterActiveWrite = () => {
+    adapter.openReadable = parts => {
+      if (parts[0] === "staging") { entered.resolve(); return pending.promise; }
+      return original(parts);
+    };
+  };
+  let done = false;
+  const result = store.install({ manifest: value.manifest, admissionAuthority: value.admissionAuthority,
+    sources: sourceSet(value.members), signal: controller.signal }).then(active => { done = true; return active; });
+  try {
+    await settleWithin(entered.promise); controller.abort();
+    await new Promise(resolve => setImmediate(resolve));
+    assert.equal(done, false);
+    assert.equal(JSON.parse(Buffer.from(adapter.readFile(["active.json"])).toString()).manifestSha256,
+      sha256(canonical(value.manifest)));
+  } finally { adapter.openReadable = original; pending.resolve(null); }
+  const active = await settleWithin(result);
+  assert.equal((await store.openActive()).manifestSha256, active.manifestSha256);
+});
+
 test("restart reopens and reverifies every immutable member", async () => {
   const adapter = new MemoryAdapter({ readChunkBytes: 6 });
   const value = fixture("restart");

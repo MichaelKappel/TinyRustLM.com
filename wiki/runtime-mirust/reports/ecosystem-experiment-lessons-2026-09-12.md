@@ -1597,6 +1597,36 @@ and the incomplete source scan are unchanged.
   long those bytes remain available. Model both requirements and test actual
   browser lock release instead of assuming a file snapshot survives deletion.
 
+## C49: carry cancellation through reads, preserve authoritative writes
+
+- Question: can a stalled metadata read keep the store locked after cancellation,
+  and can fixing that accidentally obscure an already committed installation?
+- Exact inputs: C48 parent `d7a852e14ab47c1d2231df91e82d39f65f11e14e`, current
+  synthetic six-member fixtures and the source identities in
+  `composition-read-cancellation-review.json`.
+- Method: hold file acquisition, stream next/disposal, metadata hash update/digest,
+  staging identity allocation and directory enumeration. Cancel after entry;
+  verify exact prior pointer, no accidental recovery deletion, no candidate
+  activation, released locks, a successful subsequent read and observed late
+  rejection. Separately cancel after pointer commit while readback is pending.
+  Repeat five read/enumeration cases with actual Edge OPFS/Web Locks.
+- Result: baseline 77/78 reproduced the stalled active-pointer read. Expanded
+  suites passed 121/121 and 147/147. Initial affected run 315/316 exposed an old
+  source assertion; requiring signal propagation corrected that assertion. Final
+  affected 317/317, Edge 7/7 without retry, direct smoke twelve observations.
+  Whole-store line/branch/function coverage: 88.87/86.40/90.70 percent.
+- Decision: propagate one caller signal through read-only validation, preserve
+  cancellation error identity, and observe late promise failure even after a
+  synchronous abort. Keep durable pointer-write/readback reconciliation authoritative;
+  postcommit cancellation returns the committed result after reconciliation.
+- Uncertainty: artificial stall bounds are regression observations, not product
+  latency measurements. Signal-free boot remains without a deadline; initialization,
+  durable writes/removals and commit reconciliation have separate lifetimes.
+  No actual model, seed, deployment or complete crash-safety result is established.
+- Reusable lesson: classify awaits by whether they can still change durable state.
+  Releasing a lock after abandoning a read is different from abandoning a pending
+  commit. Cancellation must never be misclassified as corrupt stored evidence.
+
 ## Continue the review
 
 Before deleting an experiment that is not covered above, record its purpose,

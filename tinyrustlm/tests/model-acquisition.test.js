@@ -1123,7 +1123,7 @@ test("boot reopens and verifies the persistent active composition", () => {
   );
   assert.match(
     openActiveInternal,
-    /await initialize\(\);\s*const pointer = await readPointer\(options\.adapter\);\s*if \(pointer === null\) return null;\s*await requireResolvedPointer\(options\.adapter, pointer\);\s*return openPointerInternal\(pointer, signal\);/
+    /await initialize\(\);\s*const pointer = await readPointer\(options\.adapter, signal\);\s*if \(pointer === null\) return null;\s*await requireResolvedPointer\(options\.adapter, pointer, signal\);\s*return openPointerInternal\(pointer, signal\);/
   );
   assert.match(
     openPointerInternal,

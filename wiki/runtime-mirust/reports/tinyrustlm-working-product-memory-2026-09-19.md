@@ -136,6 +136,17 @@ Development, regression, candidate-selection and final holdout sets have separat
 
 For independent representative Bernoulli cases, zero failures in 280 gives the one-sided 95% upper bound `1 - 0.05^(1/280) = about 1.064%`. This is a calculation, not a measured product rate. Correlated or deliberately stratified prompts do not automatically estimate a population rate; report category denominators and sampling assumptions. Zero observed failures never proves zero risk.
 
+**C49 cache read cancellation:** restore, recovery, cleanup and candidate-validation
+reads now propagate their caller signal through file acquisition, bounded streams,
+metadata hashing and enumeration. Cancelled reads retain their cancellation code;
+late promise failures are observed. Pointer mutation and authoritative readback
+continue to settle, including after cancellation. All 317 affected checks, seven
+actual Edge storage/P2P tests and twelve direct smoke observations pass. See
+`artifacts/ecosystem-cleanup-20260912/composition-read-cancellation-review.json`.
+Signal-free startup still lacks a cache deadline; initialization/durable-mutation
+lifetimes and terminal orphan crash cleanup remain separate work. The source scan,
+real-model qualification and public seed/deployment gates remain unresolved.
+
 ## Semantic and numerical diagnosis
 
 **Adopted guidance, R02/R03/R04:** hold exact weights and input text fixed while locating semantic or numerical disagreement. Use five explicitly identified arms: original source framework; source-framework execution of independently reconstructed quantized weights; strict scalar Rust; any separately implemented optimized native arm; actual browser WASM. Current native/WASM sharing scalar code is not independent validation.

@@ -1,5 +1,5 @@
 profile: tinyrustlm.long-term-memory.current.v1
-updated_utc: 2026-09-20T00:53:30Z
+updated_utc: 2026-09-20T01:13:03Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
@@ -13,8 +13,8 @@ pointers:
     authority: reviewed_guidance
     review_state: reviewed_for_routing_and_identity
     status: current
-    last_reviewed_utc: 2026-09-20T00:53:30Z
-    sha256: b5329fac65538a25c9a5a1e1d83c1a947f592bce91d4320e461259136789e4ec
+    last_reviewed_utc: 2026-09-20T01:13:03Z
+    sha256: 116e7398c2203e63a526962d22d0a45591a04fedf54e30f05a78cf6bb0a88dcf
   - id: report-decisions
     path: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
     label: September report decisions
@@ -36,21 +36,21 @@ pointers:
   - id: experiment-lessons
     path: wiki/runtime-mirust/reports/ecosystem-experiment-lessons-2026-09-12.md
     label: Retained experiment lessons
-    summary: Open for C21-C48 observations, exact evidence, uncertainty and blocked retirement.
+    summary: Open for C21-C49 observations, exact evidence, uncertainty and blocked retirement.
     authority: reviewed_bounded_historical_evidence
     review_state: reviewed_for_routing_and_identity
     status: active_growing_review
-    last_reviewed_utc: 2026-09-20T00:53:30Z
-    sha256: 1c6611c707a72667bd5ebebdce71352c431c14837861c38a270cf2d81617aa51
+    last_reviewed_utc: 2026-09-20T01:13:03Z
+    sha256: c3042c04ac6c5d297aadf4e07692483bc3c5e44027d34b98c99653d1cd9e74cf
   - id: cleanup-progress
     path: docs/ecosystem-cleanup-2026-09-12.md
     label: Ecosystem cleanup progress
-    summary: Open for outstanding cleanup, C31 publication, C32 native/browser agreement, C34 Apache behavior, C35-C40 candidate bounds and sole owners, C41-C43 browser byte/lifetime work, C44-C45 smoke evidence, C46-C48 cache cancellation/ownership/readers, and remaining model/hosting limits.
+    summary: Open for outstanding cleanup, C31 publication, C32 native/browser agreement, C34 Apache behavior, C35-C40 candidate bounds and sole owners, C41-C43 browser byte/lifetime work, C44-C45 smoke evidence, C46-C49 cache cancellation/ownership/readers, and remaining model/hosting limits.
     authority: owner_authorized_progress_record
     review_state: reviewed_for_routing_and_identity
     status: current
-    last_reviewed_utc: 2026-09-20T00:53:30Z
-    sha256: d32d25789e7405c44a9eddaf9ae34243792d875750b061b7e127c9625bfc3afc
+    last_reviewed_utc: 2026-09-20T01:13:03Z
+    sha256: 40617056c43d452608e26aeb72e3461e40cedf9f15b3d4607e4925a09f4ff0fa
   - id: source-lock
     path: contracts/vnext/qwen3-0.6b-base-source-lock.v2.json
     label: Current diagnostic source identity

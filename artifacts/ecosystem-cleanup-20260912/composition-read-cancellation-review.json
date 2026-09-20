@@ -1,0 +1,269 @@
+{
+  "schema": "tinyrustlm.composition-read-cancellation-review.v1",
+  "observedAtUtc": "2026-09-20T01:13:03Z",
+  "localDate": "2026-09-19",
+  "sourceParent": "d7a852e14ab47c1d2231df91e82d39f65f11e14e",
+  "status": "local-cancellable-cache-read-fix-no-real-model-or-publication-claim",
+  "inputs": [
+    {
+      "path": "tinyrustlm/app/model-composition-store.js",
+      "bytes": 87351,
+      "sha256": "1f4e2bc0308ab45a2c5795ee21cbeba9f3b96287ca6aad45187135b128483ffb"
+    },
+    {
+      "path": "tinyrustlm/tests/model-composition-store.test.js",
+      "bytes": 130987,
+      "sha256": "8390be3abdda0c40ba6d281e15c45981c2d8c098df8fe2323aae1319f559a69b"
+    },
+    {
+      "path": "tinyrustlm/e2e/composition-cache.spec.js",
+      "bytes": 71157,
+      "sha256": "e5d9b559d0bb332119372e29d21e068fed76f93199ce4891ac19c81d68c1f297"
+    },
+    {
+      "path": "tinyrustlm/app/index.html",
+      "bytes": 48604,
+      "sha256": "31fba4cc961c382d879aad6eaa7683713d14009ad56b34c2303012370faf53ac"
+    },
+    {
+      "path": "tinyrustlm/index.html",
+      "bytes": 48684,
+      "sha256": "e7c88a766004979a90da41f770b8dfa61a17622f292a3e6784c55942bef8c11f"
+    },
+    {
+      "path": "tinyrustlm/tests/model-cache-custody-integration.test.js",
+      "bytes": 29747,
+      "sha256": "a297825dc40a8dbc0e7ebcc38cdfcf13eaf3175cded674ff9f2a8035653f0f9c"
+    },
+    {
+      "path": "tinyrustlm/tests/p2p-composition-install.test.js",
+      "bytes": 45141,
+      "sha256": "356570a67bd3ea6354de021aac73a9ddd499019c3453f45329969503c37443da"
+    },
+    {
+      "path": "tinyrustlm/tests/companion-composition-install.test.js",
+      "bytes": 25654,
+      "sha256": "ef0938dbb20a0663f42af42719f8af0948bd7d702e703013fe08cf9f3e1dff34"
+    },
+    {
+      "path": "tinyrustlm/tests/static-shell-parity.test.js",
+      "bytes": 5127,
+      "sha256": "c20d60933c2f75bc60a243b2603545c26823a4aafdef4304c87e8e2bc634c89d"
+    },
+    {
+      "path": "tinyrustlm/tests/web-deployment-manifest.test.js",
+      "bytes": 11975,
+      "sha256": "4c68f345ff731af733f6a157d2b2d2ecd0b39544a2549f67a58d97fc672467fd"
+    },
+    {
+      "path": "tinyrustlm/app/p2p-composition-install.js",
+      "bytes": 50486,
+      "sha256": "55a53359bb7af64062eb8b7505251af6eab487bc94a8105a92698830ea6ae8e4"
+    },
+    {
+      "path": "tinyrustlm/app/companion-composition-install.js",
+      "bytes": 34585,
+      "sha256": "cbf8617b8467fe32d196788f69acd45a43e499dec31643675278f881c2b9b2b7"
+    },
+    {
+      "path": "tinyrustlm/app/browser-model-admission.js",
+      "bytes": 14858,
+      "sha256": "87cdc059e71435f1572b3ad03fcce17701d5b73e83c3a6172e078a3349e5b683"
+    },
+    {
+      "path": "tinyrustlm/app/minimodel-catalog-v1.js",
+      "bytes": 74274,
+      "sha256": "4868dba65b57197b68de6f3e74987602b9728c5fa0cf28ca05ec2a3166c35333"
+    },
+    {
+      "path": "tinyrustlm/app/incremental-sha256.js",
+      "bytes": 9404,
+      "sha256": "e28faf3a02617d3d6747a0061f10f20b756500ae727f5c02e18da9912c767095"
+    },
+    {
+      "path": "tinyrustlm/e2e/owned-browser-profile.js",
+      "bytes": 2432,
+      "sha256": "35a330243dbbd3c076eab57a6174dcd1a892b33af4774a37ec15bff7e697c4ff"
+    },
+    {
+      "path": "tinyrustlm/tools/static-shell-parity.js",
+      "bytes": 5964,
+      "sha256": "100ae82d9151f592db9607a6803d316d45934b3f349b3533d9c6df9d1e28fdeb"
+    },
+    {
+      "path": "tinyrustlm/tools/web-release-browser-smoke.js",
+      "bytes": 44097,
+      "sha256": "871da8e65d1f0b7ae6935a0a80d77d8409249dc025afac228905d70f8acb605b"
+    },
+    {
+      "path": "tinyrustlm/deploy/web-deployment-manifest.v2.json",
+      "bytes": 4802,
+      "sha256": "3c97a713670f119a978a1aea1611169dfb7d9cf1974ad8ae7c4a201454a04df8"
+    },
+    {
+      "path": "tinyrustlm/app/app.js",
+      "bytes": 461521,
+      "sha256": "5e164b597ca5f1dd301acff2c906ac68537058ed2cc95112be5ef0497580a095"
+    },
+    {
+      "path": "tinyrustlm/tests/model-acquisition.test.js",
+      "bytes": 121648,
+      "sha256": "4e005792706f4508af89cb3f296aa15c110829d7ec01b60830d8b6e506b233a6"
+    },
+    {
+      "path": "tinyrustlm/tests/model-acquisition-boundary-regression.test.js",
+      "bytes": 58516,
+      "sha256": "8b5700062cfa781dd95d0e0324bc130ffaefe41253b55e00bfb47e4e0abad216"
+    },
+    {
+      "path": "tinyrustlm/e2e/direct-p2p-composition.spec.js",
+      "bytes": 64545,
+      "sha256": "0bf79152816f86df9c550b11542b1db2255970386e0ed0ee3512b989b2252476"
+    },
+    {
+      "path": "docs/server-seeded-startup-2026-09-12.md",
+      "bytes": 12772,
+      "sha256": "4a785e1ff76c7b8163d4163705619887160c23c8e36eb7de73832098d5f757b1"
+    }
+  ],
+  "finding": "Caller cancellation did not reach active-pointer and other metadata reads, so a stalled read retained the global writer lock. Cancellation must not obscure an already committed pointer.",
+  "readContract": {
+    "cancellable": "Supplied signals propagate through pointer/staging/manifest/admission/receipt/catalog reads, metadata streaming and hashes, member read acquisition, bounded directory enumeration, staging identity allocation and precommit candidate validation. Read-only supplied-authority preparation is cancellable before storage entry.",
+    "errorIdentity": "Cancellation remains model-composition-store-aborted and cannot authorize corruption recovery or become an indeterminate commit.",
+    "lateSettlement": "Observe late promise rejection even if the adapter synchronously aborts before returning its promise; remove abort listeners on cancellation; stream cleanup waits remain cancellable.",
+    "authoritativeMutation": "Do not race durable pointer writes or postcommit staging readback against cancellation. Preserve the existing observed-commit reconciliation and prior/candidate custody rules.",
+    "limits": "No deadline for signal-free callers, including app boot. Initialization and durable mutation/removal/reconciliation waits remain distinct. Cooperative same-origin lock guarantees only."
+  },
+  "developmentResults": [
+    {
+      "stage": "baseline-regression",
+      "sourceSha256": "c70b991fb68ab77134c67fc7049b755b1584c51ec52194e8bf4a24e804d5350e",
+      "tests": 78,
+      "passed": 77,
+      "failed": 1,
+      "result": "Stalled active.json acquisition still pending 500ms after cancellation."
+    },
+    {
+      "stage": "expanded-metadata-reads",
+      "tests": 121,
+      "passed": 121,
+      "failed": 0
+    },
+    {
+      "stage": "expanded-hash-enumeration-and-commit",
+      "tests": 147,
+      "passed": 147,
+      "failed": 0
+    },
+    {
+      "stage": "initial-affected",
+      "tests": 316,
+      "passed": 315,
+      "failed": 1,
+      "result": "Boot source-shape assertion expected readPointer and requireResolvedPointer without signal. Updated to require current signal propagation; behavioral restoration and identity gates retained."
+    },
+    {
+      "stage": "final-affected",
+      "tests": 317,
+      "passed": 317,
+      "failed": 0,
+      "skipped": 0,
+      "coverage": {
+        "scope": "Node V8 whole model-composition-store.js module, not isolated changed-line coverage.",
+        "linePercent": 88.87,
+        "branchPercent": 86.4,
+        "functionPercent": 90.7
+      }
+    },
+    {
+      "stage": "actual-edge",
+      "tests": 7,
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0,
+      "retries": 0,
+      "toolchain": "Node 24.14.0 / Playwright 1.61.1 / installed Edge 153.0.4234.48",
+      "scope": "Desktop composition-cache and direct-p2p-composition specs; actual OPFS and Web Locks, synthetic compositions and controlled peers.",
+      "observations": [
+        "Five injected metadata acquisition/body/enumeration stalls cancel without changing active-pointer bytes, losing the installed composition or retaining store locks.",
+        "Late read/disposal rejections remain observed; no browser page errors.",
+        "Existing cross-tab readers, ownership refusals, persistence, transfer cancellation and basic-click P2P fixture path pass."
+      ]
+    },
+    {
+      "stage": "direct-release-smoke",
+      "status": "pass",
+      "observationCount": 12,
+      "reportSha256": "1a513a174af15f5f46eeff192f168649d31b912976a725c198e18d36c52fa4e6",
+      "temporaryOutputCleanup": "verified",
+      "scope": "Direct zero-argument Node invocation; npm package preflight remains blocked."
+    },
+    {
+      "stage": "memory",
+      "tests": 6,
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0
+    }
+  ],
+  "sourceGate": {
+    "status": "source_authority_scan_incomplete",
+    "remaining": [
+      "artifacts/verification/qwen3-environment-install/tinyrustlm-operation-C3ZUt9/install-temp/TmP6xn2evdh-b",
+      "artifacts/verification/qwen3-environment-install/tinyrustlm-operation-C3ZUt9/install-temp/TmPeq63_hr7-b"
+    ],
+    "blockedDeletionsRetried": false
+  },
+  "cleanup": {
+    "runs": [
+      {
+        "run": "baseline regression",
+        "files": 2,
+        "logicalBytes": 486294
+      },
+      {
+        "run": "expanded read tests",
+        "files": 2,
+        "logicalBytes": 486406
+      },
+      {
+        "run": "expanded enumeration and hash tests",
+        "files": 2,
+        "logicalBytes": 492325
+      },
+      {
+        "run": "initial affected suite",
+        "files": 9,
+        "logicalBytes": 3083960
+      },
+      {
+        "run": "Edge storage and P2P",
+        "files": 15,
+        "logicalBytes": 1342302
+      },
+      {
+        "run": "final affected suite",
+        "files": 9,
+        "logicalBytes": 3079918
+      },
+      {
+        "run": "direct release smoke",
+        "files": 3,
+        "logicalBytes": 2680689
+      }
+    ],
+    "total": {
+      "files": 42,
+      "logicalBytes": 11651894
+    },
+    "physicalRecoveryBytes": null,
+    "note": "Only operation-owned scratch removed. Browser profile helpers remove their own profiles before the outer harness count; these bytes are not included. Existing blocked deletions untouched."
+  },
+  "remaining": [
+    "Signal-free startup restoration needs a separate bounded lifetime; this checkpoint adds no startup deadline.",
+    "Initialization, durable mutations and authoritative commit reconciliation cannot safely be abandoned like reads; review their own terminal behavior.",
+    "Terminal orphan-directory crash cleanup remains open; known source-scan links still block material model/release gates.",
+    "No qualified default, real numerical parity, useful real browser model, live initial seed or public deployment established. Ternary/Bonsai/Hadamard research remains deferred.",
+    "Ecosystem goal remains incomplete; other repositories and unrelated pending work preserved."
+  ]
+}
