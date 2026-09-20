@@ -5,6 +5,30 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C59: cancel companion preparation and chunk hashing, September 20
+
+Companion imports had the same lifetime gap across five preparation hashes and
+each member-chunk hash. All 22 controlled stage/late-outcome cases remained pending
+after cancellation. The caller signal now covers every hash; late hash, transport
+and progress rejections are observed even after synchronous cancellation. Chunk
+errors retain role/index context. Calls without a signal and cancellation after
+the store commit preserve their prior semantics; no new timeout was introduced.
+
+All 367 affected Node checks pass, with 93.43% installer line coverage, 82.43% branch
+coverage and 100% function coverage. Eight desktop Edge tests and one mobile-viewport
+test pass. The new test exercises eleven hash stages with real OPFS: the prior
+activation stays byte-identical, no candidate/staging remains, the writer lock is
+released, and a subsequent companion install succeeds. No page errors follow late
+digest rejection. These are synthetic model bytes and an injected chunk client,
+not actual .NET acquisition, real model qualification or physical-mobile proof.
+
+Both shell asset identities were refreshed without presentation changes. Current
+memory, startup documentation and compact evidence are synchronized in
+`artifacts/ecosystem-cleanup-20260912/companion-hash-cancellation-review.json`.
+Source-authority scanning still fails on the two previously blocked installer
+links. The seven-repository review found no new repository; existing changes and
+all policy-blocked paths remain untouched. Model, seed and NuGet gates remain open.
+
 ## C58: cancel stalled install metadata hashing, September 20
 
 The P2P installer applied its deadline to network reads but awaited four WebCrypto

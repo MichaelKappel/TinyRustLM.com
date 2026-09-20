@@ -1,0 +1,192 @@
+{
+  "schema": "tinyrustlm.ecosystem_cleanup.companion_hash_cancellation_review.v1",
+  "checkpoint": "C59",
+  "recorded_at_utc": "2026-09-20T12:42:06Z",
+  "base_commit": "bd85dec4cb6933853aacb04e0b28dfe516482fed",
+  "scope": "Advanced companion composition installation: caller cancellation during metadata and member-chunk hashing.",
+  "baseline": {
+    "installer_sha256": "cbf8617b8467fe32d196788f69acd45a43e499dec31643675278f881c2b9b2b7",
+    "command": "node --test --test-name-pattern='cancellation interrupts every|cancellation after the store commit' tinyrustlm/tests/companion-composition-install.test.js",
+    "passed": 1,
+    "failed": 23,
+    "skipped": 0,
+    "interpretation": "All 22 hash-stage/late-outcome cases plus their parent failed: cancellation remained pending at 150 ms. The postcommit control passed."
+  },
+  "change": {
+    "preparation_hashes": [
+      "admission",
+      "qualification receipt",
+      "catalog",
+      "store manifest",
+      "store admission-authority descriptor"
+    ],
+    "chunk_hashes": "Every chunk in every member receives the same optional caller signal and role/chunk-index context.",
+    "late_failures": "The wait observes pending promises before checking abort; hash, client and progress callbacks that synchronously abort then reject do not create unhandled rejection.",
+    "unchanged": [
+      "No new timeout; callers without a signal keep their existing behavior.",
+      "Committed-store result is validated and returned even if the signal aborts after commit.",
+      "Exact identity, schema, role order, chunk continuity, length and digest checks.",
+      "Product presentation; the two shell changes only refresh an asset content hash."
+    ]
+  },
+  "tests": {
+    "node": {
+      "command": "node --experimental-test-coverage --test-coverage-include=**/app/companion-composition-install.js --test tinyrustlm/tests/companion-composition-install.test.js tinyrustlm/tests/model-composition-store.test.js tinyrustlm/tests/model-cache-custody-integration.test.js tinyrustlm/tests/model-acquisition.test.js tinyrustlm/tests/model-acquisition-boundary-regression.test.js tinyrustlm/tests/static-shell-parity.test.js tinyrustlm/tests/web-deployment-manifest.test.js",
+      "passed": 367,
+      "failed": 0,
+      "skipped": 0,
+      "cancelled": 0,
+      "reported_duration_ms": 8717.8692,
+      "coverage": {
+        "file": "tinyrustlm/app/companion-composition-install.js",
+        "line_percent": 93.43,
+        "branch_percent": 82.43,
+        "function_percent": 100
+      },
+      "new_cases": "22 hash-stage/late-outcome cases; synchronous abort by hash, client or progress; hash failures without cancellation; committed-store success."
+    },
+    "edge": {
+      "engine": "Installed Microsoft Edge 153.0.4234.48",
+      "desktop": {
+        "command": "node node_modules/@playwright/test/cli.js test --project=desktop --workers=1 --retries=0 --reporter=line --output=<owned>/browser e2e/composition-cache.spec.js",
+        "passed": 8,
+        "failed": 0,
+        "skipped": 0,
+        "elapsed_ms": 21874
+      },
+      "mobile": {
+        "project": "mobile",
+        "grep": "companion hash cancellation",
+        "passed": 1,
+        "failed": 0,
+        "scope": "390x844 desktop Edge mobile/touch emulation; not a physical mobile device."
+      },
+      "new_scenarios": 11,
+      "observations": [
+        "Pending preparation and chunk hashes terminate on cancellation before late digest settlement.",
+        "Prior active-pointer text is unchanged after every cancelled install.",
+        "Installed directory contains only the prior composition; staging is empty.",
+        "Writer lock is released and a subsequent companion installation activates the candidate.",
+        "No pageerror after late digest rejection."
+      ],
+      "boundaries": "OPFS and browser crypto are real; held hash promises, model bytes, qualification metadata, runtime activation and companion chunk client are test fixtures. No live .NET acquisition or real model proof."
+    },
+    "memory": {
+      "command": "dotnet test dotnet/tests/TinyRustLM.Package.Tests/TinyRustLM.Package.Tests.csproj --configuration Release --no-build --no-restore --filter FullyQualifiedName~UaixMemoryConsolidationTests --verbosity minimal",
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0
+    },
+    "diff_check": "passed"
+  },
+  "source_authority": {
+    "result": "source_authority_scan_incomplete",
+    "command": "node tinyrustlm/tools/verify-single-source-authority.js",
+    "exit_code": 1,
+    "unreadable": [
+      "artifacts/verification/qwen3-environment-install/tinyrustlm-operation-C3ZUt9/install-temp/TmP6xn2evdh-b",
+      "artifacts/verification/qwen3-environment-install/tinyrustlm-operation-C3ZUt9/install-temp/TmPeq63_hr7-b"
+    ],
+    "policy": "No blocked deletion was retried. This result does not admit model execution or publication."
+  },
+  "ecosystem_inspection": {
+    "repository_count": 7,
+    "unchanged_other_repositories": [
+      "LMComposer.com",
+      "MiniModel.MiRust.com",
+      "MiniModel.org",
+      "MiRust.com",
+      "Runtime.MiRust.com",
+      "TinyRustLM.MiRust.com"
+    ],
+    "runtime_pending": "Fifteen existing modified entries remain, including the redirect-only candidate; 174 reviewed historical docs remain policy-blocked.",
+    "portal_pending": "One pre-existing modified deployment manifest remains.",
+    "tinyrustlm_unrelated_entries_preserved": 30
+  },
+  "source_inputs": [
+    {
+      "path": "tinyrustlm/app/companion-composition-install.js",
+      "bytes": 34992,
+      "sha256": "711cf9b2d69f57be2b84802fd43992b58e546f7704aeeec933b04e742fdd6330"
+    },
+    {
+      "path": "tinyrustlm/tests/companion-composition-install.test.js",
+      "bytes": 31287,
+      "sha256": "28fe6d68a217e7e8fe1f5257304a18b805485fd6ca426613dfe4c4092e93c2b4"
+    },
+    {
+      "path": "tinyrustlm/e2e/composition-cache.spec.js",
+      "bytes": 84150,
+      "sha256": "e5272ee7b23637d4bbcd6b76f3c8c1e9bc366e8a799fa393563ad1d840d94632"
+    },
+    {
+      "path": "tinyrustlm/app/index.html",
+      "bytes": 48604,
+      "sha256": "57237c936b27e0c530ec8a0de33b9438264a0b70dd42508dbb323a86618d93ea"
+    },
+    {
+      "path": "tinyrustlm/index.html",
+      "bytes": 48684,
+      "sha256": "3d57ac88dac9042bb3284a0d5014cea2ee0cc995e346e71fd23fb1783e85d23f"
+    },
+    {
+      "path": "docs/server-seeded-startup-2026-09-12.md",
+      "bytes": 17475,
+      "sha256": "c806db31e57cd6c594c4c11b8e60e62fbfebacdb537d95a63fcb68f1db8bb177"
+    }
+  ],
+  "retired_log_identities": [
+    {
+      "path": "baseline.log",
+      "bytes": 40632,
+      "sha256": "e698c5f50eb982c9ea248fa9d405da612f001adf744d1fb3a88a6bee271d41b4"
+    },
+    {
+      "path": "node.log",
+      "bytes": 28465,
+      "sha256": "04eae66ec3e467c9010bbf78659f6ab8774f55612e8e57f88c0c525380a9b608"
+    },
+    {
+      "path": "node-final.log",
+      "bytes": 56606,
+      "sha256": "56056601893373ad75bf3f34764b5908ebecc83cade3fe567896f437e2ebcdd1"
+    },
+    {
+      "path": "edge.log",
+      "bytes": 1346,
+      "sha256": "23282a455b7e6e165c8966a35d8c03be2cd4f6e82459f2346a1c2f14a2d3dfd6"
+    },
+    {
+      "path": "mobile.log",
+      "bytes": 1390,
+      "sha256": "6c40f8f8dcce5c236a14383e7bf30304cef0a6e6d3d05d3113d1c9390d65abce"
+    },
+    {
+      "path": "memory.log",
+      "bytes": 688,
+      "sha256": "9111747c1b0e28f1a0620becd7d8846ed42fbea686b1dbd4dddbc76a2c3dfb30"
+    }
+  ],
+  "cleanup": {
+    "root": "artifacts/tests/companion-hash-cancellation/tinyrustlm-operation-ksouqm",
+    "absence_verified": true,
+    "files_removed": 37,
+    "directories_below_root": 13,
+    "logical_bytes_removed": 6638257,
+    "physical_storage_recovered": "not measured",
+    "verification": "Original root/marker identity, exact canonical artifact containment and bounded ordinary-entry inventory checked before removal; absence checked afterward."
+  },
+  "limits": [
+    "WebCrypto itself is not aborted; cancellation ends the wait and prevents subsequent actions.",
+    "Issued durable browser mutations retain their existing recovery and completion constraints.",
+    "Observation timers in tests are not product performance claims.",
+    "No screenshot comparison performed; no intentional presentation change.",
+    "No model bytes downloaded, real model run, NuGet key read, NuGet push or production deployment."
+  ],
+  "remaining": [
+    "Qualified default model, real numerical/browser evidence and initial public seed.",
+    "Policy-blocked cleanup and incomplete source scan.",
+    "Real ARM64 package execution and complete NuGet release admission; hosted account/workflow constraints.",
+    "Full ecosystem cleanup and owner acceptance."
+  ]
+}

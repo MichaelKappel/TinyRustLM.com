@@ -197,28 +197,31 @@ function (root, admissionApi) {
 
   // Races asynchronous work against cancellation and always detaches its listener.
   function waitWithCancellation(promise, signal, details) {
-    if (!signal) return Promise.resolve(promise);
-    checkCancelled(signal, details);
+    const pending = Promise.resolve(promise);
+    if (!signal) return pending;
     // Owns the temporary abort listener until the wrapped operation settles.
     return new Promise((resolve, rejectPromise) => {
+      let settled = false;
+      // Releases the listener once while still observing any late operation rejection.
+      const finish = (settle, result) => {
+        if (settled) return;
+        settled = true;
+        signal.removeEventListener("abort", onAbort);
+        settle(result);
+      };
       // Rejects immediately when the caller aborts the in-flight operation.
-      const onAbort = () => rejectPromise(new CompanionCompositionInstallError(
+      const onAbort = () => finish(rejectPromise, new CompanionCompositionInstallError(
         "companion-composition-install-aborted",
         details
       ));
-      signal.addEventListener("abort", onAbort, { once: true });
-      Promise.resolve(promise).then(
+      pending.then(
         // Resolves the original value after cancellation cleanup.
-        (value) => {
-          signal.removeEventListener("abort", onAbort);
-          resolve(value);
-        },
+        (value) => finish(resolve, value),
         // Propagates the original failure after cancellation cleanup.
-        (error) => {
-          signal.removeEventListener("abort", onAbort);
-          rejectPromise(error);
-        }
+        (error) => finish(rejectPromise, error)
       );
+      signal.addEventListener("abort", onAbort, { once: true });
+      if (signal.aborted) onAbort();
     });
   }
 
@@ -328,8 +331,9 @@ function (root, admissionApi) {
     return result;
   }
 
-  // Computes SHA-256 through the host Web Crypto implementation and checks its width.
-  async function sha256Hex(bytes) {
+  // Hashes admitted bytes under the caller signal, preserving optional chunk context.
+  async function sha256Hex(bytes, signal, details) {
+    checkCancelled(signal, details);
     if (!(bytes instanceof Uint8Array)) {
       reject("companion-composition-install-sha256");
     }
@@ -340,9 +344,9 @@ function (root, admissionApi) {
     }
     let digest;
     try {
-      digest = await cryptoValue.subtle.digest("SHA-256", bytes);
+      digest = await waitWithCancellation(cryptoValue.subtle.digest("SHA-256", bytes), signal, details);
     } catch (error) {
-      throw typed(error, "companion-composition-install-sha256");
+      throw typed(error, "companion-composition-install-sha256", details);
     }
     const digestBytes = new Uint8Array(digest);
     if (digestBytes.byteLength !== 32) {
@@ -468,8 +472,8 @@ function (root, admissionApi) {
     });
   }
 
-  // Copies and binds the raw authority records that the store must persist with the bytes.
-  async function normalizeAdmissionAuthority(value, manifest, admissionText) {
+  // Binds persisted authority bytes while the caller's cancellation signal remains active.
+  async function normalizeAdmissionAuthority(value, manifest, admissionText, signal) {
     exactObject(
       value,
       ADMISSION_AUTHORITY_INPUT_FIELDS,
@@ -495,8 +499,8 @@ function (root, admissionApi) {
     const catalogBytes = textEncoder().encode(value.catalogText);
     if (receiptBytes.byteLength !== receiptDescriptor.byteLength ||
         catalogBytes.byteLength !== catalogDescriptor.byteLength ||
-        await sha256Hex(receiptBytes) !== receiptDescriptor.sha256 ||
-        await sha256Hex(catalogBytes) !== catalogDescriptor.sha256) {
+        await sha256Hex(receiptBytes, signal) !== receiptDescriptor.sha256 ||
+        await sha256Hex(catalogBytes, signal) !== catalogDescriptor.sha256) {
       reject("companion-composition-install-admission-authority");
     }
     const catalogAuthority = exactObject(
@@ -529,8 +533,8 @@ function (root, admissionApi) {
     });
   }
 
-  // Derives the immutable store manifest and all identities before fetching member bytes.
-  async function buildInstallPlan(projection, admission, manifestValue, admissionAuthority) {
+  // Derives exact identities before member transfer, with one caller cancellation signal.
+  async function buildInstallPlan(projection, admission, manifestValue, admissionAuthority, signal) {
     let admissionText;
     try {
       admissionText = admissionApi.serializeAdmission(admission);
@@ -542,7 +546,7 @@ function (root, admissionApi) {
         admissionBytes.byteLength > admissionApi.maximumTextBytes) {
       reject("companion-composition-install-admission");
     }
-    const admissionSha256 = await sha256Hex(admissionBytes);
+    const admissionSha256 = await sha256Hex(admissionBytes, signal);
     const manifest = normalizeManifest(
       manifestValue,
       admission,
@@ -552,7 +556,8 @@ function (root, admissionApi) {
     const normalizedAdmissionAuthority = await normalizeAdmissionAuthority(
       admissionAuthority,
       manifest,
-      admissionText
+      admissionText,
+      signal
     );
     return Object.freeze({
       projection,
@@ -560,9 +565,9 @@ function (root, admissionApi) {
       admissionText,
       admissionAuthority: normalizedAdmissionAuthority,
       manifest,
-      manifestSha256: await sha256Hex(canonicalBytes(manifest)),
+      manifestSha256: await sha256Hex(canonicalBytes(manifest), signal),
       admissionAuthoritySha256: await sha256Hex(
-        canonicalBytes(manifest.admissionAuthority)
+        canonicalBytes(manifest.admissionAuthority), signal
       ),
       admissionSha256,
       // Totals admitted member lengths for bounded aggregate progress reporting.
@@ -598,8 +603,8 @@ function (root, admissionApi) {
     }
   }
 
-  // Verifies one chunk's closed metadata, continuity, length, and content digest.
-  async function validateChunk(value, plan, spec, chunkIndex) {
+  // Verifies closed chunk metadata and content, interrupting its hash on caller cancellation.
+  async function validateChunk(value, plan, spec, chunkIndex, signal) {
     const details = { role: spec.role, chunkIndex };
     const response = exactObject(
       value,
@@ -646,7 +651,7 @@ function (root, admissionApi) {
       "companion-composition-install-chunk-content",
       details
     );
-    if (await sha256Hex(response.bytes) !== contentSha256) {
+    if (await sha256Hex(response.bytes, signal, details) !== contentSha256) {
       reject("companion-composition-install-chunk-content", details);
     }
     return response.bytes;
@@ -697,7 +702,7 @@ function (root, admissionApi) {
               signal
             );
             checkCancelled(signal, details);
-            const chunk = await validateChunk(response, plan, spec, chunkIndex);
+            const chunk = await validateChunk(response, plan, spec, chunkIndex, signal);
             checkCancelled(signal, details);
             yield chunk;
             artifactCompletedBytes += chunk.byteLength;
@@ -872,7 +877,8 @@ function (root, admissionApi) {
       projection,
       admission,
       options.manifest,
-      options.admissionAuthority
+      options.admissionAuthority,
+      signal
     );
     checkCancelled(signal);
     const sources = createSources(

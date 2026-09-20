@@ -1,5 +1,22 @@
 # Server-seeded startup
 
+## September 20 companion import cancellation
+
+The Advanced companion import path propagates its caller's optional signal through
+all five preparation hashes and every member-chunk hash. Cancelling a pending hash
+rejects that wait, observes late hash failures, and prevents subsequent transfer or
+activation. Before storage starts there are no store side effects; during transfer,
+the store performs its existing failed-candidate cleanup while preserving the prior
+active composition. Cleanup failure retains its existing recovery authority.
+Actual Edge checks cover all eleven hash stages in a six-single-chunk fixture,
+writer-lock release, unchanged activation and a successful subsequent installation.
+
+This adds no new timeout or signal to calls that omit one. Underlying WebCrypto may
+finish after cancellation. The installer still validates and returns a committed
+store result when cancellation arrives after commit. Hash, transport and progress
+failures remain typed. See `companion-hash-cancellation-review.json` in the cleanup
+artifacts; these fixtures do not establish a real companion acquisition or model.
+
 ## September 20 cancellation during install metadata verification
 
 The later P2P installer uses its existing whole-install deadline and linked caller

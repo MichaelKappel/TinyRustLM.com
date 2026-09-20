@@ -11,6 +11,26 @@ Keep useful findings and compact evidence identities in the owning canonical
 repository. Keep source history in Git and current model payloads only in
 `D:\LLMs\TinyRustLM`.
 
+## C59: cancellation must reach companion chunk verification too
+
+Question: can the Advanced companion path release an interrupted import while
+metadata or chunk hashing is pending? The original bridge failed all 22 controlled
+cases across five preparation and six member-hash stages. The postcommit control
+passed. Propagating the existing caller signal into every hash fixes the wait
+without changing identity checks or committed-store success. The wait helper also
+observes a rejected promise returned after a synchronous abort by a hash, client
+or progress callback; genuine hash failure retains its separate error and context.
+
+All 367 affected Node checks pass. Nine Edge tests include real OPFS cancellation
+at all eleven stages on desktop and mobile viewports: exact prior pointer retained,
+candidate/staging absent, writer lock released, late rejection observed, then a
+successful replacement. Chunk transport and model bytes are synthetic. This does
+not verify .NET source acquisition or real inference. No-signal calls still wait
+for their work; cancellation cannot abort underlying WebCrypto or force an issued
+browser mutation to finish. Reuse the full transfer boundary, not just network
+request mocks, when checking cancellation. Evidence and source identities:
+`companion-hash-cancellation-review.json` in the cleanup artifact directory.
+
 ## C58: a network deadline must also cover metadata hashing
 
 Question: does cancelling a P2P install finish while its metadata digest is pending?

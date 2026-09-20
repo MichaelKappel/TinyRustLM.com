@@ -16,6 +16,15 @@ Authority order is current owner instructions, inspected current contracts and b
 
 ## Current evidence and its limits
 
+**C59 companion hash cancellation:** the optional caller signal now reaches all
+five preparation hashes and each chunk hash. Late rejections are observed, chunk
+context is preserved, and committed-store success remains intact. All 367 affected
+Node checks pass (93.43% installer line coverage), plus eight desktop and one
+mobile-viewport Edge tests. Real OPFS retains the prior pointer, removes cancelled
+candidates, releases the writer lock and accepts the subsequent install in the
+tested synthetic scenarios. No .NET source acquisition or real model is claimed.
+See `artifacts/ecosystem-cleanup-20260912/companion-hash-cancellation-review.json`.
+
 **C58 install metadata cancellation:** all four P2P metadata hash waits now share
 the existing install deadline and caller signal. Late failures are observed and
 cancelled preparation starts no store or transfer. All 222 affected Node checks

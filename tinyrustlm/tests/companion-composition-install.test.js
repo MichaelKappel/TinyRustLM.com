@@ -655,6 +655,130 @@ test("a missing chunk fails once without retry or fallback", async () => {
   assert.equal(store.activated, null);
 });
 
+test("cancellation interrupts every preparation and member hash before late settlement", async (t) => {
+  for (const ordinal of Array.from({ length: 11 }, (_, index) => index + 1)) {
+    for (const lateOutcome of ["resolve", "reject"]) {
+      await t.test(`${ordinal}/${lateOutcome}`, async (t) => {
+        const value = fixture({ label: `hash-${ordinal}-${lateOutcome}` });
+        const client = new FakeCapabilityClient(value);
+        const store = new ConsumingStore();
+        const controller = new AbortController();
+        const entered = Promise.withResolvers();
+        const held = Promise.withResolvers();
+        const digest = globalThis.crypto.subtle.digest.bind(globalThis.crypto.subtle);
+        let calls = 0;
+        let heldInput;
+        let observationTimer;
+        const progress = [];
+        t.mock.method(globalThis.crypto.subtle, "digest", (algorithm, bytes) => {
+          calls += 1;
+          if (calls !== ordinal) return digest(algorithm, bytes);
+          heldInput = { algorithm, bytes };
+          entered.resolve();
+          return held.promise;
+        });
+        const pending = install(value, client, store, {
+          signal: controller.signal,
+          onProgress: (event) => progress.push(event)
+        }).then((result) => ({ kind: "resolved", result }),
+          (error) => ({ kind: "rejected", error }));
+        try {
+          await entered.promise;
+          controller.abort();
+          const observed = await Promise.race([pending, new Promise((resolve) => {
+            observationTimer = setTimeout(() => resolve({ kind: "pending" }), 150);
+          })]);
+          assert.equal(observed.kind, "rejected", "cancellation must not wait for the hash");
+          assert.equal(observed.error.code, "companion-composition-install-aborted");
+          if (ordinal > 5) {
+            assert.equal(observed.error.role, ROLE_ORDER[ordinal - 6]);
+            assert.equal(observed.error.chunkIndex, 0);
+          }
+          if (lateOutcome === "reject") held.reject(new Error("late digest failure"));
+          else held.resolve(await digest(heldInput.algorithm, heldInput.bytes));
+          await new Promise(setImmediate);
+          assert.equal(await pending, observed);
+          assert.equal(calls, ordinal);
+          assert.equal(store.calls.length, ordinal <= 5 ? 0 : 1);
+          assert.equal(client.calls.length, Math.max(0, ordinal - 5));
+          assert.equal(store.completedMembers.length, Math.max(0, ordinal - 6));
+          assert.equal(progress.length, Math.max(0, ordinal - 6));
+          assert.equal(store.activated, null);
+        } finally {
+          clearTimeout(observationTimer);
+          held.reject(new Error("test cleanup"));
+          await pending;
+        }
+      });
+    }
+  }
+});
+
+test("hash failure without cancellation retains its typed error and chunk context", async (t) => {
+  for (const ordinal of [1, 6]) {
+    await t.test(String(ordinal), async (t) => {
+      const value = fixture({ label: `hash-failure-${ordinal}` });
+      const client = new FakeCapabilityClient(value);
+      const store = new ConsumingStore();
+      const digest = globalThis.crypto.subtle.digest.bind(globalThis.crypto.subtle);
+      let calls = 0;
+      t.mock.method(globalThis.crypto.subtle, "digest", (algorithm, bytes) => {
+        calls += 1;
+        return calls === ordinal ? Promise.reject(new Error("hash failed")) : digest(algorithm, bytes);
+      });
+      await assert.rejects(install(value, client, store), code("companion-composition-install-sha256", error => {
+        if (ordinal === 6) {
+          assert.equal(error.role, "model");
+          assert.equal(error.chunkIndex, 0);
+        }
+      }));
+      assert.equal(calls, ordinal);
+      assert.equal(client.calls.length, ordinal === 1 ? 0 : 1);
+      assert.equal(store.activated, null);
+    });
+  }
+});
+
+test("synchronous cancellation observes rejected hash, client and progress promises", async (t) => {
+  for (const boundary of ["hash", "client", "progress"]) {
+    await t.test(boundary, async (t) => {
+      const value = fixture({ label: `sync-cancel-${boundary}` });
+      const client = new FakeCapabilityClient(value);
+      const store = new ConsumingStore();
+      const controller = new AbortController();
+      // Simulates a capability cancelling synchronously before returning a failed promise.
+      const cancelAndReject = () => {
+        controller.abort();
+        return Promise.reject(new Error(`late ${boundary} failure`));
+      };
+      if (boundary === "hash") t.mock.method(globalThis.crypto.subtle, "digest", cancelAndReject);
+      if (boundary === "client") t.mock.method(client, "getArtifactChunk", cancelAndReject);
+      await assert.rejects(install(value, client, store, {
+        signal: controller.signal,
+        onProgress: boundary === "progress" ? cancelAndReject : undefined
+      }), code("companion-composition-install-aborted"));
+      await new Promise(setImmediate);
+      assert.equal(store.activated, null);
+    });
+  }
+});
+
+test("cancellation after the store commit returns the verified committed composition", async () => {
+  const value = fixture({ label: "cancel-after-commit" });
+  const client = new FakeCapabilityClient(value);
+  const store = new ConsumingStore();
+  const controller = new AbortController();
+  const committingStore = {
+    async install(options) {
+      const result = await store.install(options);
+      controller.abort();
+      return result;
+    }
+  };
+  assert.equal(await install(value, client, committingStore, { signal: controller.signal }), store.activated);
+  assert.equal(client.calls.length, 6);
+});
+
 test("AbortSignal cancels a stalled chunk source without issuing another request", async () => {
   const value = fixture({ label: "cancel" });
   const client = new FakeCapabilityClient(value, { stallRole: "model" });

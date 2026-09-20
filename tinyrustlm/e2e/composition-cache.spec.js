@@ -283,6 +283,129 @@ async function openRuntimePage(context, baseURL, suppliedPage) {
   return page;
 }
 
+test("companion hash cancellation preserves OPFS activation and releases the writer", async ({ page }) => {
+  const fixtures = {
+    prior: createSyntheticFixture("companion-hash-prior", 127),
+    candidate: createSyntheticFixture("companion-hash-candidate", 149)
+  };
+  const pageErrors = [];
+  page.on("pageerror", error => pageErrors.push(error.message));
+  await page.goto("/app/browser-model-admission.js", { waitUntil: "domcontentloaded" });
+  for (const script of [...RUNTIME_SCRIPTS, "companion-composition-install.js"]) {
+    await page.addScriptTag({ url: `/app/${script}` });
+  }
+  const result = await page.evaluate(async ({ fixtures, rootName, lockName }) => {
+    const api = globalThis.TinyRustLMModelCompositionStore;
+    const admissionApi = globalThis.TinyRustLMBrowserModelAdmission;
+    const installer = globalThis.TinyRustLMCompanionCompositionInstall;
+    const adapter = api.createOpfsAdapter({ createSha256: globalThis.TinyRustLMIncrementalSha256.createSha256 });
+    const store = api.createModelCompositionStore({ adapter });
+    const decode = text => Uint8Array.from(atob(text), character => character.charCodeAt(0));
+    const prior = await store.install({
+      manifest: fixtures.prior.manifest, admissionAuthority: fixtures.prior.admissionAuthority,
+      activate: async () => true, authorizeCommit: async () => true,
+      sources: Object.fromEntries(api.memberNames.map(name => [name, {
+        async *[Symbol.asyncIterator]() { yield decode(fixtures.prior.members[name]); }
+      }]))
+    });
+    const root = await (await navigator.storage.getDirectory()).getDirectoryHandle(rootName);
+    const pointer = async () => (await (await root.getFileHandle("active.json")).getFile()).text();
+    const before = await pointer();
+    const candidate = fixtures.candidate;
+    const admission = admissionApi.parseAdmissionText(candidate.admissionText);
+    const totalBytes = admission.artifacts.reduce((sum, member) => sum + member.byteCount, 0);
+    const projection = {
+      schema: "tinyrustlm.companion.loopback.operation-projection.v2",
+      operationId: "b".repeat(64), sequence: 7, state: "available", route: "source",
+      phaseCompletedBytes: totalBytes, phaseTotalBytes: totalBytes, errorCode: null,
+      artifacts: Object.fromEntries(admission.artifacts.map(member => [member.role, {
+        kind: member.format, artifactId: `sha256:${member.sha256}`,
+        sha256: member.sha256, byteCount: member.byteCount
+      }]))
+    };
+    const memberBytes = Object.fromEntries(api.memberNames.map(name => [name, decode(candidate.members[name])]));
+    let clientCalls = 0;
+    let storeCalls = 0;
+    const client = {
+      async getArtifactChunk(operationId, role, chunkIndex) {
+        clientCalls += 1;
+        const member = admission.artifacts.find(member => member.role === role);
+        return { bytes: memberBytes[member.fileName], contentSha256: member.sha256,
+          metadata: { operationId, artifactRole: role, artifactId: `sha256:${member.sha256}`,
+            artifactSha256: member.sha256, artifactBytes: member.byteCount, chunkIndex,
+            chunkCount: 1, chunkOffset: 0, chunkBytes: member.byteCount } };
+      }
+    };
+    const install = signal => installer.installCompanionComposition({
+      client, projection, admission, manifest: candidate.manifest,
+      admissionAuthority: candidate.admissionAuthority, signal,
+      store: { install(request) {
+        storeCalls += 1;
+        return store.install({ ...request, activate: async () => true, authorizeCommit: async () => true });
+      } }
+    });
+    const nativeDigest = crypto.subtle.digest;
+    const observations = [];
+    for (const ordinal of Array.from({ length: 11 }, (_, index) => index + 1)) {
+      const controller = new AbortController();
+      const entered = Promise.withResolvers();
+      const held = Promise.withResolvers();
+      let digestCalls = 0;
+      let captured = false;
+      let timer;
+      clientCalls = 0;
+      storeCalls = 0;
+      const target = ordinal > 5 ? memberBytes[api.memberNames[ordinal - 6]] : null;
+      // Metadata is hashed first; chunk matching avoids counting the store's own hashes.
+      crypto.subtle.digest = (algorithm, bytes) => {
+        digestCalls += 1;
+        const matches = target ? bytes.length === target.length &&
+          target.every((value, index) => value === bytes[index]) : digestCalls === ordinal;
+        if (captured || !matches) return nativeDigest.call(crypto.subtle, algorithm, bytes);
+        captured = true;
+        entered.resolve();
+        return held.promise;
+      };
+      const pending = install(controller.signal).then(() => "unexpected-success", error => error.code);
+      let verdict;
+      try {
+        await entered.promise;
+        controller.abort();
+        verdict = await Promise.race([pending, new Promise(resolve => {
+          timer = setTimeout(() => resolve("still-pending"), 2000);
+        })]);
+        held.reject(new Error("late browser hash failure"));
+        await new Promise(resolve => setTimeout(resolve, 0));
+      } finally {
+        clearTimeout(timer);
+        held.reject(new Error("fixture cleanup"));
+        await pending;
+        crypto.subtle.digest = nativeDigest;
+      }
+      const installed = [], staging = [];
+      for await (const name of (await root.getDirectoryHandle("installed")).keys()) installed.push(name);
+      for await (const name of (await root.getDirectoryHandle("staging")).keys()) staging.push(name);
+      const locks = await navigator.locks.query();
+      observations.push({ ordinal, verdict, clientCalls, storeCalls, installed, staging,
+        pointerUnchanged: await pointer() === before,
+        writerHeld: locks.held.some(lock => lock.name === lockName) });
+    }
+    const replacement = await install();
+    return { observations, prior: prior.manifestSha256,
+      replacement: replacement.manifestSha256, active: (await store.openActive()).manifestSha256 };
+  }, { fixtures, rootName: OPFS_ROOT_NAME, lockName: LOCK_NAME });
+  expect(pageErrors).toEqual([]);
+  expect(result.observations).toHaveLength(11);
+  for (const observed of result.observations) {
+    expect(observed).toEqual({ ordinal: observed.ordinal,
+      verdict: "companion-composition-install-aborted",
+      clientCalls: Math.max(0, observed.ordinal - 5), storeCalls: observed.ordinal <= 5 ? 0 : 1,
+      installed: [result.prior], staging: [], pointerUnchanged: true, writerHeld: false });
+  }
+  expect(result.replacement).toBe(fixtures.candidate.manifestSha256);
+  expect(result.active).toBe(result.replacement);
+});
+
 test("late source cancellation releases the real OPFS writer lock and preserves the saved model", async ({}, testInfo) => {
   test.skip(testInfo.project.name !== "desktop", "The OPFS contract runs in desktop Chromium");
   const fixtures = { prior: createSyntheticFixture("cleanup-prior", 127),
