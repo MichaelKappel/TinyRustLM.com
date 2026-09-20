@@ -16,6 +16,15 @@ Authority order is current owner instructions, inspected current contracts and b
 
 ## Current evidence and its limits
 
+**C81 UI verification:** PowerShell and Bash now delegate to one source-first
+owner. The sole v2 report requires all twelve gates, requested acquisition
+checks and completed cleanup. Custom report paths are create-only; interrupted
+child output remains marked for quiescence review. All 75 affected tests pass
+with 99.06% owner line coverage. Actual PowerShell execution writes a failure
+report at source admission and creates no scratch. Read
+`ui-verification-owner-review.json`; real browser/model, source and publication
+requirements remain unfulfilled. Existing blocked retirement was not retried.
+
 **C80 browser gates:** focused checks now cover the current six-member admission,
 installation, client and worker; all 230 UI and 41 integration checks pass. An
 actual Edge worker initialization/release check passes in two deleted profiles.

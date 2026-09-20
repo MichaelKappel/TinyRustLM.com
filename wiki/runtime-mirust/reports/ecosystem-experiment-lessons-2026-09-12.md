@@ -11,6 +11,31 @@ Keep useful findings and compact evidence identities in the owning canonical
 repository. Keep source history in Git and current model payloads only in
 `D:\LLMs\TinyRustLM`.
 
+## C81: one gate owner must control admission, output and truthful completion
+
+- Question: can the pending cross-platform UI gate avoid source sprawl and
+  incomplete passing reports while preserving every requested current check?
+- Inputs: TinyRust parent `95d2984b8b8207b11feaf1942af612cc5655c529`; initial
+  pending shell/test hashes are in `ui-verification-owner-review.json`.
+- Method: replace duplicate shell orchestration with one owner, inject bounded
+  fixture failures at each stage, execute both actual adapters, exercise real
+  child limits/cancellation and serve a child HTTP request through the real
+  current source server. Run the actual PowerShell entry point separately.
+- Result: final 75/75 affected checks, 99.06% line and 99.05% branch coverage.
+  Actual PowerShell execution fails source admission without allocating scratch;
+  mocked gate completion is not a full real UI or visual qualification result.
+- Decision: source first; one current v2 report and exact gate set; independent
+  child-report validation; canonical marked scratch; exclusive custom reports;
+  bounded output hashes and exit codes. Keep unregistered deep acquisition a
+  failure before spending on fixture checks. Preserve existing blocked cohorts.
+- Reusable lesson: process success and a passing report label cannot establish
+  missing checks. A timeout also cannot establish descendant quiescence; retain
+  ownership when interruption prevents safe cleanup. Separate the replaceable
+  current-status alias from create-only evidence supplied by the caller.
+- Uncertainty: the full source/UI gate, real model/browser qualification, initial
+  seed, physical RID and publication requirements remain. No credential read.
+- Evidence: `artifacts/ecosystem-cleanup-20260912/ui-verification-owner-review.json`.
+
 ## C80: helper success does not prove the browser executor still matches the app
 
 - Question: does the exposed browser-round chain execute the current composition

@@ -1,0 +1,133 @@
+{
+  "schema": "ecosystem.ui-verification-owner-review/1",
+  "reviewedUtc": "2026-09-20T20:16:53Z",
+  "sourceParent": "95d2984b8b8207b11feaf1942af612cc5655c529",
+  "purpose": "Complete the pending cross-platform UI gate work with one current owner, canonical output and independently checked complete reports.",
+  "baselinePendingFiles": [
+    {
+      "path": "eng/verify-tinyrustlm-ui.ps1",
+      "bytes": 8630,
+      "sha256": "7c06f35483d86adcf70e6e705f021555fdd2a848c9fa27bfeed249ebc7a31d66"
+    },
+    {
+      "path": "eng/verify-tinyrustlm-ui.sh",
+      "bytes": 7235,
+      "sha256": "a41b5264fd7c959718705fb29b6a0a57133a6ba90c12e6571b069181deaa994d"
+    },
+    {
+      "path": "tinyrustlm/tests/acquisition-playwright-gate.test.js",
+      "bytes": 4803,
+      "sha256": "aa9e5fcd130f612ad4fa06c288285b14cff70add78cb6fb3230bb64113264b0d"
+    }
+  ],
+  "findings": [
+    "PowerShell and Bash duplicated orchestration/report writing and started non-source work and system-temp evidence before source admission.",
+    "Visual checks used cargo process startup and separate port polling rather than the maintained source server.",
+    "UI v1 verification omitted required launcher/acquisition gates; a requested gate could be absent from a superficially passing report."
+  ],
+  "implementation": [
+    "Both shell adapters delegate to one Node owner, preserving argument values and terminal failure.",
+    "Source admission precedes scratch/build/browser activity. Unregistered deep acquisition remains an early failure, not a fixture pass.",
+    "Integrate no-browser launcher and acquisition fixture gates from pending work; no dependency on the unrelated synthetic walkthrough/runbook.",
+    "Use shell-free bounded children and the maintained asynchronous source server on an OS-assigned port. Close the listener on every visual exit.",
+    "UI v2 closes all twelve gate names and requires requested acquisition, source, launcher and cleanup evidence. Both public-root consumers independently validate the child report; old UI v1 is rejected.",
+    "Keep scratch canonical and remove it before a pass. Preserve interrupted/failed-cleanup ownership for quiescence review.",
+    "Custom reports are create-only; only the fixed current-status alias may be replaced. Reports retain captured decoded output lengths/digests and failed exit codes, never raw child diagnostics."
+  ],
+  "tests": {
+    "affected": {
+      "pass": 75,
+      "fail": 0,
+      "skip": 0,
+      "linePercent": 99.06,
+      "branchPercent": 99.05,
+      "functionPercent": 93.75,
+      "files": [
+        "verify-ui.test.js",
+        "verify-release-report.test.js",
+        "acquisition-playwright-gate.test.js",
+        "vnext-release-cutover.test.js",
+        "vnext-unit-test-gate.test.js"
+      ]
+    },
+    "managed": {
+      "passed": 38,
+      "failed": 0,
+      "skipped": 0
+    },
+    "realBoundaries": [
+      "PowerShell adapter success/failure, argument spaces and all flags.",
+      "Bash adapter success/failure, argument spaces, all flags and invalid switch rejection, using OSM-Ubuntu WSL.",
+      "Real child cwd/env, nonzero exit, output limit, timeout and cancellation.",
+      "Actual current source listener served an asynchronous child request and was then unreachable after closure."
+    ],
+    "syntax": "Both PowerShell adapters parse; actual Bash adapter execution and syntax check pass. Public-root Bash syntax checked separately.",
+    "actualPowerShellEntry": {
+      "exitCode": 1,
+      "command": "eng/verify-tinyrustlm-ui.ps1 -ReportOutput <owned>/actual-source-refusal.json -RunBrowserSmoke",
+      "report": {
+        "schema": "tinyrustlm.ui_verification.v2",
+        "status": "fail",
+        "error": "ui_command_failed",
+        "gates": {
+          "source_authority": "fail",
+          "static_contract": "not_run",
+          "javascript_syntax": "not_run",
+          "interview_demo_no_browser": "not_run",
+          "acquisition_playwright": "not_run",
+          "browser_contracts": "not_run",
+          "chromium_release": "not_run",
+          "acquisition_browser_bridge": "skipped",
+          "acquisition_companion": "skipped",
+          "acquisition_converter": "skipped",
+          "visual_lock": "skipped",
+          "temporary_cleanup": "not_run"
+        },
+        "evidence": {
+          "root": "",
+          "web_release": "",
+          "visual_lock": "",
+          "cleanup": "not_created"
+        },
+        "bytes": 1394,
+        "sha256": "cc540f23b6d248d28377b32628076c74230eeb69c81c46b3ff86960f25219eec"
+      }
+    },
+    "boundary": "75 includes four still-uncommitted acquisition/runbook assertions. Injected success cases and HTTP mechanics do not prove default real gates, visual parity or model qualification.",
+    "ordinaryTemporaryEnvironment": {
+      "passed": 18,
+      "failed": 0,
+      "skipped": 0,
+      "environment": "TEMP, TMP and TMPDIR set to C:\\Windows\\Temp; test-owned output remained in canonical artifacts and was removed.",
+      "reason": "Final test setup resolves its canonical parent directly. The prior observation was unavailable after compaction; process inspection confirmed no test remained live before this verification."
+    },
+    "independentValidatorComparison": {
+      "baseline": "Validator from Git parent 95d2984, evaluated in memory without a copied source file, accepted a v1 browser report missing interview_demo_no_browser and acquisition_playwright.",
+      "current": "The current v2 validator rejected the equivalent incomplete gate set."
+    }
+  },
+  "uncommittedWork": "acquisition-playwright-gate.test.js retains its pending runbook assertions, with shell assertions updated to the shared owner. Unrelated package, synthetic walkthrough, e2e and blocked-retirement work remain unstaged.",
+  "limits": [
+    "Known installer links still prevent complete source admission; no gate was bypassed to claim a real pass.",
+    "Interrupted child termination does not certify descendant quiescence; retained output requires exact later review.",
+    "Historical baseline visual differences, current live model, seed, physical RID, NuGet and publication requirements remain open.",
+    "No frontend styling, model payload, credential, package publication or deployment changed. No blocked deletion retried."
+  ],
+  "secretScan": {
+    "status": "pass",
+    "scannedArtifactCount": 18,
+    "secretFindingCount": 0,
+    "scopeComplete": false,
+    "scope": "Seventeen checkpoint files plus the pending acquisition assertion file. Scan preceded this final scan/cleanup accounting; key contents were not read."
+  },
+  "ownedOutput": {
+    "root": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\ui-verification-owner\\tinyrustlm-operation-QgpPYO",
+    "status": "removed",
+    "files": 146,
+    "childDirectories": 43,
+    "logicalBytes": 5648978,
+    "externalMarkerBytes": 65,
+    "method": "Confirmed no matching live writers, inventoried the exact original operation root, verified original directory and marker identities, and removed it through the canonical ownership helper. Root and marker absence confirmed afterward.",
+    "physicalReclaimedBytesMeasured": false
+  }
+}

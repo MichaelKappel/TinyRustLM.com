@@ -12,7 +12,7 @@ const schemas = Object.freeze({
   "feed-smoke": "tinyrustlm.nuget.feed_smoke.v0",
   "publish-plan": "tinyrustlm.nuget.publish_plan.v0",
   readiness: "tinyrustlm.nuget.release_readiness.v0",
-  ui: "tinyrustlm.ui_verification.v1",
+  ui: "tinyrustlm.ui_verification.v2",
   "public-root": "tinyrustlm.public_root_verification.v1"
 });
 
@@ -214,9 +214,13 @@ function validateReport(kind, report) {
     for (const field of ["run_id", "repository_root", "app_root"]) text(report[field], field);
     requireValue(report.gates && typeof report.gates === "object", "gates");
     for (const flag of ["browser_smoke_requested", "deep_acquisition_requested", "visual_lock_requested"]) boolean(report[flag], flag);
-    for (const gate of ["static_contract", "javascript_syntax"]) equal(report.gates[gate], "pass", gate);
+    exactSet(Object.keys(report.gates), ["source_authority", "static_contract", "javascript_syntax",
+      "interview_demo_no_browser", "acquisition_playwright", "browser_contracts", "chromium_release",
+      "acquisition_browser_bridge", "acquisition_companion", "acquisition_converter", "visual_lock", "temporary_cleanup"], "UI gate set");
+    for (const gate of ["source_authority", "static_contract", "javascript_syntax", "interview_demo_no_browser", "temporary_cleanup"]) equal(report.gates[gate], "pass", gate);
+    equal(report.evidence?.cleanup, "removed", "UI temporary cleanup");
     for (const [flag, gates] of [
-      ["browser_smoke_requested", ["browser_contracts", "chromium_release"]],
+      ["browser_smoke_requested", ["acquisition_playwright", "browser_contracts", "chromium_release"]],
       ["deep_acquisition_requested", ["acquisition_browser_bridge", "acquisition_companion", "acquisition_converter"]],
       ["visual_lock_requested", ["visual_lock"]]
     ]) for (const gate of gates) equal(report.gates[gate], report[flag] ? "pass" : "skipped", gate);

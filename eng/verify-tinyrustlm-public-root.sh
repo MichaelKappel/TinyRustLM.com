@@ -9,7 +9,8 @@ CHILD_REPORT="$REPO_ROOT/artifacts/reports/public-root-verification/$RUN_ID/ui-v
 STATUS="fail"
 ERROR_MESSAGE=""
 
-if TINYRUSTLM_ROOT="$ROOT" TINYRUSTLM_UI_REPORT="$CHILD_REPORT" RUN_BROWSER_SMOKE=1 "$REPO_ROOT/eng/verify-tinyrustlm-ui.sh"; then
+if TINYRUSTLM_ROOT="$ROOT" TINYRUSTLM_UI_REPORT="$CHILD_REPORT" RUN_BROWSER_SMOKE=1 "$REPO_ROOT/eng/verify-tinyrustlm-ui.sh" &&
+   node "$REPO_ROOT/eng/verify-release-report.js" ui "$CHILD_REPORT"; then
   STATUS="pass"
 else
   ERROR_MESSAGE="TinyRustLM UI verification failed"
@@ -25,9 +26,9 @@ if os.path.isfile(child_path):
         child_bytes = handle.read()
     child_sha = hashlib.sha256(child_bytes).hexdigest()
     child = json.loads(child_bytes)
-    if child.get("schema") != "tinyrustlm.ui_verification.v1" or child.get("status") != "pass":
+    if child.get("schema") != "tinyrustlm.ui_verification.v2" or child.get("status") != "pass":
         status = "fail"
-        error = "TinyRustLM UI verification did not produce a passing v1 report"
+        error = "TinyRustLM UI verification did not produce a passing v2 report"
 report = {
     "schema": "tinyrustlm.public_root_verification.v1",
     "generated_utc": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),

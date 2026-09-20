@@ -5,6 +5,32 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C81: one source-first UI verification owner, September 20
+
+PowerShell and Bash now translate options into one Node owner instead of
+duplicating gate orchestration, report writing and browser-server lifetime.
+Source admission runs before scratch, builds and browsers. Pending launcher and
+acquisition checks are integrated without the unrelated synthetic walkthrough.
+The visual path uses the maintained source server with an OS-assigned port.
+
+Current v2 reports require all twelve gate names, requested acquisition checks,
+launcher verification and cleanup. Public-root consumers validate the actual
+child report. V1 is rejected. Custom report destinations are create-only; the
+fixed current-status report remains replaceable. Child output is bounded and
+recorded through lengths/digests/exit codes, without raw diagnostic text.
+Timeout or cancellation cannot prove descendant quiescence, so interrupted
+scratch retains its original marker for review rather than being deleted.
+
+All 75 affected checks pass, including actual PowerShell/Bash adapters, real
+child timeout/cancellation and a child fetching the current loopback source
+server during verification. Owner line/branch coverage is 99.06%/99.05%.
+The actual PowerShell browser-mode command stops at the known two installer
+links and writes a failed v2 report before creating scratch. No full UI gate,
+visual match, real model, public seed, NuGet push or deployment is claimed.
+The pending acquisition/runbook test file remains uncommitted with its owner;
+its shared-owner assertions are updated. No blocked deletion was retried.
+Evidence: `artifacts/ecosystem-cleanup-20260912/ui-verification-owner-review.json`.
+
 ## C80: current browser contract gates and blocked retirement, September 20
 
 The old npm browser-round path still called a removed admission API, imported

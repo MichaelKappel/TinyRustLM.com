@@ -1,5 +1,5 @@
 profile: tinyrustlm.long-term-memory.current.v1
-updated_utc: 2026-09-20T19:53:58Z
+updated_utc: 2026-09-20T20:16:53Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
@@ -13,8 +13,8 @@ pointers:
     authority: reviewed_guidance
     review_state: reviewed_for_routing_and_identity
     status: current
-    last_reviewed_utc: 2026-09-20T19:53:58Z
-    sha256: df4eb5d319ed555c6a248224e32275d0e9f6efb58ea5f19947961b5ba8f4ccb3
+    last_reviewed_utc: 2026-09-20T20:16:53Z
+    sha256: a6036a1e2abe4d5268539209b9e4a4d425311f21de6eb3876e704dbdc63d8c29
   - id: report-decisions
     path: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
     label: September report decisions
@@ -36,12 +36,12 @@ pointers:
   - id: experiment-lessons
     path: wiki/runtime-mirust/reports/ecosystem-experiment-lessons-2026-09-12.md
     label: Retained experiment lessons
-    summary: Open for C21-C80 observations, exact evidence, uncertainty and blocked retirement.
+    summary: Open for C21-C81 observations, exact evidence, uncertainty and blocked retirement.
     authority: reviewed_bounded_historical_evidence
     review_state: reviewed_for_routing_and_identity
     status: active_growing_review
-    last_reviewed_utc: 2026-09-20T19:53:58Z
-    sha256: 1b43217338df53d8a6e60ce6586bd3fea97a4fd7e5b97cbe9e2663ce9016bc5d
+    last_reviewed_utc: 2026-09-20T20:16:53Z
+    sha256: e0a49c2a6af2225926067728287b7637d648789c6cb3fa04b9f162e0a47ce091
   - id: cleanup-progress
     path: docs/ecosystem-cleanup-2026-09-12.md
     label: Ecosystem cleanup progress
@@ -49,8 +49,8 @@ pointers:
     authority: owner_authorized_progress_record
     review_state: reviewed_for_routing_and_identity
     status: current
-    last_reviewed_utc: 2026-09-20T19:53:58Z
-    sha256: f7467e0638cf376653ca1579840902140aab746832265e7a8e4ea4edb71fd36e
+    last_reviewed_utc: 2026-09-20T20:16:53Z
+    sha256: 3cf852676e27264b0726eb21914fef5278412ca9a61344ed77d7a015bb853790
   - id: source-lock
     path: contracts/vnext/qwen3-0.6b-base-source-lock.v2.json
     label: Current diagnostic source identity

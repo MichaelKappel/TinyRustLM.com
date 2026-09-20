@@ -63,6 +63,39 @@ A current live round producer still needs qualification-bound full composition
 input, real multi-turn execution, bounded privacy observation and profile deletion
 evidence. Neither this focused gate nor visual capture supplies that evidence.
 
+## UI verification owner and reports
+
+`eng/verify-tinyrustlm-ui.ps1` and `.sh` only translate arguments into
+`tools/verify-ui.js`. The owner checks canonical source before builds, browser
+work or scratch creation. Base checks cover the web artifact, current runtime
+contracts, JavaScript syntax and the no-browser launcher suites. Browser mode
+adds the acquisition Playwright fixtures, current UI contracts and local release
+smoke. Visual mode uses the current source server on one OS-assigned loopback
+port and compares capture against the requested baseline. Deep acquisition is
+still unregistered and fails after source admission, before expensive fixture work.
+
+The sole current UI report is `tinyrustlm.ui_verification.v2`. Its validator
+requires all twelve gate names, source admission, the launcher suite, requested
+acquisition fixtures and temporary cleanup. Public-root verification also checks
+the actual child report. V1 is not accepted or translated.
+
+Child commands are shell-free, limited to 1 MiB of captured output and thirty
+minutes (thirty seconds for source admission). Reports retain output lengths,
+digests and failed exit codes, without raw child text. These identities cover
+captured decoded output; they are not raw conversation evidence.
+
+Scratch lives below canonical `artifacts/verification/ui` and is removed before
+a pass is reported. Evidence paths in a completed report identify retired
+temporary output. An interrupted child may leave descendants; retain its marked
+scratch for quiescence review. Cleanup failure also prevents a pass and preserves
+ownership. Custom report paths must be new; only the fixed current-status report
+can be replaced. None of these checks establishes a qualified model or deployment.
+
+Run `node --test tinyrustlm/tests/verify-ui.test.js`; the suite owns its temporary
+output beneath canonical artifacts. Tests exercise the actual PowerShell and Bash adapters;
+Windows Bash execution requires a named WSL distribution in
+`TINYRUSTLM_FEED_TEST_WSL_DISTRIBUTION`.
+
 ## Candidate selection checks
 
 The discovery and acquisition suites, together with metadata bounds, storage and

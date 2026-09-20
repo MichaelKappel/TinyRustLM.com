@@ -26,10 +26,8 @@ try {
     if ($LASTEXITCODE -ne 0) {
         throw "TinyRustLM UI verification failed with exit code $LASTEXITCODE"
     }
-    $child = Get-Content -Raw -LiteralPath $childReport | ConvertFrom-Json
-    if ($child.schema -ne "tinyrustlm.ui_verification.v1" -or $child.status -ne "pass") {
-        throw "TinyRustLM UI verification did not produce a passing v1 report"
-    }
+    & node (Join-Path $RepoRoot "eng/verify-release-report.js") "ui" $childReport
+    if ($LASTEXITCODE -ne 0) { throw "TinyRustLM UI verification report failed independent validation" }
     $status = "pass"
 }
 catch {

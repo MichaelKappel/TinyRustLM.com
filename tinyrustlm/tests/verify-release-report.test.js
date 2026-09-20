@@ -17,9 +17,11 @@ const base = { generated_utc: "2026-09-20T17:00:00.0000000Z", status: "pass",
 
 /** Supply independent, small report examples; integration tests exercise real producers. */
 function fixtures() {
-  const ui = { ...base, schema: "tinyrustlm.ui_verification.v1", run_id: "run-1", repository_root: root,
+  const ui = { ...base, schema: "tinyrustlm.ui_verification.v2", run_id: "run-1", repository_root: root,
     app_root: path.join(root, "tinyrustlm"), browser_smoke_requested: true, deep_acquisition_requested: false,
-    visual_lock_requested: false, gates: { static_contract: "pass", javascript_syntax: "pass",
+    visual_lock_requested: false, evidence: { cleanup: "removed" }, gates: {
+      source_authority: "pass", static_contract: "pass", javascript_syntax: "pass",
+      interview_demo_no_browser: "pass", acquisition_playwright: "pass", temporary_cleanup: "pass",
       browser_contracts: "pass", chromium_release: "pass", acquisition_browser_bridge: "skipped",
       acquisition_companion: "skipped", acquisition_converter: "skipped", visual_lock: "skipped" } };
   const hashRows = ids.map(package_id => ({ package_id, present: true, expected_sha256: hash, actual_sha256: hash,
@@ -128,7 +130,7 @@ test("allow-newer and trusted-publishing choices retain explicit requirements", 
   r.trusted_publishing_supported = true; validateReport("readiness", r);
   const ui = reports.ui;
   ui.browser_smoke_requested = false;
-  ui.gates.chromium_release = ui.gates.browser_contracts = "skipped";
+  ui.gates.chromium_release = ui.gates.browser_contracts = ui.gates.acquisition_playwright = "skipped";
   validateReport("ui", ui);
   ui.deep_acquisition_requested = true;
   for (const key of ["acquisition_browser_bridge", "acquisition_companion", "acquisition_converter"]) ui.gates[key] = "pass";
@@ -202,7 +204,7 @@ test("public-root report binds the exact successful browser report and applicati
   } finally { removeOwnedTemporaryDirectory(owned); }
 });
 
-test("actual PowerShell report writers produce admitted smoke and UI envelopes", {
+test("actual PowerShell report writer produces an admitted smoke envelope", {
   skip: process.platform !== "win32" ? "PowerShell 5 writer encoding is exercised on Windows." : false
 }, () => {
   const owned = createOwnedTemporaryDirectory({ temporaryParent: path.join(root, "artifacts/tests/release-reports") });
@@ -225,11 +227,6 @@ $RepoRoot = $payload.root; $Root = Join-Path $RepoRoot 'tinyrustlm'
 $NuGetSource = 'fixture-feed'; $PackageVersion = '0.1.8'
 Import-Writer (Join-Path $RepoRoot 'eng/verify-feed.ps1') @('Get-Sha256Text', 'Write-FeedSmokeReport')
 Write-FeedSmokeReport -OutputPath (Join-Path $payload.output 'smoke.json') -Status 'pass' -ErrorMessage '' -ConsumerOutput 'consumer-smoke-slm2-assembled'
-Import-Writer (Join-Path $RepoRoot 'eng/verify-tinyrustlm-ui.ps1') @('Write-VerificationReport')
-$runId = 'writer-test'; $RunBrowserSmoke = $true; $RunDeepAcquisition = $false; $RunVisualLock = $false
-$gates = $payload.ui.gates; $outputs = @{}; $evidenceRoot = $payload.output; $browserEvidenceRoot = $payload.output; $visualEvidenceRoot = ''
-$ReportOutput = Join-Path $payload.output 'ui.json'
-Write-VerificationReport -Status 'pass' -ErrorMessage ''
 `;
     const result = spawnSync("powershell.exe", ["-NoProfile", "-Command", program], {
       cwd: root, input: JSON.stringify({ root, output: owned.rootPath, ui: fixtures().ui }),
@@ -237,7 +234,6 @@ Write-VerificationReport -Status 'pass' -ErrorMessage ''
     });
     assert.equal(result.status, 0, result.stderr);
     verifyReportFile("feed-smoke", path.join(owned.rootPath, "smoke.json"));
-    verifyReportFile("ui", path.join(owned.rootPath, "ui.json"));
   } finally { removeOwnedTemporaryDirectory(owned); }
 });
 
