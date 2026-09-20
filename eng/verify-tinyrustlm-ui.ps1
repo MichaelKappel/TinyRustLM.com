@@ -154,7 +154,6 @@ try {
             throw "Visual lock baseline was not found: $VisualLockBaseline"
         }
         $visualPort = Get-Random -Minimum 8400 -Maximum 9000
-        $visualDebugPort = Get-Random -Minimum 9400 -Maximum 9900
         $visualStdout = Join-Path $visualEvidenceRoot "server.stdout.log"
         $visualStderr = Join-Path $visualEvidenceRoot "server.stderr.log"
         New-Item -ItemType Directory -Force -Path $visualEvidenceRoot | Out-Null
@@ -171,7 +170,6 @@ try {
             (Join-Path $RepoRoot "tinyrustlm/tools/capture-ui-lock.js"),
             "http://127.0.0.1:$visualPort/app/",
             $visualEvidenceRoot,
-            "$visualDebugPort",
             $VisualLockBaseline
         )
         $gates.visual_lock = "pass"

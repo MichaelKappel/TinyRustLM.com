@@ -1,185 +1,197 @@
 #!/usr/bin/env node
 "use strict";
 
-const childProcess = require("child_process");
-const crypto = require("crypto");
-const fs = require("fs");
-const http = require("http");
-const os = require("os");
-const path = require("path");
+const crypto = require("node:crypto");
+const fs = require("node:fs");
+const path = require("node:path");
+const { chromium } = require("@playwright/test");
+const admission = require("../app/browser-model-admission.js");
+const { requireModelOutputRoot, readBoundedFile } = require("./huggingface-candidate-storage.js");
+const {
+  createOwnedTemporaryDirectory, removeOwnedTemporaryDirectory, requireCanonicalArtifactPath
+} = require("./canonical-operation-scratch.js");
 
-const appUrl = process.argv[2] || "https://TinyRustLM.com/";
-const outputDir = process.argv[3] || path.resolve(__dirname, "..", "artifacts", "reports", "ui-lock");
-const debugPort = Number.parseInt(process.argv[4] || "9771", 10);
-const baselinePath = process.argv[5] && process.argv[5] !== "-" ? process.argv[5] : "";
-const visualMode = process.argv[6] || "empty";
-if (!["empty", "active", "long"].includes(visualMode)) {
-  throw new Error(`Unsupported TinyRustLM visual lock mode: ${visualMode}`);
-}
-const localVisualFixturePath = path.resolve(__dirname, "..", "models", "tiny-test-model-q8.slm");
-
-const browserCandidates = [
-  "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
-  "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
-  "C:\\Program Files\\Microsoft\\Edge\\Application\\msedge.exe",
-  "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe"
-];
-
-const viewports = [
+const viewports = Object.freeze([
   { name: "desktop", width: 1365, height: 768, mobile: false },
   { name: "mobile", width: 390, height: 844, mobile: true }
-];
+]);
+const comparisonPolicy = "stable-ui-fields-with-rect-tolerance-and-screenshot-evidence-v1";
+const profileParent = path.resolve(__dirname, "../../artifacts/tests/ui-lock-profiles");
 
-function findBrowser() {
-  for (const candidate of browserCandidates) {
-    if (fs.existsSync(candidate)) {
-      return candidate;
+/** Reject malformed options before allocating a profile or writing evidence. */
+function parseOptions(args) {
+  const [appUrl, output, baseline = "-", visualMode = "empty", compositionDir, ...extra] = args;
+  if (!appUrl || !output || extra.length || !["empty", "active", "long"].includes(visualMode)) {
+    throw new Error("Usage: capture-ui-lock.js <url> <output-directory> [baseline|-] [empty|active|long] [composition-directory]");
+  }
+  const url = new URL(appUrl);
+  if (url.username || url.password ||
+      !(url.protocol === "https:" || (url.protocol === "http:" &&
+        ["127.0.0.1", "[::1]", "localhost"].includes(url.hostname)))) {
+    throw new Error("Visual capture requires HTTPS or loopback HTTP without credentials");
+  }
+  if ((visualMode === "empty") === Boolean(compositionDir)) {
+    throw new Error("Only active/long captures require an explicit current composition directory");
+  }
+  const outputDir = requireCanonicalArtifactPath(path.resolve(output));
+  const baselinePath = baseline === "-" ? "" : path.resolve(baseline);
+  if (baselinePath && path.dirname(baselinePath) === outputDir) {
+    throw new Error("Capture output must not overwrite its baseline directory");
+  }
+  return { appUrl: url.href, outputDir, baselinePath, visualMode,
+    compositionDir: compositionDir ? requireModelOutputRoot(compositionDir) : "" };
+}
+
+/** Admit seven ordinary inputs only; browser admission still verifies identities and qualification. */
+function compositionFiles(directory) {
+  const root = requireModelOutputRoot(directory);
+  const entries = fs.readdirSync(root);
+  if (entries.length > 128) throw new Error("Composition directory inventory exceeds its bound");
+  const admissions = entries.filter((name) => name.endsWith(".browser-composition-admission.json"));
+  if (admissions.length !== 1) throw new Error("Exactly one current composition admission is required");
+  const admissionPath = path.join(root, admissions[0]);
+  const parsed = admission.parseAdmissionText(readBoundedFile(admissionPath, admission.maximumTextBytes).toString("utf8"));
+  const files = admission.artifactSpecs.map((spec) => path.join(root, spec.fileName));
+  for (const [index, file] of files.entries()) {
+    const stat = fs.lstatSync(file);
+    if (!stat.isFile() || stat.isSymbolicLink() || stat.nlink !== 1 ||
+        stat.size !== parsed.artifacts[index].byteCount) {
+      throw new Error(`Composition member is not an ordinary file of the admitted size: ${path.basename(file)}`);
     }
   }
-  throw new Error("Chrome or Edge executable was not found");
+  return [...files, admissionPath];
 }
 
-function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-function getJson(url) {
-  return new Promise((resolve, reject) => {
-    http.get(url, (response) => {
-      let data = "";
-      response.setEncoding("utf8");
-      response.on("data", (chunk) => {
-        data += chunk;
-      });
-      response.on("end", () => {
-        if (response.statusCode < 200 || response.statusCode >= 300) {
-          reject(new Error(`HTTP ${response.statusCode} while fetching ${url}: ${data}`));
-          return;
-        }
-        try {
-          resolve(JSON.parse(data));
-        } catch (error) {
-          reject(error);
-        }
-      });
-    }).on("error", reject);
-  });
-}
-
-async function waitForTarget(port) {
-  const deadline = Date.now() + 20000;
-  let lastError = null;
-  while (Date.now() < deadline) {
+/** Close the owned browser before deletion; retain its profile if closure cannot be proved. */
+async function withBrowserProfile(viewport, action, launch = chromium.launchPersistentContext.bind(chromium)) {
+  const owned = createOwnedTemporaryDirectory({ temporaryParent: profileParent });
+  let context;
+  let result;
+  let failure;
+  let closed = false;
+  try {
+    context = await launch(owned.rootPath, {
+      channel: process.env.TINYRUSTLM_PLAYWRIGHT_CHANNEL || undefined,
+      headless: true, timeout: 30000,
+      viewport: { width: viewport.width, height: viewport.height },
+      deviceScaleFactor: 1, isMobile: viewport.mobile, hasTouch: viewport.mobile,
+      colorScheme: "dark", locale: "en-US", timezoneId: "UTC",
+      acceptDownloads: false
+    });
+    context.setDefaultTimeout(30000);
+    context.setDefaultNavigationTimeout(30000);
+    result = await action(context);
+  } catch (error) {
+    failure = error;
+  } finally {
     try {
-      const targets = await getJson(`http://127.0.0.1:${port}/json/list`);
-      const target = targets.find((entry) => entry.type === "page" && entry.webSocketDebuggerUrl);
-      if (target) {
-        return target;
-      }
+      if (context) await context.close();
+      closed = true;
     } catch (error) {
-      lastError = error;
+      failure = new AggregateError([failure, error].filter(Boolean),
+        `Browser close failed; owned profile retained: ${owned.rootPath}`);
     }
-    await sleep(250);
+    if (closed) {
+      try { removeOwnedTemporaryDirectory(owned); }
+      catch (error) {
+        failure = new AggregateError([failure, error].filter(Boolean),
+          `Owned profile cleanup failed: ${owned.rootPath}`);
+      }
+    }
   }
-  throw lastError || new Error("Timed out waiting for browser target");
+  if (failure) throw failure;
+  return result;
 }
 
-class CdpClient {
-  constructor(socket) {
-    this.socket = socket;
-    this.nextId = 1;
-    this.pending = new Map();
-    this.listeners = new Map();
-    socket.addEventListener("message", (event) => {
-      const message = JSON.parse(event.data);
-      if (!message.id) {
-        for (const listener of this.listeners.get(message.method) || []) {
-          Promise.resolve(listener(message.params || {})).catch(() => {});
-        }
-        return;
-      }
-      const pending = this.pending.get(message.id);
-      if (!pending) {
-        return;
-      }
-      this.pending.delete(message.id);
-      if (message.error) {
-        pending.reject(new Error(JSON.stringify(message.error)));
-      } else {
-        pending.resolve(message.result || {});
-      }
-    });
-  }
-
-  send(method, params = {}) {
-    const id = this.nextId;
-    this.nextId += 1;
-    this.socket.send(JSON.stringify({ id, method, params }));
-    return new Promise((resolve, reject) => {
-      this.pending.set(id, { resolve, reject });
-    });
-  }
-
-  on(method, listener) {
-    const listeners = this.listeners.get(method) || [];
-    listeners.push(listener);
-    this.listeners.set(method, listeners);
-  }
+/** Accept a ready qualified default or current deferred startup, with fonts ready for capture. */
+async function waitForVisualReady(page) {
+  await page.waitForFunction(() => {
+    const text = (id) => document.getElementById(id)?.textContent;
+    const waiting = text("runtimeStatus") === "Choose a qualified composition" &&
+      text("modelState") === "choose a model" && text("wasmState") === "waiting";
+    const ready = text("runtimeStatus") === "Ready" && text("modelState")?.startsWith("loaded") &&
+      text("wasmState") === "verified";
+    return document.readyState === "complete" && document.fonts.status === "loaded" &&
+      document.querySelector(".left-sidebar") && document.querySelector(".main-workspace") &&
+      document.querySelector(".advanced-options-panel") &&
+      document.querySelectorAll(".starter-action").length >= 4 &&
+      (waiting || ready) &&
+      text("errorState") === "none";
+  }, undefined, { timeout: 60000 });
 }
 
-function connectWebSocket(url) {
-  return new Promise((resolve, reject) => {
-    const socket = new WebSocket(url);
-    socket.addEventListener("open", () => resolve(new CdpClient(socket)));
-    socket.addEventListener("error", () => reject(new Error("WebSocket connection failed")));
+/** Import all current members through Advanced; no forged admission or worker substitution. */
+async function loadComposition(page, files) {
+  const edit = page.locator("#modelEditButton");
+  if (await edit.getAttribute("aria-expanded") !== "true") await edit.click();
+  await page.locator("#simpleOpenAdvancedDiscoveryButton").click();
+  await page.locator("#localModelFile").setInputFiles(files);
+  await page.locator("#importLocalModelButton").click();
+  await page.waitForFunction(() => {
+    const text = (id) => document.getElementById(id)?.textContent;
+    const error = text("errorState");
+    if (error && error !== "none") throw new Error("Composition import failed: " + error);
+    return text("runtimeStatus") === "Ready" && text("modelState")?.startsWith("loaded") &&
+      text("wasmState") === "verified";
+  }, undefined, { timeout: 90000 });
+}
+
+/** Bound every turn and reject idle failure or no-progress instead of looping forever. */
+async function prepareConversationVisualMode(page, visualMode) {
+  const turns = visualMode === "long" ? 7 : visualMode === "active" ? 1 : 0;
+  for (let turn = 0; turn < turns; turn += 1) {
+    await page.locator("#prompt").fill(turn === 0 ? "privacy?" : "continue");
+    await page.locator("#chatForm").evaluate((form) => form.requestSubmit());
+    await page.waitForFunction((expected) => {
+      const error = document.getElementById("errorState")?.textContent;
+      if (error && error !== "none") throw new Error("Visual generation failed: " + error);
+      if (document.querySelector(".message-assistant.error")) throw new Error("Assistant turn failed");
+      return document.querySelector(".app-shell")?.dataset.generationState === "idle" &&
+        document.querySelectorAll("#conversation .message").length === expected &&
+        document.querySelectorAll(".message-assistant[data-status='completed']").length === expected / 2;
+    }, (turn + 1) * 2, { timeout: 30000 });
+  }
+  if (turns) await page.evaluate(() => {
+    window.scrollTo(0, 0);
+    const timeline = document.getElementById("conversation");
+    timeline.style.scrollBehavior = "auto";
+    timeline.scrollTop = timeline.scrollHeight;
   });
 }
 
-async function captureViewport(client, viewport) {
-  await client.send("Emulation.setDeviceMetricsOverride", {
-    width: viewport.width,
-    height: viewport.height,
-    deviceScaleFactor: 1,
-    mobile: viewport.mobile
-  });
-  await client.send("Page.navigate", { url: "about:blank" });
-  await sleep(50);
-  await client.send("Storage.clearDataForOrigin", {
-    origin: new URL(appUrl).origin,
-    storageTypes: "local_storage,indexeddb,cache_storage,service_workers"
-  });
-  await client.send("Page.navigate", { url: appUrl });
-  await waitForVisualReady(client);
-  if (visualMode !== "empty") {
-    await loadLocalVisualFixture(client);
-  }
-  await prepareConversationVisualMode(client);
-  const state = await evaluate(client, visualStateExpression(viewport));
-  assertVisualModeState(state, viewport);
-  const screenshot = await client.send("Page.captureScreenshot", {
-    format: "png",
-    fromSurface: true,
-    captureBeyondViewport: false
-  });
-  const modePart = visualMode === "empty" ? "" : `-${visualMode}`;
-  const fileName = `tinyrustlm-ui-lock${modePart}-${viewport.name}.png`;
-  const outputPath = path.join(outputDir, fileName);
-  fs.writeFileSync(outputPath, Buffer.from(screenshot.data, "base64"));
-  const pngSha256 = sha256File(outputPath);
-  const uiSignature = sha256Text(JSON.stringify(state.signatureFields));
+/** Capture a fresh-profile viewport and preserve exact PNG bytes plus stable field evidence. */
+async function captureViewport(context, options, viewport, files) {
+  const page = context.pages()[0] || await context.newPage();
+  const pageErrors = [];
+  page.on("pageerror", (error) => pageErrors.push(error.message));
+  const response = await page.goto(options.appUrl, { waitUntil: "load" });
+  if (!response || response.status() !== 200) throw new Error("Visual app did not return HTTP 200");
+  await waitForVisualReady(page);
+  if (options.visualMode !== "empty") await loadComposition(page, files);
+  await prepareConversationVisualMode(page, options.visualMode);
+  const state = await page.evaluate(visualStateExpression(viewport, options.visualMode));
+  assertVisualModeState(state, viewport, options.visualMode);
+  if (pageErrors.length) throw new Error(`Visual page errors: ${pageErrors.join("; ")}`);
+  const modePart = options.visualMode === "empty" ? "" : `-${options.visualMode}`;
+  const outputPath = path.join(options.outputDir, `tinyrustlm-ui-lock${modePart}-${viewport.name}.png`);
+  const bytes = await page.screenshot({ type: "png", fullPage: false });
+  fs.writeFileSync(outputPath, bytes, { flag: "wx" });
   return {
-    viewport: viewport.name,
-    width: viewport.width,
-    height: viewport.height,
-    screenshot: outputPath,
-    screenshot_sha256: pngSha256,
-    screenshot_bytes: fs.statSync(outputPath).size,
-    ui_signature_sha256: uiSignature,
-    state
+    viewport: viewport.name, width: viewport.width, height: viewport.height,
+    screenshot: outputPath, screenshot_sha256: sha256(bytes), screenshot_bytes: bytes.length,
+    ui_signature_sha256: sha256(JSON.stringify(state.signatureFields)), state, page_errors: pageErrors,
+    browser_version: context.browser().version(), device_scale_factor: 1,
+    color_scheme: "dark", locale: "en-US", timezone: "UTC", font_status: "loaded"
   };
 }
 
-function assertVisualModeState(state, viewport) {
+/** Hash exact binary output or UTF-8 signature text. */
+function sha256(value) {
+  return crypto.createHash("sha256").update(value).digest("hex");
+}
+
+/** Require the chosen mode, completed turns and unobstructed composer geometry. */
+function assertVisualModeState(state, viewport, visualMode) {
   if (!state || state.requiredShellPresent !== true || !state.signatureFields) {
     throw new Error(`${viewport.name} visual lock is missing the required shell`);
   }
@@ -201,6 +213,9 @@ function assertVisualModeState(state, viewport) {
   if (visualMode === "empty") {
     return;
   }
+  if (fields.completedAssistantCount !== expectedMessages / 2) {
+    throw new Error(`${viewport.name} conversation contains an incomplete or failed assistant turn`);
+  }
   if (!fields.simpleExperienceHidden || !fields.modelPopoverHidden) {
     throw new Error(`${viewport.name} active conversation retained an introductory or model-setup surface`);
   }
@@ -217,132 +232,8 @@ function assertVisualModeState(state, viewport) {
   }
 }
 
-async function prepareConversationVisualMode(client) {
-  if (visualMode === "empty") {
-    return;
-  }
-  const targetMessageCount = visualMode === "long" ? 14 : 2;
-  await evaluate(client, `(async () => {
-    const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-    const shell = document.querySelector(".app-shell");
-    const form = document.getElementById("chatForm");
-    const prompt = document.getElementById("prompt");
-    const messageCount = () => document.querySelectorAll("#conversation .message").length;
-    for (let turn = Math.floor(messageCount() / 2); messageCount() < ${targetMessageCount}; turn += 1) {
-      prompt.value = turn === 0
-        ? "privacy?"
-        : "continue";
-      prompt.dispatchEvent(new Event("input", { bubbles: true }));
-      form.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
-      for (let attempt = 0; attempt < 750; attempt += 1) {
-        if (shell.dataset.generationState === "idle" && messageCount() >= (turn + 1) * 2) {
-          break;
-        }
-        await sleep(40);
-      }
-      if (shell.dataset.generationState !== "idle") {
-        throw new Error("visual lock generation did not reach a terminal state");
-      }
-    }
-    const timeline = document.getElementById("conversation");
-    window.scrollTo(0, 0);
-    document.documentElement.scrollTop = 0;
-    document.body.scrollTop = 0;
-    timeline.style.scrollBehavior = "auto";
-    timeline.scrollTop = timeline.scrollHeight;
-    await sleep(250);
-  })()`);
-}
-
-// Loads the runtime fixture through the same local file picker used by a user.
-async function loadLocalVisualFixture(client) {
-  if (!fs.existsSync(localVisualFixturePath)) {
-    throw new Error(`visual-lock local fixture is missing: ${localVisualFixturePath}`);
-  }
-  await client.send("DOM.enable");
-  const document = await client.send("DOM.getDocument", { depth: -1, pierce: true });
-  const input = await client.send("DOM.querySelector", {
-    nodeId: document.root.nodeId,
-    selector: "#localModelFile"
-  });
-  if (!input.nodeId) {
-    throw new Error("visual-lock local model input was not found");
-  }
-  await client.send("DOM.setFileInputFiles", {
-    files: [localVisualFixturePath],
-    nodeId: input.nodeId
-  });
-  await evaluate(client, `(() => {
-    document.getElementById("modelEditButton").click();
-    document.getElementById("simpleLocalSourceButton").click();
-    const input = document.getElementById("localModelFile");
-    input.dispatchEvent(new Event("change", { bubbles: true }));
-    document.getElementById("simpleImportLocalModelButton").click();
-  })()`);
-  const deadline = Date.now() + 90000;
-  while (Date.now() < deadline) {
-    const state = await evaluate(client, `(() => ({
-      runtimeStatus: document.getElementById("runtimeStatus").textContent,
-      modelState: document.getElementById("modelState").textContent,
-      errorState: document.getElementById("errorState").textContent
-    }))()`);
-    if (state.runtimeStatus === "Ready" && state.modelState.startsWith("loaded") && state.errorState === "none") {
-      return;
-    }
-    await sleep(100);
-  }
-  throw new Error("visual-lock local fixture did not reach the loaded state");
-}
-
-async function waitForVisualReady(client) {
-  const deadline = Date.now() + 60000;
-  let lastState = null;
-  while (Date.now() < deadline) {
-    const state = await evaluate(client, `(() => ({
-      href: location.href,
-      readyState: document.readyState,
-      hasLeftSidebar: Boolean(document.querySelector(".left-sidebar")),
-      hasMainWorkspace: Boolean(document.querySelector(".main-workspace")),
-      hasAdvancedOptionsPanel: Boolean(document.querySelector(".advanced-options-panel")),
-      hasStarterActions: document.querySelectorAll(".starter-action").length >= 4,
-      runtimeStatus: document.getElementById("runtimeStatus") ? document.getElementById("runtimeStatus").textContent : "",
-      modelState: document.getElementById("modelState") ? document.getElementById("modelState").textContent : "",
-      errorState: document.getElementById("errorState") ? document.getElementById("errorState").textContent : ""
-    }))()`);
-    lastState = state;
-    if (
-      state.readyState === "complete"
-      && state.hasLeftSidebar
-      && state.hasMainWorkspace
-      && state.hasAdvancedOptionsPanel
-      && state.hasStarterActions
-      && (
-        (state.runtimeStatus === "Ready" && state.modelState.startsWith("loaded"))
-        || (state.runtimeStatus === "Runtime ready" && state.modelState.startsWith("choose a local or P2P"))
-      )
-      && state.errorState === "none"
-    ) {
-      await sleep(300);
-      return;
-    }
-    await sleep(250);
-  }
-  throw new Error(`Timed out waiting for the TinyRustLM visual shell: ${JSON.stringify(lastState)}`);
-}
-
-async function evaluate(client, expression) {
-  const result = await client.send("Runtime.evaluate", {
-    expression,
-    awaitPromise: true,
-    returnByValue: true
-  });
-  if (result.exceptionDetails) {
-    throw new Error(`Evaluation failed: ${JSON.stringify(result.exceptionDetails)}`);
-  }
-  return result.result ? result.result.value : null;
-}
-
-function visualStateExpression(viewport) {
+/** Read presentation and completed-conversation state without mutating the app. */
+function visualStateExpression(viewport, visualMode) {
   return `(() => {
     const textList = (selector) => Array.from(document.querySelectorAll(selector))
       .map((node) => node.textContent.replace(/\\s+/g, " ").trim())
@@ -388,6 +279,7 @@ function visualStateExpression(viewport) {
       generationState: document.querySelector(".app-shell") ? document.querySelector(".app-shell").dataset.generationState : "missing",
       messageCount: document.querySelectorAll("#conversation .message").length,
       responseCount: document.querySelectorAll("#response").length,
+      completedAssistantCount: document.querySelectorAll(".message-assistant[data-status='completed']:not(.error)").length,
       simpleExperienceHidden: !document.getElementById("simpleExperience")
         || document.getElementById("simpleExperience").hidden
         || style("#simpleExperience", "display") === "none",
@@ -414,54 +306,12 @@ function visualStateExpression(viewport) {
   })()`;
 }
 
-function sha256File(filePath) {
-  const hash = crypto.createHash("sha256");
-  hash.update(fs.readFileSync(filePath));
-  return hash.digest("hex");
-}
-
-function sha256Text(text) {
-  return crypto.createHash("sha256").update(text, "utf8").digest("hex");
-}
-
-function compareBaseline(report, baseline) {
-  const failures = [];
-  for (const capture of report.captures) {
-    const expected = baseline.captures.find((item) => item.viewport === capture.viewport);
-    if (!expected) {
-      failures.push(`baseline missing ${capture.viewport}`);
-      continue;
-    }
-    if (capture.width !== expected.width || capture.height !== expected.height) {
-      failures.push(
-        `${capture.viewport} viewport changed: expected ${expected.width}x${expected.height}, actual ${capture.width}x${capture.height}`
-      );
-    }
-    if (!capture.state || capture.state.requiredShellPresent !== true) {
-      failures.push(`${capture.viewport} required shell regions were not present`);
-    }
-    if (!capture.screenshot_sha256 || capture.screenshot_bytes < 4096) {
-      failures.push(`${capture.viewport} screenshot was missing or too small`);
-    }
-    const expectedFields = expected.state && expected.state.signatureFields ? expected.state.signatureFields : null;
-    const captureFields = capture.state && capture.state.signatureFields ? capture.state.signatureFields : null;
-    if (!expectedFields || !captureFields) {
-      if (expected.ui_signature_sha256 !== capture.ui_signature_sha256) {
-        failures.push(
-          `${capture.viewport} UI signature changed: expected ${expected.ui_signature_sha256}, actual ${capture.ui_signature_sha256}`
-        );
-      }
-      continue;
-    }
-    compareSignatureFields(capture.viewport, expectedFields, captureFields, failures);
-  }
-  return failures;
-}
-
+/** Compare the existing field/geometry policy; this is not a pixel-equality claim. */
 function compareSignatureFields(viewport, expected, actual, failures) {
   const prefix = `${viewport} UI signature`;
   const exactFields = [
     "viewport",
+    "conversationMode",
     "title",
     "bodyBackground",
     "bodyColor",
@@ -483,7 +333,7 @@ function compareSignatureFields(viewport, expected, actual, failures) {
   const rectTolerance = viewport === "mobile" ? 24 : 8;
   const expectedRects = expected.shellRects || {};
   const actualRects = actual.shellRects || {};
-  for (const key of Object.keys(expectedRects)) {
+  for (const key of ["leftSidebar", "mainWorkspace", "advancedOptionsPanel", "modelToolbar", "composerPanel", "conversationPanel"]) {
     const expectedRect = expectedRects[key];
     const actualRect = actualRects[key];
     if (!expectedRect || !actualRect) {
@@ -491,7 +341,8 @@ function compareSignatureFields(viewport, expected, actual, failures) {
       continue;
     }
     for (const dimension of ["x", "y", "width", "height"]) {
-      if (Math.abs(Number(expectedRect[dimension]) - Number(actualRect[dimension])) > rectTolerance) {
+      if (!Number.isFinite(expectedRect[dimension]) || !Number.isFinite(actualRect[dimension]) ||
+          Math.abs(expectedRect[dimension] - actualRect[dimension]) > rectTolerance) {
         failures.push(
           `${prefix} ${key}.${dimension} changed beyond ${rectTolerance}px: expected ${expectedRect[dimension]}, actual ${actualRect[dimension]}`
         );
@@ -500,97 +351,81 @@ function compareSignatureFields(viewport, expected, actual, failures) {
   }
 }
 
-async function main() {
-  fs.mkdirSync(outputDir, { recursive: true });
-  const browser = findBrowser();
-  const profile = path.join(os.tmpdir(), `tinyrustlm-ui-lock-${process.pid}`);
-  fs.rmSync(profile, { recursive: true, force: true });
-  fs.mkdirSync(profile, { recursive: true });
-  const browserArgs = [
-    "--headless=new",
-    "--disable-gpu",
-    "--disable-application-cache",
-    "--disable-background-networking",
-    "--disable-component-update",
-    "--disable-extensions",
-    "--disable-sync",
-    "--disk-cache-size=1",
-    "--media-cache-size=1",
-    "--no-default-browser-check",
-    "--no-first-run",
-    `--remote-debugging-port=${debugPort}`,
-    `--user-data-dir=${profile}`
-  ];
-  const targetUrl = new URL(appUrl);
-  if (targetUrl.hostname.toLowerCase() === "tinyrustlm.com" && targetUrl.protocol === "http:") {
-    browserArgs.push("--host-resolver-rules=MAP tinyrustlm.com 127.0.0.1");
-    browserArgs.push(`--unsafely-treat-insecure-origin-as-secure=${targetUrl.origin}`);
-  }
-  browserArgs.push("about:blank");
-  const browserProcess = childProcess.spawn(browser, browserArgs, {
-    stdio: "ignore",
-    windowsHide: true
-  });
 
-  try {
-    const target = await waitForTarget(debugPort);
-    const client = await connectWebSocket(target.webSocketDebuggerUrl);
-    await client.send("Page.enable");
-    await client.send("Runtime.enable");
-    const captures = [];
-    for (const viewport of viewports) {
-      captures.push(await captureViewport(client, viewport));
-    }
-    const report = {
-      schema: "tinyrustlm.ui_visual_lock.v0",
-      app_url: appUrl,
-      conversation_mode: visualMode,
-      generated_utc: new Date().toISOString(),
-      comparison_policy: "stable-ui-fields-with-rect-tolerance-and-screenshot-evidence-v1",
-      captures
-    };
-    let baseline_failures = [];
-    if (baselinePath) {
-      const baseline = JSON.parse(fs.readFileSync(baselinePath, "utf8"));
-      baseline_failures = compareBaseline(report, baseline);
-      report.baseline = baselinePath;
-      report.baseline_failures = baseline_failures;
-    }
-    const reportName = visualMode === "empty"
-      ? "tinyrustlm-ui-lock-report.json"
-      : `tinyrustlm-ui-lock-${visualMode}-report.json`;
-    const reportPath = path.join(outputDir, reportName);
-    fs.writeFileSync(reportPath, `${JSON.stringify(report, null, 2)}\n`);
-    await client.send("Browser.close").catch(() => {});
-    if (baseline_failures.length > 0) {
-      throw new Error(baseline_failures.join("; "));
-    }
-    console.log(JSON.stringify({
-      ok: true,
-      report: reportPath,
-      comparison_policy: report.comparison_policy,
-      captures: captures.map((capture) => ({
-        viewport: capture.viewport,
-        width: capture.width,
-        height: capture.height,
-        screenshot_sha256: capture.screenshot_sha256,
-        screenshot_bytes: capture.screenshot_bytes,
-        ui_signature_sha256: capture.ui_signature_sha256
-      }))
-    }, null, 2));
-  } finally {
-    browserProcess.kill();
-    await sleep(500);
-    try {
-      fs.rmSync(profile, { recursive: true, force: true });
-    } catch (_error) {
-      // Chrome can keep a transient lock briefly after Browser.close; screenshots
-      // and the report are already written, so cleanup failure is non-fatal.
+/** Require both full viewport records; missing evidence or a different mode cannot pass. */
+function compareBaseline(report, baseline) {
+  const failures = [];
+  if (report.conversation_mode !== baseline.conversation_mode) failures.push("Baseline conversation mode differs");
+  if (baseline.comparison_policy !== comparisonPolicy || report.comparison_policy !== comparisonPolicy) {
+    failures.push("Baseline comparison policy differs");
+  }
+  for (const source of [report, baseline]) {
+    if (!Array.isArray(source.captures) || source.captures.length !== viewports.length ||
+        viewports.some((v) => source.captures.filter((c) => c.viewport === v.name).length !== 1)) {
+      failures.push("Report and baseline must each contain exactly desktop and mobile");
+      return failures;
     }
   }
+  for (const capture of report.captures) {
+    const expected = baseline.captures.find((item) => item.viewport === capture.viewport);
+    if (capture.width !== expected.width || capture.height !== expected.height) {
+      failures.push(`${capture.viewport} viewport dimensions differ`);
+    }
+    for (const record of [capture, expected]) {
+      if (!record.state?.requiredShellPresent || !record.state.signatureFields ||
+          !/^[a-f0-9]{64}$/.test(record.screenshot_sha256) ||
+          !Number.isSafeInteger(record.screenshot_bytes) || record.screenshot_bytes < 4096) {
+        failures.push(`${capture.viewport} complete shell/signature/screenshot evidence is required`);
+      }
+    }
+    if (expected.state?.signatureFields && capture.state?.signatureFields) {
+      compareSignatureFields(capture.viewport, expected.state.signatureFields, capture.state.signatureFields, failures);
+    }
+  }
+  return failures;
 }
 
-main().catch((error) => {
-  console.error(error && error.stack ? error.stack : String(error));
-  process.exit(1);
+/** Run an explicit capture, preserving failed comparisons and never overwriting earlier evidence. */
+async function runCapture(options) {
+  const files = options.visualMode === "empty" ? [] : compositionFiles(options.compositionDir);
+  const baseline = options.baselinePath
+    ? JSON.parse(readBoundedFile(options.baselinePath, 1024 * 1024).toString("utf8")) : null;
+  requireCanonicalArtifactPath(options.outputDir);
+  const modePart = options.visualMode === "empty" ? "" : `-${options.visualMode}`;
+  const reportPath = path.join(options.outputDir, `tinyrustlm-ui-lock${modePart}-report.json`);
+  const outputs = [reportPath, ...viewports.map((v) =>
+    path.join(options.outputDir, `tinyrustlm-ui-lock${modePart}-${v.name}.png`))];
+  if (outputs.some((file) => fs.lstatSync(file, { throwIfNoEntry: false }))) {
+    throw new Error("Visual evidence already exists; choose a new output directory");
+  }
+  fs.mkdirSync(options.outputDir, { recursive: true });
+  const captures = [];
+  for (const viewport of viewports) {
+    captures.push(await withBrowserProfile(viewport,
+      (context) => captureViewport(context, options, viewport, files)));
+  }
+  const report = {
+    schema: "tinyrustlm.ui_visual_lock.v0", app_url: options.appUrl,
+    conversation_mode: options.visualMode, generated_utc: new Date().toISOString(),
+    comparison_policy: comparisonPolicy, captures
+  };
+  if (baseline) {
+    report.baseline = options.baselinePath;
+    report.baseline_failures = compareBaseline(report, baseline);
+  }
+  fs.writeFileSync(reportPath, JSON.stringify(report, null, 2) + "\n", { flag: "wx" });
+  if (report.baseline_failures?.length) throw new Error(report.baseline_failures.join("; "));
+  return { status: baseline ? "baseline-fields-match" : "captured-without-baseline", report: reportPath };
+}
+
+if (require.main === module) {
+  runCapture(parseOptions(process.argv.slice(2))).then(
+    (result) => console.log(JSON.stringify(result, null, 2)),
+    (error) => { console.error(error); process.exitCode = 1; }
+  );
+}
+
+module.exports = Object.freeze({
+  parseOptions, compositionFiles, withBrowserProfile, waitForVisualReady, loadComposition,
+  prepareConversationVisualMode, captureViewport, assertVisualModeState, compareBaseline, runCapture
 });

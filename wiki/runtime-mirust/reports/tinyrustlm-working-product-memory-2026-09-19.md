@@ -16,6 +16,14 @@ Authority order is current owner instructions, inspected current contracts and b
 
 ## Current evidence and its limits
 
+**C63 current visual capture:** the sole owner now uses Playwright, owned profiles,
+current startup and explicit six-member admission for active modes. Twenty focused
+checks (including actual desktop/mobile Edge capture) and 42 affected checks pass;
+line coverage is 91.42%. The historical baseline still fails with 15 differences,
+and the real CLI correctly retains failure evidence and exits 1. No baseline or
+product asset changed. See `visual-capture-current-contract-review.json`; real
+active-model captures, blocked cleanup and release/publication remain open.
+
 **C62 browser memory continuity:** the current Advanced import and canonical catalog
 authority now support the pending synthetic memory scenario. All 42 affected Node
 checks and the desktop Edge two-profile test pass, including explicit-save consent,

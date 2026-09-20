@@ -5,6 +5,48 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C63: replace obsolete visual-capture execution, September 20
+
+The visual-lock owner still selected a retired single `.slm` fixture, waited for
+eager WASM startup, ran an unbounded raw debugging socket and suppressed profile
+cleanup errors. Its generation loop could remain idle without adding messages
+and repeat forever. The pending Advanced-selector edit alone did not repair it.
+
+- Playwright now owns browser launch/closure; each viewport uses a fresh marked
+  profile below canonical artifacts. Closure precedes verified cleanup, and
+  closure/cleanup failure fails the operation. No arbitrary PID directory is
+  deleted and no cleanup error is suppressed.
+- Empty capture accepts current deferred startup or a ready qualified default.
+  Active/long capture
+  requires an explicit canonical D: directory with six current members and one
+  admission. Browser qualification remains authoritative; no implicit fixture,
+  injected worker or fabricated active conversation is provided. Every turn is
+  bounded and must finish successfully. Actual active-model capture remains
+  unverified and cannot bypass the source/material gates.
+- The CLI drops the debugging-port argument. Only its invocation changes are
+  staged in the PowerShell/Bash gates; unrelated pending demo gates remain WIP.
+  Reports and PNG files cannot overwrite existing evidence. Comparison requires
+  both viewport records and matching conversation mode, with finite geometry.
+- Final focused checks: 20 passed, including actual Edge desktop/mobile capture;
+  owner line/branch/function coverage 91.42/88.41/75.86 percent. Another 42 affected
+  Node checks passed. The normal unit inventory finds the new test; without the
+  explicit browser evidence directory, its 19 standard cases pass without skips.
+  JavaScript, PowerShell and installed-WSL Bash syntax checks passed.
+- The August baseline still fails with 15 observed differences. A separate real
+  CLI invocation exits 1 and preserves its failed comparison. No baseline was
+  refreshed or tolerance relaxed. Screenshots were inspected; this checkpoint
+  changes no product asset and does not establish historical visual parity.
+- `visual-capture-current-contract-review.json` retains exact inputs, failures,
+  coverage and evidence identities. Owned outputs are retired after review;
+  logical bytes and removal verification are recorded separately from unmeasured
+  physical storage recovery. All seven canonical repositories were rediscovered;
+  other repositories and unrelated TinyRustLM WIP were preserved.
+
+The source scan again stops at the same two policy-blocked installer links. The
+blocked old announcement reader/test, other blocked removals, full release gates,
+qualified default, real numerical/browser inference, live seed and NuGet publication
+remain incomplete. No credential content was read and no package/site was published.
+
 ## C62: restore current browser memory-continuity coverage, September 20
 
 The pending MemoryEndpoints browser test still used the retired simple import

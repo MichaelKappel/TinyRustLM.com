@@ -1,9 +1,10 @@
 profile: tinyrustlm.short-term-memory.current.v1
-updated_utc: 2026-09-20T13:40:11Z
+updated_utc: 2026-09-20T14:07:36Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
 now:
+  visual_capture: C63 replaces obsolete visual-lock execution with Playwright, owned profiles and current six-member input. Twenty focused checks including desktop/mobile Edge and 42 affected checks pass; line coverage 91.42%. The historical baseline still fails with 15 differences and the real CLI retains failure evidence. No product asset, real model or public result; see visual-capture-current-contract-review.json.
   memory_continuity: C62 restores the pending current-contract memory browser scenario. All 42 Node checks and one desktop Edge two-profile test pass: explicit saves only, both tiers, restore/search, replay rejection, credential nonpersistence and owned cleanup. Synthetic inference and loopback service only; no live or model claim. See browser-memory-contract-review.json.
   current_guides: C61 reconciles the four entry guides with existing MiniModel bootstrap, Advanced-only conversion, rejected diagnostic ancestry and canonical D: model storage. All 156 affected Node checks, 38 package/memory checks and twelve Edge fixture checks pass. No runtime or deployment changed; see current-product-guidance-review.json.
   companion_sockets: C60 releases owned sockets on cancellation or any failed connect, retaining success ownership in the stream. All 228 companion tests pass, including eight real IPv4/IPv6 socket cases; the socket helper has 100% line/branch coverage. Five fixture-path guesses now use current-build bindings. See companion-socket-ownership-review.json. No external TLS/DNS, model or publication proof.

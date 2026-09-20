@@ -136,7 +136,6 @@ fi
 if [[ "$RUN_VISUAL_LOCK" == "1" ]]; then
   [[ -f "$VISUAL_LOCK_BASELINE" ]] || fail "Visual lock baseline was not found: $VISUAL_LOCK_BASELINE"
   visual_port="${TINYRUSTLM_VISUAL_PORT:-8484}"
-  visual_debug_port="${TINYRUSTLM_VISUAL_DEBUG_PORT:-9484}"
   mkdir -p "$VISUAL_ROOT"
   cargo run -p tinyrustlm-local-server -- "$ROOT" "$visual_port" >"$VISUAL_ROOT/server.stdout.log" 2>"$VISUAL_ROOT/server.stderr.log" &
   VISUAL_SERVER_PID="$!"
@@ -155,7 +154,7 @@ PY
     sleep 0.25
   done
   [[ "$ready" == "1" ]] || fail "tinyrustlm-local-server did not become ready for visual verification"
-  node "$REPO_ROOT/tinyrustlm/tools/capture-ui-lock.js" "http://127.0.0.1:$visual_port/app/" "$VISUAL_ROOT" "$visual_debug_port" "$VISUAL_LOCK_BASELINE"
+  node "$REPO_ROOT/tinyrustlm/tools/capture-ui-lock.js" "http://127.0.0.1:$visual_port/app/" "$VISUAL_ROOT" "$VISUAL_LOCK_BASELINE"
   kill "$VISUAL_SERVER_PID" >/dev/null 2>&1 || true
   wait "$VISUAL_SERVER_PID" >/dev/null 2>&1 || true
   VISUAL_SERVER_PID=""

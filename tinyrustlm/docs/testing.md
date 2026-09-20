@@ -129,6 +129,41 @@ assistant render, cancellation behavior, and profile deletion.
 
 ## Failure Handling
 
+### Visual capture tool
+
+The current tool captures the unmodified shell in fresh owned browser profiles
+at 1365x768 and 390x844. It uses the installed Playwright browser, or the channel
+selected by `TINYRUSTLM_PLAYWRIGHT_CHANNEL` (for example, `msedge`). From the
+repository root:
+
+```powershell
+node tinyrustlm/tools/capture-ui-lock.js <url> <new-canonical-artifact-directory> [baseline-json|-] [empty|active|long] [composition-directory]
+```
+
+The debug-port argument and implicit SLM1 fixture are retired. Empty mode accepts
+current deferred-runtime startup or completed qualified-default activation;
+it means no conversation yet. Active/long modes require an explicit
+directory under `D:\LLMs\TinyRustLM` with all six current members and exactly one
+`*.browser-composition-admission.json`; normal browser admission and catalog
+qualification remain mandatory. Those modes execute real inference and must
+also satisfy the applicable source/material experiment gates before use.
+
+Output files are exclusive. Capture without a baseline says only
+`captured-without-baseline`. A failed baseline comparison preserves its report
+and screenshots and exits nonzero. The existing field/geometry tolerances do
+not establish pixel parity, model usefulness or public deployment. Do not
+replace a failing historical baseline merely to obtain a green gate.
+
+`tests/capture-ui-lock.test.js` supplies the standard unit checks. To additionally
+run the actual two-viewport source-shell check, set `TINYRUSTLM_UI_LOCK_EVIDENCE`
+to an owned canonical artifact directory and invoke that file with `node --test`.
+The directory must have no prior `browser` capture or historical-comparison
+output. The operator retains and then removes that evidence after review;
+each browser profile is closed and removed by the tool. A cleanup failure is
+reported as failure, and failed browser closure retains the profile for inspection.
+
+### Test failure evidence
+
 Preserve raw failures. Add a minimal generic regression, positive controls,
 and counterexamples; make the narrow source correction; rerun only invalidated
 phases; and retain previous terminal evidence. Do not repair output, overwrite

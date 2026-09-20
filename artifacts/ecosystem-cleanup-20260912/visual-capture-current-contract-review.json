@@ -1,0 +1,388 @@
+{
+  "schema": "tinyrustlm.ecosystem-cleanup.visual-capture-current-contract-review.v1",
+  "checkpoint": "C63",
+  "reviewedUtc": "2026-09-20T14:07:36Z",
+  "parent": "63119aae67456cf18218debab214065345219f2c",
+  "status": "implemented-and-focused-tests-passed; historical-visual-baseline-failed",
+  "previousGoalCheckpoint": "C62 made implementation and verification progress. No repeated impasse; safe independent cleanup continued.",
+  "scope": [
+    "Replace obsolete visual capture execution and current-only model input",
+    "Reconcile two CLI callers without staging unrelated gate edits",
+    "Preserve existing visual baseline, product assets and unrelated work"
+  ],
+  "removedBehavior": [
+    "Implicit retired single-SLM fixture",
+    "Raw debugging socket/process owner and debug-port argument",
+    "Unbounded idle-no-progress generation loop",
+    "Suppressed profile cleanup failure",
+    "Partial-signature baseline compatibility"
+  ],
+  "sources": [
+    {
+      "path": "tinyrustlm/tools/capture-ui-lock.js",
+      "sha256": "d3d9a5a83dbc469b72fdc42bf3f94563eb17b558bd79bf3397db241bd80427ca"
+    },
+    {
+      "path": "tinyrustlm/tests/capture-ui-lock.test.js",
+      "sha256": "509c69233603c6460c81dfc4c09f9ad7d7619b8b9eb318c4d3f5b1e6ec696ee4"
+    },
+    {
+      "path": "tinyrustlm/docs/testing.md",
+      "sha256": "b8d0f89c748525ed2e280b7a3caa3cc15eaf1857e974edc7dc3ebade3497d47b"
+    },
+    {
+      "path": "eng/verify-tinyrustlm-ui.ps1",
+      "identity": "staged CLI-only change; other worktree edits excluded",
+      "sha256": "428fa81e5a319a9bd38e6463a5f867dcdaf63965232c7fb0e117382618eb6fa0"
+    },
+    {
+      "path": "eng/verify-tinyrustlm-ui.sh",
+      "identity": "staged CLI-only change; other worktree edits excluded",
+      "sha256": "cacbeb483e505c51aa124637b83410fde3086656a3c88b1c40122707d7f41bb9"
+    }
+  ],
+  "validation": {
+    "initialUnit": {
+      "pass": 10,
+      "fail": 9,
+      "skipped": 0,
+      "causes": [
+        "Eight inventory fixtures included internal minimum/maximum spec fields not allowed by admission",
+        "Comparison checked baseline policy but not report policy"
+      ]
+    },
+    "correctedUnit": {
+      "pass": 19,
+      "fail": 0,
+      "skipped": 0
+    },
+    "finalFocusedWithBrowser": {
+      "pass": 20,
+      "fail": 0,
+      "skipped": 0,
+      "lineCoveragePercent": 91.42,
+      "branchCoveragePercent": 88.41,
+      "functionCoveragePercent": 75.86
+    },
+    "finalPlatformAwareStandardUnit": {
+      "pass": 19,
+      "fail": 0,
+      "skipped": 0,
+      "standardInventoryIncludesFile": true
+    },
+    "relatedNode": {
+      "pass": 42,
+      "fail": 0,
+      "skipped": 0,
+      "files": [
+        "canonical-operation-scratch_test.js",
+        "huggingface-candidate-storage_test.js",
+        "browser-model-admission.test.js",
+        "static-server.test.js",
+        "static-shell-parity.test.js"
+      ]
+    },
+    "browser": {
+      "engine": "installed desktop Edge",
+      "mode": "empty",
+      "captures": [
+        {
+          "viewport": "desktop",
+          "width": 1365,
+          "height": 768,
+          "browserVersion": "153.0.4234.48",
+          "screenshotSha256": "cda885d7f1b918dc57d6a8b234df3fe5cb7b08964d936f0dcb6f1517150e608e",
+          "screenshotBytes": 366724,
+          "signatureSha256": "56cba12aafb9c0aef3355df9ba62b238a3d68c9ca82e865368934e0ec84c8704",
+          "pageErrors": []
+        },
+        {
+          "viewport": "mobile",
+          "width": 390,
+          "height": 844,
+          "browserVersion": "153.0.4234.48",
+          "screenshotSha256": "16aea953736a095a5eade3a8b435172a2243435a353009001bd746c3e9762d51",
+          "screenshotBytes": 113176,
+          "signatureSha256": "68a32a2076c0ce29c6ffba91414a96d37a355207ba033c842566e0fccfc07d42",
+          "pageErrors": []
+        }
+      ],
+      "physicalMobile": false,
+      "modelLoaded": false,
+      "workerReplaced": false,
+      "screenshotInspected": true
+    },
+    "baseline": {
+      "path": "tinyrustlm/artifacts/reports/ui-lock-live/tinyrustlm-ui-lock-report.json",
+      "sha256": "4e9fe5a874131a78dcc1b78131a8bc37493b68c6ef2a7c65b914e01c95accadf",
+      "changed": false,
+      "failures": [
+        "desktop UI signature privacyBadge changed: expected \"Local browser inference • No prompts sent to a server\", actual \"Runs locally after model setup • No prompts sent to a server\"",
+        "desktop UI signature panelHeadings changed",
+        "desktop UI signature mainWorkspace.width changed beyond 8px: expected 755, actual 1021",
+        "desktop UI signature advancedOptionsPanel.x changed beyond 8px: expected 1035, actual 1301",
+        "desktop UI signature advancedOptionsPanel.width changed beyond 8px: expected 330, actual 64",
+        "desktop UI signature modelToolbar.x changed beyond 8px: expected 302, actual 401",
+        "desktop UI signature modelToolbar.width changed beyond 8px: expected 711, actual 780",
+        "desktop UI signature composerPanel.x changed beyond 8px: expected 302, actual 396",
+        "desktop UI signature composerPanel.y changed beyond 8px: expected 628, actual 651",
+        "desktop UI signature composerPanel.width changed beyond 8px: expected 711, actual 790",
+        "desktop UI signature conversationPanel.x changed beyond 8px: expected 302, actual 421",
+        "desktop UI signature conversationPanel.y changed beyond 8px: expected 478, actual 501",
+        "desktop UI signature conversationPanel.width changed beyond 8px: expected 711, actual 740",
+        "mobile UI signature privacyBadge changed: expected \"Local browser inference • No prompts sent to a server\", actual \"Runs locally after model setup • No prompts sent to a server\"",
+        "mobile UI signature panelHeadings changed"
+      ],
+      "realCliExitCode": 1,
+      "failedEvidencePreservedUntilReview": true,
+      "fieldPolicyUnchanged": true
+    },
+    "syntax": {
+      "javascript": "passed",
+      "powershell": "passed",
+      "bash": "passed on installed OSM-Ubuntu; initial guessed Ubuntu distribution absent; PATH translation warning did not prevent bash -n"
+    },
+    "sourceAuthority": {
+      "status": "source_authority_scan_incomplete",
+      "unchangedBlockedPaths": [
+        "artifacts/verification/qwen3-environment-install/tinyrustlm-operation-C3ZUt9/install-temp/TmP6xn2evdh-b",
+        "artifacts/verification/qwen3-environment-install/tinyrustlm-operation-C3ZUt9/install-temp/TmPeq63_hr7-b"
+      ],
+      "deletionRetried": false
+    },
+    "fullGates": "Not passed: source scan and policy-blocked incompatible announcement test remain; no release claim",
+    "memory": {
+      "initial": {
+        "pass": 5,
+        "fail": 1,
+        "cause": "Manually transcribed current memory checksum had one wrong character"
+      },
+      "final": {
+        "pass": 6,
+        "fail": 0,
+        "skipped": 0
+      },
+      "finalPointerHashesVerifiedAfterFinalDocs": 3
+    },
+    "beforeQualifiedStartupReview": {
+      "pass": 20,
+      "fail": 0,
+      "skipped": 0,
+      "lineCoveragePercent": 92.06,
+      "branchCoveragePercent": 88.34,
+      "functionCoveragePercent": 75.86
+    },
+    "finalReview": "Empty conversation accepts either current deferred startup or a verified loaded qualified default; boundary checks cover both, inconsistent readiness and error rejection. Final owner/test hashes above bind the follow-up 20-case run."
+  },
+  "retainedEvidenceIdentities": [
+    {
+      "path": ".tinyrustlm-operation-owner.v1",
+      "bytes": 65,
+      "sha256": "59c9839fc7b98fe2952d8aa5def98a86d8f41106b00d3aa400b54caef9e3df74"
+    },
+    {
+      "path": "affected-tests.log",
+      "bytes": 7774,
+      "sha256": "9133ac2de53902559723700d1c938d02d5814870734ed6d721586580406b652c"
+    },
+    {
+      "path": "browser/tinyrustlm-ui-lock-desktop.png",
+      "bytes": 366724,
+      "sha256": "cda885d7f1b918dc57d6a8b234df3fe5cb7b08964d936f0dcb6f1517150e608e"
+    },
+    {
+      "path": "browser/tinyrustlm-ui-lock-mobile.png",
+      "bytes": 113176,
+      "sha256": "16aea953736a095a5eade3a8b435172a2243435a353009001bd746c3e9762d51"
+    },
+    {
+      "path": "browser/tinyrustlm-ui-lock-report.json",
+      "bytes": 8983,
+      "sha256": "1a5a8559d87782de1c813fdd5277ae64a1d9f6f3ec7872a30f1f1fafc90b3de9"
+    },
+    {
+      "path": "cli-historical/tinyrustlm-ui-lock-desktop.png",
+      "bytes": 366724,
+      "sha256": "cda885d7f1b918dc57d6a8b234df3fe5cb7b08964d936f0dcb6f1517150e608e"
+    },
+    {
+      "path": "cli-historical/tinyrustlm-ui-lock-mobile.png",
+      "bytes": 113176,
+      "sha256": "16aea953736a095a5eade3a8b435172a2243435a353009001bd746c3e9762d51"
+    },
+    {
+      "path": "cli-historical/tinyrustlm-ui-lock-report.json",
+      "bytes": 10665,
+      "sha256": "e6aef2e18d51027a212db9906431aacbfd05cd4a55034e28cd69c06b3bd6addb"
+    },
+    {
+      "path": "cli.stderr.log",
+      "bytes": 1512,
+      "sha256": "1cb03795abb002e08bc116fdf418d588c024b12933527ca3e6a2cac9277c5388"
+    },
+    {
+      "path": "cli.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "final/browser/tinyrustlm-ui-lock-desktop.png",
+      "bytes": 366724,
+      "sha256": "cda885d7f1b918dc57d6a8b234df3fe5cb7b08964d936f0dcb6f1517150e608e"
+    },
+    {
+      "path": "final/browser/tinyrustlm-ui-lock-mobile.png",
+      "bytes": 113176,
+      "sha256": "16aea953736a095a5eade3a8b435172a2243435a353009001bd746c3e9762d51"
+    },
+    {
+      "path": "final/browser/tinyrustlm-ui-lock-report.json",
+      "bytes": 8997,
+      "sha256": "ee07336135186aaf6300f9c451708ef61e865c3f904bce58f9a9f582772887ee"
+    },
+    {
+      "path": "final/historical-baseline-comparison.json",
+      "bytes": 1820,
+      "sha256": "34774698a9d3cf96596b3505e7f24d74864bece7b70349ae52264357bece8e94"
+    },
+    {
+      "path": "historical-baseline-comparison.json",
+      "bytes": 1813,
+      "sha256": "1ac9ae78422188c30d5d1008ebeb31a2499169e531dad36c4ee6ec30a7600508"
+    },
+    {
+      "path": "memory-tests-final.log",
+      "bytes": 688,
+      "sha256": "bfd74b682418bbcf084de3312428b7c8451a735c9f408bc032da856d3a647f95"
+    },
+    {
+      "path": "memory-tests.log",
+      "bytes": 3330,
+      "sha256": "2aca114bd4b494985e50c068f2cc8d4b2a33642e7966784b517daaefda1cfb2f"
+    },
+    {
+      "path": "Microsoft.NET.Workload_39324_20260920_071158_796.log",
+      "bytes": 1225,
+      "sha256": "64c79dd1cf18ae8f5021113d740f78f87fc85f7a987e362431220821323e30d3"
+    },
+    {
+      "path": "Microsoft.NET.Workload_54876_20260920_071215_341.log",
+      "bytes": 1266,
+      "sha256": "fc226ce36cd6c8c27754e0a428874ad4fe32477b76024017d256dcbd04a75ddd"
+    },
+    {
+      "path": "source-scan.log",
+      "bytes": 1334,
+      "sha256": "cecc1ef0b1c801ddd1a682d258ef4d3eec55692f9d728a8080c70b36458c1b8c"
+    },
+    {
+      "path": "unit-1.log",
+      "bytes": 26066,
+      "sha256": "271f54ed54990b8b73ccf49bfa263d8d2e83620dd4bbb90a15a99bf07bc4fa83"
+    },
+    {
+      "path": "unit-2.log",
+      "bytes": 4590,
+      "sha256": "1c6c8f826b5e479e5828ec72026acfaeeb6b6c3d889ab4fa744c5fb830d4755f"
+    },
+    {
+      "path": "unit-browser-1.log",
+      "bytes": 4636,
+      "sha256": "ba0777bf3d70953fec002b62936c73b8784917f6b7c677da81d26331957f75b8"
+    },
+    {
+      "path": "unit-browser-final.log",
+      "bytes": 4636,
+      "sha256": "4b13322bbbdf1317edc74d610dec13fe57be190eceb297c9d52abfcc9a684756"
+    },
+    {
+      "path": "unit-final.log",
+      "bytes": 2708,
+      "sha256": "07251cc617e29b376ac1711f53fca47a82ac562aa8714b6fe42e35917876731e"
+    },
+    {
+      "path": "unit-platform.log",
+      "bytes": 2704,
+      "sha256": "533da86507b983484c4737610294bee249c732258f4858c01852fba562ff2d63"
+    }
+  ],
+  "retirement": {
+    "ownedRoot": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\visual-capture\\tinyrustlm-operation-I1vdjQ",
+    "files": 26,
+    "directoriesIncludingRoot": 9,
+    "logicalBytes": 1534512,
+    "status": "removed-and-absence-verified",
+    "browserProfileParentEmpty": true,
+    "physicalBytesRecovered": null
+  },
+  "limitations": [
+    "Real active/long model capture not executed; canonical Windows composition selection and browser calls have boundary tests only",
+    "Failed historical baseline is not visual parity and was not refreshed",
+    "No product asset, model payload, default model, live seed, NuGet package or website publication changed",
+    "NuGet credential contents were not read",
+    "Blocked cleanup and unrelated WIP were preserved; ecosystem goal remains incomplete"
+  ],
+  "repositoriesRediscovered": [
+    "LMComposer.com",
+    "MiniModel.MiRust.com",
+    "MiniModel.org",
+    "MiRust.com",
+    "Runtime.MiRust.com",
+    "TinyRustLM.com",
+    "TinyRustLM.MiRust.com"
+  ],
+  "preFinalReviewSources": [
+    {
+      "path": "tinyrustlm/tools/capture-ui-lock.js",
+      "sha256": "253d3541efe9e905cd10d3fdb0b02cd1af5d4bb14fcc11fa4451861c071667c3"
+    },
+    {
+      "path": "tinyrustlm/tests/capture-ui-lock.test.js",
+      "sha256": "798693240ffaebcd8eb47e4fa37737d76739d2bdb20d87c137a267dbe896fd5d"
+    },
+    {
+      "path": "tinyrustlm/docs/testing.md",
+      "sha256": "c7bef9f96159ea413c4a003cda0b52046834658185c54ec1c1c1698867939369"
+    }
+  ],
+  "retirementFollowup": {
+    "ownedRoot": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\visual-capture\\tinyrustlm-operation-A0ydwV",
+    "status": "removed-and-absence-verified",
+    "files": [
+      {
+        "path": ".tinyrustlm-operation-owner.v1",
+        "bytes": 65,
+        "sha256": "b7ace50a426e41093bf3e65a709362e88e5db5c23b9cf920a4fbcf2a6c7add81"
+      },
+      {
+        "path": "browser/tinyrustlm-ui-lock-desktop.png",
+        "bytes": 366724,
+        "sha256": "cda885d7f1b918dc57d6a8b234df3fe5cb7b08964d936f0dcb6f1517150e608e"
+      },
+      {
+        "path": "browser/tinyrustlm-ui-lock-mobile.png",
+        "bytes": 113176,
+        "sha256": "16aea953736a095a5eade3a8b435172a2243435a353009001bd746c3e9762d51"
+      },
+      {
+        "path": "browser/tinyrustlm-ui-lock-report.json",
+        "bytes": 8983,
+        "sha256": "47cd9c9e577e3e257e35087c0576cb53f10c52bb0bda9c2f947da901617ef05c"
+      },
+      {
+        "path": "historical-baseline-comparison.json",
+        "bytes": 1813,
+        "sha256": "0035a85ad6602ae80268d6f5d4a40ec7255298fd537b32258e3e40d8558423df"
+      },
+      {
+        "path": "qualified-startup-final.log",
+        "bytes": 4636,
+        "sha256": "c7e0d562c99856570fe0132f21a56337a3ea241293f79f224d70fc4d7aee138a"
+      }
+    ],
+    "directoriesIncludingRoot": 2,
+    "logicalBytes": 495397,
+    "browserProfileParentEmpty": true,
+    "physicalBytesRecovered": null
+  }
+}

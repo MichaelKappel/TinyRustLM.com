@@ -11,6 +11,39 @@ Keep useful findings and compact evidence identities in the owning canonical
 repository. Keep source history in Git and current model payloads only in
 `D:\LLMs\TinyRustLM`.
 
+## C63: a visual check must finish current work and preserve a failed comparison
+
+- Question: can the existing visual tool inspect the current application without
+  retired model support, unbounded generation or silently retained profiles?
+- Exact inputs: parent `63119aae67456cf18218debab214065345219f2c`, the existing
+  August baseline, current canonical assets and Edge 153.0.4234.48; source and
+  evidence hashes are in `visual-capture-current-contract-review.json`.
+- Method: test explicit modes/paths, current six-member selection, missing and
+  hostile inventory, launch/action/close/cleanup failure, idle no-progress,
+  failed assistant turns, comparison completeness and overwrite rejection. Use
+  actual fresh desktop/mobile browser profiles and the real CLI. No real model
+  is imported and no page state or inference worker is replaced in these captures.
+- Result: final 20 focused checks and 42 affected checks pass; owner coverage is
+  91.42% line, 88.41% branch and 75.86% function. Historical baseline comparison
+  reports 15 differences; the real CLI preserves them and exits 1. Initial unit
+  failures exposed a test fixture leaking internal spec fields into admission
+  and one-sided comparison-policy validation; both were corrected. Final normal
+  discovery uses `.test.js`, so the standard gate includes the 19 unit cases.
+- Uncertainty: a successful empty-shell capture is not useful inference, visual
+  parity with August, physical-mobile execution or deployment. Active/long modes
+  have boundary tests but await a permitted real qualified composition. Browser
+  closure failure must retain its profile rather than racing deletion.
+- Decision: use existing Playwright and ownership helpers; retire the raw socket,
+  debug-port CLI, SLM1 fixture dependency and swallowed cleanup failure. Keep the
+  original baseline and original tolerances; investigate its drift independently.
+  Final review retained both deferred startup and a verified loaded default as
+  valid empty-conversation states; the additional branch checks and fresh actual
+  shell captures pass. A loaded default must not break the visual tool.
+- Reusable lesson: success means the requested state was reached and cleanup was
+  proved. An idle state alone is not completed generation, and making the tool
+  work does not make its baseline comparison pass. Tests must use filenames that
+  the actual suite discovers, not only names accepted by an ad hoc invocation.
+
 ## C62: memory browser tests need current admission and usable owned profile paths
 
 Question: can the current user-plugin path preserve both explicit memory tiers
