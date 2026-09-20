@@ -94,7 +94,7 @@ function Get-LocalPackageVersions {
 function Get-NuGetFlatContainerBaseUrl {
     param([string]$Source)
 
-    $index = Invoke-RestMethod -Uri $Source -Headers @{ "User-Agent" = "TinyRustLM-NuGet-Freshness/1.0" }
+    $index = Invoke-RestMethod -Uri $Source -TimeoutSec 30 -Headers @{ "User-Agent" = "TinyRustLM-NuGet-Freshness/1.0" }
     $resource = $index.resources | Where-Object {
         $resourceTypes = @($_."@type")
         @($resourceTypes | Where-Object { [string]$_ -like "*PackageBaseAddress/3.0.0*" }).Count -gt 0
@@ -117,13 +117,19 @@ function Get-RemotePackageVersions {
 
     $packageIndexUrl = "$FlatContainerBaseUrl$($PackageId.ToLowerInvariant())/index.json"
     try {
-        $packageIndex = Invoke-RestMethod -Uri $packageIndexUrl -Headers @{ "User-Agent" = "TinyRustLM-NuGet-Freshness/1.0" }
+        $packageIndex = Invoke-RestMethod -Uri $packageIndexUrl -TimeoutSec 30 -Headers @{ "User-Agent" = "TinyRustLM-NuGet-Freshness/1.0" }
     }
     catch {
-        return @()
+        # Only an actual package-index 404 proves absence. Outages must block publication readiness.
+        if ($_.Exception.Response -and [int]$_.Exception.Response.StatusCode -eq 404) {
+            return @()
+        }
+        throw "NuGet package version lookup failed for $PackageId."
     }
-    if (-not $packageIndex.versions) {
-        return @()
+    # Reject malformed successful responses instead of converting them into missing-package evidence.
+    if ($packageIndex.versions -isnot [array] -or $packageIndex.versions.Count -eq 0 -or
+        @($packageIndex.versions | Where-Object { $_ -isnot [string] -or [string]::IsNullOrWhiteSpace($_) }).Count -gt 0) {
+        throw "NuGet package version index is invalid for $PackageId."
     }
     return @($packageIndex.versions | ForEach-Object { [string]$_ })
 }

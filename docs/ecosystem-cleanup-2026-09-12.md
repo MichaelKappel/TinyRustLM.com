@@ -5,6 +5,46 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C54: keep NuGet publication current, September 19
+
+The owner requires current NuGet publication at the Michael.Kappel profile.
+Live package-index reads and the actual feed-current command found all three
+current TinyRustLM IDs absent (HTTP 404), with source version 0.1.8. The profile's
+older UAIX.Browser packages do not satisfy the current package graph.
+Authenticated read-only GitHub inspection found default branch
+`codex/enterprise-vnext-clean-20260802`, no registered release-nuget workflow,
+no repository Actions secrets and no nuget-release environment. Only win-x64
+native output is present locally. No publication or remote setting was changed.
+
+Both feed checkers incorrectly converted all package-index failures into absence.
+Only 404 now means missing; authentication, rate-limit, server, connection and
+invalid-index failures remain unknown and block readiness. PowerShell requests
+now have a 30-second timeout. The daily monitor's source no longer requires an
+opt-in variable; the default-branch workflow still needs reconciliation.
+
+All 38 focused checks and 17 package-boundary checks pass. Both canonical query
+implementations execute against local HTTP controls; the complete PowerShell
+command distinguishes current, missing and unknown states. Three owned test files
+(4,517 logical bytes) were removed and absence verified. Physical recovery was
+not measured. Live missing-feed evidence remains a failure, not a release success.
+
+Evidence: `artifacts/ecosystem-cleanup-20260912/nuget-publication-current-review.json`
+and `nuget-feed-current-20260919.json`. Complete authentication, workflow-branch
+reconciliation, all native/package/consumer checks, clean source and source-authority
+admission before pushing. Previously blocked deletions were not retried.
+
+## C53: verify generated static-seed responses in Edge, September 19
+
+MiniModel commit `4b815cbb877a709e8d3060c2039c13e993c334eb` is pushed. All 79 affected
+checks pass, including six real Edge Fetch bodies, hashes and exposed identities
+from Apache, plus hidden-header, query and foreign-origin controls. The first
+test incorrectly expected page JavaScript to see unexposed ACAO; the assertion
+was corrected without changing generated configuration. Both runs' owned output
+was removed (10,658,055 logical bytes; physical recovery unmeasured). This is local
+HTTP/CORS evidence with invalid-model bytes. Public TLS, LiteSpeed, qualified
+installation and publication remain unproven. See MiniModel's
+`artifacts/reports/static-seed-browser-review-20260919.json`.
+
 ## C52: finish pending storage cleanup on a returning visit, September 19
 
 The app never invoked `cleanup` during startup, so interrupted retirement could

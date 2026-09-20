@@ -16,6 +16,25 @@ Authority order is current owner instructions, inspected current contracts and b
 
 ## Current evidence and its limits
 
+**Owner NuGet requirement (September 19):** keep publication current on the
+[Michael.Kappel profile](https://www.nuget.org/profiles/Michael.Kappel). Include
+feed freshness, package/native/consumer checks, publication and payload readback
+in SDK release work. Current public IDs are TinyRustLM.Abstractions, TinyRustLM.Core
+and TinyRustLM.P2P; do not revive retired implementations. C54 found all three
+indexes returning 404 at source version 0.1.8. GitHub's default branch is older
+than the canonical branch; its release workflow is not registered, Actions secrets
+are empty and nuget-release is absent. Only local win-x64 native output is present.
+Authentication, workflow-branch reconciliation, full release verification and
+source-authority admission remain open. No package was pushed. See
+`artifacts/ecosystem-cleanup-20260912/nuget-publication-current-review.json`.
+
+**C53 static-seed browser evidence:** MiniModel commit
+`4b815cbb877a709e8d3060c2039c13e993c334eb` passes 79 checks, including installed Edge
+Fetch of six real Apache fixture responses with exact exposed identities/hashes.
+Hidden-header, invalid-query and foreign-origin controls pass. App documents are
+synthetic and local-network permission admits loopback. No TLS, LiteSpeed, public
+seed, qualified-model installation or inference result follows.
+
 **Owner-supplied product facts:** preserve the existing visual appearance; automatically restore a usable installed model or obtain a small qualified default through MiniModel.org; keep Hugging Face, local import, conversion, custom peers and IP settings under Advanced. Prompts and inference stay local. MiniModel.org is authorized to supply initial server seeds. Download hosting is separate from inference hosting.
 
 **Recorded source state:** the Companion production source owner, bounded acquisition, conversion, terminal reconciliation, six-member inspection/transfer and listener wiring exist. The browser client is loaded by the worktree UI. These replace older “operation-not-available” and “browser client is not loaded” statements as descriptions of current source. The August observations remain historical. Source wiring does not establish an authorized real acquisition through this coordinator or a useful browser answer.

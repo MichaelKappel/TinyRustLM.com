@@ -1,0 +1,52 @@
+{
+    "schema":  "tinyrustlm.nuget.feed_current.v0",
+    "generated_utc":  "2026-09-20T02:21:58.4991056Z",
+    "source":  "https://api.nuget.org/v3/index.json",
+    "source_kind":  "nuget-v3",
+    "package_version":  "0.1.8",
+    "package_ids":  [
+                        "TinyRustLM.Abstractions",
+                        "TinyRustLM.Core",
+                        "TinyRustLM.P2P"
+                    ],
+    "allow_newer":  false,
+    "status":  "fail",
+    "package_count":  3,
+    "missing_declared_version_count":  3,
+    "not_latest_count":  3,
+    "packages":  [
+                     {
+                         "package_id":  "TinyRustLM.Abstractions",
+                         "declared_version":  "0.1.8",
+                         "declared_version_present":  false,
+                         "latest_reported_version":  "",
+                         "declared_version_is_latest_reported":  false,
+                         "version_count":  0,
+                         "listed_versions":  [
+
+                                             ]
+                     },
+                     {
+                         "package_id":  "TinyRustLM.Core",
+                         "declared_version":  "0.1.8",
+                         "declared_version_present":  false,
+                         "latest_reported_version":  "",
+                         "declared_version_is_latest_reported":  false,
+                         "version_count":  0,
+                         "listed_versions":  [
+
+                                             ]
+                     },
+                     {
+                         "package_id":  "TinyRustLM.P2P",
+                         "declared_version":  "0.1.8",
+                         "declared_version_present":  false,
+                         "latest_reported_version":  "",
+                         "declared_version_is_latest_reported":  false,
+                         "version_count":  0,
+                         "listed_versions":  [
+
+                                             ]
+                     }
+                 ]
+}

@@ -11,6 +11,7 @@ python3 - "$NUGET_SOURCE" "$PACKAGE_VERSION" "$REPORT_OUTPUT" "$ALLOW_NEWER" <<'
 import json
 import os
 import sys
+import urllib.error
 import urllib.request
 from datetime import datetime, timezone
 
@@ -75,9 +76,18 @@ def remote_versions(base_url, package_id):
     url = f"{base_url}{package_id.lower()}/index.json"
     try:
         index = read_json_url(url)
+    except urllib.error.HTTPError as error:
+        # Only an actual package-index 404 establishes absence; an outage is unknown.
+        if error.code == 404:
+            return []
+        raise RuntimeError(f"NuGet package version lookup failed for {package_id}.") from None
     except Exception:
-        return []
-    return [str(version) for version in index.get("versions", [])]
+        raise RuntimeError(f"NuGet package version lookup failed for {package_id}.") from None
+    # Keep malformed successful responses out of publication-readiness decisions.
+    versions = index.get("versions") if isinstance(index, dict) else None
+    if not isinstance(versions, list) or not versions or any(not isinstance(v, str) or not v.strip() for v in versions):
+        raise RuntimeError(f"NuGet package version index is invalid for {package_id}.")
+    return versions
 
 
 source_kind = "folder" if os.path.isdir(source) else "nuget-v3"

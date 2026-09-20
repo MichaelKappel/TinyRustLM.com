@@ -168,6 +168,39 @@ marked temporary root.
 
 ## Publication Boundary
 
+The owner's September 19 instruction is to keep NuGet publication current at
+`https://www.nuget.org/profiles/Michael.Kappel`. Include feed freshness in each
+SDK release checkpoint: compare the exact public IDs and version, complete the
+package/native/consumer checks, publish eligible updates and verify feed payloads.
+Source commits and local packages are not publication. Older `UAIX.Browser.*`
+listings do not authorize recreating retired implementations.
+
+The current observation is recorded in
+`artifacts/ecosystem-cleanup-20260912/nuget-publication-current-review.json`.
+All three current package indexes returned HTTP 404; source version is `0.1.8`.
+GitHub's default branch is older than the canonical branch, its release workflow
+is not registered, repository Actions secrets are empty, and the `nuget-release`
+environment is absent. Only win-x64 native output is present locally. No new
+package was published.
+
+The daily feed monitor no longer requires an opt-in variable in source. GitHub
+schedules use the default branch, so committing this change to the development
+branch does not activate it. Reconcile the workflow branch and publishing
+authentication during release preparation. Configure credentials in GitHub/NuGet
+settings, never in chat or source.
+
+Both feed-current implementations recognize absence only from package-index
+HTTP 404. Authentication failures, rate limits, outages, disconnects and malformed
+indexes abort the lookup. The readiness audit clears its prior observation first,
+so these failures become `blocked_feed_status_unknown`, not permission to push.
+
+Run the feed-failure regression checks with
+`node --test tinyrustlm/tests/verify-feed-current.test.js`. They require PowerShell
+and Python 3 on PATH. On Windows, an installed WSL Python may be selected explicitly
+with `TINYRUSTLM_FEED_TEST_WSL_DISTRIBUTION`; no particular distribution or local
+source path is built into the tests. The tests use loopback HTTP and owned temporary
+reports, without contacting NuGet or publishing packages.
+
 Only `TinyRustLM.Abstractions`, `TinyRustLM.Core`, and `TinyRustLM.P2P`, plus
 their matching symbol packages, may enter the public publish plan. Optional or
 unknown TinyRustLM packages make publication fail before any push.

@@ -11,6 +11,28 @@ Keep useful findings and compact evidence identities in the owning canonical
 repository. Keep source history in Git and current model payloads only in
 `D:\LLMs\TinyRustLM`.
 
+## C54: distinguish an absent package from an unknown feed
+
+Question: can feed freshness safely decide whether publication is needed? Method:
+run the canonical PowerShell and Bash Python query functions against fifteen HTTP
+cases each, then the full PowerShell command and live NuGet indexes. Old broad
+exception handling mislabeled outages, authentication errors and malformed bodies
+as missing packages. Both implementations now treat only 404 as absence; other
+failures preserve the readiness audit's unknown state. All 38 focused and 17
+package-boundary checks pass. No complete three-RID package transaction or push
+was run. Include freshness in SDK checkpoints and require public payload readback.
+Evidence: `artifacts/ecosystem-cleanup-20260912/nuget-publication-current-review.json`.
+
+## C53: HTTP headers and browser-readable headers differ
+
+Six real Apache fixture bodies and exposed identities passed Edge Fetch, with
+three negative controls. The initial test expected JavaScript to read unexposed
+Access-Control-Allow-Origin; the browser correctly consumed it internally. Correct
+the assertion and retain raw-header validation. All 79 affected MiniModel checks
+pass. Public TLS, LiteSpeed and model qualification remain unknown. Evidence:
+MiniModel commit `4b815cbb877a709e8d3060c2039c13e993c334eb` and its static-seed-browser
+review receipt.
+
 ## Conversion and qualification
 
 The following source records were inspected in TinyRustLM.com at commit

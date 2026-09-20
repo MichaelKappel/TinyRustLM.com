@@ -1,0 +1,247 @@
+{
+  "schema": "tinyrustlm.ecosystem.nuget_publication_current_review.v1",
+  "checkpoint": "C54",
+  "recorded_utc": "2026-09-20T02:35:00Z",
+  "source_parent": "21af5c356395ae43dce8c3e6242fa0124f1286ce",
+  "canonical_source": "E:\\Source\\Rust\\TinyRustLM.com",
+  "owner_requirement": "Keep NuGet publication current at https://www.nuget.org/profiles/Michael.Kappel. Eligible publication is authorized; credentials must not enter chat or source.",
+  "scope": "Current TinyRustLM SDK public graph; older UAIX package IDs are not authority to recreate retired implementations.",
+  "package_ids": [
+    "TinyRustLM.Abstractions",
+    "TinyRustLM.Core",
+    "TinyRustLM.P2P"
+  ],
+  "source_version": "0.1.8",
+  "observations": {
+    "public_profile": {
+      "url": "https://www.nuget.org/profiles/Michael.Kappel",
+      "retrieved_utc_date": "2026-09-20",
+      "package_count_shown": 32,
+      "limit": "Profile includes older UAIX and unrelated packages; this record does not audit or publish every package owned by the account."
+    },
+    "public_indexes": {
+      "observed_utc": "2026-09-20T02:14:36Z",
+      "statuses": {
+        "TinyRustLM.Abstractions": 404,
+        "TinyRustLM.Core": 404,
+        "TinyRustLM.P2P": 404
+      },
+      "url_pattern": "https://api.nuget.org/v3-flatcontainer/{lowercase-package-id}/index.json"
+    },
+    "actual_feed_command": {
+      "report": "artifacts/ecosystem-cleanup-20260912/nuget-feed-current-20260919.json",
+      "generated_utc": "2026-09-20T02:21:58.4991056Z",
+      "exit_code": 1,
+      "status": "fail",
+      "missing_declared_versions": 3,
+      "not_latest": 3,
+      "serialization": "Operation-owned PowerShell report normalized from UTF-8 BOM/CRLF to UTF-8/LF; field values unchanged."
+    },
+    "github_readonly": {
+      "repository": "MichaelKappel/TinyRustLM.com",
+      "default_branch": "codex/enterprise-vnext-clean-20260802",
+      "canonical_branch": "codex/model-acquisition-v2",
+      "release_workflow_lookup_status": 404,
+      "feed_monitor_workflow_lookup_status": 200,
+      "repository_actions_secret_count": 0,
+      "nuget_release_environment_status": 404,
+      "environment_checked_utc": "2026-09-20T02:32:17.167Z",
+      "credential_handling": "Existing Git credential helper used only in memory for authenticated read-only repository metadata requests; no credential values retained or printed.",
+      "remote_mutations": 0,
+      "limit": "Empty repository secret inventory and absent environment do not prove absence of every possible external authentication setup."
+    },
+    "local_native_outputs": {
+      "present": [
+        "win-x64"
+      ],
+      "not_present": [
+        "linux-x64",
+        "linux-arm64"
+      ],
+      "limit": "Directory observation only; no current three-RID build/pack execution proof."
+    },
+    "source_authority": {
+      "status": "source_authority_scan_incomplete",
+      "unreadable_paths": [
+        "artifacts/verification/qwen3-environment-install/tinyrustlm-operation-C3ZUt9/install-temp/TmP6xn2evdh-b",
+        "artifacts/verification/qwen3-environment-install/tinyrustlm-operation-C3ZUt9/install-temp/TmPeq63_hr7-b"
+      ],
+      "action": "No previously blocked deletion retried."
+    }
+  },
+  "changes": [
+    "Both canonical feed query implementations recognize missing package only from HTTP 404.",
+    "Other HTTP, connection, parsing or malformed-index failures abort with sanitized errors and do not produce missing-package evidence.",
+    "PowerShell service/package-index requests have a 30-second timeout.",
+    "Daily monitor opt-in job condition removed in source. The older default branch means the new schedule behavior is not operationally deployed.",
+    "Portable regression tests run actual canonical implementations against loopback HTTP. Windows can explicitly select its installed WSL Python without hardcoded distribution or source path.",
+    "Owner publication requirement and precise remaining gates persisted in current guidance."
+  ],
+  "verification": [
+    {
+      "command": "TINYRUSTLM_FEED_TEST_WSL_DISTRIBUTION=OSM-Ubuntu node --test tinyrustlm/tests/verify-feed-current.test.js",
+      "environment_notation": "Set the variable in PowerShell before invoking Node; this is a command summary.",
+      "pass": 38,
+      "fail": 0,
+      "skip": 0,
+      "duration_ms": 10829.0068,
+      "coverage": "Fifteen HTTP cases for each canonical query function, schedule guard, and full PowerShell command current/missing/unknown cases. Earlier 31- and 38-case runs also passed; final run followed removal of local-path/interpreter assumptions."
+    },
+    {
+      "command": "dotnet test dotnet/tests/TinyRustLM.Package.Tests/TinyRustLM.Package.Tests.csproj --no-restore --filter FullyQualifiedName~PackageBoundaryTests --verbosity minimal",
+      "pass": 17,
+      "fail": 0,
+      "skip": 0
+    },
+    {
+      "command": "dotnet test dotnet/tests/TinyRustLM.Package.Tests/TinyRustLM.Package.Tests.csproj --no-restore --filter FullyQualifiedName~UaixMemoryConsolidationTests --verbosity minimal",
+      "pass": 6,
+      "fail": 0,
+      "skip": 0
+    }
+  ],
+  "coverage_limit": "No PowerShell/Python line or branch percentage was collected. Actual canonical query and command behavior is the closest automated evidence; this record does not assert the 75% target was measured.",
+  "cleanup": {
+    "owned_parent": "artifacts/tests/nuget-feed-current",
+    "final_run": {
+      "files_removed": 3,
+      "logical_bytes": 4517,
+      "absence_verified": true
+    },
+    "previous_38_case_run": {
+      "files_removed": 3,
+      "logical_bytes": 4517,
+      "absence_verified": true
+    },
+    "physical_storage_recovery": "not measured",
+    "source_copies_created": 0,
+    "model_copies_created": 0
+  },
+  "related_checkpoint": {
+    "checkpoint": "C53",
+    "repository": "MiniModel.org",
+    "commit": "4b815cbb877a709e8d3060c2039c13e993c334eb",
+    "receipt": "artifacts/reports/static-seed-browser-review-20260919.json",
+    "pass": 79,
+    "scope": "Local Apache/Edge fixture CORS, exact bodies and negative controls; not public model qualification or seed deployment."
+  },
+  "publication": {
+    "status": "not_published",
+    "packages_packed_this_checkpoint": 0,
+    "packages_pushed": 0,
+    "remaining": [
+      "Configure publishing authentication through NuGet/GitHub settings.",
+      "Reconcile the default-branch workflow with canonical current source.",
+      "Complete all three required native RID builds/tests, package graph and consumer checks.",
+      "Resolve source-authority release admission and use clean coherent release inputs.",
+      "Publish eligible exact packages and read back NuGet current-version and payload hashes."
+    ]
+  },
+  "limits": [
+    "No public package or scheduled-monitor activation is claimed.",
+    "No real model, numerical parity, first-user inference or live seed qualification is claimed.",
+    "The broader ecosystem cleanup goal remains active and unrelated working changes are preserved."
+  ],
+  "inputs": [
+    {
+      "path": ".github/workflows/nuget-feed-monitor.yml",
+      "bytes": 5012,
+      "sha256": "912908425ab2c4b0bf28fdc6efbbbda66f899c5e157ab121063fa699114ce6a4"
+    },
+    {
+      "path": ".uai/operations.uai",
+      "bytes": 16345,
+      "sha256": "78db3c18f68ead919495617018a737d3d92aae2d9db025886bdf17ef2d47333e"
+    },
+    {
+      "path": ".uai/short-term-memory.uai",
+      "bytes": 14027,
+      "sha256": "bd328625ac16e6eb4f2813daa7b1adcd569a1b8bd6d01d1df72616a2dc6b6925"
+    },
+    {
+      "path": ".uai/startup-packet.uai",
+      "bytes": 9672,
+      "sha256": "b53c128c5dd5115b496f108792ca408351c51cdb350a4681e6ed9fb7d56f73fc"
+    },
+    {
+      "path": ".uai/long-term-memory.uai",
+      "bytes": 8892,
+      "sha256": "5717a4ed48a1af882f5e17870db761ffff5743c87e105f41703e0a09d089d6df"
+    },
+    {
+      "path": "docs/nuget/README.md",
+      "bytes": 11902,
+      "sha256": "d5ea805bd9e8e251da86aabf73abcc8d0a925d63e75eeaec8b8abb94e7db9b39"
+    },
+    {
+      "path": "docs/ecosystem-cleanup-2026-09-12.md",
+      "bytes": 105922,
+      "sha256": "c3e7fb68a8c0f6676fb185847652095920594218386bd1bb72ca2d00ef65aa00"
+    },
+    {
+      "path": "eng/verify-feed-current.ps1",
+      "bytes": 7239,
+      "sha256": "9b676a098079ed0963ccf91adcede91d4e62105b97437949536413c44dd39d3a"
+    },
+    {
+      "path": "eng/verify-feed-current.sh",
+      "bytes": 5848,
+      "sha256": "a82b19751770a4fd4fc9b3a74c1ec9ca1016e5f1cd9a16f6e2e8ecfb87ba8953"
+    },
+    {
+      "path": "tinyrustlm/tests/verify-feed-current.test.js",
+      "bytes": 9936,
+      "sha256": "da5893474a5457dc97e55b901981e42d80bcd13b897ec76eabbc5fb09f833685"
+    },
+    {
+      "path": "wiki/runtime-mirust/reports/ecosystem-experiment-lessons-2026-09-12.md",
+      "bytes": 138328,
+      "sha256": "01d20b612ab14dad10f9336d1958d04c47f627c02f1348bb7ddbb243b30566b7"
+    },
+    {
+      "path": "wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md",
+      "bytes": 49226,
+      "sha256": "33b97f35f5a430df3a8635c633d99393d8e29ef6556fdc2c5d18cdea6d060921"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/nuget-feed-current-20260919.json",
+      "bytes": 2073,
+      "sha256": "53fe543c0a51bc20b12f1d659f550524207250e18be04ba1f88b60b9ae9133c7"
+    },
+    {
+      "path": "dotnet/Directory.Build.props",
+      "bytes": 2667,
+      "sha256": "6829f8afa45c8850d0f3f7486fa7249136aff0922a85ecf9cbe52ded400d7f39"
+    },
+    {
+      "path": "dotnet/src/TinyRustLM.Abstractions/TinyRustLM.Abstractions.csproj",
+      "bytes": 1284,
+      "sha256": "b0fa224e57c8ae51dcd99eeb7473e53bafddac0013aa1a7a059063b046fcf01b"
+    },
+    {
+      "path": "dotnet/src/TinyRustLM.Core/TinyRustLM.Core.csproj",
+      "bytes": 2272,
+      "sha256": "ce6623286454f332d8fdb52f9e51efd827e8af6349543583e54a317cb7fa6acc"
+    },
+    {
+      "path": "dotnet/src/TinyRustLM.P2P/TinyRustLM.P2P.csproj",
+      "bytes": 1588,
+      "sha256": "11b436048d0e227d20c4f9c7a045e623653fb0e16f1778096d91780237d9f7f8"
+    },
+    {
+      "path": ".github/workflows/release-nuget.yml",
+      "bytes": 11859,
+      "sha256": "4586c08f87cd179e866bc54521f50cce310bd4dd42e99e2145ead79af6bbd6cf"
+    },
+    {
+      "path": "eng/audit-nuget-release-readiness.ps1",
+      "bytes": 15210,
+      "sha256": "8ad4c9ad7cd42a60324c7c03a679d0c675971fb9b0ded697601e546808372754"
+    },
+    {
+      "path": "eng/audit-nuget-release-readiness.sh",
+      "bytes": 13741,
+      "sha256": "d3193a790eb5128e654570528b749d2dc1bce7b0332d672005682f09c6007d92"
+    }
+  ]
+}

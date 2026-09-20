@@ -36,7 +36,6 @@ jobs:
   verify-feed-current:
     name: Verify exact TinyRustLM public package feed
     runs-on: windows-latest
-    if: ${{ github.event_name != 'schedule' || vars.TINYRUSTLM_NUGET_MONITOR_ENABLED == 'true' }}
     env:
       NUGET_SOURCE: ${{ github.event_name == 'workflow_dispatch' && inputs.source || vars.TINYRUSTLM_NUGET_SOURCE || 'https://api.nuget.org/v3/index.json' }}
       ALLOW_NEWER: ${{ github.event_name == 'workflow_dispatch' && format('{0}', inputs.allow_newer) || vars.TINYRUSTLM_NUGET_MONITOR_ALLOW_NEWER || 'false' }}
