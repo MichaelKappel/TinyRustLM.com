@@ -1,10 +1,11 @@
 profile: tinyrustlm.short-term-memory.current.v1
-updated_utc: 2026-09-20T14:43:29Z
+updated_utc: 2026-09-20T15:11:53Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
 now:
-  next_cleanup: C64 output is absent after its compiler server released locked analyzers. The generic canonical-operation-scratch helper removed its marker before that failed deletion; fix marker retention through partial cleanup next, with failure-path tests. Use shared-compilation-disabled managed builds. This OS lock was not a policy rejection; previously blocked cohorts remain untouched.
+  scratch_retirement: C65 fixes marker loss during partial cleanup with an external marker and bounded nonrecursive removal. All 17 focused checks pass with 100% line coverage, including a real Windows file lock. Shared consumers pass after explicit WSL setup; current numerical helper bindings are corrected. See scratch-retirement-ownership-review.json. Stop writers first; no old-layout adoption or blocked-cohort retry.
+  next_work: Continue ecosystem entry-point and current-contract cleanup; useful real-model, eligible NuGet release, hosting and public readback gates remain open. Use shared-compilation-disabled managed builds. Previously policy-blocked deletions remain untouched.
   runtime_context: C64 narrows sampling to the admitted scalar KV ceiling before prefill, retaining the last token with ContextLimit. All 76 Rust checks and Clippy pass; the refreshed local WASM reproduces twice. The 73 affected Node checks, two additional Edge scenarios and 38 related checks pass across recorded invocations. See runtime-context-limit-review.json for setup failures and coverage limits; no real model, package or public result.
   visual_capture: C63 replaces obsolete visual-lock execution with Playwright, owned profiles and current six-member input. Twenty focused checks including desktop/mobile Edge and 42 affected checks pass; line coverage 91.42%. The historical baseline still fails with 15 differences and the real CLI retains failure evidence. No product asset, real model or public result; see visual-capture-current-contract-review.json.
   memory_continuity: C62 restores the pending current-contract memory browser scenario. All 42 Node checks and one desktop Edge two-profile test pass: explicit saves only, both tiers, restore/search, replay rejection, credential nonpersistence and owned cleanup. Synthetic inference and loopback service only; no live or model claim. See browser-memory-contract-review.json.

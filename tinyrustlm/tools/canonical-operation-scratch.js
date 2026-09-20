@@ -7,7 +7,7 @@ const path = require("node:path");
 const siteRoot = path.resolve(__dirname, "..");
 const artifactRoots = [path.join(siteRoot, "artifacts"), path.resolve(siteRoot, "../artifacts")];
 const prefix = "tinyrustlm-operation-";
-const markerName = ".tinyrustlm-operation-owner.v1";
+const markerSuffix = ".owner.v2";
 
 /** Reject an invalid boundary before any filesystem mutation. */
 function invariant(condition, message) {
@@ -59,7 +59,8 @@ function createOwnedTemporaryDirectory(options = {}) {
   const rootPath = fs.mkdtempSync(path.join(temporaryParent, prefix));
   const rootStat = fs.lstatSync(rootPath, { bigint: true });
   const markerBytes = Buffer.from(`${crypto.randomBytes(32).toString("hex")}\n`, "utf8");
-  const markerPath = path.join(rootPath, markerName);
+  // Keep ownership outside the disposable tree, including its final rmdir.
+  const markerPath = rootPath + markerSuffix;
   try {
     fs.writeFileSync(markerPath, markerBytes, { flag: "wx", mode: 0o600 });
   } catch (error) {
@@ -71,16 +72,13 @@ function createOwnedTemporaryDirectory(options = {}) {
     markerStat: fs.lstatSync(markerPath, { bigint: true }), temporaryParent });
 }
 
-/** Bind cleanup to the original directory and marker identities, with bounded reads. */
-function verifyOwnedTemporaryDirectory(owned) {
+/** Verify the external marker even when only terminal marker retirement remains. */
+function verifyOwnershipMarker(owned) {
   invariant(owned && typeof owned === "object", "Operation ownership record is required");
   requireCanonicalArtifactPath(owned.rootPath);
   invariant(samePath(path.dirname(owned.rootPath), owned.temporaryParent) &&
     path.basename(owned.rootPath).startsWith(prefix), "Operation parent or name changed");
-  const rootStat = fs.lstatSync(owned.rootPath, { bigint: true });
-  invariant(rootStat.dev === owned.rootStat.dev && rootStat.ino === owned.rootStat.ino,
-    "Operation directory identity changed");
-  invariant(samePath(owned.markerPath, path.join(owned.rootPath, markerName)),
+  invariant(samePath(owned.markerPath, owned.rootPath + markerSuffix),
     "Operation marker path changed");
   const markerStat = fs.lstatSync(owned.markerPath, { bigint: true });
   invariant(markerStat.isFile() && !markerStat.isSymbolicLink() && markerStat.nlink === 1n &&
@@ -90,38 +88,104 @@ function verifyOwnedTemporaryDirectory(owned) {
     "Operation marker content changed");
 }
 
-/** Remove only an owned bounded ordinary tree; never follow fixture or browser links. */
-function removeOwnedTemporaryDirectory(owned) {
-  verifyOwnedTemporaryDirectory(owned);
+/** Inspect the original root; absence permits cleanup finalization, never new work. */
+function inspectOwnedRoot(owned) {
+  const stat = fs.lstatSync(owned.rootPath, { bigint: true, throwIfNoEntry: false });
+  if (stat) invariant(stat.isDirectory() && !stat.isSymbolicLink() &&
+    stat.dev === owned.rootStat.dev && stat.ino === owned.rootStat.ino,
+  "Operation directory identity changed");
+  return stat;
+}
+
+/** Bind live work to the original directory and external marker identities. */
+function verifyOwnedTemporaryDirectory(owned) {
+  verifyOwnershipMarker(owned);
+  invariant(inspectOwnedRoot(owned), "Operation directory is missing");
+}
+
+/** Inventory all entries before mutation, including contained Cargo hard-link groups. */
+function inventoryCleanup(owned) {
   const pending = [{ directory: owned.rootPath, depth: 0 }];
+  const entries = [];
+  const directories = new Map([[owned.rootPath, owned.rootStat]]);
   const hardLinks = new Map();
   let count = 0;
   while (pending.length) {
     const { directory, depth } = pending.pop();
     invariant(depth <= 32, "Operation cleanup depth exceeds its bound");
+    if (directory === owned.rootPath) verifyOwnedTemporaryDirectory(owned);
+    else verifyCleanupEntry(owned, { path: directory, stat: directories.get(directory) }, directories);
     for (const name of fs.readdirSync(directory)) {
       invariant(++count <= 8192, "Operation cleanup inventory exceeds its bound");
       const entry = path.join(directory, name);
       const stat = fs.lstatSync(entry, { bigint: true });
       invariant(!stat.isSymbolicLink() && (stat.isDirectory() || stat.isFile()),
         "Operation cleanup found a linked or special entry");
-      if (stat.isFile() && stat.nlink > 1n) {
+      entries.push({ path: entry, stat });
+      if (stat.isFile()) {
         const identity = `${stat.dev}:${stat.ino}`;
         const group = hardLinks.get(identity) || { count: 0n, links: stat.nlink };
         invariant(group.links === stat.nlink, "Operation hard-link identity changed");
         group.count += 1n;
         hardLinks.set(identity, group);
       }
-      if (stat.isDirectory()) pending.push({ directory: entry, depth: depth + 1 });
+      if (stat.isDirectory()) {
+        directories.set(entry, stat);
+        pending.push({ directory: entry, depth: depth + 1 });
+      }
     }
   }
   // Cargo aliases are safe only when every name belongs to this exact owned tree.
   for (const group of hardLinks.values()) {
     invariant(group.count === group.links, "Operation cleanup found an external hard link");
   }
+  return { entries, directories, hardLinks };
+}
+
+/** Reject a replaced entry or ancestor immediately before its nonrecursive removal. */
+function verifyCleanupEntry(owned, entry, directories) {
   verifyOwnedTemporaryDirectory(owned);
-  fs.rmSync(owned.rootPath, { recursive: true, force: false, maxRetries: 5, retryDelay: 100 });
-  invariant(!fs.existsSync(owned.rootPath), "Operation cleanup could not be verified");
+  for (let current = path.dirname(entry.path); current !== owned.rootPath;
+    current = path.dirname(current)) {
+    const expected = directories.get(current);
+    const observed = fs.lstatSync(current, { bigint: true });
+    invariant(expected && observed.isDirectory() && !observed.isSymbolicLink() &&
+      observed.dev === expected.dev && observed.ino === expected.ino,
+    "Operation cleanup ancestor identity changed");
+  }
+  const stat = fs.lstatSync(entry.path, { bigint: true });
+  invariant(!stat.isSymbolicLink() && stat.dev === entry.stat.dev &&
+    stat.ino === entry.stat.ino && stat.isDirectory() === entry.stat.isDirectory() &&
+    (stat.isDirectory() || (stat.isFile() && stat.size === entry.stat.size &&
+      stat.mtimeNs === entry.stat.mtimeNs)), "Operation cleanup entry identity changed");
+  return stat;
+}
+
+/** Remove bounded, quiescent owned output; retain authority through every partial failure. */
+function removeOwnedTemporaryDirectory(owned) {
+  verifyOwnershipMarker(owned);
+  if (inspectOwnedRoot(owned)) {
+    const { entries, directories, hardLinks } = inventoryCleanup(owned);
+    // Files first, then child directories before parents. New entries stop rmdir.
+    for (const entry of entries.filter(value => value.stat.isFile())) {
+      const stat = verifyCleanupEntry(owned, entry, directories);
+      const group = hardLinks.get(`${stat.dev}:${stat.ino}`);
+      invariant(stat.nlink === group.count, "Operation hard-link identity changed");
+      fs.unlinkSync(entry.path);
+      group.count -= 1n;
+    }
+    for (const entry of entries.filter(value => value.stat.isDirectory()).reverse()) {
+      verifyCleanupEntry(owned, entry, directories);
+      fs.rmdirSync(entry.path);
+    }
+    verifyOwnedTemporaryDirectory(owned);
+    fs.rmdirSync(owned.rootPath);
+  }
+  verifyOwnershipMarker(owned);
+  invariant(!inspectOwnedRoot(owned), "Operation cleanup could not be verified");
+  fs.unlinkSync(owned.markerPath);
+  invariant(!fs.lstatSync(owned.markerPath, { throwIfNoEntry: false }),
+    "Operation marker cleanup could not be verified");
 }
 
 module.exports = Object.freeze({ createOwnedTemporaryDirectory, removeOwnedTemporaryDirectory,

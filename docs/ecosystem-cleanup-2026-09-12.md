@@ -5,6 +5,42 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C65: retain ownership through failed scratch cleanup, September 20
+
+A real Windows exclusive file lock reproduced C64's cleanup defect: recursive
+removal erased the inside ownership marker before failing on a locked file. The
+shared helper now keeps an exclusive `.owner.v2` marker beside its output root,
+inventories bounded ordinary entries and fully contained hard-link groups, checks
+identities before each nonrecursive removal, and retires the marker only after
+observing root absence. Partial failures retain cleanup authority. A missing root
+cannot authorize new work; a terminal marker failure can be finished explicitly
+with the original ownership record. No obsolete layout reader or adoption path
+was added. The operation must stop its writers first; path checks do not establish
+an adversarial filesystem transaction or restart/power-loss recovery.
+
+All 17 focused tests pass with 100% line/function and 96.77% branch coverage.
+They include real Windows file locking, partial deletion, terminal failures,
+new files, changing identities, external hard links and inventory/depth bounds.
+Renaming the test to `.test.js` also places it in the normal Node gate. Capture,
+deployment and smoke fixtures now use the same sole current marker contract.
+
+The initial consumer run passed 175 checks, failed two missing-`python.exe`
+setups and skipped one WSL scenario. Binding the existing OSM-Ubuntu interpreter
+made the two affected feed suites pass all 124 checks, including their full Bash
+and PowerShell paths. These counts overlap and must not be added as unique tests.
+Other initial checks passed, including actual Edge streamed loading and two fresh
+offline builds reproducing the unchanged C64 WASM. A separate real Edge capture
+passed at desktop/mobile sizes with no page errors; the historical visual baseline
+still has 15 differences, so this is not a visual-parity or real-model result.
+
+The numerical boundary run passed 59 checks and exposed a pre-existing stale
+source-authority helper digest in the current unregistered profile. Its corrected
+binding check passes; the scratch helper identity is updated in that same current
+profile. Closed registrations and historical outcomes remain unchanged. No real
+checkpoint execution, qualification, NuGet push, site publication or previously
+blocked deletion occurred. See `scratch-retirement-ownership-review.json` for
+source/test identities, final memory validation and operation-output retirement.
+
 ## C64: honor the admitted runtime context, September 20
 
 The generation controller used the model-wide 40,960-token ceiling even when

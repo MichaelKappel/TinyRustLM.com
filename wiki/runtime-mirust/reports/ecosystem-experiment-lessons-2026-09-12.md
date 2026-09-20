@@ -11,6 +11,34 @@ Keep useful findings and compact evidence identities in the owning canonical
 repository. Keep source history in Git and current model payloads only in
 `D:\LLMs\TinyRustLM`.
 
+## C65: cleanup authority must outlive the disposable directory
+
+- Question: can a locked file or failed terminal removal destroy the authority
+  needed to retire the remaining operation output?
+- Exact inputs: parent `d8904f67d80f6577d592bc79a6bddeab0e651c33`, the canonical
+  scratch helper, a real Windows `FileShare.None` child and bounded synthetic
+  output. `scratch-retirement-ownership-review.json` binds source and evidence.
+- Method: reproduce the real lock against the old helper, inject individual
+  terminal failures, then test explicit cleanup after releasing the lock. Exercise
+  partial deletion, new/changed entries, root replacement, contained/external hard
+  links, linked ancestors and inventory/depth bounds. Run shared consumers.
+- Result: old cleanup lost its marker with `ENOENT` after the locked-file failure.
+  The external marker survives partial and terminal failures; all 17 checks pass
+  with 100% line/function and 96.77% branch coverage. Consumer feed failures were
+  missing interpreter setup, resolved by explicit existing WSL binding (124 pass).
+  Numerical tests found a stale current helper digest; its corrected binding check
+  passes. Neither setup failure was a model failure.
+- Uncertainty: quiescent output is required; path-based checks cannot prevent every
+  malicious mutation between check and syscall. Lost in-memory ownership, process
+  restart and power-loss durability are not established. The historical browser
+  visual comparison remains failed with 15 differences.
+- Decision: one external marker contract, bounded direct unlink/rmdir, no recursive
+  fallback, old reader, ownership recreation or policy-denial bypass. Disable
+  shared compilation for managed builds in short-lived owned output.
+- Reusable lesson: keep cleanup authority outside what it authorizes deleting,
+  through observed absence; test the real operating-system failure as well as
+  injected failures. Test-file naming must match the actual gate's discovery rule.
+
 ## C64: generation must use the same context budget as its KV cache
 
 - Question: does a smaller admitted runtime context end generation normally?

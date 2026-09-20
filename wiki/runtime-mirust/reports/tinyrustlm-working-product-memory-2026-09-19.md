@@ -16,6 +16,18 @@ Authority order is current owner instructions, inspected current contracts and b
 
 ## Current evidence and its limits
 
+**C65 scratch retirement:** operation ownership now lives beside the disposable
+root and survives locked files, partial deletion and final-directory failures.
+The sole helper inventories bounded ordinary output and checks identities before
+direct unlink/rmdir. All 17 focused tests pass (100% line coverage), including a
+real Windows lock; the normal Node gate now discovers them. Consumer checks pass
+after explicit WSL interpreter binding, and current numerical helper identities
+are reconciled without changing closed registrations. Actual Edge loading/capture
+and two reproducible WASM builds exercise shared callers. The historical visual
+baseline still has 15 differences. Quiescent output and original in-memory
+ownership are required; no crash-recovery, real model or publication claim follows.
+See `scratch-retirement-ownership-review.json` and testing.md for exact limits.
+
 **C64 runtime context:** generation now honors the admitted scalar KV ceiling
 before prefill. Exact-full prompts terminate without sampling; the last admitted
 token remains in the answer with `ContextLimit`. All 76 affected Rust checks and

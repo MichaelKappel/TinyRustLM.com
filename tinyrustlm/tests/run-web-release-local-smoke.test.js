@@ -132,11 +132,9 @@ test("runner fails closed and preserves a root whose ownership marker changed", 
       async invokeLocalWebReleaseSmokeCli(options) {
         invocationCount += 1;
         ownedRoot = path.dirname(options.outputDirectory);
-        const markerName = fs.readdirSync(ownedRoot).find(
-          (name) => name === ".tinyrustlm-operation-owner.v1"
-        );
-        assert.ok(markerName);
-        fs.writeFileSync(path.join(ownedRoot, markerName), "changed\n");
+        const markerPath = ownedRoot + ".owner.v2";
+        assert.ok(fs.existsSync(markerPath));
+        fs.writeFileSync(markerPath, "changed\n");
         return passingResult;
       }
     }),

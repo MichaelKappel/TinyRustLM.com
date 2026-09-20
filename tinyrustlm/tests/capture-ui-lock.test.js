@@ -192,7 +192,7 @@ test("mode assertions reject failed answers, wrong counts, obstruction and overf
 
 /** Read the exact ownership minted by the tested function, solely for simulated failure teardown. */
 function ownership(rootPath) {
-  const markerPath = path.join(rootPath, ".tinyrustlm-operation-owner.v1");
+  const markerPath = rootPath + ".owner.v2";
   return { rootPath, temporaryParent: path.dirname(rootPath), markerPath,
     rootStat: fs.lstatSync(rootPath, { bigint: true }), markerStat: fs.lstatSync(markerPath, { bigint: true }),
     markerBytes: fs.readFileSync(markerPath) };
@@ -205,8 +205,8 @@ for (const scenario of ["success", "action-failed", "launch-failed", "close-fail
     const context = { setDefaultTimeout: (ms) => assert.equal(ms, 30000),
       setDefaultNavigationTimeout: (ms) => assert.equal(ms, 30000),
       close: async () => { events.push("close"); if (scenario === "close-failed") throw Error("close failure"); } };
-    const rm = fs.rmSync;
-    if (scenario === "cleanup-failed") t.mock.method(fs, "rmSync", (target, options) => {
+    const rm = fs.rmdirSync;
+    if (scenario === "cleanup-failed") t.mock.method(fs, "rmdirSync", (target, options) => {
       if (target === owned?.rootPath) throw Error("cleanup failure");
       return rm(target, options);
     });

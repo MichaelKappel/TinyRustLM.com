@@ -1,5 +1,5 @@
 profile: tinyrustlm.startup-packet.current.v1
-updated_utc: 2026-09-20T14:43:29Z
+updated_utc: 2026-09-20T15:11:53Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
@@ -10,6 +10,7 @@ startup_steps:
   - Preserve immutable failed operations and all campaign counters.
 
 current_truth:
+  scratch_retirement: C65 retains external ownership through locked-file, partial and terminal cleanup failures, using bounded direct unlink/rmdir. All 17 focused tests pass with 100% line coverage; shared consumers and Edge capture pass after recorded setup/binding corrections. See scratch-retirement-ownership-review.json. Quiescent writers and original ownership are required; no old-layout adoption or publication claim.
   runtime_context: C64 narrows sampling to the admitted scalar KV ceiling before prefill, retaining the last token with ContextLimit. All 76 Rust checks and Clippy pass; the refreshed local WASM reproduces twice. The 73 affected Node checks, two additional Edge scenarios and 38 related checks pass across recorded invocations. See runtime-context-limit-review.json for setup failures and coverage limits; no real model, package or public result.
   visual_capture: C63 replaces obsolete visual-lock execution with Playwright, owned profiles and current six-member input. Twenty focused checks including desktop/mobile Edge and 42 affected checks pass; line coverage 91.42%. The historical baseline still fails with 15 differences and the real CLI retains failure evidence. No product asset, real model or public result; see visual-capture-current-contract-review.json.
   memory_continuity: C62 restores the pending current-contract memory browser scenario. All 42 Node checks and one desktop Edge two-profile test pass: explicit saves only, both tiers, restore/search, replay rejection, credential nonpersistence and owned cleanup. Synthetic inference and loopback service only; no live or model claim. See browser-memory-contract-review.json.

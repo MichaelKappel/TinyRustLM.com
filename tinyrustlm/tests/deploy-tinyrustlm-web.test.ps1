@@ -194,7 +194,7 @@ Import-DeploymentFunctions -ScriptPath $deploymentScript -Names @(
 
 $canonicalRepositoryRoot = "E:\Source\Rust\TinyRustLM.com"
 $root = Assert-CanonicalDeploymentArtifactPath -Path $OperationRoot -SourceRoot $canonicalRepositoryRoot
-if (-not (Test-Path -LiteralPath (Join-Path $root ".tinyrustlm-operation-owner.v1") -PathType Leaf)) {
+if (-not (Test-Path -LiteralPath ($root + ".owner.v2") -PathType Leaf)) {
     throw "Run this suite through its Node launcher, which owns and cleans the test output."
 }
 try {

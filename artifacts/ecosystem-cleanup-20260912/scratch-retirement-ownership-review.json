@@ -1,0 +1,392 @@
+{
+  "schema": "tinyrustlm.ecosystem-cleanup.scratch-retirement-ownership-review.v1",
+  "checkpoint": "C65",
+  "reviewedUtc": "2026-09-20T15:17:07Z",
+  "parent": "d8904f67d80f6577d592bc79a6bddeab0e651c33",
+  "status": "implemented-and-affected-checks-passed; owned-output-removed",
+  "previousGoalCheckpoint": "C64 made implementation progress; C65 closes the ownership-loss defect it exposed. The intervening credential-location confirmation did not advance release gates.",
+  "defect": {
+    "baselineRealWindows": {
+      "tests": 1,
+      "pass": 0,
+      "fail": 1,
+      "observation": "FileShare.None blocks recursive cleanup; the inside owner marker is already absent (ENOENT) when inspected after the removal error."
+    },
+    "baselineInjected": {
+      "tests": 2,
+      "pass": 0,
+      "fail": 2,
+      "limitation": "The old recursive implementation did not call the public direct-removal hooks; missing expected exceptions are a design mismatch, not independent proof of a terminal OS failure."
+    },
+    "firstCorrection": {
+      "tests": 10,
+      "pass": 9,
+      "fail": 1,
+      "observation": "Direct unlink reports EBUSY where the old recursive path reported EPERM. The test accepts both native locking errors and still requires preserved ownership and successful explicit cleanup after child exit."
+    }
+  },
+  "implementation": [
+    "External exclusive random rootPath + .owner.v2 marker remains until observed root absence.",
+    "Bounded inventory (8192 entries, depth 32) before mutation; reject linked/special entries and externally shared hard links.",
+    "Revalidate original root, marker, each file/directory and ancestors before direct unlink/rmdir; late entries stop nonrecursive removal.",
+    "Partial failures retain authority; original ownership can explicitly finish terminal marker removal, while absent root rejects new work.",
+    "No old-layout reader, migration, marker recreation, recursive fallback or automatic retry.",
+    "Move scratch suite to the standard .test.js discovery pattern; update capture/deployment/smoke consumers.",
+    "Refresh only the current unregistered numerical profile helper identities; preserve closed execution contracts.",
+    "Document quiescent-writer and shared-compilation-disabled managed-output requirements."
+  ],
+  "sources": [
+    {
+      "path": "tinyrustlm/tools/canonical-operation-scratch.js",
+      "bytes": 9276,
+      "sha256": "52b6024d121479d20a634ee639d641cb1ff4896bce99b1110a3e26720bf5a7f9"
+    },
+    {
+      "path": "tinyrustlm/tests/canonical-operation-scratch.test.js",
+      "bytes": 16535,
+      "sha256": "e00e52761566417808a0fa129c8a1a15069c5880340978fed1bc17a5a4e5b191"
+    },
+    {
+      "path": "tinyrustlm/tests/capture-ui-lock.test.js",
+      "bytes": 18412,
+      "sha256": "1a1f85e589197c4d10b5d2d88bd510ccf92bc245730ca7ec32bf81a20843b074"
+    },
+    {
+      "path": "tinyrustlm/tests/deploy-tinyrustlm-web.test.ps1",
+      "bytes": 92039,
+      "sha256": "fd0ec7629400ef8914d9cb01c48e5a00c2ef392e4c53154088cbbebb1eece6f9"
+    },
+    {
+      "path": "tinyrustlm/tests/run-web-release-local-smoke.test.js",
+      "bytes": 8933,
+      "sha256": "6ec39b58697a0a50c2142c93239868d67d4681f15cb22035fefda0945a6589d6"
+    },
+    {
+      "path": "contracts/vnext/qwen3-numerical-differential-profile.v2.json",
+      "bytes": 18093,
+      "sha256": "e65f749b10e2db7b81506977cab865ac53abb57e52cfc0de790f40a1797bc223"
+    },
+    {
+      "path": "tinyrustlm/docs/testing.md",
+      "bytes": 9182,
+      "sha256": "8d4a4ab8051cad7f1870f592c7253c4b2f9d7cfe38f72307cbc159817710d393"
+    },
+    {
+      "path": "docs/ecosystem-cleanup-2026-09-12.md",
+      "bytes": 129222,
+      "sha256": "ca027a6ad6395738e3bd9afcc091453c94e6d2168814a4491fb690b58d9568b1"
+    },
+    {
+      "path": "wiki/runtime-mirust/reports/ecosystem-experiment-lessons-2026-09-12.md",
+      "bytes": 159517,
+      "sha256": "43fe66c5f7312844ff7bd34e98eb021989a11d1ad7bad030b386a5df590cd167"
+    },
+    {
+      "path": "wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md",
+      "bytes": 56892,
+      "sha256": "cf9c33c3244acdc0c6abb5db0a55b7b46d0158064d8895b4f4af59c5c0c9e992"
+    },
+    {
+      "path": ".uai/startup-packet.uai",
+      "bytes": 14135,
+      "sha256": "3cb25926d20477ad3f1db7825b8f4160e601f92c68c41ec63c869c73bcabf7ce"
+    },
+    {
+      "path": ".uai/short-term-memory.uai",
+      "bytes": 17777,
+      "sha256": "fe98a14a00a044be1da66e586f6ef75a8f6fa08e92027f4db42e250bbd5b3e83"
+    },
+    {
+      "path": ".uai/operations.uai",
+      "bytes": 22577,
+      "sha256": "1113ff8782326c290c7bca5a3ca8bb3d032ac5ee5139d6a7259559c5dffea9b6"
+    },
+    {
+      "path": ".uai/long-term-memory.uai",
+      "bytes": 8846,
+      "sha256": "5e6bca404c24ebc6fc177758e3848cc72429fe1a2239f772b3eee201b83342a1"
+    }
+  ],
+  "verification": {
+    "focused": {
+      "tests": 17,
+      "pass": 17,
+      "fail": 0,
+      "skip": 0,
+      "coverage": {
+        "linePercent": 100,
+        "branchPercent": 96.77,
+        "functionPercent": 100
+      },
+      "standardGateDiscoversSuite": true
+    },
+    "consumersInitial": {
+      "tests": 178,
+      "pass": 175,
+      "fail": 2,
+      "skip": 1,
+      "failures": "Two Bash Python portions attempted absent python.exe; one full WSL case skipped without explicit distribution."
+    },
+    "feedCorrected": {
+      "tests": 124,
+      "pass": 124,
+      "fail": 0,
+      "skip": 0,
+      "environment": "TINYRUSTLM_FEED_TEST_WSL_DISTRIBUTION=OSM-Ubuntu",
+      "coverage": "Actual PowerShell and WSL Bash consumers against controlled local feeds; overlaps initial run, counts not additive."
+    },
+    "nativeBrowserConsumers": "The passing initial consumers include actual Edge streamed runtime loading, deployment PowerShell fixtures, source custody, package consumer boundaries, and two fresh offline builds reproducing the unchanged C64 WASM.",
+    "numericalInitial": {
+      "tests": 60,
+      "pass": 59,
+      "fail": 1,
+      "skip": 0,
+      "failure": "Current unregistered profile's verify-single-source-authority.js digest was already stale. Byte count 141430 unchanged; source itself was not edited."
+    },
+    "numericalCorrection": {
+      "tests": 1,
+      "pass": 1,
+      "fail": 0,
+      "case": "preserves closed implementation history without adopting its execution authority",
+      "scope": "Current helper bindings only; pinned Python synthetic hooks and boundary checks passed in the initial invocation; no real checkpoint trace."
+    },
+    "browserCapture": {
+      "tests": 1,
+      "pass": 1,
+      "fail": 0,
+      "captures": [
+        {
+          "viewport": "desktop",
+          "width": 1365,
+          "height": 768,
+          "browser": "153.0.4234.48",
+          "pageErrors": [],
+          "screenshot": {
+            "path": "E:/Source/Rust/TinyRustLM.com/artifacts/tests/scratch-retirement/tinyrustlm-operation-n21lP0/visual/browser/tinyrustlm-ui-lock-desktop.png",
+            "bytes": 366724,
+            "sha256": "cda885d7f1b918dc57d6a8b234df3fe5cb7b08964d936f0dcb6f1517150e608e"
+          }
+        },
+        {
+          "viewport": "mobile",
+          "width": 390,
+          "height": 844,
+          "browser": "153.0.4234.48",
+          "pageErrors": [],
+          "screenshot": {
+            "path": "E:/Source/Rust/TinyRustLM.com/artifacts/tests/scratch-retirement/tinyrustlm-operation-n21lP0/visual/browser/tinyrustlm-ui-lock-mobile.png",
+            "bytes": 113176,
+            "sha256": "16aea953736a095a5eade3a8b435172a2243435a353009001bd746c3e9762d51"
+          }
+        }
+      ],
+      "historicalBaselineDifferences": 15,
+      "limitation": "Current empty shell capture and profile cleanup only; historical visual baseline still fails; no model or visual parity claim."
+    },
+    "managedMemory": {
+      "tests": 6,
+      "pass": 6,
+      "fail": 0,
+      "skip": 0,
+      "configuration": "Release, UseSharedCompilation=false, canonical owned artifacts",
+      "scope": "UaixMemoryConsolidationTests"
+    },
+    "hygiene": "git diff --check passed.",
+    "secretScan": {
+      "status": "fail",
+      "secretFindingCount": 1,
+      "scannedArtifactCount": 14,
+      "scopeManifestSha256": "9425bf2e01453bdb911699bb72e03ea3df3d28524c69f4a76cfedac1ae137f14",
+      "scannerSourceClosureSha256": "05cefc2bb03b448c3c54d688e7f10b05b1eaf21befa5cb602334c11aae68c5ac",
+      "findings": [
+        {
+          "label": "source/tinyrustlm/tests/capture-ui-lock.test.js",
+          "sha256": "1a1f85e589197c4d10b5d2d88bd510ccf92bc245730ca7ec32bf81a20843b074",
+          "findings": [
+            "credential_url_userinfo"
+          ]
+        }
+      ],
+      "disposition": "One existing synthetic rejection-test URL at capture-ui-lock.test.js:89 uses literal user:pass. It is test input to parseOptions and must throw; no network request or real credential. Keep scanner's raw fail result and record reviewed fixture separately; no rule weakened.",
+      "initialInvocation": "Rejected artifact labels starting with .uai before producing a report. Corrected labels use source/ prefix.",
+      "credentialContentsRead": false
+    }
+  },
+  "evidence": [
+    {
+      "path": "focused.log",
+      "bytes": 4406,
+      "sha256": "23a92cfe7a0ebe1082e19ca10e623237efaf1abb1b31fea85c5146c9d31b70ae"
+    },
+    {
+      "path": "consumers.log",
+      "bytes": 29328,
+      "sha256": "4389363cdc022978044404ada4d342e71bf88539086a6555df3ec5be1a1b73c5"
+    },
+    {
+      "path": "feed-consumers-wsl.log",
+      "bytes": 9482,
+      "sha256": "d0c4561eefff0124d523181b3162dc98bd431d56cdd610cd191413244835759d"
+    },
+    {
+      "path": "numerical-boundaries.log",
+      "bytes": 13516,
+      "sha256": "3a581b59f1088b0990baca12778c875a9d8669ed3dc93f321329a0eacd2024da"
+    },
+    {
+      "path": "numerical-binding-corrected.log",
+      "bytes": 406,
+      "sha256": "8174841c45fa50b9d2e68ea8464775dcd8c22c9176d5687a0ab0cdf8280a97d3"
+    },
+    {
+      "path": "visual-browser.log",
+      "bytes": 418,
+      "sha256": "f2384f805d207e87e7976835d94e026a5d08b946b73c08b7d6740c95f3a5e3d5"
+    },
+    {
+      "path": "memory.log",
+      "bytes": 3830,
+      "sha256": "f1135580a00b75f46971dcb335c755a82fcc8b74c4096041e361a59495ac41ea"
+    },
+    {
+      "path": "source-secret-scan.json",
+      "bytes": 7907,
+      "sha256": "57a43581040030dd3384aa7d4862192ac418f453c41228e01109edac78dde33a"
+    },
+    {
+      "path": "c65Baseline.json",
+      "bytes": 2011,
+      "sha256": "f6a8ab445b10e81f1f4e2b61122ec6faa657892aef7ea92daa499a6fac7d89de"
+    },
+    {
+      "path": "c65WindowsBaseline.json",
+      "bytes": 1387,
+      "sha256": "3ef418d4c0d153d21d034747a449b2986edfd76c04671989cf2d8c1d92da9821"
+    },
+    {
+      "path": "c65InitialTests.json",
+      "bytes": 2850,
+      "sha256": "ac4b1a2320b763e43f8a7bf994c82849e21c97693d30cf967e95669a86808fd8"
+    },
+    {
+      "path": "c65Focused.json",
+      "bytes": 2169,
+      "sha256": "30fd70422839f28de3d3ddfd0fcf968ef91c7b64be38ddcbd8bf7e9b64a56406"
+    },
+    {
+      "path": "visual/browser/tinyrustlm-ui-lock-report.json",
+      "bytes": 9007,
+      "sha256": "a6ad2050db244e938a97af6d7ac1e83ddb4ba7e88fdd1af7e534b6d22921e224"
+    },
+    {
+      "path": "visual/historical-baseline-comparison.json",
+      "bytes": 1825,
+      "sha256": "b2ab68332bb947247282e5d4e5f7eef1fe280643009a463f10204f7b1bf0af4c"
+    }
+  ],
+  "discovery": {
+    "scope": "Direct canonical repositories freshly rediscovered under E:/Source/Rust; not a fresh complete governed source-authority scan.",
+    "repositories": [
+      {
+        "name": "LMComposer.com",
+        "head": "618e081b510ad75411f2d7bec1d60a8e4f98cbbf",
+        "branch": "main",
+        "statusLines": 0
+      },
+      {
+        "name": "MiniModel.MiRust.com",
+        "head": "b437611c34ad4f80312016f4bf9aa1a08398d07a",
+        "branch": "master",
+        "statusLines": 0
+      },
+      {
+        "name": "MiniModel.org",
+        "head": "4b815cbb877a709e8d3060c2039c13e993c334eb",
+        "branch": "master",
+        "statusLines": 0
+      },
+      {
+        "name": "MiRust.com",
+        "head": "b9420a10feb0819ca6bbf89d92c9199ba89d7c86",
+        "branch": "master",
+        "statusLines": 0
+      },
+      {
+        "name": "Runtime.MiRust.com",
+        "head": "8623dcf5603ab419d02ffd0809e9ae987fb5b2a0",
+        "branch": "master",
+        "statusLines": 15
+      },
+      {
+        "name": "TinyRustLM.com",
+        "head": "d8904f67d80f6577d592bc79a6bddeab0e651c33",
+        "branch": "codex/model-acquisition-v2",
+        "statusLines": 41
+      },
+      {
+        "name": "TinyRustLM.MiRust.com",
+        "head": "d17f77af652e9ac086482414a5bd0b6eb2250a50",
+        "branch": "master",
+        "statusLines": 1
+      }
+    ],
+    "activeIntake": "Content and Improvement buckets placeholder-only."
+  },
+  "retirement": {
+    "status": "removed-and-absence-verified",
+    "removedUtc": "2026-09-20T15:17:07Z",
+    "rootAbsent": true,
+    "externalMarkerAbsent": true,
+    "remainingParentEntries": [],
+    "root": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\scratch-retirement\\tinyrustlm-operation-n21lP0",
+    "marker": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\scratch-retirement\\tinyrustlm-operation-n21lP0.owner.v2",
+    "rootIdentity": {
+      "dev": "2767432419",
+      "ino": "30962247444697777"
+    },
+    "files": 165,
+    "directories": 46,
+    "logicalBytes": 6223871,
+    "markerBytes": 65,
+    "topLevel": [
+      "5fscisrj.fos",
+      "c65Baseline.json",
+      "c65Focused.json",
+      "c65InitialTests.json",
+      "c65WindowsBaseline.json",
+      "consumers.log",
+      "da01a2hp.x05",
+      "dotnet",
+      "dotnet-home",
+      "feed-consumers-wsl.log",
+      "focused.log",
+      "memory.log",
+      "Microsoft.NET.Workload_40160_20260920_081251_075.log",
+      "Microsoft.NET.Workload_40160_20260920_081252_419.log",
+      "Microsoft.NET.Workload_40160_20260920_081252_419_4654124f06a3b97be3fb6c48229426a8-x64_AdminInstall.log",
+      "NuGetScratch",
+      "numerical-binding-corrected.log",
+      "numerical-boundaries.log",
+      "secret-evidence",
+      "source-secret-scan.json",
+      "spofscdy.3u0",
+      "visual",
+      "visual-browser.log"
+    ],
+    "inventorySha256": "8356cd4315b5336f0367dccfc88a39e61fcfb9782dbb12c91d046254261b7590",
+    "measuredPhysicalBytesRecovered": null,
+    "limitation": "Logical file sizes do not measure physical disk recovery; other test-owned outputs retired inside their owning tests."
+  },
+  "remaining": [
+    "Previously policy-blocked installer paths, Linux header tree and historical cohorts remain untouched; full governed source-authority scan remains incomplete.",
+    "No qualified default, real numerical agreement/useful browser chat, or proven live MiniModel seed.",
+    "NuGet ARM64 and clean release admission/default-branch gates remain; no key read or package push.",
+    "Historical visual baseline has 15 differences; no UI asset was changed here.",
+    "No current site deployment or live memory result. Preserve unrelated work in all repositories."
+  ],
+  "limitations": [
+    "Helper requires stopped writers and original in-memory ownership; path-based checks do not provide a hostile concurrent-filesystem transaction or process-restart/power-loss recovery.",
+    "Affected checks only; unrelated old announcement WIP and broader ecosystem/release gates are not claimed green.",
+    "One inventory-print attempt failed BigInt JSON serialization before any deletion; converted IDs to strings for the successful read-only inventory."
+  ]
+}

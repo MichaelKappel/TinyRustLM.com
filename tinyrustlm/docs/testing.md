@@ -50,6 +50,31 @@ The clean-cut test proves the registered obsolete executable closure remains
 physically absent, scans active source for superseded tokens, verifies the
 sole deployed browser artifact, and checks canonical Rust workspace ownership.
 
+## Owned temporary output
+
+`tools/canonical-operation-scratch.js` creates bounded output beneath canonical
+project artifacts. Keep its returned ownership record for the operation's full
+lifetime. Its exclusive random `.owner.v2` marker is adjacent to the directory,
+so failed file removal or final directory removal cannot delete cleanup authority.
+The helper checks directory and marker identities before work or retirement.
+
+Stop all writers and owned children before cleanup. Retirement inventories at
+most 8,192 entries and 32 directory levels, rejects linked/special entries and
+external hard links, rechecks each entry and ancestor, then unlinks files and
+removes empty directories nonrecursively. Unexpected new content stops cleanup.
+Only observed root absence allows marker removal. An explicit subsequent cleanup
+may finish a partial removal with the original ownership record after the cause
+is resolved; there is no automatic retry, marker recreation or old-layout adoption.
+This path-based helper does not provide a transaction against hostile concurrent
+filesystem mutation or recover ownership records lost with the process.
+
+Run `node --test tinyrustlm/tests/canonical-operation-scratch.test.js` for the
+cleanup contract, including a real Windows file lock. The standard Node gate now
+discovers this suite. For managed builds in owned output, pass
+`-p:UseSharedCompilation=false` so a compiler server does not retain analyzer DLLs
+after the test command exits. Preserve cleanup errors and retained paths honestly;
+an operating-system lock does not authorize bypassing an automatic-policy denial.
+
 ## Memory Continuity Browser Check
 
 The MemoryEndpoints enrollment browser scenario uses Advanced local import with
