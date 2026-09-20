@@ -36,6 +36,16 @@ function resolveSource(source) {
   return { value: source, local: false };
 }
 
+/** Map Node platform/architecture identifiers to an advertised native package asset. */
+function nativeAssetRelativePath(platform = process.platform, architecture = process.arch) {
+  const rid = `${platform === "win32" ? "win" : platform}-${architecture}`;
+  if (!["win32", "linux"].includes(platform) || !["win-x64", "linux-x64", "linux-arm64"].includes(rid)) {
+    throw new Error("Unsupported package consumer platform or architecture.");
+  }
+  return path.join("runtimes", rid, "native",
+    platform === "win32" ? "tinyrustlm_native.dll" : "libtinyrustlm_native.so");
+}
+
 /** Compile canonical source against exact package bytes with mutable output owned locally.
  * The optional runner is a test seam; the CLI always invokes the real dotnet process.
  */
@@ -44,6 +54,7 @@ function verifyConsumer(source, version, runner = invokeDotnet) {
     throw new Error("An exact package version is required.");
   }
   const feed = resolveSource(source);
+  const nativeAsset = nativeAssetRelativePath();
   const optional = (id) => feed.local && fs.existsSync(path.join(feed.value, `${id}.${version}.nupkg`));
   const memory = optional("TinyRustLM.MemoryEndpoints");
   const conversion = optional("TinyRustLM.Conversion");
@@ -68,9 +79,12 @@ function verifyConsumer(source, version, runner = invokeDotnet) {
       DOTNET_SKIP_FIRST_TIME_EXPERIENCE: "1",
       DOTNET_GENERATE_ASPNET_CERTIFICATE: "false",
       MSBUILDDISABLENODEREUSE: "1",
+      // A developer override or global loader path must not substitute for a missing package asset.
+      TINYRUSTLM_NATIVE_PATH: path.join(owned.rootPath, "bin/Release/net8.0", nativeAsset),
       TEMP: temp, TMP: temp, TMPDIR: temp,
     };
     const properties = [
+      "-p:UseArtifactsOutput=false",
       `-p:TinyRustLmConsumerPackageVersion=${version}`,
       `-p:TinyRustLmConsumerMemoryEndpoints=${memory}`,
       `-p:TinyRustLmConsumerConversion=${conversion}`,
@@ -103,4 +117,4 @@ if (require.main === module) {
   }
 }
 
-module.exports = Object.freeze({ verifyConsumer, resolveSource });
+module.exports = Object.freeze({ verifyConsumer, resolveSource, nativeAssetRelativePath });

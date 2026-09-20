@@ -170,6 +170,15 @@ Relative folder feeds are resolved against the caller's directory before work
 starts. The consumer verifies the package-local native runtime and removes only
 its identity-checked owned output after success or failure.
 
+Every consumer child binds `TINYRUSTLM_NATIVE_PATH` to the native asset installed
+under that consumer's own `bin/Release/net8.0/runtimes/<rid>/native` directory.
+An inherited developer override cannot substitute for a missing package library.
+The verifier accepts only Windows x64, Linux x64 and Linux ARM64 hosts, and fixes
+`UseArtifactsOutput=false` for its isolated project so caller build settings
+cannot move the assembly away from its declared launch path. Core conversion
+tests separately use MSBuild-generated fixture output bindings, including when
+the packaging build uses an owned `ArtifactsPath`.
+
 The release workflow packs and audits the three-platform payload once, then
 downloads those same package files into Windows x64, Linux x64 and Linux ARM64
 consumer jobs. Each job checks its actual host architecture before running the

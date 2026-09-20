@@ -1,0 +1,494 @@
+{
+  "schema": "tinyrustlm.ecosystem-cleanup.nuget-consumer-native-binding-review.v1",
+  "checkpoint": "C68",
+  "parent": "c0c2a3f192755682748fa99a0190662154e3edea",
+  "status": "implemented-and-tested; owned-output-removed",
+  "reviewedUtc": "2026-09-20T16:19:16.600Z",
+  "previousGoalTurn": "The last response confirmed an existing credential-location memory entry and made no new goal progress. This continuation revalidated the goal, canonical Git identity, seven repositories, placeholder-only intake and live C68 evidence before completing the pending work.",
+  "findings": [
+    "An inherited TINYRUSTLM_NATIVE_PATH let the package verifier pass after its installed native DLL was removed.",
+    "Core conversion fixtures guessed an obsolete bin output path; UseArtifactsOutput=true caused 39 test setup failures.",
+    "The consumer inherited UseArtifactsOutput=true while its launch path assumed bin/Release/net8.0."
+  ],
+  "implementation": [
+    "Bind every consumer child to its exact owned native asset for the actual supported Node host pair.",
+    "Force UseArtifactsOutput=false for the isolated canonical consumer project; preserve owned paths and caller environment.",
+    "Bind Core conversion fixture output through MSBuild assembly metadata; remove the guessed configuration/path."
+  ],
+  "verification": {
+    "setupFailure": {
+      "command": "PowerShell 5 invocation with native stderr redirected under ErrorActionPreference=Stop",
+      "exitCode": 1,
+      "result": "Normal cargo progress became NativeCommandError before package verification; corrected invocation used Node spawnSync capture."
+    },
+    "coreBaseline": {
+      "log": "pack-baseline-corrected.log",
+      "exitCode": 1,
+      "tests": 86,
+      "pass": 47,
+      "fail": 39,
+      "result": "Fixture executable lookup failed."
+    },
+    "fixtureCorrection": {
+      "log": "pack-fixture-corrected.log",
+      "exitCode": 1,
+      "corePassed": 86,
+      "packagePassed": 38,
+      "result": "Tests and pack/audit completed; consumer launch failed because inherited artifacts layout relocated the assembly."
+    },
+    "missingNativeBaseline": {
+      "phase": "real-override-baseline",
+      "steps": [
+        {
+          "stage": 1,
+          "status": 0,
+          "nativeOverride": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\native\\win-x64\\tinyrustlm_native.dll"
+        },
+        {
+          "stage": 2,
+          "status": 0,
+          "nativeOverride": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\native\\win-x64\\tinyrustlm_native.dll"
+        },
+        {
+          "stage": 3,
+          "status": 0,
+          "nativeOverride": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\native\\win-x64\\tinyrustlm_native.dll"
+        }
+      ],
+      "removed": {
+        "path": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\nuget-consumer\\tinyrustlm-operation-ugaroL\\bin\\Release\\net8.0\\runtimes\\win-x64\\native\\tinyrustlm_native.dll",
+        "bytes": 1283072,
+        "sha256": "98d4b68ca355eacfba568b9b9e6c6d69f6b796d2496ffb1f8d9a632b98b54c09"
+      },
+      "success": true,
+      "error": null,
+      "sourceSha256": "0c4579e3f64c984a2791e67f00d363ca8b50382e552359c65a4c14e6de7586b0"
+    },
+    "missingNativeCorrected": {
+      "phase": "real-override-corrected",
+      "steps": [
+        {
+          "stage": 1,
+          "status": 0,
+          "nativeOverride": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\nuget-consumer\\tinyrustlm-operation-zeVNxX\\bin\\Release\\net8.0\\runtimes\\win-x64\\native\\tinyrustlm_native.dll"
+        },
+        {
+          "stage": 2,
+          "status": 0,
+          "nativeOverride": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\nuget-consumer\\tinyrustlm-operation-zeVNxX\\bin\\Release\\net8.0\\runtimes\\win-x64\\native\\tinyrustlm_native.dll"
+        },
+        {
+          "stage": 3,
+          "status": 3762504530,
+          "nativeOverride": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\nuget-consumer\\tinyrustlm-operation-zeVNxX\\bin\\Release\\net8.0\\runtimes\\win-x64\\native\\tinyrustlm_native.dll"
+        }
+      ],
+      "removed": {
+        "path": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\nuget-consumer\\tinyrustlm-operation-zeVNxX\\bin\\Release\\net8.0\\runtimes\\win-x64\\native\\tinyrustlm_native.dll",
+        "bytes": 1283072,
+        "sha256": "98d4b68ca355eacfba568b9b9e6c6d69f6b796d2496ffb1f8d9a632b98b54c09"
+      },
+      "success": false,
+      "error": "Probe dotnet stage failed",
+      "sourceSha256": "9998b181af226d5c78f4934a13063bf545ef8cc203ca72c4c14554dda5d5c815"
+    },
+    "intactNativeCorrected": {
+      "status": 0,
+      "error": null,
+      "parentOverride": "nonexistent-parent-native.dll",
+      "parentUseArtifactsOutput": true,
+      "observations": [
+        "native-contract-15",
+        "slm2-inspected",
+        "acg2-assembled",
+        "slm2-assembled",
+        "create-only-rejected",
+        "manifest-tamper-rejected"
+      ]
+    },
+    "defaultDiscovery": {
+      "steps": [
+        {
+          "stage": 1,
+          "status": 0,
+          "nativeOverride": ""
+        },
+        {
+          "stage": 2,
+          "status": 0,
+          "nativeOverride": ""
+        },
+        {
+          "stage": 3,
+          "status": 0,
+          "nativeOverride": ""
+        }
+      ],
+      "result": {
+        "packageIds": [
+          "TinyRustLM.Abstractions",
+          "TinyRustLM.Core",
+          "TinyRustLM.P2P"
+        ],
+        "optionalMemoryEndpoints": false,
+        "privateConversion": false
+      },
+      "method": "Independent actual consumer arm explicitly cleared the native override for all dotnet children; normal SDK discovery succeeds with packages-current."
+    },
+    "focused": {
+      "log": "consumer-tests.log",
+      "pass": 14,
+      "fail": 0,
+      "lineCoverage": 85.83,
+      "branchCoverage": 97.14
+    },
+    "nodeFinal": {
+      "log": "node-final.log",
+      "tests": 105,
+      "pass": 105,
+      "fail": 0,
+      "skipped": 0,
+      "lineCoverage": 85.83,
+      "branchCoverage": 97.22,
+      "functionCoverage": 83.33,
+      "command": "node --test --experimental-test-coverage --test-coverage-include=eng/verify-consumer.js tinyrustlm/tests/release-nuget-workflow.test.js tinyrustlm/tests/verify-consumer.test.js tinyrustlm/tests/audit-nuget-release-readiness.test.js"
+    },
+    "packFinal": {
+      "log": "pack-current.log",
+      "status": 0,
+      "error": null,
+      "corePassed": 86,
+      "packagePassed": 38,
+      "skipped": 0,
+      "nativeConsumerObservations": 6,
+      "command": "powershell.exe -NoProfile -NonInteractive -File eng/pack.ps1 -Configuration Release -PackageOutput <owned>/packages-current -RequiredNativeRids win-x64",
+      "environment": {
+        "UseArtifactsOutput": true,
+        "ArtifactsPath": "<owned>/dotnet",
+        "UseSharedCompilation": false
+      },
+      "reasonForFinalRun": "README is shipped in each package; rerun after final documentation and UAI changes to verify current bytes and memory checks."
+    },
+    "earlierSuccessfulPack": {
+      "log": "pack-final.log",
+      "status": 0,
+      "error": null,
+      "boundary": "Passed before final README updates; superseded by packages-current, not release evidence."
+    },
+    "managedCoverage": "No numeric coverage collector configured for the changed test helper; its behavior is exercised by all 39 formerly failing conversion cases within the passing 86-test Core suite.",
+    "counting": "Overlapping invocations are not additive unique-test counts."
+  },
+  "packages": {
+    "version": "0.1.8",
+    "auditStatus": "pass",
+    "requiredNativeRids": [
+      "win-x64"
+    ],
+    "embeddedNativeEntries": [
+      "runtimes/linux-x64/native/libtinyrustlm_native.so",
+      "runtimes/win-x64/native/tinyrustlm_native.dll"
+    ],
+    "archives": [
+      {
+        "name": "TinyRustLM.Abstractions.0.1.8.nupkg",
+        "bytes": 37427,
+        "sha256": "eaead1d14480a28fa83b3edd1d1f122192fb759a763ee8797e31a4eb572fa442"
+      },
+      {
+        "name": "TinyRustLM.Core.0.1.8.nupkg",
+        "bytes": 1379751,
+        "sha256": "af720587cfe1e0d0104c2f02f5fe5971b05989fdbc5d5c4d7eacebed49603830"
+      },
+      {
+        "name": "TinyRustLM.P2P.0.1.8.nupkg",
+        "bytes": 24347,
+        "sha256": "a5b2e2753beb94c64abdef1413a98e792e27a0ebcf31a22a4f1503f2827f7013"
+      },
+      {
+        "name": "TinyRustLM.Abstractions.0.1.8.snupkg",
+        "bytes": 12213,
+        "sha256": "bd8cd971f250f0a5bfbf9399b055479fbeda639cede87c55a3a8fe0f25e7495c"
+      },
+      {
+        "name": "TinyRustLM.Core.0.1.8.snupkg",
+        "bytes": 12863,
+        "sha256": "3df80280523c24d55a90eb6e49b179af1887065d90ae2381693f53671b9e1bf9"
+      },
+      {
+        "name": "TinyRustLM.P2P.0.1.8.snupkg",
+        "bytes": 10489,
+        "sha256": "2f9e42ed746c340c8f8b48e6e664c54fdac2b0853019f20f4eab54d245f1132f"
+      }
+    ],
+    "auditIdentity": {
+      "path": "artifacts/tests/nuget-native-binding/tinyrustlm-operation-aOStje/packages-current/tinyrustlm-nuget-package-audit.json",
+      "bytes": 35844,
+      "sha256": "e7190b96f413c16e556f818972a619cc4a197ace37a945c19bc4072c99b7458a"
+    },
+    "readmeSha256": "0f98298624c8aa3e7f2f819a14b4121b0903b8f915f6b94b59456b498402a21f"
+  },
+  "sources": [
+    {
+      "path": "eng/verify-consumer.js",
+      "bytes": 5888,
+      "sha256": "e240571ed8d18597106a2278ef9fc46212d6f6fab0a0185bed532063ff6de318"
+    },
+    {
+      "path": "tinyrustlm/tests/verify-consumer.test.js",
+      "bytes": 9000,
+      "sha256": "e7787d5903834cde36c930d5b355a007ed10a97009cc61df778af6e418d9a4f2"
+    },
+    {
+      "path": "dotnet/tests/TinyRustLM.Core.Tests/ConversionToolTests.cs",
+      "bytes": 30455,
+      "sha256": "0032862d173dce55e96785ebd0c6ffd86a593bf84f858fec89a9410094c9504e"
+    },
+    {
+      "path": "dotnet/tests/TinyRustLM.Core.Tests/TinyRustLM.Core.Tests.csproj",
+      "bytes": 2068,
+      "sha256": "41890e9eec04e8b66e3a6109ea86afdba28180e714acef21f6ce7a8d1c4fa5a4"
+    },
+    {
+      "path": "docs/nuget/README.md",
+      "bytes": 14779,
+      "sha256": "0f98298624c8aa3e7f2f819a14b4121b0903b8f915f6b94b59456b498402a21f"
+    },
+    {
+      "path": ".uai/startup-packet.uai",
+      "bytes": 15458,
+      "sha256": "72cb521cd5faae04e1ac1ff09c9df1facfe15fc8e135a1be4591c928b37c8368"
+    },
+    {
+      "path": ".uai/operations.uai",
+      "bytes": 24101,
+      "sha256": "c32c5907742f485b7a11c453d7a84f282fd475d38bcdd0a7d956269d97277d9a"
+    },
+    {
+      "path": ".uai/short-term-memory.uai",
+      "bytes": 19121,
+      "sha256": "fdf402e0c2ab23a83af9da323720c081fbeae44244a2270f2e312dc3979e59aa"
+    },
+    {
+      "path": ".uai/long-term-memory.uai",
+      "bytes": 8835,
+      "sha256": "c5abf763bafc77414c8a490e8ec0cc7db324a19b13fa73c717423e9616fbf187"
+    },
+    {
+      "path": "docs/ecosystem-cleanup-2026-09-12.md",
+      "bytes": 134937,
+      "sha256": "4d292321461727be07149daf2fdf6e4b974af3129e9b513c92ac4ec500e5f806"
+    },
+    {
+      "path": "wiki/runtime-mirust/reports/ecosystem-experiment-lessons-2026-09-12.md",
+      "bytes": 164802,
+      "sha256": "2af12503a4cb7b4c6915ccd53fd8d50d7a8b83d20cbbd8b2f3f698d927b1b199"
+    },
+    {
+      "path": "wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md",
+      "bytes": 58770,
+      "sha256": "640bd846f9df4c39365a1b59a1b396f400675efa94ffa4c3da45f115c3d9543a"
+    }
+  ],
+  "unchangedRuntimeInputs": [
+    {
+      "path": "dotnet/src/TinyRustLM.Core/NativeMethods.cs",
+      "bytes": 8790,
+      "sha256": "f47b8779ea5cbca5aefe6f6898ce98ae2da8f421f7fe36b108caab62db821520"
+    },
+    {
+      "path": "eng/consumer-smoke/Program.cs",
+      "bytes": 8848,
+      "sha256": "8cbdc2c73516e0eacca8ac598443dd78054d71d13cf59149d812fc7307276f9e"
+    },
+    {
+      "path": "eng/consumer-smoke/TinyRustLM.ConsumerSmoke.csproj",
+      "bytes": 937,
+      "sha256": "61702a14717bc998153a777be25764ee3ab703a302915a0ce9910ceb528972b5"
+    },
+    {
+      "path": "tinyrustlm/tools/canonical-operation-scratch.js",
+      "bytes": 9276,
+      "sha256": "52b6024d121479d20a634ee639d641cb1ff4896bce99b1110a3e26720bf5a7f9"
+    }
+  ],
+  "nativeInputs": [
+    {
+      "path": "artifacts/native/win-x64/tinyrustlm_native.dll",
+      "bytes": 1283072,
+      "sha256": "98d4b68ca355eacfba568b9b9e6c6d69f6b796d2496ffb1f8d9a632b98b54c09"
+    },
+    {
+      "path": "artifacts/native/linux-x64/libtinyrustlm_native.so",
+      "bytes": 2297616,
+      "sha256": "feb5253988305deeca5b7beaf0d54f0490c490a4fdcb0b660fc4efbf6ba24cc5"
+    }
+  ],
+  "logs": [
+    {
+      "path": "artifacts/tests/nuget-native-binding/tinyrustlm-operation-aOStje/consumer-tests.log",
+      "bytes": 3708,
+      "sha256": "0ac590811d760de732c79b275d01af8e2b82dcf2106005cc9fae24c5b8e16acf"
+    },
+    {
+      "path": "artifacts/tests/nuget-native-binding/tinyrustlm-operation-aOStje/node-final.log",
+      "bytes": 10690,
+      "sha256": "b0fc5532cbc33e13ea326b453453762d21c0ccf1e380224852a4a1a88bcf01e7"
+    },
+    {
+      "path": "artifacts/tests/nuget-native-binding/tinyrustlm-operation-aOStje/override-baseline.log",
+      "bytes": 3994,
+      "sha256": "e9de70549e5cf840a7b396df9f6c3915d3b1b9eab5a90adf290a36bdb3d840bf"
+    },
+    {
+      "path": "artifacts/tests/nuget-native-binding/tinyrustlm-operation-aOStje/pack-baseline-corrected.log",
+      "bytes": 64498,
+      "sha256": "341d735f566d965f77163c00cea3711cd794089e856dc7cdff8c43da13052729"
+    },
+    {
+      "path": "artifacts/tests/nuget-native-binding/tinyrustlm-operation-aOStje/pack-baseline.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifacts/tests/nuget-native-binding/tinyrustlm-operation-aOStje/pack-current-result.json",
+      "bytes": 35,
+      "sha256": "635ec14dfaecfdac76ddc14eaab1a81c7630f014620a40096d3ed36ed51a1838"
+    },
+    {
+      "path": "artifacts/tests/nuget-native-binding/tinyrustlm-operation-aOStje/pack-current.log",
+      "bytes": 10076,
+      "sha256": "8a49f58eae165e564c05e6932bbe17986fb0c3137e68b8838ce3835ab28c4b82"
+    },
+    {
+      "path": "artifacts/tests/nuget-native-binding/tinyrustlm-operation-aOStje/pack-final-result.json",
+      "bytes": 35,
+      "sha256": "635ec14dfaecfdac76ddc14eaab1a81c7630f014620a40096d3ed36ed51a1838"
+    },
+    {
+      "path": "artifacts/tests/nuget-native-binding/tinyrustlm-operation-aOStje/pack-final.log",
+      "bytes": 10060,
+      "sha256": "68da7ebc4d2217a4f3ad515c54ee11d0a9d517adc4fea76cde61aecdee881c04"
+    },
+    {
+      "path": "artifacts/tests/nuget-native-binding/tinyrustlm-operation-aOStje/pack-fixture-corrected.log",
+      "bytes": 10564,
+      "sha256": "c4c2e818c4c09d6d7434176d4b6ba692a8dc8b65e311def1ed7c2da3004b12f1"
+    },
+    {
+      "path": "artifacts/tests/nuget-native-binding/tinyrustlm-operation-aOStje/real-consumer-corrected.json",
+      "bytes": 1328,
+      "sha256": "c2e2770aa7e4bcd155c8dfdc07e6d72910384985b1de9ee290db5a2b1b78b208"
+    },
+    {
+      "path": "artifacts/tests/nuget-native-binding/tinyrustlm-operation-aOStje/real-consumer-corrected.log",
+      "bytes": 1098,
+      "sha256": "e73aab8dca67d9bc1f5192f21a182d34872ef1dcc624ab4af280492704ae6537"
+    },
+    {
+      "path": "artifacts/tests/nuget-native-binding/tinyrustlm-operation-aOStje/real-default-discovery.json",
+      "bytes": 447,
+      "sha256": "99acafa287fd3475f7b14b5408a56beee19d89860f6aacb342c3d6d5c43d8e00"
+    },
+    {
+      "path": "artifacts/tests/nuget-native-binding/tinyrustlm-operation-aOStje/real-default-discovery.log",
+      "bytes": 1102,
+      "sha256": "59adb5dc8bd154ec6628b4e3cf929c7fe7e6804e831f1048548a27af7adb8071"
+    },
+    {
+      "path": "artifacts/tests/nuget-native-binding/tinyrustlm-operation-aOStje/real-override-baseline.json",
+      "bytes": 965,
+      "sha256": "21f05b0d575b83a5a53eedfee468e3496bf1bfff273ab5e8eef09261ce8efeee"
+    },
+    {
+      "path": "artifacts/tests/nuget-native-binding/tinyrustlm-operation-aOStje/real-override-baseline.log",
+      "bytes": 1102,
+      "sha256": "4e2f493a21d09b20e2957faae6abf052495863b0804a207a9c5465fa91e6df77"
+    },
+    {
+      "path": "artifacts/tests/nuget-native-binding/tinyrustlm-operation-aOStje/real-override-corrected.json",
+      "bytes": 1251,
+      "sha256": "2e21abd91cb855afac5d63ec24832bb2443585f5a14b7b0b1da4004f0f062817"
+    },
+    {
+      "path": "artifacts/tests/nuget-native-binding/tinyrustlm-operation-aOStje/real-override-corrected.log",
+      "bytes": 2071,
+      "sha256": "ec6c754f4816345a7a74ebdd4eb543383969f8c16ebfe70f1be190e1dc38a6e0"
+    }
+  ],
+  "repositories": [
+    {
+      "repository": "LMComposer.com",
+      "head": "618e081b510ad75411f2d7bec1d60a8e4f98cbbf",
+      "branch": "main",
+      "changedEntries": 0
+    },
+    {
+      "repository": "MiniModel.MiRust.com",
+      "head": "b437611c34ad4f80312016f4bf9aa1a08398d07a",
+      "branch": "master",
+      "changedEntries": 0
+    },
+    {
+      "repository": "MiniModel.org",
+      "head": "4b815cbb877a709e8d3060c2039c13e993c334eb",
+      "branch": "master",
+      "changedEntries": 0
+    },
+    {
+      "repository": "MiRust.com",
+      "head": "b9420a10feb0819ca6bbf89d92c9199ba89d7c86",
+      "branch": "master",
+      "changedEntries": 0
+    },
+    {
+      "repository": "Runtime.MiRust.com",
+      "head": "8623dcf5603ab419d02ffd0809e9ae987fb5b2a0",
+      "branch": "master",
+      "changedEntries": 15
+    },
+    {
+      "repository": "TinyRustLM.com",
+      "head": "c0c2a3f192755682748fa99a0190662154e3edea",
+      "branch": "codex/model-acquisition-v2",
+      "changedEntries": 38
+    },
+    {
+      "repository": "TinyRustLM.MiRust.com",
+      "head": "d17f77af652e9ac086482414a5bd0b6eb2250a50",
+      "branch": "master",
+      "changedEntries": 1
+    }
+  ],
+  "limitations": [
+    "Windows x64 execution only in C68. The pre-existing Linux x64 asset is included, but no fresh Linux execution or ARM64 proof follows.",
+    "The normal default-loader path passed a separate local arm; the published verification owner deliberately uses an explicit packaged native path.",
+    "These are native SDK contract/vector checks, not real model quality or numerical parity.",
+    "Hosted execution, default-branch/source-authority and complete clean three-RID release admission remain open. No NuGet key read, package push or site deployment.",
+    "No product visual assets changed. Unrelated work and policy-blocked deletion cohorts remain untouched.",
+    "Initial read-only documentation lookup used nonexistent docs/testing.md and testing.md; canonical tinyrustlm/docs/testing.md was then discovered and read."
+  ],
+  "retirement": {
+    "status": "removed-and-absence-verified",
+    "root": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\nuget-native-binding\\tinyrustlm-operation-aOStje",
+    "marker": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\nuget-native-binding\\tinyrustlm-operation-aOStje.owner.v2",
+    "files": 1310,
+    "directories": 340,
+    "logicalBytes": 245505246,
+    "markerBytes": 65,
+    "physicalBytesRecovered": null,
+    "processEvidence": "All launch handles returned terminal exit; fresh process inspection found no live process naming the owned root or its test assemblies.",
+    "scope": "Only original C68 owned output and its original external marker. Existing canonical native outputs and policy-blocked cohorts excluded.",
+    "completedUtc": "2026-09-20T16:20:10.536Z"
+  },
+  "secretScan": {
+    "status": "pass",
+    "scannedArtifacts": 17,
+    "secretFindings": 0,
+    "scopeComplete": false,
+    "scopeKind": "c68-source-review",
+    "reportIdentity": {
+      "bytes": 9191,
+      "sha256": "14b50aa091339ef9784a7d7bb7e291ebf878a0b94887e02f08e76a024c7c4fcd"
+    }
+  }
+}

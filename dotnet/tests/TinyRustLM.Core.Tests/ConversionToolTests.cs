@@ -1,3 +1,4 @@
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text.Json;
@@ -606,22 +607,28 @@ public sealed class ConversionToolTests
             }
         }
 
+        /// <summary>Use this build's declared fixture output, including owned artifacts layouts.</summary>
         private static string FixtureToolPath()
         {
-            var configuration = new DirectoryInfo(AppContext.BaseDirectory).Parent?.Name
-                ?? throw new InvalidOperationException("Cannot determine test configuration.");
-            var fileName = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
-                ? "TinyRustLM.ConversionFixtureTool.exe"
-                : "TinyRustLM.ConversionFixtureTool";
-            return Path.Combine(
-                RepositoryRoot(),
-                "dotnet",
-                "tools",
-                "TinyRustLM.ConversionFixtureTool",
-                "bin",
-                configuration,
-                "net8.0",
-                fileName);
+            var assembly = typeof(ConversionToolTests).Assembly
+                .GetCustomAttributes<AssemblyMetadataAttribute>()
+                .Single(attribute => attribute.Key == "TinyRustLM.Fixture.TinyRustLM.ConversionFixtureTool")
+                .Value ?? throw new InvalidOperationException("Conversion fixture binding is missing.");
+            var relative = Path.GetRelativePath(RepositoryRoot(), assembly);
+            if (!Path.IsPathFullyQualified(assembly) || Path.IsPathRooted(relative) ||
+                relative == ".." || relative.StartsWith($"..{Path.DirectorySeparatorChar}", StringComparison.Ordinal) ||
+                Path.GetFileName(assembly) != "TinyRustLM.ConversionFixtureTool.dll")
+            {
+                throw new InvalidOperationException("Conversion fixture binding is outside canonical output.");
+            }
+            var executable = Path.ChangeExtension(assembly,
+                RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? ".exe" : null);
+            var file = new FileInfo(executable);
+            if (!file.Exists || file.Length == 0 || (file.Attributes & FileAttributes.ReparsePoint) != 0)
+            {
+                throw new IOException("Bound conversion fixture executable is missing or linked.");
+            }
+            return executable;
         }
 
         private static string RepositoryRoot()

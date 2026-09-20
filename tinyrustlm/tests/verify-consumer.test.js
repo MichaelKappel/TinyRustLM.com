@@ -5,7 +5,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const { spawnSync } = require("node:child_process");
 const test = require("node:test");
-const { verifyConsumer, resolveSource } = require("../../eng/verify-consumer.js");
+const { verifyConsumer, resolveSource, nativeAssetRelativePath } = require("../../eng/verify-consumer.js");
 const { createOwnedTemporaryDirectory, removeOwnedTemporaryDirectory } =
   require("../tools/canonical-operation-scratch.js");
 
@@ -32,6 +32,42 @@ test("canonical consumer keeps exact package-only references and no project-refe
   assert.match(source, /TinyRustLmConsumerConversion/);
 });
 
+test("native asset selection covers exactly the advertised host and architecture pairs", () => {
+  for (const [platform, architecture, rid, file] of [
+    ["win32", "x64", "win-x64", "tinyrustlm_native.dll"],
+    ["linux", "x64", "linux-x64", "libtinyrustlm_native.so"],
+    ["linux", "arm64", "linux-arm64", "libtinyrustlm_native.so"]
+  ]) {
+    assert.equal(nativeAssetRelativePath(platform, architecture), path.join("runtimes", rid, "native", file));
+  }
+  for (const [platform, architecture] of [["win32", "arm64"], ["win32", "ia32"],
+    ["linux", "arm"], ["darwin", "x64"], ["darwin", "arm64"], ["win", "x64"]]) {
+    assert.throws(() => nativeAssetRelativePath(platform, architecture), /Unsupported package consumer/);
+  }
+});
+
+test("package verification binds every child to its own native output despite a parent override", () => withFeed((feed) => {
+  const prior = process.env.TINYRUSTLM_NATIVE_PATH;
+  const poisoned = path.join(feed, "outside-consumer-native-library");
+  process.env.TINYRUSTLM_NATIVE_PATH = poisoned;
+  let calls = 0;
+  try {
+    verifyConsumer(feed, "0.1.8", (_args, options) => {
+      calls++;
+      const ownedRoot = path.dirname(options.env.NUGET_PACKAGES);
+      const rid = `${process.platform === "win32" ? "win" : process.platform}-${process.arch}`;
+      const fileName = process.platform === "win32" ? "tinyrustlm_native.dll" : "libtinyrustlm_native.so";
+      assert.equal(options.env.TINYRUSTLM_NATIVE_PATH,
+        path.join(ownedRoot, "bin/Release/net8.0/runtimes", rid, "native", fileName));
+    });
+    assert.equal(calls, 3);
+    assert.equal(process.env.TINYRUSTLM_NATIVE_PATH, poisoned);
+  } finally {
+    if (prior === undefined) delete process.env.TINYRUSTLM_NATIVE_PATH;
+    else process.env.TINYRUSTLM_NATIVE_PATH = prior;
+  }
+}));
+
 test("relative feeds stay absolute and consumer stages use canonical source with isolated output", () => withFeed((feed) => {
   const originalEnvironment = { ...process.env };
   const before = sourceNames();
@@ -49,6 +85,7 @@ test("relative feeds stay absolute and consumer stages use canonical source with
     if (calls.length < 3) {
       assert.equal(args[1], path.join(root, "eng/consumer-smoke/TinyRustLM.ConsumerSmoke.csproj"));
       assert.ok(args.includes("-p:TinyRustLmConsumerPackageVersion=0.1.8"));
+      assert.ok(args.includes("-p:UseArtifactsOutput=false"));
       for (const key of ["BaseIntermediateOutputPath", "MSBuildProjectExtensionsPath", "BaseOutputPath"]) {
         const value = args.find((arg) => arg.startsWith(`-p:${key}=`)).split("=")[1];
         assert.equal(path.dirname(path.resolve(value)), ownedRoot);

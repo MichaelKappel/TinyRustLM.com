@@ -1,5 +1,5 @@
 profile: tinyrustlm.startup-packet.current.v1
-updated_utc: 2026-09-20T15:51:26Z
+updated_utc: 2026-09-20T16:15:05Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
@@ -10,6 +10,7 @@ startup_steps:
   - Preserve immutable failed operations and all campaign counters.
 
 current_truth:
+  nuget_native_binding: C68 forces package-consumer children to their own native asset and output layout; Core conversion fixtures bind actual MSBuild output. A real missing-DLL false pass is now rejected; intact Windows packages pass. All 105 Node and 124 managed checks pass, plus audit/native smoke. See nuget-consumer-native-binding-review.json. No new Linux/ARM64 execution, key read or publication; release gates remain open.
   nuget_consumers: C67 makes the protected publisher wait for Windows x64/Linux x64/Linux ARM64 consumers of one audited package artifact. Eleven Bash entry points have executable Git modes with unchanged bytes. All 103 Node and 38 managed package checks pass plus independent YAML/Bash validation. See nuget-prepublish-consumer-review.json; hosted ARM64, source/release gates and actual publication remain open.
   terminal_prefill: C66 carries immediate context-limit completion through the worker/client with empty output and unchanged prefill KV, preserving the active model. All 113 final affected checks pass; worker/client line coverage is 81.91%/81.03%. Actual Edge boundary checks pass; the separate desktop/mobile DOM probe proves status geometry only. Read browser-terminal-prefill-review.json for historical binding correction and limitations; no real model or publication proof.
   scratch_retirement: C65 retains external ownership through locked-file, partial and terminal cleanup failures, using bounded direct unlink/rmdir. All 17 focused tests pass with 100% line coverage; shared consumers and Edge capture pass after recorded setup/binding corrections. See scratch-retirement-ownership-review.json. Quiescent writers and original ownership are required; no old-layout adoption or publication claim.

@@ -16,6 +16,15 @@ Authority order is current owner instructions, inspected current contracts and b
 
 ## Current evidence and its limits
 
+**C68 package binding:** the consumer now forces its own installed native path,
+so an inherited developer override cannot make a missing DLL pass. A real Windows
+false pass was reproduced before the fix and rejected afterward; intact bytes
+pass with a bad parent override. The consumer fixes its output layout, while Core
+conversion tests bind their fixture through MSBuild metadata. All 105 affected
+Node checks pass and the Windows package flow passes 124 managed checks, audit
+and native smoke. Read `nuget-consumer-native-binding-review.json` for exact
+identities and limits. No new Linux/ARM64 or public release evidence follows.
+
 **C67 NuGet consumers:** the release now packs once and requires Windows x64,
 Linux x64 and Linux ARM64 consumers of those exact packages before the protected
 publisher. Eleven Bash scripts have executable Git modes with unchanged bytes.

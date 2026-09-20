@@ -1,5 +1,5 @@
 profile: tinyrustlm.operations.current.v1
-updated_utc: 2026-09-20T15:51:26Z
+updated_utc: 2026-09-20T16:15:05Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
@@ -10,6 +10,7 @@ historical_checkpoint:
   boundary: These August 28 source/test counts are historical. They do not describe current implementation or establish real-model qualification or deployment.
 
 current_state:
+  nuget_native_binding: C68 ignores inherited developer native paths in package verification by binding the child's exact installed asset; fixes consumer output layout and Core fixture metadata. Missing packaged DLL now rejects, and intact Windows packages pass even with bad parent settings. All 105 Node and 124 managed checks pass with package audit/native smoke. Read nuget-consumer-native-binding-review.json for failed setup evidence and cleanup. Other platform and release gates remain open; no key read or push.
   nuget_consumers: C67 separates one audited pack, three actual-host package-consumer jobs and protected publication. The publisher downloads the verified artifact and builds only report validators; credentials/OIDC are confined to it. Eleven Bash script modes are corrected. All 103 Node and 38 managed checks pass; YAML/Bash syntax and host-guard execution pass. See nuget-prepublish-consumer-review.json. No hosted ARM64 run or package push is claimed; do not retry unchanged billing-blocked jobs.
   terminal_prefill: C66 permits an immediate empty context-limit result after prefill, verifies reason/identity/unchanged KV and issues no extra step or cancellation. The existing status card reports Context limit reached / Start a new chat; mobile keeps its existing hidden card. All 113 final checks pass plus corrected historical and current-only gates. See browser-terminal-prefill-review.json; Edge initialization/rejection and DOM presentation are not real inference or broad visual-parity proof.
   scratch_retirement: C65 uses an external .owner.v2 marker, bounded inventory and revalidated direct file/directory removal. The marker survives partial or terminal failure and is retired only after root absence. Explicit subsequent cleanup requires the original ownership record and resolution of the cause; no automatic retry, marker recreation or old-layout reader. Stop writers/children first and use -p:UseSharedCompilation=false. See scratch-retirement-ownership-review.json for real Windows locking, 17 focused passes, affected consumers and limitations. Existing policy-blocked cohorts remain untouched.

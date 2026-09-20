@@ -5,6 +5,36 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C68: bind the NuGet consumer to its packaged native library, September 20
+
+A real Windows package consumer passed after its installed native DLL was removed:
+it inherited `TINYRUSTLM_NATIVE_PATH` and loaded the developer library instead.
+The verifier now binds every child to the exact native asset under its own output.
+Repeating the missing-DLL experiment rejects the package with `DllNotFoundException`.
+An intact package succeeds even with a nonexistent parent override. The SDK's
+explicit override remains available outside this verification harness.
+
+The same packaging exercise exposed two output-layout defects. Conversion tests
+guessed their fixture executable's old `bin` path; they now use MSBuild-generated
+assembly metadata for the actual fixture output. The consumer also inherited
+`UseArtifactsOutput=true`, then tried to launch from the ordinary output layout.
+It now fixes that property for its isolated project. Owned alternate-layout
+packaging and ordinary consumer output can coexist without copied source.
+
+All 105 affected Node checks pass; verifier line/branch coverage is 85.83%/97.22%.
+The real Windows packaging flow passes 86 Core and 38 package checks, audit and
+all six native consumer observations. The first fixture run's 39 failures, later
+consumer launch failure and original false pass remain compact evidence rather
+than being overwritten. Managed test-helper coverage is not numerically measured.
+See `nuget-consumer-native-binding-review.json` for final source/package identities,
+memory/secret checks and owned-output retirement.
+
+Seven direct Git repositories were rediscovered; their unrelated changes remain.
+Only Windows execution is established here; the package also contains the existing
+Linux x64 asset without a new Linux execution result. ARM64, hosted execution and
+source/release gates remain open. No key was read, package pushed, model qualified,
+site deployed or previously blocked deletion retried.
+
 ## C67: verify packaged consumers before NuGet publication, September 20
 
 The release workflow tested native libraries on three platforms but packed and

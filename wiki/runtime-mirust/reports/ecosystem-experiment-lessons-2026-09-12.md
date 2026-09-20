@@ -11,6 +11,33 @@ Keep useful findings and compact evidence identities in the owning canonical
 repository. Keep source history in Git and current model payloads only in
 `D:\LLMs\TinyRustLM`.
 
+## C68: a developer native override can invalidate package verification
+
+- Question: does a successful consumer actually execute the packaged library?
+- Exact inputs: parent `c0c2a3f192755682748fa99a0190662154e3edea`, local 0.1.8
+  packages, Windows x64 native library and canonical consumer. Source, package
+  and log hashes are retained in `nuget-consumer-native-binding-review.json`.
+- Method: use real restore/build/run, remove only the newly owned consumer DLL
+  after build, and supply a valid external developer DLL in the parent environment.
+  Hold output layout constant. Then bind the verifier's child to its own DLL and
+  repeat; separately test intact bytes with a bad parent override and alternate
+  output settings. Run the full package transaction in owned output.
+- Result: the original missing-DLL run falsely passed all three stages. The fixed
+  run rejects with `DllNotFoundException`; intact packages pass six native checks.
+  All 105 affected Node checks pass (85.83% line, 97.22% branch coverage). Packaging
+  passes 86 Core and 38 package tests and audit. Earlier setup failures were
+  PowerShell stderr handling, 39 guessed fixture-path failures, then an inherited
+  MSBuild layout mismatch; these are distinct from model or native-runtime failure.
+- Decision: force the verification child's own packaged native path and output
+  layout. Bind conversion fixtures to MSBuild output metadata instead of deriving
+  configuration from directory names. Preserve the SDK's intentional override.
+- Uncertainty: Windows package-contract smoke is not real model inference or
+  Linux/ARM64 qualification. Managed test-helper numeric coverage was not collected.
+  No publication or blocked-cohort removal occurred.
+- Reusable lesson: isolated package caches do not isolate a native loader or
+  inherited build properties. Test removal of the artifact whose presence the
+  verifier claims to prove; success must not come from an ambient development copy.
+
 ## C67: native build success does not prove the packed SDK works on that host
 
 - Question: must every supported platform consume the final package before NuGet

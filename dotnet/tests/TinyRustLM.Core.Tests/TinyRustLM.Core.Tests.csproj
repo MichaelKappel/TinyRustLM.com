@@ -16,9 +16,20 @@
     <ProjectReference Include="..\..\src\TinyRustLM.Conversion\TinyRustLM.Conversion.csproj" />
     <ProjectReference Include="..\..\src\TinyRustLM.MemoryEndpoints\TinyRustLM.MemoryEndpoints.csproj" />
     <ProjectReference Include="..\..\src\TinyRustLM.P2P\TinyRustLM.P2P.csproj" />
-    <ProjectReference Include="..\..\tools\TinyRustLM.ConversionFixtureTool\TinyRustLM.ConversionFixtureTool.csproj"
-                      ReferenceOutputAssembly="false" />
+    <ConversionFixtureProject Include="..\..\tools\TinyRustLM.ConversionFixtureTool\TinyRustLM.ConversionFixtureTool.csproj" />
+    <ProjectReference Include="@(ConversionFixtureProject)" ReferenceOutputAssembly="false" />
   </ItemGroup>
+  <!-- Bind the fixture to this build's output instead of guessing a bin directory. -->
+  <Target Name="BindConversionFixtureAssembly" BeforeTargets="GetAssemblyAttributes">
+    <MSBuild Projects="@(ConversionFixtureProject)" Targets="GetTargetPath"
+             Properties="Configuration=$(Configuration)">
+      <Output TaskParameter="TargetOutputs" ItemName="ConversionFixtureAssembly" />
+    </MSBuild>
+    <ItemGroup>
+      <AssemblyMetadata Include="TinyRustLM.Fixture.%(ConversionFixtureAssembly.Filename)"
+                        Value="%(ConversionFixtureAssembly.FullPath)" />
+    </ItemGroup>
+  </Target>
   <ItemGroup>
     <None Include="..\..\..\docs\nuget\memoryendpoints-distributed-sync-capabilities-v1.example.json"
           Link="fixtures\memoryendpoints-distributed-sync-capabilities-v1.example.json"
