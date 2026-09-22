@@ -1,0 +1,407 @@
+{
+  "schema": "ecosystem.memory-http-lifetime-review/1",
+  "reviewedUtc": "2026-09-22T21:31:07.007Z",
+  "implementationDate": "2026-09-20",
+  "sourceParent": "1d5d0acf03f479e24c221c0eb1573f1e7024c516",
+  "purpose": "Bound browser memory HTTP responses, cancel obsolete sessions and reject malformed connection success.",
+  "previousGoalTurn": "Progress: the final 87 affected Node checks, 38 managed checks, 41 Edge checks and byte-identical visual comparison were verified; source blockage was rechecked. A preceding credential-note-only turn had made no new implementation progress.",
+  "continuation": "Resumed September 22 without restarting terminal browser work; original ownership retained and all 18 tested source identities reverified.",
+  "repositoryInventory": [
+    {
+      "name": ".local-secrets",
+      "repository": false
+    },
+    {
+      "name": ".vscode",
+      "repository": false
+    },
+    {
+      "name": "LMComposer.com",
+      "branch": "main",
+      "head": "6cbb67c59d2f0a3ef22f736d7b515570746c0e3b",
+      "statusCount": 0
+    },
+    {
+      "name": "MiniModel.MiRust.com",
+      "branch": "master",
+      "head": "b437611c34ad4f80312016f4bf9aa1a08398d07a",
+      "statusCount": 0
+    },
+    {
+      "name": "MiniModel.org",
+      "branch": "master",
+      "head": "015d36818f339a9194f2e09591254f954b71ea96",
+      "statusCount": 0
+    },
+    {
+      "name": "MiRust.com",
+      "branch": "master",
+      "head": "b9420a10feb0819ca6bbf89d92c9199ba89d7c86",
+      "statusCount": 0
+    },
+    {
+      "name": "Runtime.MiRust.com",
+      "branch": "master",
+      "head": "8623dcf5603ab419d02ffd0809e9ae987fb5b2a0",
+      "statusCount": 15
+    },
+    {
+      "name": "TinyRustLM.com",
+      "branch": "codex/model-acquisition-v2",
+      "head": "1d5d0acf03f479e24c221c0eb1573f1e7024c516",
+      "statusCount": 34
+    },
+    {
+      "name": "TinyRustLM.MiRust.com",
+      "branch": "master",
+      "head": "d17f77af652e9ac086482414a5bd0b6eb2250a50",
+      "statusCount": 1
+    },
+    {
+      "name": "_archive",
+      "repository": false
+    },
+    {
+      "name": "_screenshots",
+      "repository": false
+    }
+  ],
+  "activeIntake": "TinyRustLM Content and Improvement remain placeholder-only.",
+  "baseline": {
+    "failed": 1,
+    "expected": "Malformed registration JSON must show a valid-JSON error.",
+    "observed": "HTTP 200 with not-json produced web memory connected in actual desktop Edge.",
+    "evidence": {
+      "path": "baseline.txt",
+      "bytes": 5414,
+      "sha256": "0f5bdcdfb77fb890690e69b735f338d7dff8e9d3b464b489ee3723a96c6d11e2"
+    }
+  },
+  "implementation": {
+    "http": "One production streamed JSON-object reader is shared by ordinary requests and enrollment; the private enrollment reader and unbounded GET/POST response.text success fallback were removed.",
+    "limits": {
+      "ordinaryTimeoutMilliseconds": 30000,
+      "ordinaryMaximumBytes": 16777216,
+      "enrollmentMaximumBytes": 1048576,
+      "maximumChunks": 4096
+    },
+    "validation": "Reject invalid Content-Length, excess bytes/chunks, empty body, invalid UTF-8, malformed JSON and nonobject roots. Cancel abandoned bodies without awaiting uncooperative cancellation; sanitize network/HTTP errors. Fetch rejects redirects and omits ambient credentials.",
+    "session": "An AbortController generation binds each request. Clear, authority edit, agent activation or workspace reconnect cancels obsolete work, even when the same settings are selected again. Old drain finally cannot clear a newer promise.",
+    "connection": "Failed registration or initial pull cannot produce workspace connection success.",
+    "publication": "Both generated shells and the sole deployment manifest include the new shared asset. No publication performed."
+  },
+  "tests": {
+    "node": {
+      "passed": 87,
+      "failed": 0,
+      "skipped": 0,
+      "runs": [
+        {
+          "passed": 78,
+          "report": {
+            "path": "node-closed.txt",
+            "bytes": 37964,
+            "sha256": "b78927887d82902de4b58e20810c1c3efd1c3e408fd9f0c7f16d9e711c4702ee"
+          }
+        },
+        {
+          "passed": 9,
+          "report": {
+            "path": "node-related.txt",
+            "bytes": 1684,
+            "sha256": "9bad720c42d15184b729e2b98e41bce296a0af8e3179717f4931f2ae3c37bf97"
+          }
+        }
+      ]
+    },
+    "managed": {
+      "passed": 38,
+      "failed": 0,
+      "skipped": 0,
+      "configuration": "Release net8.0; unchanged package test project and dependencies",
+      "report": {
+        "path": "results/package.trx",
+        "bytes": 60605,
+        "sha256": "19721a8f145cfb179df6876229bf0194a13f2d38d17caff412531c9d5c0cb6b1"
+      }
+    },
+    "browser": {
+      "passed": 41,
+      "failed": 0,
+      "skipped": 3,
+      "retries": 0,
+      "projects": [
+        "desktop",
+        "narrow-desktop",
+        "mobile",
+        "reduced-motion"
+      ],
+      "scope": "Real installed Edge: malformed registration/pull; real HTTP stalled response cancellation and fresh reconnect; enrollment and memory deadlines/byte bounds; existing enrollment recovery, destination isolation and one desktop continuity scenario. Loopback fixtures, not live service proof.",
+      "report": {
+        "path": "browser-closed.txt",
+        "bytes": 15270,
+        "sha256": "caa20fd82e9721f60f80a1ad8f445558bde916ba51f8a7d456b52c99375de6aa"
+      }
+    },
+    "coverage": {
+      "newHttpModule": {
+        "linePercent": 99.28,
+        "branchPercent": 93.64,
+        "functionPercent": 91.67
+      },
+      "changedLineMethod": "Added nonblank, noncomment lines; first nonwhitespace character observed in innermost V8 range from Node and four Edge outbox tests. This is added-line observation, not full-module or branch coverage. Initial-pull rejection is tested separately without coverage capture.",
+      "changedLines": [
+        {
+          "path": "tinyrustlm/app/app.js",
+          "addedExecutableLines": 39,
+          "observed": 34,
+          "percent": "87.18",
+          "unobserved": [
+            8766,
+            8767,
+            8818,
+            8819,
+            8820
+          ],
+          "scripts": 4
+        },
+        {
+          "path": "tinyrustlm/app/memory-endpoints-enrollment.js",
+          "addedExecutableLines": 8,
+          "observed": 8,
+          "percent": "100.00",
+          "unobserved": [],
+          "scripts": 2
+        }
+      ]
+    },
+    "visual": {
+      "pairs": [
+        {
+          "viewport": "desktop",
+          "width": 1365,
+          "height": 768,
+          "screenshotSha256": "cda885d7f1b918dc57d6a8b234df3fe5cb7b08964d936f0dcb6f1517150e608e",
+          "signatureSha256": "56cba12aafb9c0aef3355df9ba62b238a3d68c9ca82e865368934e0ec84c8704",
+          "bytesEqual": true,
+          "signatureEqual": true,
+          "pageErrors": [],
+          "browser": "153.0.4234.48",
+          "deviceScaleFactor": 1,
+          "colorScheme": "dark",
+          "locale": "en-US",
+          "timezone": "UTC",
+          "fontStatus": "loaded"
+        },
+        {
+          "viewport": "mobile",
+          "width": 390,
+          "height": 844,
+          "screenshotSha256": "16aea953736a095a5eade3a8b435172a2243435a353009001bd746c3e9762d51",
+          "signatureSha256": "68a32a2076c0ce29c6ffba91414a96d37a355207ba033c842566e0fccfc07d42",
+          "bytesEqual": true,
+          "signatureEqual": true,
+          "pageErrors": [],
+          "browser": "153.0.4234.48",
+          "deviceScaleFactor": 1,
+          "colorScheme": "dark",
+          "locale": "en-US",
+          "timezone": "UTC",
+          "fontStatus": "loaded"
+        }
+      ],
+      "limitation": "Same-slice empty-state desktop/mobile comparison; fifteen historical visual differences remain unresolved. No full product visual-parity claim."
+    }
+  },
+  "intermediateOutcomes": [
+    {
+      "passed": 86,
+      "failed": 1,
+      "reason": "Publication file-count expectation still said 31 after the shared asset made 32; corrected explicit expected closure.",
+      "report": {
+        "path": "node.txt",
+        "bytes": 42624,
+        "sha256": "0e5a785606c22698f7dd66a4f2f3a310aaf610c62a1629701294527912d444c3"
+      }
+    },
+    {
+      "passed": 87,
+      "failed": 0,
+      "reason": "Earlier focused suite before final initial-pull app guard; final 78+9 checks and final Edge exercise current bytes.",
+      "report": {
+        "path": "node-final.txt",
+        "bytes": 40758,
+        "sha256": "4c73b7f3342ebf8cb2abce4bced8a68a1394e958b14b26399f411aed77cc3685"
+      }
+    },
+    {
+      "passed": 33,
+      "skipped": 3,
+      "report": {
+        "path": "browser.txt",
+        "bytes": 12794,
+        "sha256": "fe681d179493f0c8747f64d13c045d676215c93487fb7429eec973a9e2ebb706"
+      }
+    },
+    {
+      "passed": 37,
+      "skipped": 3,
+      "report": {
+        "path": "browser-final.txt",
+        "bytes": 13962,
+        "sha256": "933c5c310876dae336eccb6d3f795c5ed54b4708d384770ebd735c81bbc497d4"
+      }
+    },
+    {
+      "failed": 4,
+      "reason": "Initial manifest entry omitted required source discriminator; fixed before later recorded Node run. Console evidence only; no retained raw log claimed."
+    }
+  ],
+  "secretScan": {
+    "status": "pass",
+    "secretFindingCount": 0,
+    "scopeFiles": 18,
+    "scopeComplete": false,
+    "report": {
+      "path": "scan-report.json",
+      "bytes": 9017,
+      "sha256": "cfed732655465b8731d6befe494f050d65a23cff7d5ccf2ee706df558c9f61fe"
+    },
+    "handling": "No NuGet credential was opened. This bounded changed-file scan is not a full release scan.",
+    "finalScopeVerification": {
+      "files": 19,
+      "status": "pass",
+      "findings": 0,
+      "reportSha256": "310baf00098e82cd15c573fa9dce05040e1c3e2e3336e24bb0b1ee016b0c9ca6"
+    }
+  },
+  "sourceAuthority": {
+    "status": "source_authority_scan_incomplete",
+    "exitCode": 1,
+    "reason": "Same two C28 installer links remain unreadable; no blocked removal was retried.",
+    "report": {
+      "path": "source-authority.txt",
+      "bytes": 1336,
+      "sha256": "c902107c755174a7b1d06b0dd0205e75af775a071a0eba2d246e9a30c94580c0"
+    }
+  },
+  "sourceFiles": [
+    {
+      "path": ".uai/operations.uai",
+      "bytes": 32571,
+      "sha256": "3d629f74ca69a32038ebcfcfda25148463b78d85008970252cc5afc07fc48da2"
+    },
+    {
+      "path": ".uai/short-term-memory.uai",
+      "bytes": 27417,
+      "sha256": "e248c576d9ee3c508e960e543151955d7bcf80a1894f974ad54b57b6f4c9d38a"
+    },
+    {
+      "path": ".uai/startup-packet.uai",
+      "bytes": 23869,
+      "sha256": "24ae706a2a7cd13551f3c646ab678d56559c4c1a6977bff97a01047585d28028"
+    },
+    {
+      "path": ".uai/long-term-memory.uai",
+      "bytes": 8801,
+      "sha256": "5358b5758d8612a7220427589e587f02ac6c5210fa06403099cc6d829db18069"
+    },
+    {
+      "path": "docs/ecosystem-cleanup-2026-09-12.md",
+      "bytes": 165206,
+      "sha256": "0b4325a267e26796606dc9b15f288b747c2c38adcfc1ae0947b4153582b3281e"
+    },
+    {
+      "path": "docs/nuget/MEMORY_ENDPOINTS_CONNECTOR.md",
+      "bytes": 20986,
+      "sha256": "f85383de0eb60bf45204b3e5139c72abaf0b61f3f01aac56cee1ba7d3c94400b"
+    },
+    {
+      "path": "tinyrustlm/app/app.js",
+      "bytes": 470942,
+      "sha256": "b44ce4f3caec4f6b75bb878e52f05c68eaecf5f1a1b93bf6bbe7ff65ef578c5c"
+    },
+    {
+      "path": "tinyrustlm/app/index.html",
+      "bytes": 48731,
+      "sha256": "28bd0824c4f08646eb533df7a6111604951871e679874e59bf6f1adb0f9c20af"
+    },
+    {
+      "path": "tinyrustlm/app/memory-endpoints-enrollment.js",
+      "bytes": 22096,
+      "sha256": "92ee09d71918379d882d5bf6333add268c98e9b60b0a2b8fdf2711cc65384138"
+    },
+    {
+      "path": "tinyrustlm/app/memory-endpoints-http.js",
+      "bytes": 7954,
+      "sha256": "0328842b85ec11eb0e34dc005c3d4f20a6b74e54136b3cfad7ebf91cc30723c2"
+    },
+    {
+      "path": "tinyrustlm/deploy/web-deployment-manifest.v2.json",
+      "bytes": 4935,
+      "sha256": "dd056b9fa7177d9cf2a1832d6e32323be4740b061a25023c7a3e4ba69bbaca10"
+    },
+    {
+      "path": "tinyrustlm/e2e/memory-endpoints-enrollment.spec.js",
+      "bytes": 57209,
+      "sha256": "8d7ebcf1e02507d6d47ee35d6a2b13dc836384db49da5fe10686051349bf822c"
+    },
+    {
+      "path": "tinyrustlm/index.html",
+      "bytes": 48815,
+      "sha256": "0d5905dcee9f2b5c6257638809d95a2e2d3f28533c1d6b1c93d118c2a0349d60"
+    },
+    {
+      "path": "tinyrustlm/tests/memory-endpoints-http.test.js",
+      "bytes": 8928,
+      "sha256": "509735ce87bde6502ea458f36523aefa608c3c9d1a40984c68b0f99e251ac074"
+    },
+    {
+      "path": "tinyrustlm/tests/static-shell-parity.test.js",
+      "bytes": 5161,
+      "sha256": "8b2a5ff4a024d70c41d02664f2f1ac023545436e958a996b3a189aac9da67711"
+    },
+    {
+      "path": "tinyrustlm/tests/web-deployment-manifest.test.js",
+      "bytes": 12031,
+      "sha256": "09e67327a6cd6961b0a7a13b58158640aad0efae9a0e74b3881c9a08d42ba3a0"
+    },
+    {
+      "path": "wiki/runtime-mirust/reports/ecosystem-experiment-lessons-2026-09-12.md",
+      "bytes": 196888,
+      "sha256": "d9242f30c9982e5679e6d110e1c6f5dc8b6a9bfc396305959e34dd06277635e0"
+    },
+    {
+      "path": "wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md",
+      "bytes": 69065,
+      "sha256": "0d256524fec7a9c3b8d10606606a580581c602f2eba4bfc588b594be4b759c0e"
+    }
+  ],
+  "cleanup": {
+    "status": "removed_and_verified_absent",
+    "root": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\memory-http-lifetime\\tinyrustlm-operation-YT1q8r",
+    "completedUtc": "2026-09-22T21:32:06.318Z",
+    "originalRootIdentity": {
+      "dev": "2767432419",
+      "ino": "28991922607735486"
+    },
+    "originalMarkerIdentity": {
+      "dev": "2767432419",
+      "ino": "26177172840628928"
+    },
+    "files": 221,
+    "directories": 75,
+    "logicalBytes": 20950493,
+    "externalMarkerBytes": 65,
+    "physicalStorageRecovery": "Not measured; logical file sizes only.",
+    "method": "Canonical ownership helper verified original root/marker and bounded ordinary-entry inventory; no live test writers. Previously blocked paths were not touched."
+  },
+  "limits": [
+    "Per-request HTTP deadline does not bound the entire multi-request drain or IndexedDB/hash work.",
+    "Large pulls exceeding 16 MiB or 4096 chunks reject; no unverified pagination or truncation.",
+    "Pull-snapshot storage scope and asynchronous search-packing ownership still need review.",
+    "No new model qualification, real-model inference, live MemoryEndpoints, public seed, NuGet push or deployment.",
+    "Prior policy-blocked cleanup, source admission and release gates remain open."
+  ],
+  "next": "Review pull snapshot and asynchronous search authority without weakening source/model/release gates."
+}

@@ -16,6 +16,13 @@ Authority order is current owner instructions, inspected current contracts and b
 
 ## Current evidence and its limits
 
+**C86 memory HTTP:** ordinary browser memory requests now share enrollment's
+streaming reader, with explicit byte/chunk limits, deadlines and session aborts.
+Malformed response text no longer becomes success; a failed initial pull prevents
+workspace connection success. Read `memory-http-lifetime-review.json` for actual
+Edge regression evidence and exact tests. Multi-request/IndexedDB lifetimes,
+pull snapshot scope, asynchronous search packing and product/release gates remain.
+
 **C85 outbox destination:** current v3 browser/SDK entries and local receipts bind
 origin and exact submit route, workspace and actor. Old unbound rows are
 quarantined; status reads cannot reset another sender. Authority edits discard

@@ -51,6 +51,7 @@
     throw new Error("TinyRustLM direct P2P composition installer is unavailable");
   }
   const memoryEndpointsEnrollmentApi = window.TinyRustLMMemoryEndpointsEnrollment || null;
+  const memoryEndpointsHttpClient = new window.TinyRustLMMemoryEndpointsHttp.MemoryEndpointsHttpClient();
   const browserModelAdmissionApi = window.TinyRustLMBrowserModelAdmission;
   if (!browserModelAdmissionApi) {
     throw new Error("TinyRustLM browser model admission module is unavailable");
@@ -441,7 +442,8 @@
       pendingCount: 0,
       quarantineCount: 0,
       drainPromise: null,
-      drainAuthority: null
+      drainAuthority: null,
+      requestController: new AbortController()
     },
     localConnectApprovalMode: "ask",
     localConnectFullControlAcknowledged: false,
@@ -8518,13 +8520,6 @@
     return { "Authorization": `Bearer ${state.memoryEndpoints.bearerToken}` };
   }
 
-  function memoryEndpointsBrowserFetchError(error) {
-    const text = errorMessage(error);
-    if (/failed to fetch|load failed|networkerror|network error/i.test(text)) {
-      return new Error("MemoryEndpoints browser access blocked by CORS or network policy");
-    }
-    return error instanceof Error ? error : new Error(text);
-  }
 
   /** Bind session-only enrollment recovery to the currently selected service. */
   function memoryEndpointsEnrollmentFlow() {
@@ -8569,6 +8564,7 @@
   /** Apply a validated restore only while its initiating enrollment operation still owns the session. */
   async function activateMemoryEndpointsAgentSession(reconnect, signal) {
     signal.throwIfAborted();
+    cancelMemoryEndpointsRequests();
     state.memoryEndpoints.enabled = true;
     state.memoryEndpoints.connectionMode = "agent";
     state.memoryEndpoints.workspaceId = reconnect.workspaceId;
@@ -8671,6 +8667,7 @@
   }
 
   function clearMemoryEndpointsSessionSecrets() {
+    cancelMemoryEndpointsRequests();
     cancelMemoryEndpointsEnrollment();
     state.memoryEndpoints.bearerToken = "";
     for (const input of [
@@ -8683,6 +8680,14 @@
         input.value = "";
       }
     }
+  }
+
+  /** End this request generation even if the same service and credential are later selected again. */
+  function cancelMemoryEndpointsRequests() {
+    state.memoryEndpoints.requestController.abort();
+    state.memoryEndpoints.requestController = new AbortController();
+    state.memoryEndpoints.drainPromise = null;
+    state.memoryEndpoints.drainAuthority = null;
   }
 
   /** Editing authority drops credentials instead of carrying an old key into a new service or identity. */
@@ -8703,6 +8708,7 @@
       baseUrl: state.memoryEndpoints.baseUrl,
       serviceOrigin: requireMemoryEndpointsSync().requireServiceOrigin(submitUrl.origin),
       submitUrl: submitUrl.href,
+      signal: state.memoryEndpoints.requestController.signal,
       workspaceId: state.memoryEndpoints.workspaceId,
       actorAgentId: state.memoryEndpoints.agentId,
       authHeader: state.memoryEndpoints.authHeader,
@@ -8713,7 +8719,7 @@
   /** Refuse a queued request or completion after any part of its authorization changes. */
   function requireMemoryEndpointsAuthority(authority) {
     const current = state.memoryEndpoints;
-    if (!current.enabled || current.baseUrl !== authority.baseUrl ||
+    if (authority.signal.aborted || !current.enabled || current.baseUrl !== authority.baseUrl ||
         current.workspaceId !== authority.workspaceId || current.agentId !== authority.actorAgentId ||
         current.authHeader !== authority.authHeader || current.bearerToken !== authority.bearerToken) {
       const error = new Error("Web memory connection changed; connect before retrying");
@@ -8722,78 +8728,43 @@
     }
   }
 
+  /** Send a JSON object under the captured session, rejecting malformed or late responses. */
   async function memoryEndpointsPost(path, payload, idempotencyPrefix, options = {}) {
     readMemoryEndpointsSettings({ requireEnabled: true, requireAuth: true });
     const authority = options.authority || memoryEndpointsRequestAuthority();
     requireMemoryEndpointsAuthority(authority);
-    const idempotencyKey = options.idempotencyKey || memoryEndpointsIdempotencyKey(idempotencyPrefix);
-    let response = null;
     try {
-      response = await fetch(memoryEndpointsUrl(path), {
-        method: "POST",
-        cache: "no-store",
-        credentials: "omit",
-        redirect: "error",
-        headers: {
-          ...memoryEndpointsAuthHeaders(),
-          "Content-Type": "application/json",
-          "Idempotency-Key": idempotencyKey
-        },
-        body: JSON.stringify(payload)
+      const response = await memoryEndpointsHttpClient.request(new URL(memoryEndpointsUrl(path), window.location.href).href, {
+        method: "POST", payload, signal: authority.signal,
+        headers: { ...memoryEndpointsAuthHeaders(),
+          "Idempotency-Key": options.idempotencyKey || memoryEndpointsIdempotencyKey(idempotencyPrefix) }
       });
+      requireMemoryEndpointsAuthority(authority);
+      return response;
     } catch (error) {
-      throw memoryEndpointsBrowserFetchError(error);
-    }
-    const responseText = await response.text();
-    requireMemoryEndpointsAuthority(authority);
-    if (!response.ok) {
-      throw new Error(`MemoryEndpoints request failed with HTTP ${response.status}`);
-    }
-    if (!responseText.trim()) {
-      return { ok: true };
-    }
-    try {
-      return JSON.parse(responseText);
-    } catch (_error) {
-      return { ok: true, text: responseText.slice(0, 1024) };
+      requireMemoryEndpointsAuthority(authority);
+      throw error;
     }
   }
 
+  /** Keep query encoding and credentials bound to one selected session through body completion. */
   async function memoryEndpointsGet(path, query, authority) {
     readMemoryEndpointsSettings({ requireEnabled: true, requireAuth: true });
     authority = authority || memoryEndpointsRequestAuthority();
     requireMemoryEndpointsAuthority(authority);
     const url = new URL(memoryEndpointsUrl(path), window.location.href);
     for (const [key, value] of Object.entries(query || {})) {
-      if (value === null || value === undefined || value === "") {
-        continue;
-      }
-      url.searchParams.set(key, String(value));
+      if (value !== null && value !== undefined && value !== "") url.searchParams.set(key, String(value));
     }
-    let response = null;
     try {
-      response = await fetch(url.toString(), {
-        method: "GET",
-        cache: "no-store",
-        credentials: "omit",
-        redirect: "error",
-        headers: memoryEndpointsAuthHeaders()
+      const response = await memoryEndpointsHttpClient.request(url.href, {
+        signal: authority.signal, headers: memoryEndpointsAuthHeaders()
       });
+      requireMemoryEndpointsAuthority(authority);
+      return response;
     } catch (error) {
-      throw memoryEndpointsBrowserFetchError(error);
-    }
-    const responseText = await response.text();
-    requireMemoryEndpointsAuthority(authority);
-    if (!response.ok) {
-      throw new Error(`MemoryEndpoints request failed with HTTP ${response.status}`);
-    }
-    if (!responseText.trim()) {
-      return { ok: true };
-    }
-    try {
-      return JSON.parse(responseText);
-    } catch (_error) {
-      return { ok: true, text: responseText.slice(0, 1024) };
+      requireMemoryEndpointsAuthority(authority);
+      throw error;
     }
   }
 
@@ -8819,6 +8790,7 @@
   }
 
   async function connectMemoryEndpoints() {
+    cancelMemoryEndpointsRequests();
     if (el.memoryEndpointsEnabled) {
       el.memoryEndpointsEnabled.checked = true;
     }
@@ -8842,6 +8814,10 @@
     state.memoryEndpoints.connected = true;
     const drain = await drainMemoryEndpointsOutbox();
     requireMemoryEndpointsAuthority(authority);
+    if (drain.lastError) {
+      state.memoryEndpoints.connected = false;
+      throw new Error(drain.lastError);
+    }
     setMemoryEndpointsStatus(
       drain.pending > 0 ? memoryEndpointsPendingStatus(drain.pending) : "web memory connected",
       false
@@ -9091,10 +9067,13 @@
       };
     };
     state.memoryEndpoints.drainAuthority = authority;
-    state.memoryEndpoints.drainPromise = run().finally(() => {
-      state.memoryEndpoints.drainPromise = null;
-      state.memoryEndpoints.drainAuthority = null;
+    const promise = run().finally(() => {
+      if (state.memoryEndpoints.drainPromise === promise) {
+        state.memoryEndpoints.drainPromise = null;
+        state.memoryEndpoints.drainAuthority = null;
+      }
     });
+    state.memoryEndpoints.drainPromise = promise;
     return state.memoryEndpoints.drainPromise;
   }
 

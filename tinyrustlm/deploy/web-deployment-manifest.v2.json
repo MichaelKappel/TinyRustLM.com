@@ -51,6 +51,11 @@
     },
     {
       "source": "source",
+      "local": "app/memory-endpoints-http.js",
+      "remote": "app/memory-endpoints-http.js"
+    },
+    {
+      "source": "source",
       "local": "app/memory-endpoints-distributed-sync-v1.js",
       "remote": "app/memory-endpoints-distributed-sync-v1.js"
     },

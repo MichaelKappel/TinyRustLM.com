@@ -11,6 +11,28 @@ Keep useful findings and compact evidence identities in the owning canonical
 repository. Keep source history in Git and current model payloads only in
 `D:\LLMs\TinyRustLM`.
 
+## C86: an HTTP success code cannot repair malformed application data
+
+- **Question:** Can an invalid or stalled memory response become success or hold
+  the selected session indefinitely?
+- **Inputs/method:** Parent `1d5d0acf03f479e24c221c0eb1573f1e7024c516`, actual Edge
+  workspace UI, malformed HTTP 200 registration/pull bodies, real loopback held
+  streams, controlled Fetch/read stalls, caller cancellation and boundary bytes.
+- **Result:** The baseline showed web memory connected after receiving non-JSON.
+  Shared streaming admission now rejects invalid data, enforces per-request
+  byte/chunk/time limits, and cancels a discarded session. Enrollment preserves
+  its smaller policy and public errors. The receipt records exact results.
+- **Decision:** Preserve HTTP and application-data failure separately. Never
+  invent a success object from parse failure. A session generation must end
+  independently of whether its textual URL and credentials later match again.
+- **Uncertainty:** Request bounds do not time-limit IndexedDB or an entire drain.
+  Pull snapshot scope and asynchronous search packing need further review.
+  Aborting the local request cannot undo remote persistence.
+- **Reusable lesson:** Reuse the streamed reader across current clients with
+  explicit policy budgets. Test cancellation against a real held response and
+  then reconnect through the same controls to expose stale ownership.
+- **Evidence:** `artifacts/ecosystem-cleanup-20260912/memory-http-lifetime-review.json`.
+
 ## C85: a queue needs destination identity as well as content identity
 
 - **Question:** Can a queued record be sent to a different service or identity?

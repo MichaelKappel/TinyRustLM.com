@@ -3,14 +3,16 @@
 
   const lifetimeApi = typeof module === "object" && module.exports
     ? require("./operation-lifetime.js") : root.TinyRustLMOperationLifetime;
-  const api = factory(lifetimeApi);
+  const httpApi = typeof module === "object" && module.exports
+    ? require("./memory-endpoints-http.js") : root.TinyRustLMMemoryEndpointsHttp;
+  const api = factory(lifetimeApi, httpApi);
   if (typeof module === "object" && module.exports) {
     module.exports = api;
   }
   if (root) {
     root.TinyRustLMMemoryEndpointsEnrollment = api;
   }
-})(typeof globalThis !== "undefined" ? globalThis : this, function (lifetimeApi) {
+})(typeof globalThis !== "undefined" ? globalThis : this, function (lifetimeApi, httpApi) {
   "use strict";
 
   const contractSchema = "memoryendpoints.single_agent_enrollment_contract.v1";
@@ -146,69 +148,12 @@
     return `MemoryEndpoints enrollment returned HTTP ${status}`;
   }
 
-  /** Cancel abandoned bytes without letting an uncooperative cancel promise hold enrollment open. */
-  function cancelBody(body) {
-    try { Promise.resolve(body && body.cancel()).catch(() => {}); } catch (_error) { /* Already closed/locked. */ }
-  }
+  const cancelBody = httpApi.cancelBody;
 
-  /** Enforce decoded-byte and chunk limits before retention, using the operation's one deadline. */
-  async function boundedJson(response, label, lifetime) {
-    const declared = response.headers && response.headers.get
-      ? response.headers.get("Content-Length") : null;
-    if (declared !== null && (!/^\d+$/.test(declared) || !Number.isSafeInteger(Number(declared)))) {
-      cancelBody(response.body);
-      throw enrollmentError("invalid_response", `${label} returned an invalid response length`);
-    }
-    if (declared !== null && Number(declared) > maximumResponseBytes) {
-      cancelBody(response.body);
-      throw enrollmentError("response_too_large", `${label} exceeded the response limit`);
-    }
-    if (!response.body || typeof response.body.getReader !== "function") {
-      cancelBody(response.body);
-      throw enrollmentError("invalid_response", `${label} requires a readable response body`);
-    }
-    const reader = response.body.getReader();
-    const chunks = [];
-    let length = 0;
-    let count = 0;
-    let complete = false;
-    try {
-      while (true) {
-        const item = await lifetime.wait(() => reader.read());
-        if (item.done) { complete = true; break; }
-        if (!(item.value instanceof Uint8Array)) {
-          throw enrollmentError("invalid_response", `${label} returned invalid response bytes`);
-        }
-        if (++count > maximumResponseChunks || item.value.byteLength > maximumResponseBytes - length) {
-          throw enrollmentError("response_too_large", `${label} exceeded the response limit`);
-        }
-        length += item.value.byteLength;
-        if (item.value.byteLength) chunks.push(item.value.slice());
-      }
-    } finally {
-      if (!complete) cancelBody(reader);
-      try { reader.releaseLock(); } catch (_error) { /* Cancellation owns any pending read. */ }
-    }
-    if (length === 0) {
-      throw enrollmentError("invalid_response", `${label} returned an invalid response length`);
-    }
-    const bytes = new Uint8Array(length);
-    let offset = 0;
-    for (const chunk of chunks) { bytes.set(chunk, offset); offset += chunk.byteLength; }
-    let text;
-    try {
-      text = new TextDecoder("utf-8", { fatal: true }).decode(bytes);
-    } catch (_error) {
-      throw enrollmentError("invalid_response", `${label} did not return valid UTF-8`);
-    }
-    try {
-      return requireObject(JSON.parse(text), label);
-    } catch (error) {
-      if (error instanceof MemoryEndpointsEnrollmentError) {
-        throw error;
-      }
-      throw enrollmentError("invalid_response", `${label} did not return valid JSON`);
-    }
+  /** Keep enrollment's public error contract and one-MiB limit on the shared reader. */
+  function boundedJson(response, label, lifetime) {
+    return httpApi.readJsonResponse(response, { label, lifetime, error: enrollmentError,
+      maximumResponseBytes, maximumResponseChunks });
   }
 
   function normalizeContract(payload, baseUrl) {

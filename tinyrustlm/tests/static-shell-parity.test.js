@@ -24,7 +24,7 @@ test("canonical app shell deterministically generates the public root shell", ()
   const result = verifyShells(siteRoot);
   assert.match(result.appShell, /<main class="app-shell"/);
   const references = new Set(result.references.map((entry) => entry.reference));
-  assert.equal(result.references.length, 20);
+  assert.equal(result.references.length, 21);
   assert.deepEqual(Array.from(references).sort(), [
     "./active-conversation.js",
     "./app.css",
@@ -38,6 +38,7 @@ test("canonical app shell deterministically generates the public root shell", ()
     "./incremental-sha256.js",
     "./memory-endpoints-distributed-sync-v1.js",
     "./memory-endpoints-enrollment.js",
+    "./memory-endpoints-http.js",
     "./memory-endpoints-sync.js",
     "./minimodel-catalog-v1.js",
     "./model-composition-store.js",

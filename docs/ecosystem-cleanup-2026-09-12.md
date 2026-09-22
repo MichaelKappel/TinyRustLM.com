@@ -5,6 +5,34 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C86: bound memory responses and stop false connection success, September 20
+
+An actual Edge baseline returned HTTP 200 with `not-json`; the browser still
+reported web memory connected. The old GET/POST readers buffered arbitrary
+response text and repaired parse failure into a success-shaped object.
+
+The browser now uses a shared streaming JSON-object reader. Enrollment's former
+private reader was removed, preserving its one-MiB policy and error contract.
+Ordinary requests enforce one 30-second deadline, 16 MiB and 4,096 chunks before
+retaining excess bytes. Malformed or nonobject JSON, invalid UTF-8 and empty
+bodies reject. Non-success HTTP bodies are discarded without displaying them.
+
+A session AbortController cancels pending requests when authority is cleared or
+replaced, even if the same settings are later restored. Old drain completion
+cannot clear a new owner's promise. Workspace connection propagates a failed
+initial pull. The shared asset is included in both content-bound shells and the
+publication manifest; existing layout, controls and dependencies remain.
+
+Evidence and exact test counts: `memory-http-lifetime-review.json`. Actual Edge
+tests cover malformed registration/pull responses, real stream cancellation,
+fresh reconnect, byte limits, deadlines and existing enrollment/outbox behavior.
+Unit coverage measures the reader/client, not full application coverage.
+
+Multi-request drain duration, IndexedDB/hash waits, pull storage scope and search
+packing remain separate work. Large pulls beyond the response budget reject;
+pagination was not invented. Source-authority and prior deletion blocks remain,
+with no model qualification, live seed, NuGet push or deployment claim.
+
 ## C85: send queued memory only to its original destination, September 20
 
 The baseline SDK sent a queued record to a different host when workspace/actor

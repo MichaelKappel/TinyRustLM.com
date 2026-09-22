@@ -25,6 +25,83 @@ const TEST_ONLY_SCOPE =
   "test-only/never-live/e2e/memory-endpoints-enrollment";
 const RESOLVED_MEMBER_LENGTHS = Object.freeze([8704, 7459, 1403, 65800, 512]);
 
+test("clearing memory closes a pending response and permits a fresh connection", async ({ page, context }) => {
+  const applicationOrigin = test.info().project.use.baseURL;
+  let registrations = 0;
+  let closed = false;
+  const server = http.createServer((request, response) => {
+    response.setHeader("Access-Control-Allow-Origin", applicationOrigin);
+    response.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+    response.setHeader("Access-Control-Allow-Headers", "Authorization, X-MemoryEndpoints-Key, Content-Type, Idempotency-Key");
+    response.setHeader("Content-Type", "application/json");
+    if (request.method === "OPTIONS") { response.writeHead(204).end(); return; }
+    if (request.url === "/api/matm/agents/register" && ++registrations === 1) {
+      response.on("close", () => { closed = true; });
+      response.write('{"pending":');
+    } else {
+      response.end(JSON.stringify({ ok: true, count: 0, items: [], valuesRedacted: true,
+        rawCredentialExposed: false, rawPayloadExposed: false }));
+    }
+  });
+  try {
+    await new Promise((resolve, reject) => { server.once("error", reject); server.listen(0, "127.0.0.1", resolve); });
+    const serviceOrigin = `http://127.0.0.1:${server.address().port}`;
+    await context.route("**/*", route => [applicationOrigin, serviceOrigin].includes(new URL(route.request().url()).origin)
+      ? route.continue() : route.fulfill({ status: 503, body: "External services unavailable in this test" }));
+    await page.goto("/", { waitUntil: "load" });
+    await expect(page.locator("#simpleOpenAdvancedDiscoveryButton")).toBeVisible();
+    await openMemorySettings(page);
+    await page.locator("#memoryEndpointsBaseUrl").fill(serviceOrigin);
+    await page.locator(".memory-endpoints-workspace-access > summary").click();
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+      await page.locator("#memoryEndpointsWorkspaceId").fill("workspace-http-test");
+      await page.locator("#memoryEndpointsAgentId").fill("agent-http-test");
+      await page.locator("#memoryEndpointsToken").fill("test-only-workspace-key");
+      await page.locator("#memoryEndpointsConnectButton").click();
+      if (attempt === 0) {
+        await expect.poll(() => registrations).toBe(1);
+        await page.locator("#memoryEndpointsClearButton").click();
+        await expect.poll(() => closed).toBe(true);
+        await expect(page.locator("#memoryEndpointsStatus")).toHaveText("web memory off");
+      }
+    }
+    await expect(page.locator("#memoryEndpointsStatus")).toHaveText("web memory connected");
+    expect(registrations).toBe(2);
+  } finally {
+    server.closeAllConnections();
+    await new Promise(resolve => server.close(resolve));
+  }
+});
+
+for (const failedStage of ["registration", "pull"]) {
+test(`workspace connection rejects malformed ${failedStage} JSON instead of confirming success`, async ({ page, context }) => {
+  const origin = test.info().project.use.baseURL;
+  let pulls = 0;
+  await context.route("**/*", route => new URL(route.request().url()).origin === origin
+    ? route.continue() : route.fulfill({ status: 503, body: "External services unavailable in this test" }));
+  await context.route(`${origin}/api/matm/agents/register`, route => route.fulfill({
+    status: 200, contentType: "application/json", body: failedStage === "registration" ? "not-json" : '{"ok":true}'
+  }));
+  await context.route(`${origin}/api/matm/memory-events?*`, route => {
+    pulls += 1;
+    return route.fulfill({ status: 200, contentType: "application/json", body: failedStage === "pull" ? "not-json" : JSON.stringify({
+      ok: true, count: 0, items: [], valuesRedacted: true, rawCredentialExposed: false, rawPayloadExposed: false
+    }) });
+  });
+  await page.goto("/", { waitUntil: "load" });
+  await expect(page.locator("#simpleOpenAdvancedDiscoveryButton")).toBeVisible();
+  await openMemorySettings(page);
+  await page.locator("#memoryEndpointsBaseUrl").fill(origin);
+  await page.locator(".memory-endpoints-workspace-access > summary").click();
+  await page.locator("#memoryEndpointsWorkspaceId").fill("workspace-http-test");
+  await page.locator("#memoryEndpointsAgentId").fill("agent-http-test");
+  await page.locator("#memoryEndpointsToken").fill("test-only-workspace-key");
+  await page.locator("#memoryEndpointsConnectButton").click();
+  await expect(page.locator("#memoryEndpointsStatus")).toContainText("valid JSON");
+  expect(pulls).toBe(failedStage === "pull" ? 1 : 0);
+});
+}
+
 test("outbox sends only its original service, workspace and actor and quarantines unbound rows", async ({ page, context }) => {
   const service = createMemoryEndpointsEnrollmentFixture();
   let company;
@@ -295,7 +372,7 @@ for (const cancellation of ["clear", "service", "disabled", "workspace-key"]) {
   });
 }
 
-test("enrollment bounds real Fetch streams and closes cancelled requests", async ({ page, context }) => {
+test("enrollment and memory bound real Fetch streams and close cancelled requests", async ({ page, context }) => {
   const applicationOrigin = test.info().project.use.baseURL;
   const closed = [];
   const errors = [];
@@ -324,21 +401,34 @@ test("enrollment bounds real Fetch streams and closes cancelled requests", async
     const results = await page.evaluate(async baseUrl => {
       const Client = window.TinyRustLMMemoryEndpointsEnrollment.MemoryEndpointsEnrollmentClient;
       const output = {};
+      for (const kind of ["enrollment", "memory"]) {
+        output[kind] = {};
       for (const mode of ["deadline", "cancelled", "oversized", "success"]) {
         const controller = new AbortController();
         const timer = mode === "cancelled" ? setTimeout(() => controller.abort(), 75) : null;
         try {
-          const result = await new Client({ baseUrl, timeoutMilliseconds: 300 })
-            .request("GET", `/api/matm/${mode}`, { signal: controller.signal });
-          output[mode] = result.payload.ok;
-        } catch (error) { output[mode] = error.code; }
+          if (kind === "enrollment") {
+            const result = await new Client({ baseUrl, timeoutMilliseconds: 300 })
+              .request("GET", `/api/matm/${kind}/${mode}`, { signal: controller.signal });
+            output[kind][mode] = result.payload.ok;
+          } else {
+            const result = await new window.TinyRustLMMemoryEndpointsHttp.MemoryEndpointsHttpClient({
+              timeoutMilliseconds: 300, maximumResponseBytes: 1024 * 1024
+            }).request(`${baseUrl}/api/matm/${kind}/${mode}`, { signal: controller.signal });
+            output[kind][mode] = result.ok;
+          }
+        } catch (error) { output[kind][mode] = error.code; }
         finally { if (timer !== null) clearTimeout(timer); }
+      }
       }
       return output;
     }, serviceOrigin);
-    expect(results).toEqual({ deadline: "enrollment_timeout", cancelled: "enrollment_cancelled",
-      oversized: "response_too_large", success: true });
-    await expect.poll(() => closed.includes("deadline") && closed.includes("cancelled")).toBe(true);
+    expect(results).toEqual({
+      enrollment: { deadline: "enrollment_timeout", cancelled: "enrollment_cancelled", oversized: "response_too_large", success: true },
+      memory: { deadline: "memory_timeout", cancelled: "memory_cancelled", oversized: "response_too_large", success: true }
+    });
+    await expect.poll(() => closed.filter(mode => mode === "deadline").length >= 2 &&
+      closed.filter(mode => mode === "cancelled").length >= 2).toBe(true);
     expect(errors).toEqual([]);
   } finally {
     server.closeAllConnections();
