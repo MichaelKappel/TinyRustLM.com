@@ -34,12 +34,129 @@ function selectionCandidate(name = "One") {
     configSha256: sha256(bodies["config.json"]), tokenizer: file("tokenizer.json"),
     tokenizerConfig: file("tokenizer_config.json"), chatTemplateKind: "revision-chatml-template-v1",
     chatTemplateSha256: sha256(Buffer.from(template)), sourceWeightByteCount: weight.byteCount,
-    weightIdentity: sha256(Buffer.from(`${weight.filename}:${weight.byteCount}:${weight.sha256}`)), weightFiles: [weight] } };
+    weightIdentity: sha256(Buffer.from(`${weight.filename}:${weight.byteCount}:${weight.sha256}`)), weightIndex: null, weightFiles: [weight] } };
 }
+
+// Keep shard bodies synthetic while binding the exact index needed by the real screen consumer.
+function shardedCandidate() {
+  const fixture = selectionCandidate("Sharded");
+  delete fixture.bodies["model.safetensors"];
+  const names = ["model-00001-of-00002.safetensors", "model-00002-of-00002.safetensors"];
+  for (const [index, name] of names.entries()) fixture.bodies[name] = Buffer.from(`synthetic shard ${index}`);
+  fixture.candidate.weightFiles = names.map(filename => ({ filename, byteCount: fixture.bodies[filename].length,
+    sha256: sha256(fixture.bodies[filename]), gitBlobId: null }));
+  fixture.candidate.sourceWeightByteCount = fixture.candidate.weightFiles.reduce((sum, file) => sum + file.byteCount, 0);
+  fixture.candidate.weightIdentity = sha256(Buffer.from(fixture.candidate.weightFiles
+    .map(file => `${file.filename}:${file.byteCount}:${file.sha256}`).join("\n")));
+  setShardIndex(fixture, JSON.stringify({ metadata: { total_size: 2 },
+    weight_map: { "layer.a.weight": names[0], "layer.b.weight": names[1] } }));
+  return fixture;
+}
+
+// Rebind deliberately malformed indexes so validation, rather than a hash mismatch, rejects them.
+function setShardIndex(fixture, text) {
+  const filename = "model.safetensors.index.json";
+  const bytes = Buffer.from(text);
+  fixture.bodies[filename] = bytes;
+  fixture.candidate.weightIndex = { filename, byteCount: bytes.length, sha256: sha256(bytes), gitBlobId: null };
+}
+
+test("sharded acquisition retains the index required by the source screen and verifies cached closure", async () => {
+  const storage = createSourceAcquisitionFixture();
+  const fixture = shardedCandidate();
+  const requests = [];
+  const fetchImpl = async url => { const name = new URL(url).pathname.split('/').at(-1);
+    requests.push(name); return new Response(fixture.bodies[name]); };
+  try {
+    const receipt = await acquire.acquireCandidate(fixture.candidate, storage.rootPath, { fetchImpl });
+    const names = receipt.files.map(file => file.filename);
+    assert.ok(names.includes("model.safetensors.index.json"), "verified acquisition must retain the shard index");
+    assert.ok(requests.indexOf("model.safetensors.index.json") < requests.indexOf(fixture.candidate.weightFiles[0].filename));
+    const directory = acquire.candidateDirectory(storage.rootPath, fixture.candidate);
+    const artifacts = require("../tools/source-model-screen-evidence.js").sourceCheckpointArtifacts(directory);
+    assert.equal(artifacts.identityKind, "indexed-safetensors-set-v1");
+    assert.deepEqual(artifacts.modelFiles.map(file => file.name), ["model.safetensors.index.json",
+      ...fixture.candidate.weightFiles.map(file => file.filename)]);
+    requests.length = 0;
+    assert.deepEqual(await acquire.acquireCandidate(fixture.candidate, storage.rootPath, { fetchImpl }), receipt);
+    assert.deepEqual(requests, []);
+    fs.writeFileSync(path.join(directory, "model.safetensors.index.json"), Buffer.alloc(fixture.candidate.weightIndex.byteCount, 0x20));
+    await assert.rejects(acquire.acquireCandidate(fixture.candidate, storage.rootPath, { fetchImpl }), /SHA-256 mismatch/);
+    assert.deepEqual(requests, []);
+  } finally { storage.remove(); }
+});
+
+test("shard index admission rejects unsafe maps before any other source download", async () => {
+  const cases = [
+    '{"weight_map":{}}',
+    '{"weight_map":{"x":"../outside.safetensors"}}',
+    '{"weight_map":{"x":"model-00001-of-00002.safetensors"}}',
+    '{"weight_map":{"x":"model-00001-of-00002.safetensors","x":"model-00002-of-00002.safetensors"}}'
+  ];
+  for (const contents of cases) {
+    const fixture = shardedCandidate();
+    setShardIndex(fixture, contents);
+    const storage = createSourceAcquisitionFixture();
+    const requested = [];
+    try {
+      await assert.rejects(acquire.acquireCandidate(fixture.candidate, storage.rootPath, { fetchImpl: async url => {
+        const name = new URL(url).pathname.split('/').at(-1); requested.push(name);
+        return new Response(fixture.bodies[name]);
+      } }), /weight index/);
+      assert.deepEqual(requested, ["model.safetensors.index.json"]);
+      assert.equal(fs.existsSync(path.join(acquire.candidateDirectory(storage.rootPath, fixture.candidate),
+        "source-acquisition.json")), false);
+    } finally { storage.remove(); }
+  }
+});
+
+test("index identities and obsolete inventories reject before acquisition side effects", async () => {
+  const original = shardedCandidate().candidate;
+  const storage = createSourceAcquisitionFixture();
+  let requests = 0;
+  const fetchImpl = async () => { requests++; throw Error("unexpected request"); };
+  try {
+    for (const candidate of [
+      { ...original, weightIndex: undefined }, { ...original, weightIndex: null },
+      { ...original, weightIndex: { ...original.weightIndex, filename: "config.json" } },
+      { ...original, weightIndex: { ...original.weightIndex, byteCount: 256 * 1024 + 1 } },
+      { ...selectionCandidate().candidate, weightIndex: original.weightIndex },
+      { ...selectionCandidate().candidate, weightIndex: undefined }
+    ]) await assert.rejects(acquire.acquireCandidate(candidate, storage.rootPath, { fetchImpl }), /weight index/);
+    await assert.rejects(acquire.acquireInventory({ schema: "tinyrustlm.huggingface_supported_candidate_inventory.v2",
+      candidates: [original] }, storage.rootPath, { fetchImpl }), /inventory schema/);
+    assert.equal(requests, 0);
+    assert.deepEqual(fs.readdirSync(storage.rootPath), [".fixture-owner"]);
+  } finally { storage.remove(); }
+});
+
+test("Git-blob index verification binds fresh bytes and obsolete receipts never resume", async () => {
+  const fixture = shardedCandidate();
+  const index = fixture.bodies["model.safetensors.index.json"];
+  fixture.candidate.weightIndex.sha256 = null;
+  fixture.candidate.weightIndex.gitBlobId = crypto.createHash("sha1").update(`blob ${index.length}\0`).update(index).digest("hex");
+  const storage = createSourceAcquisitionFixture();
+  const requests = [];
+  const fetchImpl = async url => { const name = new URL(url).pathname.split('/').at(-1); requests.push(name);
+    return new Response(fixture.bodies[name]); };
+  try {
+    const receipt = await acquire.acquireCandidate(fixture.candidate, storage.rootPath, { fetchImpl });
+    assert.equal(receipt.schema, "tinyrustlm.huggingface_source_acquisition.v3");
+    assert.equal(receipt.files.find(file => file.filename === "model.safetensors.index.json").sha256, sha256(index));
+    const directory = acquire.candidateDirectory(storage.rootPath, fixture.candidate);
+    const receiptPath = path.join(directory, "source-acquisition.json");
+    fs.writeFileSync(receiptPath, JSON.stringify({ ...receipt, files: receipt.files.filter(file => file.filename !== "model.safetensors.index.json") }));
+    requests.length = 0;
+    await assert.rejects(acquire.acquireCandidate(fixture.candidate, storage.rootPath, { fetchImpl }), /file closure/);
+    fs.writeFileSync(receiptPath, JSON.stringify({ ...receipt, schema: "tinyrustlm.huggingface_source_acquisition.v2" }));
+    await assert.rejects(acquire.acquireCandidate(fixture.candidate, storage.rootPath, { fetchImpl }), /receipt is invalid/);
+    assert.deepEqual(requests, []);
+  } finally { storage.remove(); }
+});
 
 test("invalid explicit acquisition selection never falls back to downloading candidates", async () => {
   const storage = createSourceAcquisitionFixture();
-  const inventory = { schema: "tinyrustlm.huggingface_supported_candidate_inventory.v2",
+  const inventory = { schema: "tinyrustlm.huggingface_supported_candidate_inventory.v3",
     candidates: [selectionCandidate().candidate] };
   let requests = 0;
   const fetchImpl = async () => { requests++; throw Error("unexpected source request"); };
@@ -65,7 +182,7 @@ test("every selected candidate is validated before the first source request", as
       const candidates = [selectionCandidate().candidate];
       candidates.length = 2;
       if (tail !== undefined) candidates[1] = tail;
-      await assert.rejects(acquire.acquireInventory({ schema: "tinyrustlm.huggingface_supported_candidate_inventory.v2", candidates },
+      await assert.rejects(acquire.acquireInventory({ schema: "tinyrustlm.huggingface_supported_candidate_inventory.v3", candidates },
         storage.rootPath, { fetchImpl: async () => { requests++; throw Error("unexpected source request"); } }),
       /candidate revision is not immutable|candidate is invalid/);
     }
@@ -79,7 +196,7 @@ test("acquisition CLI rejects zero, nonnumeric and empty explicit limits without
   const storage = createSourceAcquisitionFixture();
   try {
     const inventory = path.join(metadata.rootPath, "inventory.json");
-    fs.writeFileSync(inventory, JSON.stringify({ schema: "tinyrustlm.huggingface_supported_candidate_inventory.v2",
+    fs.writeFileSync(inventory, JSON.stringify({ schema: "tinyrustlm.huggingface_supported_candidate_inventory.v3",
       candidates: [{ modelId: "invalid candidate must never be reached" }] }));
     for (const [start, count, message] of [["0", "0", "count"], ["0", "NaN", "count"],
       ["0", "", "count"], ["", "1", "start"], ["NaN", "1", "start"]]) {
@@ -100,7 +217,7 @@ test("acquisition honors explicit slices and omitted selection defaults", async 
     const one = selectionCandidate("One"), two = selectionCandidate("Two");
     const requests = [];
     try {
-      const receipts = await acquire.acquireInventory({ schema: "tinyrustlm.huggingface_supported_candidate_inventory.v2",
+      const receipts = await acquire.acquireInventory({ schema: "tinyrustlm.huggingface_supported_candidate_inventory.v3",
         candidates: [one.candidate, two.candidate] }, storage.rootPath, { ...options,
         fetchImpl: async url => { requests.push(String(url)); return new Response(one.bodies[new URL(url).pathname.split('/').at(-1)]); } });
       assert.deepEqual(receipts.map(receipt => receipt.modelId), expected.map(name => `Example/Selection-${name}`));
@@ -201,6 +318,7 @@ test("resumes pinned files, verifies every digest, and reuses a complete receipt
     chatTemplateSha256: sha256(Buffer.from(chatTemplate)),
     sourceWeightByteCount: weight.length,
     weightIdentity: sha256(Buffer.from(`model.safetensors:${weight.length}:${sha256(weight)}`)),
+    weightIndex: null,
     weightFiles: [{ filename: "model.safetensors", byteCount: weight.length, sha256: sha256(weight) }]
   };
 
@@ -262,6 +380,7 @@ test("rejects a downloaded source whose pinned digest does not match", async () 
     chatTemplateSha256: sha256(Buffer.from(chatTemplate)),
     sourceWeightByteCount: bytes.length,
     weightIdentity: sha256(Buffer.from(`model.safetensors:${bytes.length}:${"d".repeat(64)}`)),
+    weightIndex: null,
     weightFiles: [{ filename: "model.safetensors", byteCount: bytes.length, sha256: "d".repeat(64) }]
   };
 
@@ -322,6 +441,7 @@ test("preserves repeated short reads and resumes them on the next acquisition", 
     chatTemplateSha256: sha256(Buffer.from(chatTemplate)),
     sourceWeightByteCount: weight.length,
     weightIdentity: sha256(Buffer.from(`model.safetensors:${weight.length}:${sha256(weight)}`)),
+    weightIndex: null,
     weightFiles: [{ filename: "model.safetensors", byteCount: weight.length, sha256: sha256(weight) }]
   };
 

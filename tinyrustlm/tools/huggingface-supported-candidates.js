@@ -4,8 +4,9 @@ const crypto = require("node:crypto");
 const { sourceCandidateRejection } = require("./source-candidate-exclusions.js");
 const { createMetadataReader, MetadataReadError } = require("./huggingface-metadata.js");
 const { writeCandidateInventory: writeReport } = require("./huggingface-candidate-storage.js");
+const { maximumWeightIndexBytes, validateWeightLayout } = require("./huggingface-weight-layout.js");
 
-const inventorySchema = "tinyrustlm.huggingface_supported_candidate_inventory.v2";
+const inventorySchema = "tinyrustlm.huggingface_supported_candidate_inventory.v3";
 const defaultBaseUrl = "https://huggingface.co";
 const defaultLicenseUrl = "https://www.apache.org/licenses/LICENSE-2.0.txt";
 const maximumSearchLimit = 500;
@@ -250,7 +251,10 @@ function siblingIdentity(row, label) {
 function validateSiblings(info, profile) {
   invariant(info && typeof info === "object" && Array.isArray(info.siblings),
     "revision metadata is invalid");
+  invariant(info.siblings.every((row) => row && typeof row === "object" &&
+    typeof row.rfilename === "string" && row.rfilename.length > 0), "revision sibling is invalid");
   const siblings = new Map(info.siblings.map((row) => [row.rfilename, row]));
+  invariant(siblings.size === info.siblings.length, "revision sibling filenames are duplicated");
   invariant(siblings.has("config.json"), "config.json is missing");
   invariant(siblings.has("tokenizer.json"), "tokenizer.json is missing");
   invariant(siblings.has("tokenizer_config.json"), "tokenizer_config.json is missing");
@@ -264,12 +268,21 @@ function validateSiblings(info, profile) {
       return Object.freeze({ filename: row.rfilename, byteCount, sha256 });
     })
     .sort((left, right) => left.filename.localeCompare(right.filename));
-  invariant(weights.length >= 1, "full safetensors weights are missing");
+  const layout = validateWeightLayout(weights);
+  const indexRow = siblings.get("model.safetensors.index.json");
+  let weightIndex = null;
+  if (layout === "single") {
+    invariant(!indexRow, "weight layout has both direct weights and an index");
+  } else {
+    weightIndex = siblingIdentity(indexRow, "weight index");
+    invariant(weightIndex.byteCount <= maximumWeightIndexBytes, "weight index size exceeds its limit");
+  }
   const totalBytes = weights.reduce((sum, row) => sum + row.byteCount, 0);
   invariant(totalBytes >= profile.minimumWeightBytes && totalBytes <= profile.maximumWeightBytes,
     "weight size is outside profile bounds");
   return Object.freeze({
     weights: Object.freeze(weights),
+    weightIndex,
     totalBytes,
     tokenizer: siblingIdentity(siblings.get("tokenizer.json"), "tokenizer.json"),
     tokenizerConfig: siblingIdentity(siblings.get("tokenizer_config.json"), "tokenizer_config.json")
@@ -367,6 +380,7 @@ async function inspectCandidate(model, settings) {
         chatTemplateSha256: chatTemplate.sha256,
         sourceWeightByteCount: files.totalBytes,
         weightIdentity: weightIdentity(files.weights),
+        weightIndex: files.weightIndex,
         weightFiles: files.weights
       })
     };

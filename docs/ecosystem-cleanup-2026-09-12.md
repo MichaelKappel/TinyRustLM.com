@@ -5,6 +5,34 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C88: retain and validate candidate shard indexes, September 22
+
+A synthetic acquisition reproduced a verified receipt containing both weight
+shards but no `model.safetensors.index.json`. The reference source-screen loader
+requires that index. Discovery and acquisition now share one bounded weight
+layout validator and use current-only inventory/receipt v3. Direct weights
+declare a null index; sharded candidates bind the index's exact revision identity.
+
+Acquisition verifies and parses the index before requesting other source files.
+Duplicate keys, invalid encoding, unsafe mappings, incomplete shard groups and
+unused shards reject. Cached receipts require and revalidate the index before
+hashing shards. The index ceiling matches the source screen's 256 KiB limit;
+tensor-data totals are deliberately not confused with file lengths. Existing
+weight exclusions and weight-identity hashes retain their semantics.
+
+All 68 affected Node checks pass without skips. V8 evidence reaches all 109
+selected changed source lines; whole-module line coverage is 93.54% acquisition,
+94.01% discovery and 100% shared validation. The source-screen handoff is exercised
+with owned synthetic files under the canonical D: model root. The initial 33/34
+consumer result exposed rejection-order drift; restoring prior-weight exclusion
+precedence fixed it without changing the exclusion test.
+
+`candidate-shard-index-review.json` records input identities, failed baseline,
+intermediate failure, final checks and scratch retirement. No real candidate was
+downloaded or qualified. Converter support, numerical/browser quality, source
+authority, initial seed, NuGet and deployment gates remain open. No policy-blocked
+removal was retried, and no key was read.
+
 ## C87: isolate pulled memory and asynchronous search results, September 22
 
 Two Edge baselines exposed independent defects: a second service sharing a

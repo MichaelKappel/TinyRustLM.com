@@ -17,7 +17,7 @@ const chatTemplate = "{% for message in messages %}<|im_start|>{{ message.role }
 test("candidate discovery, acquisition and rejection suites participate in the standard gate", () => {
   const { discoverStandardUnitTestFiles } = require("../tools/run-vnext-unit-test-gate.js");
   const files = discoverStandardUnitTestFiles();
-  for (const name of ["huggingface-supported-candidates", "huggingface-candidate-acquire",
+  for (const name of ["huggingface-supported-candidates", "huggingface-candidate-acquire", "huggingface-weight-layout",
     "huggingface-candidate-storage", "huggingface-metadata", "source-candidate-exclusions"]) {
     assert.ok(files.includes(`tests/${name}.test.js`), name);
   }
@@ -201,7 +201,7 @@ test("discovers distinct immutable Qwen3 full-weight conversation candidates", a
     candidateLimit: 10
   });
 
-  assert.equal(report.schema, "tinyrustlm.huggingface_supported_candidate_inventory.v2");
+  assert.equal(report.schema, "tinyrustlm.huggingface_supported_candidate_inventory.v3");
   assert.equal(report.profileId, profileId);
   assert.equal(report.candidates.length, 1);
   assert.equal(report.candidates[0].modelId, firstId);
@@ -212,6 +212,7 @@ test("discovers distinct immutable Qwen3 full-weight conversation candidates", a
   assert.equal(report.candidates[0].chatTemplateKind, "revision-chatml-template-v1");
   assert.equal(report.candidates[0].chatTemplateSha256.length, 64);
   assert.equal(report.candidates[0].weightFiles[0].sha256, weightSha);
+  assert.equal(report.candidates[0].weightIndex, null);
   assert.equal(report.rejections.some((row) => row.code === "duplicate_weight_identity"), true);
 });
 
@@ -282,7 +283,7 @@ test("the sole discovery producer covers Qwen2.5 and emits the downloader's curr
   fixture.addRevision(wrongShape, { ...qwen25Config(), hidden_size: 2048 });
   fixture.addRevision(untied, { ...qwen25Config(), tie_word_embeddings: false });
   const report = await discovery.discoverCandidates(fixture.options);
-  assert.equal(report.schema, "tinyrustlm.huggingface_supported_candidate_inventory.v2");
+  assert.equal(report.schema, "tinyrustlm.huggingface_supported_candidate_inventory.v3");
   assert.equal(report.candidates.length, 1);
   const candidate = report.candidates[0];
   assert.equal(candidate.modelId, fixture.model.id);
@@ -324,5 +325,74 @@ test("discovery excludes gated or unavailable search and pinned revision metadat
       assert.equal(report.candidates.length, 0);
       assert.equal(calls.length, stage === "search" ? 1 : 2);
     }
+  }
+});
+
+// Replace the direct fixture weights with an indexed, two-shard repository closure.
+function indexedRoster() {
+  const fixture = qwen25Roster();
+  const info = fixture.routes[discovery.buildRevisionInfoUrl(
+    fixture.options.baseUrl, fixture.model.id, revision)].json;
+  info.siblings = info.siblings.filter((row) => row.rfilename !== "model.safetensors");
+  const weightIndex = { rfilename: "model.safetensors.index.json", size: 400, blobId: "f".repeat(40) };
+  info.siblings.push(weightIndex, ...[1, 2].map((number) => ({
+    rfilename: `model-0000${number}-of-00002.safetensors`, size: 1_500_000_000,
+    lfs: { size: 1_500_000_000, sha256: String(number).repeat(64) }
+  })));
+  return { ...fixture, info, weightIndex };
+}
+
+test("discovery retains the exact index identity without downloading its contents", async () => {
+  for (const useLfs of [false, true]) {
+    const fixture = indexedRoster();
+    if (useLfs) fixture.weightIndex.lfs = { size: 400, sha256: "e".repeat(64) };
+    const calls = [];
+    const report = await discovery.discoverCandidates({ ...fixture.options, fetchImpl: async (url) => {
+      calls.push(url); return fixture.options.fetchImpl(url);
+    } });
+    assert.equal(report.schema, "tinyrustlm.huggingface_supported_candidate_inventory.v3");
+    assert.equal(report.candidates.length, 1);
+    assert.deepEqual(report.rejections, []);
+    const candidate = report.candidates[0];
+    assert.deepEqual(candidate.weightIndex, { filename: "model.safetensors.index.json", byteCount: 400,
+      sha256: useLfs ? "e".repeat(64) : null, gitBlobId: useLfs ? null : "f".repeat(40) });
+    assert.equal(candidate.sourceWeightByteCount, 3_000_000_000);
+    assert.deepEqual(candidate.weightFiles.map((row) => row.filename), [
+      "model-00001-of-00002.safetensors", "model-00002-of-00002.safetensors"]);
+    const canonical = candidate.weightFiles.map((row) => `${row.filename}:${row.byteCount}:${row.sha256}`).join("\n");
+    assert.equal(candidate.weightIdentity, require("node:crypto").createHash("sha256").update(canonical).digest("hex"));
+    assert.equal(calls.some((url) => url.includes("model.safetensors.index.json")), false);
+    assert.equal(calls.length, 5);
+  }
+});
+
+test("discovery rejects incomplete and ambiguous weight layouts before config or license retrieval", async () => {
+  const cases = [
+    ["missing index", (f) => { f.info.siblings = f.info.siblings.filter((r) => r !== f.weightIndex); }],
+    ["oversized index", (f) => { f.weightIndex.size = 256 * 1024 + 1; }],
+    ["empty index", (f) => { f.weightIndex.size = 0; }],
+    ["missing index identity", (f) => { delete f.weightIndex.blobId; }],
+    ["missing shard", (f) => { f.info.siblings.pop(); }],
+    ["inconsistent shard total", (f) => { f.info.siblings.at(-1).rfilename = "model-00002-of-00003.safetensors"; }],
+    ["duplicate index", (f) => { f.info.siblings.push({ ...f.weightIndex }); }],
+    ["duplicate config", (f) => { f.info.siblings.push({ ...f.info.siblings[0] }); }],
+    ["duplicate shard", (f) => { f.info.siblings.push({ ...f.info.siblings.at(-1) }); }],
+    ["mixed direct and sharded", (f) => { f.info.siblings.push({ rfilename: "model.safetensors",
+      size: 1_500_000_000, lfs: { size: 1_500_000_000, sha256: "d".repeat(64) } }); }],
+    ["direct with index", (f) => { f.info.siblings = f.info.siblings.filter((r) => !r.rfilename.startsWith("model-"));
+      f.info.siblings.push({ rfilename: "model.safetensors", size: 3_000_000_000,
+        lfs: { size: 3_000_000_000, sha256: "d".repeat(64) } }); }],
+    ["invalid sibling", (f) => { f.info.siblings.push(null); }]
+  ];
+  for (const [label, mutate] of cases) {
+    const fixture = indexedRoster();
+    mutate(fixture);
+    let requests = 0;
+    const report = await discovery.discoverCandidates({ ...fixture.options, fetchImpl: async (url) => {
+      requests++; return fixture.options.fetchImpl(url);
+    } });
+    assert.equal(report.candidates.length, 0, label);
+    assert.equal(report.rejections.length, 1, label);
+    assert.equal(requests, 2, label);
   }
 });

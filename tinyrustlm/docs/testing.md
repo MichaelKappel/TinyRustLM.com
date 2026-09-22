@@ -117,10 +117,19 @@ requires current `worker active` diagnostics. The old `loaded` label is rejected
 
 ## Candidate selection checks
 
-The discovery and acquisition suites, together with metadata bounds, storage and
-source exclusions, use `.test.js` filenames and participate in the standard gate.
-Focused runs can select those five `huggingface-*` / `source-candidate-exclusions`
+The discovery and acquisition suites, together with metadata bounds, storage,
+weight layouts and source exclusions, use `.test.js` filenames and participate in
+the standard gate. Focused runs can select those six `huggingface-*` / `source-candidate-exclusions`
 suites directly without making a public model request.
+
+Current discovery inventories and acquisition receipts use v3 exclusively.
+Direct-weight candidates declare `weightIndex: null`; sharded candidates bind
+the exact `model.safetensors.index.json` identity. Shared layout/index checks
+enforce complete shard groups, duplicate-free bounded JSON (256 KiB), exact shard
+references and use of every shard. Acquisition validates the index before other
+downloads and rechecks it on receipt reuse. Tests include the real source-screen
+artifact reader over synthetic acquired files in the canonical model store;
+this proves file closure, not tensor validity or model qualification.
 
 Discovery defaults to 300 search rows and at most 40 candidates only when those
 arguments are omitted. Explicit limits must be integers in 1..500 and 1..100,

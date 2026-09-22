@@ -16,6 +16,15 @@ Authority order is current owner instructions, inspected current contracts and b
 
 ## Current evidence and its limits
 
+**C88 source acquisition:** discovery/acquisition now use inventory/receipt v3,
+binding the shard index or explicitly declaring null for direct weights. A shared
+validator rejects incomplete layouts and unsafe index mappings; acquisition
+verifies the index before other files and on cache reuse. All 68 affected checks
+pass, including the synthetic source-screen handoff. Read
+`candidate-shard-index-review.json` for the failed baseline, coverage and limits.
+This is complete source-file acquisition plumbing, not real tensor, reference
+quality, supported conversion, useful browser, seed or release evidence.
+
 **C87 result isolation:** browser pull snapshots bind exact service, route,
 workspace and reader; IndexedDB v2 retires unbound caches while preserving queued
 writes. Search normalization and packing publish only for their current session,

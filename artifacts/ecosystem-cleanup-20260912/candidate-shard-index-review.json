@@ -1,0 +1,430 @@
+{
+  "schema": "ecosystem.candidate-shard-index-review/1",
+  "reviewedUtc": "2026-09-22T22:20:52.676Z",
+  "sourceParent": "b5888f5f249d86967ed3c1a032f2cfdc4fac3b4d",
+  "purpose": "Retain the exact shard index through discovery/acquisition/cache verification and prove source-screen file closure.",
+  "repositoryInventory": [
+    {
+      "name": ".local-secrets",
+      "repository": false
+    },
+    {
+      "name": ".vscode",
+      "repository": false
+    },
+    {
+      "name": "LMComposer.com",
+      "branch": "main",
+      "head": "6cbb67c59d2f0a3ef22f736d7b515570746c0e3b",
+      "statusCount": 0
+    },
+    {
+      "name": "MiniModel.MiRust.com",
+      "branch": "master",
+      "head": "b437611c34ad4f80312016f4bf9aa1a08398d07a",
+      "statusCount": 0
+    },
+    {
+      "name": "MiniModel.org",
+      "branch": "master",
+      "head": "015d36818f339a9194f2e09591254f954b71ea96",
+      "statusCount": 0
+    },
+    {
+      "name": "MiRust.com",
+      "branch": "master",
+      "head": "b9420a10feb0819ca6bbf89d92c9199ba89d7c86",
+      "statusCount": 0
+    },
+    {
+      "name": "Runtime.MiRust.com",
+      "branch": "master",
+      "head": "8623dcf5603ab419d02ffd0809e9ae987fb5b2a0",
+      "statusCount": 15
+    },
+    {
+      "name": "TinyRustLM.com",
+      "branch": "codex/model-acquisition-v2",
+      "head": "b5888f5f249d86967ed3c1a032f2cfdc4fac3b4d",
+      "statusCount": 30
+    },
+    {
+      "name": "TinyRustLM.MiRust.com",
+      "branch": "master",
+      "head": "d17f77af652e9ac086482414a5bd0b6eb2250a50",
+      "statusCount": 1
+    },
+    {
+      "name": "_archive",
+      "repository": false
+    },
+    {
+      "name": "_screenshots",
+      "repository": false
+    }
+  ],
+  "sourceFiles": [
+    {
+      "path": "tinyrustlm/tools/huggingface-weight-layout.js",
+      "byteCount": 3690,
+      "sha256": "002b9cbe9111a89a01a6c36ff63def0d18e9c5e7060a798636eac440dd6f2911"
+    },
+    {
+      "path": "tinyrustlm/tests/huggingface-weight-layout.test.js",
+      "byteCount": 5356,
+      "sha256": "3124e924e19c8c9bc7a94588b360e9bac22d21e7cc757ef43aed655c55215e00"
+    },
+    {
+      "path": "tinyrustlm/tools/huggingface-supported-candidates.js",
+      "byteCount": 21802,
+      "sha256": "f966ff104fc11fc4a77f000755e2db3995a85772b2e3577d87352c381ec85892"
+    },
+    {
+      "path": "tinyrustlm/tests/huggingface-supported-candidates.test.js",
+      "byteCount": 19553,
+      "sha256": "d6cd14d14c1f7c71cfd63c74d0b669ec0e54f781f6c115b4aebb28976639099b"
+    },
+    {
+      "path": "tinyrustlm/tools/huggingface-candidate-acquire.js",
+      "byteCount": 30598,
+      "sha256": "c359d36e422d6546d552bade6ccacf9b10b086959d2930ee38b8f8f070ea993a"
+    },
+    {
+      "path": "tinyrustlm/tests/huggingface-candidate-acquire.test.js",
+      "byteCount": 24639,
+      "sha256": "f674ad092905c43f6d0e6a1446c500383851ebbe8c0c8702ad072a69e66286fc"
+    },
+    {
+      "path": "tinyrustlm/tests/huggingface-candidate-storage.test.js",
+      "byteCount": 28268,
+      "sha256": "30298bac520b29da948efdfa5a9cffdf0411f133079414ff567ed34203dac0ab"
+    },
+    {
+      "path": "tinyrustlm/docs/testing.md",
+      "byteCount": 17130,
+      "sha256": "721b38a70bb1742a6fc9d48a3edde96128a8b196cfcc20d29c0e2dddf8a0b31a"
+    },
+    {
+      "path": "docs/ecosystem-cleanup-2026-09-12.md",
+      "byteCount": 168138,
+      "sha256": "8c20e50d3c99b49afd70525bd1bd399e59b5291aa4fcc9722b6e3bf730e7e9c5"
+    },
+    {
+      "path": "wiki/runtime-mirust/reports/ecosystem-experiment-lessons-2026-09-12.md",
+      "byteCount": 199718,
+      "sha256": "c5f80426736a89a0e6b0f0a70437be8c71827428c1138e68ebb58b1aa6aee495"
+    },
+    {
+      "path": "wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md",
+      "byteCount": 70155,
+      "sha256": "90623c6abd0e2f4dcfa4b1fbb2dc18095bb54ffceb86dbdb3eefee0df30ec9c4"
+    },
+    {
+      "path": ".uai/startup-packet.uai",
+      "byteCount": 24760,
+      "sha256": "0c227972dfbc3de2c3334a21a69538933085382b71b7a0e5a72682868e9e91e9"
+    },
+    {
+      "path": ".uai/operations.uai",
+      "byteCount": 33462,
+      "sha256": "9e4c8dd3787c3d0d188fa7a4ec9790c73042f401df45a3ff990e9da768a21684"
+    },
+    {
+      "path": ".uai/short-term-memory.uai",
+      "byteCount": 28308,
+      "sha256": "a02fdafdef506bc32c43b4aa1232e2500b8847d09cd30fdb87b54cc8b06967fb"
+    },
+    {
+      "path": ".uai/long-term-memory.uai",
+      "byteCount": 8746,
+      "sha256": "d009a000cd2b754e7fd5eec91ca47303b3087e6df0acbeeefa6bd03f0b46f796"
+    }
+  ],
+  "inputs": {
+    "syntheticModels": "Two tiny synthetic shards and an index; injected pinned source and metadata responses. Test source identities bind exact inputs. File fixtures are owned below D:/LLMs/TinyRustLM/artifacts/tests/source-acquisition.",
+    "intake": "Content and Improvement inspected; placeholder-only."
+  },
+  "baseline": {
+    "command": "node --test --test-name-pattern='sharded acquisition retains' tinyrustlm/tests/huggingface-candidate-acquire.test.js",
+    "pass": 0,
+    "fail": 1,
+    "failure": "verified acquisition must retain the shard index",
+    "meaning": "Pre-fix acquisition emitted a verified receipt without the source-screen index.",
+    "log": "baseline-acquire.txt"
+  },
+  "intermediate": {
+    "pass": 33,
+    "fail": 1,
+    "failure": "Existing exclusion test expected prior_weight_quality_rejected; new null-index validation ran first.",
+    "correction": "Restore prior weight exclusion precedence without changing the test.",
+    "log": "consumer.txt"
+  },
+  "validation": {
+    "command": "node --test --test-reporter=tap --experimental-test-coverage tinyrustlm/tests/huggingface-weight-layout.test.js tinyrustlm/tests/huggingface-supported-candidates.test.js tinyrustlm/tests/huggingface-candidate-acquire.test.js tinyrustlm/tests/huggingface-candidate-storage.test.js tinyrustlm/tests/huggingface-metadata.test.js tinyrustlm/tests/source-candidate-exclusions.test.js tinyrustlm/tests/strict-json.test.js",
+    "pass": 68,
+    "fail": 0,
+    "skipped": 0,
+    "exitCode": 0,
+    "testNames": [
+      "sharded acquisition retains the index required by the source screen and verifies cached closure",
+      "shard index admission rejects unsafe maps before any other source download",
+      "index identities and obsolete inventories reject before acquisition side effects",
+      "Git-blob index verification binds fresh bytes and obsolete receipts never resume",
+      "invalid explicit acquisition selection never falls back to downloading candidates",
+      "every selected candidate is validated before the first source request",
+      "acquisition CLI rejects zero, nonnumeric and empty explicit limits without output",
+      "acquisition honors explicit slices and omitted selection defaults",
+      "resumes pinned files, verifies every digest, and reuses a complete receipt",
+      "rejects a downloaded source whose pinned digest does not match",
+      "preserves repeated short reads and resumes them on the next acquisition",
+      "acquisition refuses noncanonical, traversal and alias roots before creating output or fetching",
+      "filenames reject traversal, Windows aliases and role collisions before acquisition",
+      "existing junction roots are rejected without following them",
+      "hardlinked partial files cannot be appended to or retired by acquisition",
+      "one exclusive owner rejects concurrent acquisition and preserves an abandoned lock",
+      "a file replaced during fetch is rejected before body consumption and its response is cancelled",
+      "Windows prevents moving the candidate directory while its owner lock is open",
+      "cached receipt must contain the exact files and current candidate identities",
+      "the current report writer uses canonical artifacts and rejects linked output",
+      "bounded local reads reject size and link violations before reading and detect mutations",
+      "inventory CLI rejects an oversized sparse input before parsing or model output",
+      "tokenizer sizes and timeout bounds fail before fetching or creating a candidate directory",
+      "oversized resumed chunks cannot append past the range and a later transfer still resumes",
+      "range totals, endpoints, encoding and Content-Length must agree before appending",
+      "real HTTP gzip expansion is limited by decoded bytes before disk writes",
+      "small evidence streams enforce decoded limits without writing oversized bodies",
+      "the body deadline cancels stalled evidence and weight streams and releases ownership",
+      "failed evidence promotion removes its temporary but preserves an exclusive-name collision",
+      "streamed text preserves split Unicode, whitespace and BOM bytes at the exact limit",
+      "advertised oversize refuses before body reads; actual bytes defeat a lying length",
+      "default text and JSON limits count original whitespace before parsing",
+      "invalid lengths, bytes, UTF-8, JSON and HTTP status fail with evidence error codes",
+      "invalid fetch, timeout and byte bounds reject before issuing requests",
+      "deadline settles a noncooperative fetch and cancels its late response",
+      "deadline includes a stalled body and does not await stalled cancellation",
+      "native HTTP fetch enforces deadlines, decompressed limits and truncated-body rejection",
+      "discovery bounds server search rows and propagates its timeout before model requests",
+      "discovery distinguishes license fetch failures from license judgments without retrying",
+      "candidate discovery, acquisition and rejection suites participate in the standard gate",
+      "invalid explicit discovery limits fail before metadata requests",
+      "discovery applies omitted limits and admits both inclusive limit boundaries",
+      "discovery CLI rejects invalid explicit limits before producing a report",
+      "discovers distinct immutable Qwen3 full-weight conversation candidates",
+      "accepts exact SmolLM2 shape and rejects non-conversation or prequantized packages",
+      "the sole discovery producer covers Qwen2.5 and emits the downloader's current inventory",
+      "discovery excludes gated or unavailable search and pinned revision metadata",
+      "discovery retains the exact index identity without downloading its contents",
+      "discovery rejects incomplete and ambiguous weight layouts before config or license retrieval",
+      "weight layouts admit a direct file and complete unordered shard groups at the bounds",
+      "weight layouts reject malformed, mixed, duplicate and incomplete groups",
+      "weight indexes bind every shard and ignore metadata tensor-byte counts",
+      "weight indexes support Unicode tensor names, repeated shard use and byte views",
+      "weight indexes reject unsafe or incomplete reference sets and invalid mapping shapes",
+      "weight indexes enforce byte, nesting, mapping count, encoding and duplicate-key bounds",
+      "current exclusions preserve all exact prior decisions and their evidence identities",
+      "exclusions are exact negative evidence, not a family ban or positive admission",
+      "discovery excludes recorded revision before model-specific requests",
+      "discovery refuses a renamed repository with the rejected weight digest",
+      "acquisition independently rejects stale or fabricated inventories before any write or fetch",
+      "parses bounded UTF-8 JSON without changing decoded member identity",
+      "rejects literal and escaped-equivalent duplicate object members",
+      "rejects byte-order marks and malformed UTF-8 before parsing",
+      "rejects lone escaped surrogates while accepting a valid pair",
+      "enforces byte, depth, member, item, entry, and string limits",
+      "rejects negative zero, unsafe integers, numeric overflow, and underflow",
+      "rejects malformed grammar and all trailing non-whitespace data",
+      "rejects unknown or invalid parser limits"
+    ],
+    "log": "final.txt",
+    "changedLineCoverage": {
+      "method": "Final V8 coverage only; added nonblank/noncomment lines, first nonwhitespace UTF16 offset, smallest containing range per script, positive union across processes. Not branch coverage.",
+      "rows": [
+        {
+          "file": "tinyrustlm/tools/huggingface-candidate-acquire.js",
+          "sha256": "c359d36e422d6546d552bade6ccacf9b10b086959d2930ee38b8f8f070ea993a",
+          "selectedLines": 27,
+          "coveredLines": 27,
+          "uncoveredLines": []
+        },
+        {
+          "file": "tinyrustlm/tools/huggingface-supported-candidates.js",
+          "sha256": "f966ff104fc11fc4a77f000755e2db3995a85772b2e3577d87352c381ec85892",
+          "selectedLines": 16,
+          "coveredLines": 16,
+          "uncoveredLines": []
+        },
+        {
+          "file": "tinyrustlm/tools/huggingface-weight-layout.js",
+          "sha256": "002b9cbe9111a89a01a6c36ff63def0d18e9c5e7060a798636eac440dd6f2911",
+          "selectedLines": 66,
+          "coveredLines": 66,
+          "uncoveredLines": []
+        }
+      ]
+    },
+    "moduleCoverage": [
+      {
+        "file": "huggingface-candidate-acquire.js",
+        "line": 93.54,
+        "branch": 90.71,
+        "functions": 88.89
+      },
+      {
+        "file": "huggingface-supported-candidates.js",
+        "line": 94.01,
+        "branch": 76.58,
+        "functions": 94.12
+      },
+      {
+        "file": "huggingface-weight-layout.js",
+        "line": 100,
+        "branch": 100,
+        "functions": 100
+      }
+    ],
+    "pointerChecks": 17,
+    "diffCheck": "pass",
+    "crossConsumer": "sourceCheckpointArtifacts accepts the acquired fixture as indexed-safetensors-set-v1; no model execution."
+  },
+  "review": {
+    "agent": "/root/candidate_runtime_boundary",
+    "scope": "Implemented shared helper/discovery; parent inspected changes and ran combined tests. Agent separately reviewed parent acquisition/cache closure and source-screen bounds.",
+    "finding": "No concrete defect identified in final acquisition changes; 256 KiB ceiling matches consumer.",
+    "independenceLimit": "Additional agent review is not independent human model qualification.",
+    "focusedTests": {
+      "pass": 16,
+      "fail": 0,
+      "log": "c88-candidate-agent.txt"
+    }
+  },
+  "sourceAuthority": {
+    "status": "source_authority_scan_incomplete",
+    "observation": "Parent and agent checks report the two known C28 unreadable installer links. No gate pass or deletion retry.",
+    "paths": [
+      "artifacts/verification/qwen3-environment-install/tinyrustlm-operation-C3ZUt9/install-temp/TmP6xn2evdh-b",
+      "artifacts/verification/qwen3-environment-install/tinyrustlm-operation-C3ZUt9/install-temp/TmPeq63_hr7-b"
+    ]
+  },
+  "secretScan": {
+    "status": "pass",
+    "scope": "15 implementation/test/documentation/UAI files; generated receipt excluded.",
+    "scopeComplete": false,
+    "scannedArtifactCount": 15,
+    "secretFindingCount": 0,
+    "scannerSourceClosureSha256": "05cefc2bb03b448c3c54d688e7f10b05b1eaf21befa5cb602334c11aae68c5ac",
+    "scopeManifestSha256": "bb90c67c51f1b997469abba8a45eea5ad9f31d7b8857520d2114c0029eaf740d",
+    "log": "scan-report.json"
+  },
+  "nuget": {
+    "webTool": "Profile timed out; API URLs inaccessible through web tool. Direct read-only HTTPS results follow.",
+    "rows": [
+      {
+        "id": "TinyRustLM.Abstractions",
+        "url": "https://api.nuget.org/v3-flatcontainer/tinyrustlm.abstractions/index.json",
+        "status": 404,
+        "latestVersion": null,
+        "observedUtc": "2026-09-22T22:18:46.088Z"
+      },
+      {
+        "id": "TinyRustLM.Core",
+        "url": "https://api.nuget.org/v3-flatcontainer/tinyrustlm.core/index.json",
+        "status": 404,
+        "latestVersion": null,
+        "observedUtc": "2026-09-22T22:18:46.089Z"
+      },
+      {
+        "id": "TinyRustLM.P2P",
+        "url": "https://api.nuget.org/v3-flatcontainer/tinyrustlm.p2p/index.json",
+        "status": 404,
+        "latestVersion": null,
+        "observedUtc": "2026-09-22T22:18:46.090Z"
+      }
+    ],
+    "keyRead": false,
+    "published": false,
+    "credentialLocationRecord": ".uai/operations.uai",
+    "releaseLimits": "Real Linux ARM64 execution, clean source authority and complete three-RID release admission remain open."
+  },
+  "visual": {
+    "changedProductUI": false,
+    "browserRun": false,
+    "scope": "Source acquisition tooling only; no new visual-parity claim."
+  },
+  "receiptPreparation": {
+    "initialAttempt": "Failed before writing receipt: PowerShell5 redirected TAP is UTF-16LE, but receipt reader assumed UTF-8.",
+    "correction": "Decode the BOM-marked existing log as UTF-16LE; no test rerun or source changes."
+  },
+  "scratch": {
+    "rootPath": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\candidate-shard-index\\tinyrustlm-operation-FzLKVn",
+    "rootOriginalIdentity": {
+      "dev": "2767432419",
+      "ino": "30680772467999734"
+    },
+    "markerPath": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\candidate-shard-index\\tinyrustlm-operation-FzLKVn.owner.v2",
+    "markerOriginalIdentity": {
+      "dev": "2767432419",
+      "ino": "29836347537867767"
+    },
+    "markerByteCount": 65,
+    "markerSha256": "d1b0cbdf194b526f0d9ba11e7e6e8be3ffe15362ee8509e2fba741a1cf6eb364",
+    "fileCount": 19,
+    "directoryCountIncludingRoot": 8,
+    "logicalBytes": 6291394,
+    "inventorySha256": "5ce6f8081ce0a715cc268be59c84f10540ae264bbb5c602acce0c366978bc49a",
+    "evidenceFiles": [
+      {
+        "path": "baseline-acquire.txt",
+        "byteCount": 2030,
+        "sha256": "f8024891e37e7d511e7b4e2e009f3b87bdd3046b051e0fd8a93bcd342adadf3f"
+      },
+      {
+        "path": "c88-candidate-agent.txt",
+        "byteCount": 17232,
+        "sha256": "9ae058d832ea9a91f429c4e195687d5448caf9b3de337f4c4fea1dfc78710f73"
+      },
+      {
+        "path": "changed-line-coverage.json",
+        "byteCount": 948,
+        "sha256": "8a2dd21ac5afea58999fdfb8b43e1d3e7c38d048ed8e487987dab74953544120"
+      },
+      {
+        "path": "consumer.txt",
+        "byteCount": 17550,
+        "sha256": "94a48585366c10888b9ba5a857b61f20ce30455a8aba953b07d334b81f54a562"
+      },
+      {
+        "path": "final.txt",
+        "byteCount": 46902,
+        "sha256": "89117b5b5949b7c9cc36359df17a47cc73f237b47063f2f1be8f8ae336d64d95"
+      },
+      {
+        "path": "nuget-readback.json",
+        "byteCount": 819,
+        "sha256": "ce4b8e87c706588328c4a3d657f7e69406bfc166a58034b3b349e8703183b913"
+      },
+      {
+        "path": "repository-inventory.json",
+        "byteCount": 1252,
+        "sha256": "3872d7b397fdbab615be6b5c3728d5fa8ad988f6bdccd0d4e6e911a9f4f2b6ac"
+      },
+      {
+        "path": "scan-report.json",
+        "byteCount": 7779,
+        "sha256": "aacbe1fcdfcc79c6be7418e37d697d992c88a43ed7339d3fc12aeeb81e75e2aa"
+      }
+    ],
+    "status": "removed_and_verified_absent",
+    "quiescence": "All commands terminal; CIM found no matching node/dotnet/msedge operation process.",
+    "modelFixtureParentEmpty": true,
+    "physicalStorageReclaimed": "unmeasured",
+    "removedUtc": "2026-09-22T22:21:18.411Z"
+  },
+  "limits": [
+    "No real source downloaded, executed or qualified.",
+    "No tensor validity, runtime architecture support or throughput claim.",
+    "Candidate metadata profiles do not establish converter support.",
+    "No numerical, useful-browser-model, live seed, NuGet or deployment proof.",
+    "No superseded model or policy-blocked output deletion attempted.",
+    "Acceptance thresholds and candidate rejection identities unchanged."
+  ]
+}

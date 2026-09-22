@@ -11,6 +11,29 @@ Keep useful findings and compact evidence identities in the owning canonical
 repository. Keep source history in Git and current model payloads only in
 `D:\LLMs\TinyRustLM`.
 
+## C88: verified acquisition must include the source loader's complete file set
+
+- **Question:** Can a sharded candidate marked acquired actually reach the source
+  screen with all required files?
+- **Inputs/method:** Parent `b5888f5f249d86967ed3c1a032f2cfdc4fac3b4d`, injected
+  pinned metadata/download responses, two tiny synthetic shards and an exact
+  index, production acquisition and independent source-screen artifact reader.
+  Fixtures stay under `D:\LLMs\TinyRustLM` and remove their owned output.
+- **Result:** Baseline omitted the index while recording verified acquisition.
+  Current inventory/receipt v3 carries it, validates semantics before payload
+  transfer and rechecks cached closure. Final 68/68 pass with zero skips;
+  all 109 selected changed lines are covered. An intermediate 33/34 result caught
+  prior-weight rejection losing precedence to new index validation; corrected.
+- **Decision:** Treat the shard index as a required identity-bound source member,
+  using the existing source-screen size ceiling. Retire active v2 admission;
+  retain old evidence as history. Keep weight deduplication identity unchanged.
+- **Uncertainty:** Synthetic source closure does not prove safetensors contents,
+  architecture support, model usefulness, throughput or live acquisition.
+- **Reusable lesson:** A hash-valid set of downloaded weights may still be an
+  unusable source checkpoint. Test the producer's output through its actual
+  downstream consumer before declaring the handoff complete.
+- **Evidence:** `artifacts/ecosystem-cleanup-20260912/candidate-shard-index-review.json`.
+
 ## C87: bind stored and asynchronous results to complete authority
 
 - **Question:** Can another service or discarded search inherit workspace state?

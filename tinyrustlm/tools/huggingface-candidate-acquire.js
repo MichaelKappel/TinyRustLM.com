@@ -6,11 +6,12 @@ const path = require("node:path");
 const { Readable, Transform } = require("node:stream");
 const { pipeline } = require("node:stream/promises");
 const { sourceCandidateRejection } = require("./source-candidate-exclusions.js");
+const { validateWeightLayout, validateWeightIndex, maximumWeightIndexBytes } = require("./huggingface-weight-layout.js");
 const { requireFilename, requireModelOutputRoot, readBoundedFile,
   withCandidateDirectory } = require("./huggingface-candidate-storage.js");
 
-const inventorySchema = "tinyrustlm.huggingface_supported_candidate_inventory.v2";
-const receiptSchema = "tinyrustlm.huggingface_source_acquisition.v2";
+const inventorySchema = "tinyrustlm.huggingface_supported_candidate_inventory.v3";
+const receiptSchema = "tinyrustlm.huggingface_source_acquisition.v3";
 const defaultBaseUrl = "https://huggingface.co";
 const maximumSmallFileBytes = 32 * 1024 * 1024;
 const maximumReceiptBytes = 128 * 1024;
@@ -95,6 +96,15 @@ function requireCandidate(value) {
   invariant(weightFiles.every((file) => file.sha256), "every weight requires SHA-256");
   const weightRejection = sourceCandidateRejection(modelId, revision, weightFiles);
   invariant(!weightRejection, weightRejection);
+  const layout = validateWeightLayout(weightFiles);
+  let weightIndex = null;
+  if (layout === "single") {
+    invariant(value.weightIndex === null, "direct weights require an explicit null weight index");
+  } else {
+    weightIndex = requireSourceFile(value.weightIndex, "weight index");
+    invariant(weightIndex.filename === "model.safetensors.index.json" &&
+      weightIndex.byteCount <= maximumWeightIndexBytes, "candidate weight index filename or size is invalid");
+  }
   const sourceWeightByteCount = Number(value.sourceWeightByteCount);
   invariant(Number.isSafeInteger(sourceWeightByteCount) && sourceWeightByteCount > 0 &&
     weightFiles.reduce((sum, file) => sum + file.byteCount, 0) === sourceWeightByteCount,
@@ -118,6 +128,7 @@ function requireCandidate(value) {
     chatTemplateSha256,
     sourceWeightByteCount,
     weightIdentity,
+    weightIndex,
     weightFiles: Object.freeze(weightFiles)
   });
 }
@@ -222,6 +233,13 @@ function verifyChatTemplate(directory, candidate, guard) {
   "tokenizer_config.json chat template is not ChatML compatible");
   invariant(crypto.createHash("sha256").update(template).digest("hex") === candidate.chatTemplateSha256,
     "tokenizer_config.json chat template fingerprint mismatch");
+}
+
+// A verified index must resolve exactly the admitted shard set before transfer or cache reuse.
+function verifyShardIndex(directory, candidate, guard) {
+  if (!candidate.weightIndex) return;
+  validateWeightIndex(readBoundedFile(path.join(directory, candidate.weightIndex.filename),
+    maximumWeightIndexBytes, guard), candidate.weightFiles);
 }
 
 // Flushes a completed part file before its final verification and promotion.
@@ -482,7 +500,8 @@ async function existingReceipt(directory, candidate, guard) {
   "source acquisition receipt identity changed");
   const expectedFiles = [
     { filename: "config.json", sha256: candidate.configSha256 }, candidate.tokenizer, candidate.tokenizerConfig,
-    { filename: "LICENSE", sha256: candidate.licenseSha256 }, ...candidate.weightFiles
+    { filename: "LICENSE", sha256: candidate.licenseSha256 },
+    ...(candidate.weightIndex ? [candidate.weightIndex] : []), ...candidate.weightFiles
   ];
   invariant(Array.isArray(receipt.files) && receipt.files.length === expectedFiles.length &&
     receipt.files.every((file) => isPlainObject(file)) &&
@@ -497,6 +516,7 @@ async function existingReceipt(directory, candidate, guard) {
     "source acquisition receipt file identity is invalid");
     const localPath = path.join(directory, file.filename);
     await verifyExpectedFile(localPath, { ...expected, byteCount: file.byteCount, sha256: file.sha256 }, guard);
+    if (candidate.weightIndex && file.filename === candidate.weightIndex.filename) verifyShardIndex(directory, candidate, guard);
   }
   verifyChatTemplate(directory, candidate, guard);
   return Object.freeze(receipt);
@@ -520,6 +540,12 @@ async function acquireCandidate(candidateValue, outputRoot, options = {}) {
     const resumed = await existingReceipt(directory, candidate, guard);
     if (resumed) return resumed;
     const files = [];
+    if (candidate.weightIndex) {
+      files.push(await downloadExpectedFile(
+        pinnedFileUrl(settings.baseUrl, candidate, candidate.weightIndex.filename),
+        directory, candidate.weightIndex, settings));
+      verifyShardIndex(directory, candidate, guard);
+    }
     files.push(await downloadSmallFile(
       pinnedFileUrl(settings.baseUrl, candidate, "config.json"),
       path.join(directory, "config.json"),
