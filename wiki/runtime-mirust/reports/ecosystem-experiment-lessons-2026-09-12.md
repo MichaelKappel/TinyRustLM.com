@@ -11,6 +11,24 @@ Keep useful findings and compact evidence identities in the owning canonical
 repository. Keep source history in Git and current model payloads only in
 `D:\LLMs\TinyRustLM`.
 
+## C87: bind stored and asynchronous results to complete authority
+
+- **Question:** Can another service or discarded search inherit workspace state?
+- **Inputs/method:** Parent `f131190eaae284318de2fa979c24e91ffcd9b545`, actual Edge
+  IndexedDB, shared workspace/event IDs across services, routes and readers,
+  independent event watermarks, and controlled pending search hashes/packing.
+- **Result:** Baseline service checkpoints collided and late results repopulated
+  cleared memory. Scoped snapshots and staged search completion replace those
+  paths. The receipt records exact outcomes and intermediate test failures.
+- **Decision:** Workspace IDs are not globally unique authority. Bind persistent
+  state to service, route and reader; recheck async ownership before UI commit.
+- **Uncertainty:** Local tests do not prove live permissions or availability.
+  A completed transaction cannot be rolled back by subsequent cancellation;
+  rejecting late crypto results does not stop cryptography.
+- **Reusable lesson:** A valid response can become stale during local processing.
+  Ownership must extend through final state publication.
+- **Evidence:** `artifacts/ecosystem-cleanup-20260912/memory-result-isolation-review.json`.
+
 ## C86: an HTTP success code cannot repair malformed application data
 
 - **Question:** Can an invalid or stalled memory response become success or hold

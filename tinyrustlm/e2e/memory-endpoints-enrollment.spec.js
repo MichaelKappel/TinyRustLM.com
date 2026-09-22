@@ -25,6 +25,176 @@ const TEST_ONLY_SCOPE =
   "test-only/never-live/e2e/memory-endpoints-enrollment";
 const RESOLVED_MEMBER_LENGTHS = Object.freeze([8704, 7459, 1403, 65800, 512]);
 
+test("pull storage isolates the service, route, workspace and reader", async ({ page, context }) => {
+  const origin = test.info().project.use.baseURL;
+  await context.route("**/*", route => new URL(route.request().url()).origin === origin
+    ? route.continue() : route.fulfill({ status: 503, body: "External services unavailable in this test" }));
+  await page.coverage.startJSCoverage({ resetOnNavigation: false });
+  await page.goto("/", { waitUntil: "load" });
+  const observed = await page.evaluate(async () => {
+    const sync = window.TinyRustLMMemorySync;
+    const store = new sync.MemoryEndpointsOutboxStore({ databaseName: "test-pull-isolation" });
+    const base = { serviceOrigin: "https://memory.example", pullUrl: "https://memory.example/api/matm/memory-events",
+      workspaceId: "same-workspace", actorAgentId: "reader-a" };
+    const authorities = [base,
+      { ...base, serviceOrigin: "https://another.example", pullUrl: "https://another.example/api/matm/memory-events" },
+      { ...base, pullUrl: "https://memory.example/relay/api/matm/memory-events" },
+      { ...base, workspaceId: "another-workspace" }, { ...base, actorAgentId: "reader-b" }];
+    try {
+      for (let i = 0; i < authorities.length; i += 1) {
+        const snapshot = sync.normalizeMemoryEventsPull({ valuesRedacted: true, items: [{ eventId: "shared-event-id",
+          bodyHash: String(i + 1).repeat(64), createdAt: new Date(1700000000000 - i * 1000).toISOString(),
+          revision: 1, status: "active", memoryType: "handoff", scope: "project", scopeId: "tinyrustlm.com", actorAgentId: "author" }]
+        }, { ...authorities[i], pulledAtUnixMs: 1800000000000 + i });
+        await store.commitPullSnapshot(snapshot);
+      }
+      return await Promise.all(authorities.map(async authority => (await store.readPullSnapshot(authority)).heads[0].bodyHash));
+    } finally { await store.close(); }
+  });
+  expect(observed).toEqual([1, 2, 3, 4, 5].map(n => String(n).repeat(64)));
+  await saveIsolationCoverage(page);
+});
+
+for (const [phase, action] of [["hash", "clear"], ["hash", "newer-search"], ["hash", "filter"], ["hash", "model"],
+  ["packing", "clear"], ["packing", "newer-search"]]) {
+test(`search ${phase} completion cannot override ${action}`, async ({ page, context }) => {
+  const origin = test.info().project.use.baseURL;
+  await context.route("**/*", route => new URL(route.request().url()).origin === origin
+    ? route.continue() : route.fulfill({ status: 503, body: "External services unavailable in this test" }));
+  await context.route(`${origin}/api/matm/**`, route => route.fulfill({ status: 200, contentType: "application/json",
+    body: JSON.stringify({ ok: true, valuesRedacted: true, items: route.request().url().includes("/search?") ? [{
+      memoryId: route.request().url().includes("query=new") ? "new-memory" : "held-memory", revisionId: "held-revision",
+      title: route.request().url().includes("query=new") ? "Current new result" : "Delayed old result",
+      safeSummary: "Public fixture from the previous search.",
+      scope: "project", scopeId: "tinyrustlm.com", memoryType: "handoff", tinyrustlmMemoryTier: "long_term",
+      status: "active", reviewed: true, publicSafe: true, createdAtUnixMs: 1700000000000, score: 1
+    }] : [] }) }));
+  await page.coverage.startJSCoverage({ resetOnNavigation: false });
+  await page.goto("/", { waitUntil: "load" });
+  await expect(page.locator("#simpleOpenAdvancedDiscoveryButton")).toBeVisible();
+  await openMemorySettings(page);
+  await page.locator("#memoryEndpointsBaseUrl").fill(origin);
+  await page.locator(".memory-endpoints-workspace-access > summary").click();
+  await page.locator("#memoryEndpointsWorkspaceId").fill("search-workspace");
+  await page.locator("#memoryEndpointsAgentId").fill("search-agent");
+  await page.locator("#memoryEndpointsToken").fill("test-only-workspace-key");
+  await page.locator("#memoryEndpointsConnectButton").click();
+  await expect(page.locator("#memoryEndpointsStatus")).toHaveText("web memory connected");
+  await page.evaluate(phase => {
+    if (phase === "packing") {
+      const api = window.TinyRustLMMemorySync;
+      window.TinyRustLMMemorySync = { ...api, packMemoryContext: async (...args) => {
+        if (args[0][0].memoryId === "held-memory") await new Promise(resolve => { window.releaseSearchHash = resolve; });
+        return api.packMemoryContext(...args);
+      } };
+      return;
+    }
+    const original = crypto.subtle.digest.bind(crypto.subtle);
+    let held = false;
+    crypto.subtle.digest = async (algorithm, bytes) => {
+      if (!held && new TextDecoder().decode(bytes).includes("Public fixture from the previous search.")) {
+        held = true;
+        await new Promise(resolve => { window.releaseSearchHash = resolve; });
+      }
+      return original(algorithm, bytes);
+    };
+  }, phase);
+  await page.locator("#memoryEndpointsSearchButton").click();
+  await page.waitForFunction(() => typeof window.releaseSearchHash === "function");
+  if (action === "clear") await page.locator("#memoryEndpointsClearButton").click();
+  else if (action === "newer-search") {
+    await page.locator("#memoryEndpointsSearchQuery").fill("new");
+    await page.locator("#memoryEndpointsSearchButton").click();
+    await expect(page.locator("#memoryEndpointsSearchResults")).toContainText("Current new result");
+  } else if (action === "filter") await page.locator("#memoryEndpointsSearchTier").selectOption("short_term");
+  else await page.locator("#modelSelect").dispatchEvent("change");
+  const status = await page.locator("#memoryEndpointsStatus").textContent();
+  await page.evaluate(() => window.releaseSearchHash());
+  await page.waitForTimeout(250);
+  await expect(page.locator("#memoryEndpointsStatus")).toHaveText(status);
+  await expect(page.locator("#memoryEndpointsSearchResults")).not.toContainText("Delayed old result");
+  if (action === "clear") await expect(page.locator("#memoryEndpointsSearchResults")).toBeEmpty();
+  if (action === "newer-search") await expect(page.locator("#memoryEndpointsSearchResults")).toContainText("Current new result");
+  await saveIsolationCoverage(page);
+});
+}
+
+test("pull storage retires unbound caches and preserves atomic cancellation", async ({ page, context }) => {
+  const origin = test.info().project.use.baseURL;
+  await context.route("**/*", route => new URL(route.request().url()).origin === origin
+    ? route.continue() : route.fulfill({ status: 503, body: "External services unavailable in this test" }));
+  await page.coverage.startJSCoverage({ resetOnNavigation: false });
+  await page.goto("/", { waitUntil: "load" });
+  const result = await page.evaluate(async () => {
+    const name = "test-pull-retirement";
+    await new Promise((resolve, reject) => {
+      const request = indexedDB.open(name, 1);
+      request.onupgradeneeded = () => {
+        const db = request.result;
+        db.createObjectStore("metadata", { keyPath: "key" }).put({ key: "pull:workspace", checkpoint: "obsolete" });
+        db.createObjectStore("remoteHeads", { keyPath: "cacheKey" }).put({ cacheKey: "workspace:event", old: true });
+        db.createObjectStore("outbox", { keyPath: "eventId" }).put({ eventId: "retained-outbox" });
+      };
+      request.onsuccess = () => { request.result.close(); resolve(); };
+      request.onerror = () => reject(request.error);
+    });
+    const api = window.TinyRustLMMemorySync;
+    const store = new api.MemoryEndpointsOutboxStore({ databaseName: name });
+    try {
+      const db = await store.open();
+      const authority = { serviceOrigin: "https://memory.example", pullUrl: "https://memory.example/pull",
+        workspaceId: "workspace", actorAgentId: "reader" };
+      const snapshot = api.normalizeMemoryEventsPull({ valuesRedacted: true, items: [] }, { ...authority, pulledAtUnixMs: 1700000000000 });
+      const pending = store.commitPullSnapshot(snapshot);
+      snapshot.checkpoint.workspaceId = "mutated-after-call";
+      await pending;
+      const committed = await store.readPullSnapshot(authority);
+      const controller = new AbortController();
+      const transact = db.transaction.bind(db);
+      db.transaction = (...args) => {
+        const tx = transact(...args);
+        queueMicrotask(() => controller.abort());
+        return tx;
+      };
+      let aborted = false;
+      try { await store.commitPullSnapshot({ ...committed, checkpoint: { ...committed.checkpoint, pulledAtUnixMs: 1700000001000 } }, { signal: controller.signal }); }
+      catch (error) { aborted = error.name === "AbortError"; }
+      finally { db.transaction = transact; }
+      const retained = await store.readPullSnapshot(authority);
+      const outbox = await new Promise((resolve, reject) => {
+        const request = db.transaction("outbox").objectStore("outbox").get("retained-outbox");
+        request.onsuccess = () => resolve(request.result.eventId); request.onerror = () => reject(request.error);
+      });
+      const absent = await store.readPullSnapshot({ ...authority, actorAgentId: "other-reader" });
+      let backwards = false;
+      try { await store.commitPullSnapshot({ ...committed, checkpoint: { ...committed.checkpoint, pulledAtUnixMs: 1699999999999 } }); }
+      catch (error) { backwards = /backwards/.test(error.message); }
+      const key = JSON.stringify([authority.serviceOrigin, authority.pullUrl, authority.workspaceId, authority.actorAgentId]);
+      await new Promise((resolve, reject) => {
+        const tx = db.transaction("pullSnapshots", "readwrite");
+        tx.objectStore("pullSnapshots").put({ authorityKey: key, snapshot: { ...committed, checkpoint: { ...committed.checkpoint, readerAgentId: "other-reader" } } });
+        tx.oncomplete = resolve; tx.onabort = () => reject(tx.error);
+      });
+      let corrupt = false;
+      try { await store.readPullSnapshot(authority); } catch (error) { corrupt = /authority changed/.test(error.message); }
+      return { stores: Array.from(db.objectStoreNames), version: db.version, aborted, backwards, corrupt, outbox,
+        workspace: retained.checkpoint.workspaceId, pulledAt: retained.checkpoint.pulledAtUnixMs, absent };
+    } finally { await store.close(); }
+  });
+  expect(result).toEqual({ stores: ["outbox", "pullSnapshots", "quarantine", "receipts"], version: 2,
+    aborted: true, backwards: true, corrupt: true, outbox: "retained-outbox", workspace: "workspace",
+    pulledAt: 1700000000000, absent: { checkpoint: null, heads: [] } });
+  await saveIsolationCoverage(page);
+});
+
+/** Retain V8 ranges for changed code without duplicating any application source. */
+async function saveIsolationCoverage(page) {
+  const coverage = await page.coverage.stopJSCoverage();
+  fs.writeFileSync(test.info().outputPath("isolation-coverage.json"), JSON.stringify(coverage
+    .filter(entry => /\/(memory-endpoints-sync|app)\.js(?:\?|$)/.test(entry.url))
+    .map(entry => ({ url: entry.url, functions: entry.functions }))));
+}
+
 test("clearing memory closes a pending response and permits a fresh connection", async ({ page, context }) => {
   const applicationOrigin = test.info().project.use.baseURL;
   let registrations = 0;

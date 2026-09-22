@@ -5,6 +5,26 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C87: isolate pulled memory and asynchronous search results, September 22
+
+Two Edge baselines exposed independent defects: a second service sharing a
+workspace hit the first service's checkpoint watermark, and delayed search
+hashing restored hosted results after the user cleared memory.
+
+Browser checkpoints now bind service origin, exact pull route, workspace and
+authenticated reader. IndexedDB v2 stores each validated snapshot atomically.
+It retires unbound metadata/head caches while preserving outbox, receipts and
+quarantine. Input is cloned before waiting, persisted fields are validated, and
+session cancellation aborts an uncommitted pull transaction.
+
+Search and packing stage output privately until the initiating session, search
+generation, filter and model still own completion. The old state-mutating packing
+path is removed. Exact baselines, tests, coverage, visual comparison and scratch
+retirement are in `memory-result-isolation-review.json`. Browser cache changes
+do not alter SDK or hosted wire contracts. Real service evidence, crypto/IndexedDB
+time bounds and existing source/model/release gates remain separate. Prior
+policy-blocked removals were not retried.
+
 ## C86: bound memory responses and stop false connection success, September 20
 
 An actual Edge baseline returned HTTP 200 with `not-json`; the browser still

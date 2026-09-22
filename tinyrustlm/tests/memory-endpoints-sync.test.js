@@ -373,6 +373,7 @@ test("pull snapshots are deterministic, redacted, and monotonic", () => {
   };
 
   const snapshot = sync.normalizeMemoryEventsPull(response, {
+    serviceOrigin: "https://memory.example", pullUrl: "https://memory.example/api/matm/memory-events", actorAgentId: "reader",
     workspaceId: "workspace-demo",
     pulledAtUnixMs: 1_783_700_000_000
   });
@@ -392,11 +393,63 @@ test("pull snapshots are deterministic, redacted, and monotonic", () => {
   );
   assert.throws(
     () => sync.normalizeMemoryEventsPull({ ...response, rawPayloadExposed: true }, {
+      serviceOrigin: "https://memory.example", pullUrl: "https://memory.example/api/matm/memory-events", actorAgentId: "reader",
       workspaceId: "workspace-demo",
       pulledAtUnixMs: 1_783_700_000_000
     }),
     /raw payload/i
   );
+});
+
+test("pull scope rejects unbound, ambiguous and changed authorities", () => {
+  const authority = { serviceOrigin: "https://memory.example", pullUrl: "https://memory.example/api/matm/memory-events",
+    workspaceId: "workspace", actorAgentId: "reader", pulledAtUnixMs: 1700000000000 };
+  const response = { valuesRedacted: true, items: [] };
+  for (const change of [{ serviceOrigin: undefined }, { pullUrl: undefined }, { actorAgentId: undefined },
+    { pullUrl: "https://another.example/api/matm/memory-events" }, { pullUrl: authority.pullUrl + "?key=fixture" },
+    { pullUrl: authority.pullUrl + "#part" }, { actorAgentId: "invalid reader" }]) {
+    assert.throws(() => sync.normalizeMemoryEventsPull(response, { ...authority, ...change }));
+  }
+  const first = sync.normalizeMemoryEventsPull(response, authority);
+  for (const change of [{ workspaceId: "other" }, { actorAgentId: "other" }, { pullUrl: "https://memory.example/relay" },
+    { serviceOrigin: "https://other.example", pullUrl: "https://other.example/pull" }]) {
+    const next = sync.normalizeMemoryEventsPull(response, { ...authority, ...change });
+    assert.throws(() => sync.validateCheckpointAdvance(first.checkpoint, next.checkpoint), /authority changed/);
+  }
+  assert.throws(() => sync.validateCheckpointAdvance(null, { ...first.checkpoint, kind: "tinyrustlm.memory_endpoints.checkpoint.v1", version: 1 }), /unsupported/);
+});
+
+test("pull snapshot validates every persisted head, count and watermark without repair", () => {
+  const options = { serviceOrigin: "https://memory.example", pullUrl: "https://memory.example/pull",
+    workspaceId: "workspace", actorAgentId: "reader", pulledAtUnixMs: 1700000000000 };
+  const item = { eventId: "event", bodyHash: "a".repeat(64), createdAt: "2023-01-01T00:00:00Z", revision: 1,
+    status: "active", memoryType: "handoff", scope: "project", scopeId: "tinyrustlm.com", actorAgentId: "author" };
+  const snapshot = sync.normalizeMemoryEventsPull({ valuesRedacted: true, items: [item] }, options);
+  const change = update => { const copy = structuredClone(snapshot); update(copy); return copy; };
+  for (const update of [s => { s.token = "test-only"; }, s => { s.checkpoint.readerAgentId = ""; },
+    s => { s.checkpoint.recordCount = 2; }, s => { s.checkpoint.maxEventId = "wrong"; },
+    s => { s.heads[0].workspaceId = "other"; }, s => { s.heads[0].bodyHash = "invalid"; },
+    s => { s.heads[0].version = 1; }, s => { s.heads[0].summary = "unadmitted body"; },
+    s => { s.heads.push(s.heads[0]); s.checkpoint.recordCount = 2; }]) {
+    assert.throws(() => sync.validatePullSnapshot(change(update)));
+  }
+  assert.throws(() => sync.normalizeMemoryEventsPull({ valuesRedacted: true, items: [item, { ...item, bodyHash: "b".repeat(64) }] }, options), /conflicting/);
+  assert.throws(() => sync.normalizeMemoryEventsPull({ valuesRedacted: true, items: Array(10001).fill(item) }, options), /excessive/);
+  assert.throws(() => sync.validateCheckpointAdvance(snapshot.checkpoint, { ...snapshot.checkpoint, maxCreatedAtUnixMs: 1 }), /backwards/);
+});
+
+test("pull cancellation and snapshot validation reject before opening storage", async () => {
+  let opened = 0;
+  const store = new sync.MemoryEndpointsOutboxStore({ indexedDB: { open() { opened += 1; throw new Error("unexpected open"); } } });
+  const snapshot = sync.normalizeMemoryEventsPull({ valuesRedacted: true, items: [] }, {
+    serviceOrigin: "https://memory.example", pullUrl: "https://memory.example/pull", workspaceId: "workspace",
+    actorAgentId: "reader", pulledAtUnixMs: 1700000000000 });
+  for (const signal of [null, {}, { throwIfAborted() {} }]) await assert.rejects(store.commitPullSnapshot(snapshot, { signal }), /signal/);
+  const controller = new AbortController(); controller.abort();
+  await assert.rejects(store.commitPullSnapshot(snapshot, { signal: controller.signal }), { name: "AbortError" });
+  await assert.rejects(store.commitPullSnapshot({ ...snapshot, heads: [{}] }), /count/);
+  await assert.rejects(store.readPullSnapshot({ workspaceId: "workspace" }), /origin/);
+  assert.equal(opened, 0);
 });
 
 async function retrievalCandidate(memoryId, revisionId, summary, relevanceMicros) {

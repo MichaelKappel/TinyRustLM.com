@@ -1,5 +1,5 @@
 profile: tinyrustlm.startup-packet.current.v1
-updated_utc: 2026-09-20T22:42:38Z
+updated_utc: 2026-09-22T21:53:47Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
@@ -10,6 +10,7 @@ startup_steps:
   - Preserve immutable failed operations and all campaign counters.
 
 current_truth:
+  memory_result_isolation: C87 binds current browser pull snapshots to service, route, workspace and reader, replacing unbound caches without touching queued writes. Search and packing publish only for the initiating session, request generation, filter and model. Read memory-result-isolation-review.json for baselines, tests, coverage and visual evidence. Live/model/release gates and crypto/IndexedDB duration remain open.
   memory_http: C86 replaces unbounded browser memory reads and malformed-JSON success fallback with one shared streamed JSON reader. Ordinary requests have a 30-second deadline, 16-MiB/4096-chunk ceiling and session cancellation; enrollment retains its one-MiB policy. Clearing or replacing authority ends the request generation. Workspace connect reports failed initial pulls. Read memory-http-lifetime-review.json for real Edge, coverage and visual evidence; storage/search ownership and live/model/release gates remain open.
   outbox_destination: C85 binds current v3 entries and local receipts to exact submit URL, service origin, workspace and actor. Only the elected matching sender recovers sends; status reads preserve them. Authority edits discard credentials and late responses cannot reactivate them. Read outbox-destination-review.json for Node, managed, Edge, shared serialization and visual evidence. General HTTP bounds, pull/search scope and model/release gates remain open.
   enrollment_recovery: C84 retains one original claim and issued credentials in private session memory for explicit recovery, with cancellation through activation. All 73 Node, 38 managed and 25 Edge checks pass; three existing skips remain and screenshot pairs match. Read enrollment-recovery-review.json, including one raw scanner finding manually classified as a dummy test URL. General memory/outbox, model and release gates remain open; no key read or publication.

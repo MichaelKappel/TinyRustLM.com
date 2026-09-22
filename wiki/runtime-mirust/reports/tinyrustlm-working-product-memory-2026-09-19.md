@@ -16,6 +16,13 @@ Authority order is current owner instructions, inspected current contracts and b
 
 ## Current evidence and its limits
 
+**C87 result isolation:** browser pull snapshots bind exact service, route,
+workspace and reader; IndexedDB v2 retires unbound caches while preserving queued
+writes. Search normalization and packing publish only for their current session,
+request, filter and model. Read `memory-result-isolation-review.json` for baseline
+failures, validation and limits. Local evidence does not qualify live memory,
+model, seed or release behavior; crypto/IndexedDB duration remains unbounded.
+
 **C86 memory HTTP:** ordinary browser memory requests now share enrollment's
 streaming reader, with explicit byte/chunk limits, deadlines and session aborts.
 Malformed response text no longer becomes success; a failed initial pull prevents

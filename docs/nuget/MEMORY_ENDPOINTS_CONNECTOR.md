@@ -76,7 +76,11 @@ Browser GET/POST requests now use the same streamed JSON-object reader as enroll
 
 Clearing memory, editing authority, activating an agent or starting a new workspace connection aborts the old request generation. Selecting identical settings later cannot revive it. The HTTP client does not retry a POST; the existing outbox separately retains durable same-key retry semantics. Failed initial pulls prevent a workspace connection success message.
 
-These bounds cover each HTTP request, not the complete multi-request drain or IndexedDB/hash work. Pull-snapshot storage and asynchronous search packing still require separate ownership review. No live service behavior follows from local tests.
+Browser pull caches bind service origin, exact pull URL (including relay paths), workspace and authenticated reader. Current browser checkpoint/head schemas are v2. IndexedDB version 2 atomically stores each snapshot under that compound identity and validates cached heads, counts and watermarks. Cancellation aborts an uncommitted transaction. Upgrade retires the obsolete unbound `metadata` and `remoteHeads` caches while preserving outbox, receipts and quarantine. Cached pulls are rebuildable metadata, not queued user writes. This browser-only change leaves the hosted wire contract and SDK distributed-sync checkpoint unchanged.
+
+Search normalization and packing stage results privately. Only the latest search in the initiating session, filter and model selection can publish results or connection status. Clearing memory, changing authority or filter, and selecting or activating a model invalidate pending results.
+
+HTTP bounds do not cover an entire multi-request drain or IndexedDB/hash execution time. Search ownership rejects late output but does not stop executing cryptography. Local tests establish no live service behavior.
 
 The shared Rust, .NET, and browser local engine also defines exact-parent revisions, explicit sibling conflicts, normalized-body deduplication, tombstones, device epochs and revocation, stale-index reporting, monotonic checkpoints, and conservative compaction. The deployed hosted v1 adapter uses one exact parent and a server-assigned revision ID; it records stale-parent, tombstone, and device decisions explicitly instead of silently applying last-write-wins. Hard forget returns a durable rejected receipt because the advertised retention policy does not support it.
 

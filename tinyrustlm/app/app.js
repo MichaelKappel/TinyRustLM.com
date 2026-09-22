@@ -432,6 +432,7 @@
       searchResults: [],
       retrievalResults: [],
       retrievalCandidates: [],
+      retrievalGeneration: 0,
       packedContext: null,
       packedModelKey: "",
       retrievalReceipt: null,
@@ -8429,6 +8430,7 @@
   }
 
   function invalidateMemoryEndpointsRetrieval(clearPreview) {
+    state.memoryEndpoints.retrievalGeneration += 1;
     state.memoryEndpoints.retrievalCandidates = [];
     state.memoryEndpoints.packedContext = null;
     state.memoryEndpoints.packedModelKey = "";
@@ -8684,6 +8686,7 @@
 
   /** End this request generation even if the same service and credential are later selected again. */
   function cancelMemoryEndpointsRequests() {
+    invalidateMemoryEndpointsRetrieval(true);
     state.memoryEndpoints.requestController.abort();
     state.memoryEndpoints.requestController = new AbortController();
     state.memoryEndpoints.drainPromise = null;
@@ -8780,12 +8783,16 @@
       limit: 10000
     }, authority);
     const snapshot = sync.normalizeMemoryEventsPull(response, {
+      serviceOrigin: authority.serviceOrigin,
+      pullUrl: new URL(memoryEndpointsUrl(memoryEndpointsListPath), window.location.href).href,
       workspaceId: authority.workspaceId,
+      actorAgentId: authority.actorAgentId,
       pulledAtUnixMs: Date.now()
     });
     const store = await memoryEndpointsOutboxStore();
     requireMemoryEndpointsAuthority(authority);
-    await store.commitPullSnapshot(snapshot);
+    await store.commitPullSnapshot(snapshot, { signal: authority.signal });
+    requireMemoryEndpointsAuthority(authority);
     return snapshot;
   }
 
@@ -9334,46 +9341,27 @@
     };
   }
 
-  async function refreshMemoryEndpointsPackedContext() {
-    const sync = requireMemoryEndpointsSync();
-    const candidates = Array.isArray(state.memoryEndpoints.retrievalCandidates)
-      ? state.memoryEndpoints.retrievalCandidates
-      : [];
-    if (!candidates.length) {
-      state.memoryEndpoints.packedContext = null;
-      state.memoryEndpoints.packedModelKey = "";
-      state.memoryEndpoints.retrievalReceipt = null;
-      state.memoryEndpoints.searchResults = state.memoryEndpoints.retrievalResults.map((result) => ({
-        ...result,
-        contextEligible: false
-      })).slice(0, memoryEndpointsMaxPreviewResults);
-      return null;
+  /** Reject late results after another search, account, filter or model owns the UI. */
+  function requireMemoryEndpointsSearch(owner) {
+    requireMemoryEndpointsAuthority(owner.authority);
+    if (state.memoryEndpoints.retrievalGeneration !== owner.generation ||
+        state.memoryEndpoints.searchTier !== owner.tier || state.activeModelKey !== owner.activeModelKey ||
+        el.modelSelect.value !== owner.selectedModelKey) {
+      const error = new Error("Hosted memory search changed");
+      error.code = "memory_authority_changed";
+      throw error;
     }
-    const tier = state.memoryEndpoints.searchTier;
-    const packed = await sync.packMemoryContext(
-      candidates,
-      {
-        scope: memoryEndpointsTinyRustLmScope,
-        scopeId: memoryEndpointsTinyRustLmScopeId,
-        allowShortTerm: tier === "all" || tier === "short_term",
-        allowLongTerm: tier === "all" || tier === "long_term",
-        requireReviewedHosted: true,
-        maxCandidates: memoryEndpointsMaxSearchResults,
-        maxSummaryChars: 2400
-      },
-      selectedModelHostedMemoryContextBudget()
-    );
-    state.memoryEndpoints.packedContext = packed;
-    state.memoryEndpoints.packedModelKey = state.activeModelKey || el.modelSelect.value || "";
-    state.memoryEndpoints.retrievalReceipt = packed.receipt;
-    const selectedRevisionIds = new Set(packed.selected.map((item) => item.revisionId));
-    state.memoryEndpoints.searchResults = state.memoryEndpoints.retrievalResults.map((result) => ({
-      ...result,
-      contextEligible: selectedRevisionIds.has(result.candidate.revisionId)
-    })).sort((left, right) =>
-      Number(right.contextEligible) - Number(left.contextEligible) || left.resultIndex - right.resultIndex
-    ).slice(0, memoryEndpointsMaxPreviewResults);
-    return packed;
+  }
+
+  /** Pack local candidates under captured policy; publish no state until ownership is rechecked. */
+  async function packMemoryEndpointsSearch(results, owner) {
+    if (!results.length) return null;
+    return requireMemoryEndpointsSync().packMemoryContext(results.map(result => result.candidate), {
+      scope: memoryEndpointsTinyRustLmScope, scopeId: memoryEndpointsTinyRustLmScopeId,
+      allowShortTerm: owner.tier === "all" || owner.tier === "short_term",
+      allowLongTerm: owner.tier === "all" || owner.tier === "long_term",
+      requireReviewedHosted: true, maxCandidates: memoryEndpointsMaxSearchResults, maxSummaryChars: 2400
+    }, owner.budget);
   }
 
   function memoryEndpointsHostedContextActive() {
@@ -9391,60 +9379,63 @@
     );
   }
 
+  /** Stage search and packing privately, then commit only the initiating session's latest result. */
   async function searchMemoryEndpoints() {
+    readMemoryEndpointsSettings({ requireEnabled: true, requireAuth: true });
     const query = memoryEndpointsPublicText(
       el.memoryEndpointsSearchQuery && el.memoryEndpointsSearchQuery.value
-        ? el.memoryEndpointsSearchQuery.value
-        : "tinyrustlm hosted memory",
-      "Hosted memory search query",
-      { maxChars: 512 }
-    );
-    setMemoryEndpointsStatus("searching hosted memory", false);
-    const searchTier = memoryEndpointsNormalizeSearchTier(
-      el.memoryEndpointsSearchTier ? el.memoryEndpointsSearchTier.value : state.memoryEndpoints.searchTier
-    );
-    state.memoryEndpoints.searchTier = searchTier;
-    persistMemoryEndpointsSettings();
-    const memoryType = memoryEndpointsMemoryTypeForTier(searchTier);
-    const queryParams = {
-      workspaceId: state.memoryEndpoints.workspaceId,
-      agentId: state.memoryEndpoints.agentId,
-      actor_agent_id: state.memoryEndpoints.agentId,
-      query,
-      scope: memoryEndpointsTinyRustLmScope,
-      scopeId: memoryEndpointsTinyRustLmScopeId,
-      memory_type: memoryType,
-      limit: memoryEndpointsMaxSearchResults
-    };
-    const response = await memoryEndpointsGet(memoryEndpointsSearchPath, queryParams);
-    if (!response || typeof response !== "object" ||
-        response.rawCredentialExposed === true || response.rawPayloadExposed === true ||
-        response.valuesRedacted !== true) {
-      throw new Error("MemoryEndpoints search response did not prove a redacted public-safe boundary");
-    }
-    const normalizedResults = (await Promise.all(memoryEndpointsResultArray(response)
-      .slice(0, memoryEndpointsMaxRetrievedCandidates)
-      .map(async (item, index) => {
-        try {
-          return await normalizeMemoryEndpointsResult(item, index, response);
-        } catch (_error) {
-          return null;
-        }
-      })))
-      .filter(Boolean)
-      .map((result, resultIndex) => ({ ...result, resultIndex }));
-    state.memoryEndpoints.retrievalResults = normalizedResults;
-    state.memoryEndpoints.searchResults = normalizedResults.slice(0, memoryEndpointsMaxPreviewResults);
-    state.memoryEndpoints.retrievalCandidates = normalizedResults.map((result) => result.candidate);
-    await refreshMemoryEndpointsPackedContext();
-    state.memoryEndpoints.connected = true;
+        ? el.memoryEndpointsSearchQuery.value : "tinyrustlm hosted memory",
+      "Hosted memory search query", { maxChars: 512 });
+    const tier = memoryEndpointsNormalizeSearchTier(
+      el.memoryEndpointsSearchTier ? el.memoryEndpointsSearchTier.value : state.memoryEndpoints.searchTier);
+    state.memoryEndpoints.searchTier = tier;
+    invalidateMemoryEndpointsRetrieval(true);
     renderMemoryEndpointsSearchResults();
-    setMemoryEndpointsStatus(
-      state.memoryEndpoints.searchResults.length
+    persistMemoryEndpointsSettings();
+    const owner = { authority: memoryEndpointsRequestAuthority(),
+      generation: state.memoryEndpoints.retrievalGeneration, tier,
+      activeModelKey: state.activeModelKey, selectedModelKey: el.modelSelect.value,
+      budget: selectedModelHostedMemoryContextBudget() };
+    setMemoryEndpointsStatus("searching hosted memory", false);
+    try {
+      const response = await memoryEndpointsGet(memoryEndpointsSearchPath, {
+        workspaceId: owner.authority.workspaceId, agentId: owner.authority.actorAgentId,
+        actor_agent_id: owner.authority.actorAgentId, query, scope: memoryEndpointsTinyRustLmScope,
+        scopeId: memoryEndpointsTinyRustLmScopeId, memory_type: memoryEndpointsMemoryTypeForTier(tier),
+        limit: memoryEndpointsMaxSearchResults
+      }, owner.authority);
+      requireMemoryEndpointsSearch(owner);
+      if (!response || typeof response !== "object" || response.rawCredentialExposed === true ||
+          response.rawPayloadExposed === true || response.valuesRedacted !== true) {
+        throw new Error("MemoryEndpoints search response did not prove a redacted public-safe boundary");
+      }
+      const results = (await Promise.all(memoryEndpointsResultArray(response)
+        .slice(0, memoryEndpointsMaxRetrievedCandidates).map(async (item, index) => {
+          try { return await normalizeMemoryEndpointsResult(item, index, response); }
+          catch (_error) { return null; }
+        }))).filter(Boolean).map((result, resultIndex) => ({ ...result, resultIndex }));
+      requireMemoryEndpointsSearch(owner);
+      const packed = await packMemoryEndpointsSearch(results, owner);
+      requireMemoryEndpointsSearch(owner);
+      const selected = new Set(packed ? packed.selected.map(item => item.revisionId) : []);
+      state.memoryEndpoints.retrievalResults = results;
+      state.memoryEndpoints.retrievalCandidates = results.map(result => result.candidate);
+      state.memoryEndpoints.packedContext = packed;
+      state.memoryEndpoints.packedModelKey = owner.activeModelKey || owner.selectedModelKey || "";
+      state.memoryEndpoints.retrievalReceipt = packed ? packed.receipt : null;
+      state.memoryEndpoints.searchResults = results.map(result => ({
+        ...result, contextEligible: selected.has(result.candidate.revisionId)
+      })).sort((left, right) => Number(right.contextEligible) - Number(left.contextEligible) ||
+        left.resultIndex - right.resultIndex).slice(0, memoryEndpointsMaxPreviewResults);
+      state.memoryEndpoints.connected = true;
+      renderMemoryEndpointsSearchResults();
+      setMemoryEndpointsStatus(state.memoryEndpoints.searchResults.length
         ? `${state.memoryEndpoints.searchResults.length} hosted memory results loaded`
-        : "no hosted memory results found",
-      false
-    );
+        : "no hosted memory results found", false);
+    } catch (error) {
+      requireMemoryEndpointsSearch(owner);
+      throw error;
+    }
   }
 
   function clearMemoryEndpointsSettings() {
@@ -10901,6 +10892,8 @@ if (view.matches.length) {
       );
     }
     const loadId = state.modelLoadSequence + 1;
+    invalidateMemoryEndpointsRetrieval(true);
+    renderMemoryEndpointsSearchResults();
     state.modelLoadSequence = loadId;
     if (activationToken) activationToken.loadId = loadId;
     const selectedModel = el.modelSelect.value;
@@ -11376,6 +11369,8 @@ if (view.matches.length) {
   el.form.addEventListener("submit", submitBrowserConversation);
 
   el.modelSelect.addEventListener("change", function () {
+    invalidateMemoryEndpointsRetrieval(true);
+    renderMemoryEndpointsSearchResults();
     loadSelectedModelWithConsent().catch((error) => {
       setText(el.runtimeStatus, "Model load failed", true);
       setText(el.modelState, "unexpected error", true);

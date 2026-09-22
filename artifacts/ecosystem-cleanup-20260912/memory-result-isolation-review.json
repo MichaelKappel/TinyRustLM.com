@@ -1,0 +1,441 @@
+{
+  "schema": "ecosystem.memory-result-isolation-review/1",
+  "reviewedUtc": "2026-09-22T21:59:30Z",
+  "sourceParent": "f131190eaae284318de2fa979c24e91ffcd9b545",
+  "purpose": "Isolate browser pull caches and reject obsolete memory search results through local normalization, hashing and context packing.",
+  "repositoryInventory": [
+    {
+      "name": ".local-secrets",
+      "repository": false
+    },
+    {
+      "name": ".vscode",
+      "repository": false
+    },
+    {
+      "name": "LMComposer.com",
+      "branch": "main",
+      "head": "6cbb67c59d2f0a3ef22f736d7b515570746c0e3b",
+      "statusCount": 0
+    },
+    {
+      "name": "MiniModel.MiRust.com",
+      "branch": "master",
+      "head": "b437611c34ad4f80312016f4bf9aa1a08398d07a",
+      "statusCount": 0
+    },
+    {
+      "name": "MiniModel.org",
+      "branch": "master",
+      "head": "015d36818f339a9194f2e09591254f954b71ea96",
+      "statusCount": 0
+    },
+    {
+      "name": "MiRust.com",
+      "branch": "master",
+      "head": "b9420a10feb0819ca6bbf89d92c9199ba89d7c86",
+      "statusCount": 0
+    },
+    {
+      "name": "Runtime.MiRust.com",
+      "branch": "master",
+      "head": "8623dcf5603ab419d02ffd0809e9ae987fb5b2a0",
+      "statusCount": 15
+    },
+    {
+      "name": "TinyRustLM.com",
+      "branch": "codex/model-acquisition-v2",
+      "head": "f131190eaae284318de2fa979c24e91ffcd9b545",
+      "statusCount": 30
+    },
+    {
+      "name": "TinyRustLM.MiRust.com",
+      "branch": "master",
+      "head": "d17f77af652e9ac086482414a5bd0b6eb2250a50",
+      "statusCount": 1
+    },
+    {
+      "name": "_archive",
+      "repository": false
+    },
+    {
+      "name": "_screenshots",
+      "repository": false
+    }
+  ],
+  "activeIntake": "Content and Improvement contain only .gitkeep.",
+  "baseline": {
+    "passed": 0,
+    "failed": 2,
+    "source": "Unchanged parent product source in the canonical checkout; no source copies.",
+    "observations": [
+      "Actual desktop Edge: another service sharing workspace/event identifiers inherited the original service watermark and failed with checkpoint watermark moved backwards.",
+      "Actual desktop Edge: releasing a delayed search hash after Clear restored one hosted result instead of leaving hosted memory off."
+    ]
+  },
+  "implementation": {
+    "pull": "Current browser checkpoint/head v2 bind service origin, exact pull URL, workspace and reader. One IndexedDB v2 pullSnapshots record atomically holds validated checkpoint and heads.",
+    "retirement": "Discard rebuildable unbound metadata and remoteHeads caches during version change. Preserve outbox, receipts and quarantine; no old reader or metadata migration.",
+    "validation": "Clone before awaiting storage; reject mismatched scopes, unknown persisted fields, invalid hashes/counts/order/watermarks and backwards scope-local checkpoints. Abort an uncommitted transaction on session cancellation.",
+    "search": "Stage normalized results and packed context locally. Publish only if session, retrieval generation, filter, active model and selected model still match. Clear/reconnect/authority/model changes invalidate retrieval.",
+    "unchanged": "No hosted wire, .NET SDK, NuGet version, styles, labels or visual layout changes. Both generated shells bind current script hashes."
+  },
+  "tests": {
+    "node": {
+      "passed": 90,
+      "failed": 0,
+      "skipped": 0,
+      "suites": [
+        "memory-endpoints-http",
+        "memory-endpoints-enrollment",
+        "memory-endpoints-sync",
+        "memory-endpoints-enrollment-fixture",
+        "static-shell-parity",
+        "web-deployment-manifest",
+        "memory-endpoints-distributed-sync-authority",
+        "memory-endpoints-portable-memory-policy"
+      ],
+      "command": "node --test --experimental-test-coverage <the eight named existing tests>"
+    },
+    "memoryPolicyAfterDocumentation": {
+      "passed": 6,
+      "failed": 0,
+      "alreadyIncludedIn90": true
+    },
+    "managed": {
+      "passed": 38,
+      "failed": 0,
+      "skipped": 0,
+      "project": "dotnet/tests/TinyRustLM.Package.Tests/TinyRustLM.Package.Tests.csproj",
+      "configuration": "Release",
+      "sharedCompilation": false
+    },
+    "edge": {
+      "passed": 73,
+      "failed": 0,
+      "skipped": 3,
+      "projects": [
+        "desktop",
+        "narrow-desktop",
+        "mobile",
+        "reduced-motion"
+      ],
+      "workers": 1,
+      "retries": 0,
+      "processExit": 0,
+      "command": "node node_modules/@playwright/test/cli.js test e2e/memory-endpoints-enrollment.spec.js --workers=1 --retries=0 --reporter=line --output <owned-root>/browser-confirmed",
+      "scope": "Local service/transport fixtures and real Edge IndexedDB; three existing non-desktop continuity cases remain skipped."
+    },
+    "intermediateResults": [
+      {
+        "run": "initial-fixed",
+        "passed": 1,
+        "failed": 1,
+        "reason": "Storage test returned pending Promise.all and closed IndexedDB in finally before reads finished.",
+        "change": "Await Promise.all before closing; product unchanged for this correction."
+      },
+      {
+        "run": "browser",
+        "passed": 65,
+        "failed": 8,
+        "skipped": 3,
+        "reason": "New search cases opened Advanced before the asynchronously displayed model chooser was ready; chooser intercepted clicks.",
+        "change": "Wait for the existing Advanced model options control before calling the existing helper; assertions and product layout unchanged."
+      },
+      {
+        "run": "browser-final",
+        "passed": 73,
+        "failed": 0,
+        "skipped": 3,
+        "wrapperExit": 1,
+        "runnerLastRun": "passed",
+        "reason": "PowerShell wrapper status disagreed with the complete passing runner report; cause not established from that invocation.",
+        "next": "Same suite confirmed with explicit propagation of the native runner exit code, returning 0; no test or source change."
+      }
+    ],
+    "capture": {
+      "before": 1,
+      "after": 1,
+      "failed": 0
+    },
+    "pointerChecks": "All existing file-backed long-memory pointer checksums match; current pointers refreshed.",
+    "diffHygiene": "git diff --check passed."
+  },
+  "coverage": {
+    "method": "Union of final passing browser-final isolation/outbox V8 scripts and the 90-test Node V8 run only. For each nonblank, noncomment added line in git diff --unified=0, test the first nonwhitespace UTF-16 source offset against the smallest containing V8 range; any positive observed count covers the line. No baseline or failed-run coverage included.",
+    "metrics": [
+      {
+        "file": "tinyrustlm/app/app.js",
+        "sha256": "e0bbd1791b99c068e1bce6a5b58c2f70eb5819feb0616037347a46e0fa4d83c3",
+        "addedNoncommentLines": 80,
+        "coveredLines": 75,
+        "percent": 93.75,
+        "uncoveredLines": [
+          9410,
+          9411,
+          9415,
+          9429,
+          9434
+        ],
+        "matchingCoverageScripts": 36
+      },
+      {
+        "file": "tinyrustlm/app/memory-endpoints-sync.js",
+        "sha256": "19f1f1f71334af4ae87debf060fd5f716b48f1ac8af57826151c0d7fea399c0d",
+        "addedNoncommentLines": 127,
+        "coveredLines": 125,
+        "percent": 98.4251968503937,
+        "uncoveredLines": [
+          1784,
+          2252
+        ],
+        "matchingCoverageScripts": 38
+      }
+    ],
+    "limitations": "Added-line observations, not whole-application or full branch coverage. Whole sync-module Node line coverage alone is 51.31%."
+  },
+  "visual": {
+    "captures": [
+      {
+        "viewport": "desktop",
+        "width": 1365,
+        "height": 768,
+        "bytesEqual": true,
+        "signatureEqual": true,
+        "screenshotSha256": "cda885d7f1b918dc57d6a8b234df3fe5cb7b08964d936f0dcb6f1517150e608e",
+        "uiSignatureSha256": "56cba12aafb9c0aef3355df9ba62b238a3d68c9ca82e865368934e0ec84c8704",
+        "pageErrors": [],
+        "browserVersion": "153.0.4234.48",
+        "deviceScaleFactor": 1,
+        "colorScheme": "dark",
+        "locale": "en-US",
+        "timezone": "UTC",
+        "fontStatus": "loaded"
+      },
+      {
+        "viewport": "mobile",
+        "width": 390,
+        "height": 844,
+        "bytesEqual": true,
+        "signatureEqual": true,
+        "screenshotSha256": "16aea953736a095a5eade3a8b435172a2243435a353009001bd746c3e9762d51",
+        "uiSignatureSha256": "68a32a2076c0ce29c6ffba91414a96d37a355207ba033c842566e0fccfc07d42",
+        "pageErrors": [],
+        "browserVersion": "153.0.4234.48",
+        "deviceScaleFactor": 1,
+        "colorScheme": "dark",
+        "locale": "en-US",
+        "timezone": "UTC",
+        "fontStatus": "loaded"
+      }
+    ],
+    "inspection": "Both matching after images inspected. Actual PNG bytes and UI signatures equal their before images.",
+    "scope": "Empty-state desktop 1365x768 and mobile 390x844; not a real model conversation or all-state visual gate. Fifteen historical baseline differences remain a separate unresolved gate."
+  },
+  "sourceAuthority": {
+    "status": "source_authority_scan_incomplete",
+    "exitCode": 1,
+    "unchangedBlockers": [
+      "artifacts/verification/qwen3-environment-install/tinyrustlm-operation-C3ZUt9/install-temp/TmP6xn2evdh-b",
+      "artifacts/verification/qwen3-environment-install/tinyrustlm-operation-C3ZUt9/install-temp/TmPeq63_hr7-b"
+    ],
+    "boundary": "No blocked deletion retried or source/release admission claimed."
+  },
+  "secretScan": {
+    "scope": "14 implementation/test/documentation/UAI files; receipt excluded from this source scan.",
+    "scopeComplete": false,
+    "rawStatus": "fail",
+    "findingCount": 1,
+    "scannerSourceClosureSha256": "05cefc2bb03b448c3c54d688e7f10b05b1eaf21befa5cb602334c11aae68c5ac",
+    "scopeManifestSha256": "77537e7f5cae23c01da923a7083ccffa9fff49853edc0de3b155e35bec53e72d",
+    "manualClassification": "The sole bearer_credential finding is the existing session-only-test-value literal in memory-endpoints-sync.test.js at lines 73 and 95, used by mocked status fetches. It is not a real credential; scanner findings and rules remain unchanged.",
+    "nugetKeyRead": false
+  },
+  "sourceFiles": [
+    {
+      "path": "tinyrustlm/app/app.js",
+      "bytes": 472004,
+      "sha256": "e0bbd1791b99c068e1bce6a5b58c2f70eb5819feb0616037347a46e0fa4d83c3"
+    },
+    {
+      "path": "tinyrustlm/app/memory-endpoints-sync.js",
+      "bytes": 128088,
+      "sha256": "19f1f1f71334af4ae87debf060fd5f716b48f1ac8af57826151c0d7fea399c0d"
+    },
+    {
+      "path": "tinyrustlm/app/index.html",
+      "bytes": 48731,
+      "sha256": "f1661a36f9f9c13e5a31889da20e0d582f9ab8845b59f7de925def8536afef02"
+    },
+    {
+      "path": "tinyrustlm/index.html",
+      "bytes": 48815,
+      "sha256": "dbfead02a741cc9fa71a6996e67a887528d8ca548f74481dffa420260ea0a763"
+    },
+    {
+      "path": "tinyrustlm/e2e/memory-endpoints-enrollment.spec.js",
+      "bytes": 68136,
+      "sha256": "c82ab3ef09a9051572627f46ac3d15bdb61d0e710b9c9d29d0b1f149fab81eeb"
+    },
+    {
+      "path": "tinyrustlm/tests/memory-endpoints-sync.test.js",
+      "bytes": 31286,
+      "sha256": "f8585c755053c952410c8d1b908e8a388b431d9350af5eb80f4f9c14de1c3782"
+    },
+    {
+      "path": "docs/nuget/MEMORY_ENDPOINTS_CONNECTOR.md",
+      "bytes": 21882,
+      "sha256": "8b6426e376cd1a5cde672016680b2ae28375fe47cec88ddc74fc7f79d9067b01"
+    },
+    {
+      "path": "docs/ecosystem-cleanup-2026-09-12.md",
+      "bytes": 166394,
+      "sha256": "d72cf0ba732cba3dff8e87e27d2d00b7d3ff814fff3c20319e52d581c3a2b957"
+    },
+    {
+      "path": "wiki/runtime-mirust/reports/ecosystem-experiment-lessons-2026-09-12.md",
+      "bytes": 198118,
+      "sha256": "18c49c433d04b8eac8a4baa5af3298ffcd5a518c4c0b2aa54ad6379ea260ea28"
+    },
+    {
+      "path": "wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md",
+      "bytes": 69544,
+      "sha256": "f15d6ed5c2ce30cf6d56901e418a3291920bf798cfc93d8dc2fa35a4e4f9478d"
+    },
+    {
+      "path": ".uai/startup-packet.uai",
+      "bytes": 24294,
+      "sha256": "bcbbfab65e462e782602521ae61eca67a9cb5b180d84c13b7ffc465010af176d"
+    },
+    {
+      "path": ".uai/short-term-memory.uai",
+      "bytes": 27842,
+      "sha256": "fd4c94d78732c95d5f8a991c0b63b6d3190515536b6091832083c039dc0ff4dd"
+    },
+    {
+      "path": ".uai/operations.uai",
+      "bytes": 32996,
+      "sha256": "7ca03cfa49b1b1410d06f21766a71176024ebf7ad61bc0d716ccfb028cf3a1e4"
+    },
+    {
+      "path": ".uai/long-term-memory.uai",
+      "bytes": 8810,
+      "sha256": "ae93b2b5e068641b72369e88854078bc44dc708dc81496d09c1efc4d2569f3d4"
+    }
+  ],
+  "evidence": [
+    {
+      "path": "baseline.txt",
+      "bytes": 9128,
+      "sha256": "484502b77e72731a1056838eb1ee1da02a82f7e3a049c95f7a81fa17dfc83242"
+    },
+    {
+      "path": "initial-fixed.txt",
+      "bytes": 5292,
+      "sha256": "592f4a75658e8368443b21b41adc9787440b90e5fc093a7768c7567295b48b3d"
+    },
+    {
+      "path": "browser.txt",
+      "bytes": 84692,
+      "sha256": "e1f4dca6d1837bbcee67d2ecaab9e937327aa1e40bd8a10aace2a73be511b81b"
+    },
+    {
+      "path": "browser-final.txt",
+      "bytes": 23252,
+      "sha256": "a38a906669a5ac16cc526fd08594bc0ff58a4e5d3e624825582a82c57b8c95ff"
+    },
+    {
+      "path": "browser-final/.last-run.json",
+      "bytes": 45,
+      "sha256": "91d1c43004802cd49950d78eb11c8fa7d05da8ffffe219a8b13b2f561bc00903"
+    },
+    {
+      "path": "node.txt",
+      "bytes": 40130,
+      "sha256": "f319e8c670921098708e4e2bd619bb9d873f426b65d14abc481b039f918d09e6"
+    },
+    {
+      "path": "memory-policy-final.txt",
+      "bytes": 1116,
+      "sha256": "42d7dbdb65acc53e7cf247eecb4c0b32d762f755addb4c85d5f33b15bdd3cbf8"
+    },
+    {
+      "path": "package.txt",
+      "bytes": 2508,
+      "sha256": "266cc5d9e5fd30e8823e3e784748d0d35831c2fce0a25020aae9365d99a2adec"
+    },
+    {
+      "path": "results/package.trx",
+      "bytes": 60833,
+      "sha256": "c40240d1d78e1e3a59ce761d357ad13ec1d4eac3429280be1bf11a95a76afc71"
+    },
+    {
+      "path": "capture-before.txt",
+      "bytes": 418,
+      "sha256": "e609dd84df460b84507af130d6df0ba4f5551ed7eb712293152992715614d183"
+    },
+    {
+      "path": "capture-after.txt",
+      "bytes": 418,
+      "sha256": "3255a5a07922969418289ac4cf81565a70141e217dea9d7a4bed7870a5ac9ae5"
+    },
+    {
+      "path": "before/browser/tinyrustlm-ui-lock-report.json",
+      "bytes": 9017,
+      "sha256": "2bcf471aa04c726ecad592cd3b512fe8e21a0c08fd3c89703544cc8b830f60df"
+    },
+    {
+      "path": "after/browser/tinyrustlm-ui-lock-report.json",
+      "bytes": 9015,
+      "sha256": "50284b020119007ef721b67065fca07b5e4aa8c5a3bfdaec88f87a2084ac67e9"
+    },
+    {
+      "path": "source-authority.txt",
+      "bytes": 1336,
+      "sha256": "d26652c0acf6741f7938700bcee9419c79ee0092e76002769447e99f6bb0a750"
+    },
+    {
+      "path": "browser-confirmed.txt",
+      "bytes": 23250,
+      "sha256": "04c1ce8ea462eec2dc88d28119a9c45306a7e392de23b27ac38ac1f5173017b0"
+    },
+    {
+      "path": "browser-confirmed/.last-run.json",
+      "bytes": 45,
+      "sha256": "91d1c43004802cd49950d78eb11c8fa7d05da8ffffe219a8b13b2f561bc00903"
+    },
+    {
+      "path": "scan-report.json",
+      "bytes": 7413,
+      "sha256": "91d2a793a0c4a50d51504ecd5bcb468daaf4e2a09da3eb095f43a6aaac637c9b"
+    }
+  ],
+  "cleanup": {
+    "status": "removed-and-verified",
+    "removedAtUtc": "2026-09-22T22:01:21.054Z",
+    "rootAbsent": true,
+    "markerAbsent": true,
+    "files": 313,
+    "directoriesIncludingRoot": 168,
+    "logicalBytes": 27994103,
+    "markerBytes": 65,
+    "manifestSha256": "1f5d4ff76d3501ccf2eec87a79bd47ec141696a7b2f4b86b138c62acb09875e9",
+    "ownedRoot": "artifacts/tests/memory-result-isolation/tinyrustlm-operation-lLMMuS",
+    "originalRootIdentity": {
+      "dev": "2767432419",
+      "ino": "29554872561156988"
+    },
+    "originalMarkerIdentity": {
+      "dev": "2767432419",
+      "ino": "32088147351552905"
+    },
+    "physicalStorageReclaimed": "not measured"
+  },
+  "limitations": [
+    "Local fixture behavior does not prove live MemoryEndpoints permissions, availability, continuity or deletion.",
+    "HTTP bounds do not bound cryptography or IndexedDB duration. Late hashing is ignored, not cancelled. Cancellation after durable commit cannot roll back that commit.",
+    "No real model, numerical parity, useful default browser conversation, initial public MiniModel seed, NuGet publication or site deployment was performed.",
+    "Source-authority blocks, Linux/ARM64 package execution and other existing release gates remain unresolved.",
+    "Current payload/source storage constraints and X:\\LLMS exclusion remain in force; unrelated working-tree edits preserved."
+  ]
+}
