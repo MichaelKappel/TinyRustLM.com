@@ -22,9 +22,9 @@ const candidateTarget = "wasm32-unknown-unknown";
 const candidateFileName = "tinyrustlm_browser_runtime_wasm.wasm";
 const expectedTracked = Object.freeze({
   manifestByteCount: 1209,
-  manifestSha256: "80eaffc3eb5a77a416eb5a2c34910793e89c9c1a6077a779e095d1bcdd67ace6",
-  wasmByteCount: 576621,
-  wasmSha256: "80cc1e2ce69c19485ae52965dd93051cb007253168a98e9e38871ab34a7c78ac"
+  manifestSha256: "c64f9d28a35bda7b3e39667cc512a149e78e5cda9973e4fc259b640b897ce2bb",
+  wasmByteCount: 576696,
+  wasmSha256: "43225b5f986ed2d1f1f445157693761d99550e0cd6eb7e1ca01aba83bb217c7a"
 });
 const exactToolchain = Object.freeze({
   cargoCommit: "30a34c6821b57de0aaec83a901aca39f88f6778c",

@@ -181,7 +181,10 @@ test("replays independent scalar vectors in the Node WASM engine", async () => {
 
 test("replays identical vectors inside real headless Chromium", async () => {
   const vectors = parseStrictJson(fs.readFileSync(vectorPath));
-  const browser = await chromium.launch({ headless: true });
+  const browser = await chromium.launch({
+    headless: true,
+    channel: process.env.TINYRUSTLM_PLAYWRIGHT_CHANNEL || undefined
+  });
   const requests = [];
   try {
     const page = await browser.newPage();

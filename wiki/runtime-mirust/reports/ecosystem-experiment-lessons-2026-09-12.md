@@ -11,6 +11,31 @@ Keep useful findings and compact evidence identities in the owning canonical
 repository. Keep source history in Git and current model payloads only in
 `D:\LLMs\TinyRustLM`.
 
+## C90: a finite final result can hide an invalid intermediate
+
+- **Question:** Can RMS scaling silently erase an overflow and commit a token?
+- **Inputs/method:** Parent `a21e39956c3cb694d27b8bdeb45386a0bae4e1b6`,
+  ordered F32 square/sum/epsilon boundary cases, unchanged independent Node
+  reference, and an in-memory production-written model that fails after KV growth.
+  Compare the former expression in memory; exercise corrected native execution,
+  normal WASM vectors and reproducible current browser builds.
+- **Result:** Reciprocal turns positive infinity into zero. Both corrected RMS
+  paths reject earlier. All 22 Rust and 57 Node/WASM checks plus Clippy pass.
+  The first Node run had two missing-Chromium launch failures (55/57); actual Edge
+  passes after honoring the existing channel setting. Normal vectors are unchanged;
+  failed token caches roll back and the next valid token matches a clean control.
+- **Decision:** Share the ordered scaling check; replace tracked WASM and its
+  manifest together. Keep source-quality claims separate from retired runtime
+  qualification. Smol360's historical failure record must not disappear from
+  current candidate guidance merely because a later research report suggests it.
+- **Uncertainty:** No previous Rust binary run, browser overflow injection,
+  measured Rust coverage, real checkpoint parity or product qualification.
+  Source scan, model, seed and publication gates remain open; a separate public
+  session-policy admission finding is not fixed by this numerical change.
+- **Reusable lesson:** Validate a lossy arithmetic boundary before a later
+  operation can conceal its failure. Verify state recovery, not just the error.
+- **Evidence:** `artifacts/ecosystem-cleanup-20260912/scalar-normalization-overflow-review.json`.
+
 ## C89: a total-size budget does not replace per-role limits
 
 - **Question:** Can the seed planner emit configuration for member sizes that

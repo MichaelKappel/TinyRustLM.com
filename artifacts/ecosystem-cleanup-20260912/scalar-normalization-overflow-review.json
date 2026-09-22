@@ -1,0 +1,324 @@
+{
+  "schema": "tinyrustlm.scalar-normalization-overflow-review.v1",
+  "recordedUtc": "2026-09-22T22:52:20.309Z",
+  "checkpoint": "C90",
+  "parentCommit": "a21e39956c3cb694d27b8bdeb45386a0bae4e1b6",
+  "scope": "Current scalar arithmetic, tracked browser runtime and truthful model-readiness memory. Source/fixture checkpoint only.",
+  "finding": {
+    "problem": "Ordered F32 squared sums or epsilon-adjusted means can become infinity. Reciprocal of the square root then produces finite zero, hiding the invalid intermediate.",
+    "change": "Both normalization consumers use one rms_scale helper that rejects nonfinite sum and mean before the unchanged reciprocal calculation.",
+    "unchanged": "SLM2 format, finite arithmetic ordering, independent vector corpus, model exclusions, product UI and release gates.",
+    "oracle": {
+      "schema": "tinyrustlm.scalar-rms-overflow-diagnostic.v1",
+      "method": "Former ordered F32 expression reproduced in memory; unchanged independent Node reference executed in isolated VM. This is not a prior Rust binary execution.",
+      "oracleSha256": "8d76a559790d0d9996c9d17990d982c32e227ce767dbfef17a045181444d4f0e",
+      "records": [
+        {
+          "id": "square",
+          "input": [
+            100000002004087730000,
+            1
+          ],
+          "epsilon": 0.000009999999747378752,
+          "oldOrderedF32Expression": {
+            "sum": "Infinity",
+            "mean": "Infinity",
+            "scale": 0,
+            "outputs": [
+              0,
+              0
+            ]
+          },
+          "independentOracleErrors": {
+            "rmsNorm": "reference arithmetic became non-finite",
+            "normalizeHeads": "reference arithmetic became non-finite"
+          }
+        },
+        {
+          "id": "sum",
+          "input": [
+            14000000192611353000,
+            14000000192611353000
+          ],
+          "epsilon": 0.000009999999747378752,
+          "oldOrderedF32Expression": {
+            "sum": "Infinity",
+            "mean": "Infinity",
+            "scale": 0,
+            "outputs": [
+              0,
+              0
+            ]
+          },
+          "independentOracleErrors": {
+            "rmsNorm": "reference arithmetic became non-finite",
+            "normalizeHeads": "reference arithmetic became non-finite"
+          }
+        },
+        {
+          "id": "epsilon",
+          "input": [
+            9999999980506448000,
+            0
+          ],
+          "epsilon": 3.4028234663852886e+38,
+          "oldOrderedF32Expression": {
+            "sum": "9.999999680285692e+37",
+            "mean": "Infinity",
+            "scale": 0,
+            "outputs": [
+              0,
+              0
+            ]
+          },
+          "independentOracleErrors": {
+            "rmsNorm": "reference arithmetic became non-finite",
+            "normalizeHeads": "reference arithmetic became non-finite"
+          }
+        }
+      ]
+    }
+  },
+  "validation": {
+    "rust": {
+      "command": "cargo test -p tinyrustlm-runtime --locked --offline",
+      "passed": 22,
+      "failed": 0,
+      "ignored": 0,
+      "summaries": [
+        "test result: ok. 18 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s",
+        "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s",
+        "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+      ],
+      "regressions": [
+        "individual square overflow",
+        "finite-square accumulation overflow",
+        "epsilon-adjusted mean overflow",
+        "finite boundary controls in both normalization paths",
+        "public token failure after KV insertion preserves exact prior cache and resumes like a clean control"
+      ]
+    },
+    "clippy": {
+      "command": "cargo clippy -p tinyrustlm-runtime --all-targets --locked --offline -- -D warnings",
+      "exitCode": 0
+    },
+    "format": {
+      "firstCheck": "Two test-only line-wrap differences; formatted after test completion, then check and clippy passed.",
+      "finalPassed": true
+    },
+    "nodeInitial": {
+      "passed": 55,
+      "failed": 2,
+      "skipped": 0,
+      "cause": "Playwright pinned Chromium headless executable absent; both failures happened at browser launch.",
+      "resolution": "Conformance test now honors existing TINYRUSTLM_PLAYWRIGHT_CHANNEL. Final run selects installed msedge for both browser tests."
+    },
+    "nodeFinal": {
+      "files": [
+        "slm2-runtime-vectors.test.js",
+        "slm2-runtime-wasm-conformance.test.js",
+        "browser-runtime-web-artifact.test.js",
+        "browser-runtime-wasm-raw-abi.test.js",
+        "browser-runtime-loader_test.js"
+      ],
+      "passed": 57,
+      "failed": 0,
+      "skipped": 0,
+      "durationMs": 15823.7905,
+      "browser": "Actual installed Edge; six scalar vector steps and streamed-loader boundary checks.",
+      "artifact": "Two independent owned builds byte-match updated tracked WASM and manifest."
+    },
+    "coverage": {
+      "measured": false,
+      "reason": "cargo-llvm-cov and llvm-tools component are not installed. Five targeted regressions plus unchanged independent vector comparisons are the closest automated evidence; no percentage claimed."
+    },
+    "secretScan": {
+      "status": "pass",
+      "secretFindingCount": 0,
+      "scannedArtifactCount": 12,
+      "scopeComplete": false,
+      "reportSha256": "12274fe39a775458014dbc91af84d4e85cad46a2afa5bbba3ae01ae4a7aecfea",
+      "setupNotes": [
+        "Initial label used a path and was rejected before a report was produced.",
+        "Final report says pass with zero findings; wrapper exit was 1 because it compared status with passed instead of pass. Report fields were then inspected directly; no rescan or suppressed finding."
+      ]
+    },
+    "pointerHashesPassed": 17
+  },
+  "browserBuild": {
+    "toolchain": "C:\\Users\\AI\\.rustup\\toolchains\\stable-x86_64-pc-windows-msvc\\bin\\cargo.exe",
+    "arguments": [
+      "build",
+      "--locked",
+      "--offline",
+      "--release",
+      "--target",
+      "wasm32-unknown-unknown",
+      "--target-dir",
+      "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\scalar-rms-overflow\\tinyrustlm-operation-dAnMLL\\web-build",
+      "-p",
+      "tinyrustlm-browser-runtime-wasm"
+    ],
+    "oldWasm": {
+      "byteCount": 576621,
+      "sha256": "80cc1e2ce69c19485ae52965dd93051cb007253168a98e9e38871ab34a7c78ac"
+    },
+    "oldManifest": {
+      "byteCount": 1209,
+      "sha256": "80eaffc3eb5a77a416eb5a2c34910793e89c9c1a6077a779e095d1bcdd67ace6"
+    },
+    "newWasm": {
+      "byteCount": 576696,
+      "sha256": "43225b5f986ed2d1f1f445157693761d99550e0cd6eb7e1ca01aba83bb217c7a"
+    },
+    "newManifest": {
+      "byteCount": 1209,
+      "sha256": "c64f9d28a35bda7b3e39667cc512a149e78e5cda9973e4fc259b640b897ce2bb"
+    }
+  },
+  "modelReadiness": {
+    "finding": "Twelve retained raw-screen records represent eleven exact checkpoints, all mapped to rejected current assessments. No qualified present candidate found by bounded review.",
+    "smol360": {
+      "revision": "a10cc1512eabd3dde888204e902eca88bddb4951",
+      "presentWeightStatBytes": 723674912,
+      "weightReadOrHashed": false,
+      "retiredNativeQ8Qualification": {
+        "passed": 2,
+        "total": 14,
+        "status": "rejected"
+      },
+      "sourceEvidence": "Historical July11 memory claims source failures; underlying source-framework raw screen/formal assessment was not located in bounded retained records. Converted-runtime rejection does not isolate source quality.",
+      "decision": "Correct current guidance; do not invent source-quality exclusion or eligibility. Exclusion contract unchanged."
+    },
+    "evidence": [
+      {
+        "path": "wiki/runtime-mirust/reports/tinyrustlm-distillation-pipeline-memory-2026-07-11.md",
+        "byteCount": 17202,
+        "sha256": "aa120fcdc2b6dfcbb8f5f28a884f675876ad316d048f1c13183af97ea880582c"
+      },
+      {
+        "path": "wiki/runtime-mirust/reports/smollm2-gqa-gbpe-planning-memory-2026-07-08.md",
+        "byteCount": 22115,
+        "sha256": "a452ce190af6e1fa1b67a58c456487e5e0c0b6f48a4a1de15aeef5bad3790bd9"
+      },
+      {
+        "path": "artifacts/retained-evidence/Source/External/TinyRustLM-campaign-evidence/receipts/sha256/1c/1c42762fa6b4b2a0bad956d9cfb5474003911ea9ab27d8046cd572ac96023738.json",
+        "byteCount": 2478,
+        "sha256": "854b7dc0017bdf5809ff71619ded16eb41acda819e6f9f4e952179e6e7954ba2"
+      },
+      {
+        "path": "contracts/vnext/source-candidate-exclusions.v1.json",
+        "byteCount": 17290,
+        "sha256": "abb84b63d8fd59eaa335b7e2c7517cdf50c49f9a6f45117f9a22d5f47b9f7133"
+      }
+    ]
+  },
+  "limitations": [
+    "Source-authority scan still incomplete on the two previously policy-blocked install-temp links; no deletion retry and no material gate pass.",
+    "No prior Rust binary run for the baseline expression; no overflow fixture injected into browser WASM.",
+    "No real checkpoint trace, numerical parity, useful browser model, qualified default, live seed or deployment.",
+    "Separate exported ScalarSession::new policy readmission gap identified by source review remains pending regression/fix.",
+    "No visual files changed; no screenshot or visual-parity claim.",
+    "NuGet not published; local credential content not read. Credential location remains in .uai/operations.uai; ARM64/full release gates remain incomplete."
+  ],
+  "sourceFiles": [
+    {
+      "path": "rust/crates/tinyrustlm-runtime/src/scalar.rs",
+      "byteCount": 53816,
+      "sha256": "c4c25047f5c6e2eadeb1c4915bf841d7715f1aba000a2f0592454af29c681a05"
+    },
+    {
+      "path": "tinyrustlm/browser-runtime/tinyrustlm-browser-runtime.wasm",
+      "byteCount": 576696,
+      "sha256": "43225b5f986ed2d1f1f445157693761d99550e0cd6eb7e1ca01aba83bb217c7a"
+    },
+    {
+      "path": "tinyrustlm/browser-runtime/tinyrustlm-browser-runtime.wasm.manifest.json",
+      "byteCount": 1209,
+      "sha256": "c64f9d28a35bda7b3e39667cc512a149e78e5cda9973e4fc259b640b897ce2bb"
+    },
+    {
+      "path": "tinyrustlm/tests/browser-runtime-web-artifact.test.js",
+      "byteCount": 19606,
+      "sha256": "d69494e3118b81ba8567570445ddec73619e1dc2b072fc7f8959b0899812a489"
+    },
+    {
+      "path": "tinyrustlm/tests/slm2-runtime-wasm-conformance.test.js",
+      "byteCount": 9868,
+      "sha256": "b355b3e3181740f9f83d44601f65649cc8ff112ffd1cb2751937618f8d2adb03"
+    },
+    {
+      "path": "wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md",
+      "byteCount": 72511,
+      "sha256": "170f0d76e79b117d5106503ab0e8f4bee15fb4e49c3adfddd1a43b5642758f9d"
+    },
+    {
+      "path": "wiki/runtime-mirust/reports/ecosystem-experiment-lessons-2026-09-12.md",
+      "byteCount": 203127,
+      "sha256": "54605eaaacf2e0138e8454a8f83da0c117945350274de0d0f36991b6f637cfca"
+    },
+    {
+      "path": "docs/ecosystem-cleanup-2026-09-12.md",
+      "byteCount": 171917,
+      "sha256": "b870b57e748324f5e0541a102d7c80c94847cd6fa5ed40c4c10aa66ab02efbb6"
+    },
+    {
+      "path": ".uai/startup-packet.uai",
+      "byteCount": 25644,
+      "sha256": "8dc13da3afe053f36c519f3fadc3a133b180a6fcb6d354966cf0b3325cff951e"
+    },
+    {
+      "path": ".uai/operations.uai",
+      "byteCount": 34346,
+      "sha256": "916dfa627b016b95b655b952e368d8827f43970d053b08288ac149900fb981e5"
+    },
+    {
+      "path": ".uai/short-term-memory.uai",
+      "byteCount": 29192,
+      "sha256": "830b3b1471b588f2c831c02ca55c818cd18603bd532f3ff210628654fe657c7a"
+    },
+    {
+      "path": ".uai/long-term-memory.uai",
+      "byteCount": 8755,
+      "sha256": "46db648f7a7aa85777f28ddd504ddc34cc7d82fc04d18d5cf3b319a6e4a3df1b"
+    }
+  ],
+  "logs": [
+    {
+      "path": "rust-tests.log",
+      "byteCount": 8864,
+      "sha256": "c7de7cd6531a86103291532cdfb2aee24814f1ba53a4ac5ebe979712b712aff8"
+    },
+    {
+      "path": "clippy.log",
+      "byteCount": 3422,
+      "sha256": "4eda41aaade3bdafb49bd759ad19c86214f1703c014cbae799a3a8a0b03145fe"
+    },
+    {
+      "path": "node-runtime.log",
+      "byteCount": 12188,
+      "sha256": "d735d4c4e9071521aaa0450ff441a2168a1a2c860e1a8d4d8371a1b724224cb3"
+    },
+    {
+      "path": "node-runtime-final.log",
+      "byteCount": 8056,
+      "sha256": "f19655dbbed3f897852b7f3ac9e874bcb850639d0979aa8a1ecc7b6d3b974547"
+    },
+    {
+      "path": "web-build.log",
+      "byteCount": 1628,
+      "sha256": "1e9743fc1acbc6de5a314d6037b7dafab301a69a9bb49ea9bcc0aa8d1466d4c6"
+    }
+  ],
+  "scratch": {
+    "root": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\scalar-rms-overflow\\tinyrustlm-operation-dAnMLL",
+    "files": 1423,
+    "directories": 334,
+    "logicalBytes": 384448793,
+    "manifestSha256": "c3689c8e85d62fea6da581b1fba05aaba92889f17740e57adf1334472fa49e31",
+    "retirement": "Original owned root and external marker removed with canonical exact-owner helper; absence verified.",
+    "physicalBytesRecovered": null,
+    "removedMarkerLogicalBytes": 65,
+    "removedUtc": "2026-09-22T22:52:45.281Z"
+  }
+}

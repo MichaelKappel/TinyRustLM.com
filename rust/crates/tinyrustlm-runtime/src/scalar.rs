@@ -1002,14 +1002,7 @@ fn rms_norm(
     {
         return Err(ScalarRuntimeError::new("slm2-runtime-tensor-shape"));
     }
-    let mut sum = 0.0_f32;
-    for value in input {
-        sum += *value * *value;
-    }
-    let scale = (sum / input.len() as f32 + epsilon).sqrt().recip();
-    if !scale.is_finite() {
-        return Err(ScalarRuntimeError::new("slm2-runtime-nonfinite"));
-    }
+    let scale = rms_scale(input, epsilon)?;
     for (index, (source, target)) in input.iter().zip(output.iter_mut()).enumerate() {
         *target = *source * scale * weight.element(index)?;
     }
@@ -1035,19 +1028,32 @@ fn normalize_heads(
         return Err(ScalarRuntimeError::new("slm2-runtime-tensor-shape"));
     }
     for head in values.chunks_exact_mut(head_dimension) {
-        let mut sum = 0.0_f32;
-        for value in head.iter() {
-            sum += *value * *value;
-        }
-        let scale = (sum / head_dimension as f32 + epsilon).sqrt().recip();
-        if !scale.is_finite() {
-            return Err(ScalarRuntimeError::new("slm2-runtime-nonfinite"));
-        }
+        let scale = rms_scale(head, epsilon)?;
         for (index, value) in head.iter_mut().enumerate() {
             *value = *value * scale * weight.element(index)?;
         }
     }
     finite_slice(values)
+}
+
+/// Computes ordered F32 RMS scaling without letting reciprocal hide an overflow.
+fn rms_scale(input: &[f32], epsilon: f32) -> Result<f32, ScalarRuntimeError> {
+    let mut sum = 0.0_f32;
+    for value in input {
+        sum += *value * *value;
+    }
+    if !sum.is_finite() {
+        return Err(ScalarRuntimeError::new("slm2-runtime-nonfinite"));
+    }
+    let mean_with_epsilon = sum / input.len() as f32 + epsilon;
+    if !mean_with_epsilon.is_finite() {
+        return Err(ScalarRuntimeError::new("slm2-runtime-nonfinite"));
+    }
+    let scale = mean_with_epsilon.sqrt().recip();
+    if !scale.is_finite() {
+        return Err(ScalarRuntimeError::new("slm2-runtime-nonfinite"));
+    }
+    Ok(scale)
 }
 
 fn apply_rope(
@@ -1365,6 +1371,162 @@ mod tests {
         for (actual, expected) in values.iter().zip(expected) {
             assert!((*actual - expected).abs() < 1e-5, "{actual} != {expected}");
         }
+    }
+
+    /// Checks full-vector RMS and a later query/key head against the same overflow case.
+    fn assert_normalization_overflow(input: &[f32], epsilon: f32) {
+        let weights = vec![1.0_f32; input.len()]
+            .iter()
+            .flat_map(|value| value.to_le_bytes())
+            .collect::<Vec<_>>();
+        let shape = [input.len() as u64];
+        let tensor = TensorView {
+            bytes: &weights,
+            element_type: ElementType::F32,
+            shape: &shape,
+        };
+        let mut output = vec![0.0; input.len()];
+        assert_eq!(
+            rms_norm(input, tensor, epsilon, &mut output)
+                .unwrap_err()
+                .code(),
+            "slm2-runtime-nonfinite"
+        );
+
+        let mut heads = vec![0.0; input.len()];
+        heads.extend_from_slice(input);
+        assert_eq!(
+            normalize_heads(&mut heads, tensor, 2, input.len() as u32, epsilon)
+                .unwrap_err()
+                .code(),
+            "slm2-runtime-nonfinite"
+        );
+    }
+
+    /// A finite activation must not become accepted zeros when its square overflows.
+    #[test]
+    fn normalization_rejects_individual_square_overflow() {
+        assert!(1e20_f32.is_finite());
+        assert!(!(1e20_f32 * 1e20_f32).is_finite());
+        assert_normalization_overflow(&[1e20, 1.0], 1e-5);
+    }
+
+    /// Individually finite squares can still overflow their ordered F32 sum.
+    #[test]
+    fn normalization_rejects_accumulated_square_overflow() {
+        let square = 1e19_f32 * 1e19_f32;
+        assert!(square.is_finite());
+        assert!((square + square).is_finite());
+        assert!(!(square + square + square + square).is_finite());
+        assert_normalization_overflow(&[1e19; 4], 1e-5);
+    }
+
+    /// The model admits every positive finite epsilon, including values that overflow addition.
+    #[test]
+    fn normalization_rejects_epsilon_adjusted_mean_overflow() {
+        let square = 1e19_f32 * 1e19_f32;
+        let sum = square + square;
+        assert!(sum.is_finite());
+        assert!(!(sum / 2.0 + f32::MAX).is_finite());
+        assert_normalization_overflow(&[1e19; 2], f32::MAX);
+    }
+
+    /// Large finite reductions and epsilon remain usable when no intermediate overflows.
+    #[test]
+    fn normalization_preserves_finite_boundary_cases() {
+        let weights = [1.0_f32, 1.0]
+            .iter()
+            .flat_map(|value| value.to_le_bytes())
+            .collect::<Vec<_>>();
+        let tensor = TensorView {
+            bytes: &weights,
+            element_type: ElementType::F32,
+            shape: &[2],
+        };
+        for (input, epsilon, expected) in [
+            ([1e19, 1e19], 1e-5, [1.0, 1.0]),
+            ([0.0, 0.0], f32::MAX, [0.0, 0.0]),
+        ] {
+            let mut output = [0.0; 2];
+            rms_norm(&input, tensor, epsilon, &mut output).unwrap();
+            let mut heads = input;
+            normalize_heads(&mut heads, tensor, 1, 2, epsilon).unwrap();
+            assert_eq!(output, heads);
+            for (actual, expected) in output.iter().zip(expected) {
+                assert!((*actual - expected).abs() < 1e-6);
+            }
+        }
+    }
+
+    /// Writes a valid tiny model in memory whose nonzero token overflows RMS after KV insertion.
+    fn post_attention_overflow_model() -> Vec<u8> {
+        use tinyrustlm_slm2::{required_model_tensors, write_model, ArtifactClass, TensorInput};
+
+        let spec = ModelSpec {
+            artifact_class: ArtifactClass::BaseModel,
+            vocabulary_size: 2,
+            context_length: 4,
+            embedding_size: 2,
+            feed_forward_size: 2,
+            layer_count: 1,
+            head_count: 1,
+            kv_head_count: 1,
+            head_dimension: 2,
+            rope_theta: 10_000.0,
+            normalization_epsilon: 1e-5,
+            tied_embeddings: true,
+            qkv_bias: false,
+            qk_normalization: false,
+        };
+        let mut tensors = required_model_tensors(&spec, 64)
+            .unwrap()
+            .into_iter()
+            .map(|tensor| {
+                let count = tensor.shape().iter().product::<u64>() as usize;
+                let values = match tensor.semantic_role() {
+                    "model.token-embedding.weight" => vec![0.0, 0.0, 1.0, 1.0],
+                    "layer.attention.value-projection.weight" => vec![1.0; count],
+                    "layer.attention.output-projection.weight" => vec![1e20; count],
+                    role if role.ends_with("normalization.weight") => vec![1.0; count],
+                    _ => vec![0.0; count],
+                };
+                let payload = values
+                    .iter()
+                    .flat_map(|value: &f32| value.to_le_bytes())
+                    .collect::<Vec<_>>();
+                TensorInput::new(tensor, Cursor::new(payload))
+            })
+            .collect::<Vec<_>>();
+        let mut output = Cursor::new(Vec::new());
+        write_model(&mut output, &spec, &mut tensors).unwrap();
+        output.into_inner()
+    }
+
+    /// A failed post-attention normalization rolls back appended KV and permits a valid next token.
+    #[test]
+    fn normalization_overflow_rolls_back_public_forward_token() {
+        let mut session =
+            ScalarSession::from_bytes(post_attention_overflow_model(), policy(4)).unwrap();
+        session.forward_token(0).unwrap();
+        let previous_keys = session.caches[0].keys.clone();
+        let previous_values = session.caches[0].values.clone();
+        let previous_bytes = session.committed_kv_bytes().unwrap();
+
+        assert_eq!(
+            session.forward_token(1).unwrap_err().code(),
+            "slm2-runtime-nonfinite"
+        );
+        assert_eq!(session.position().unwrap(), 1);
+        assert_eq!(session.committed_kv_bytes().unwrap(), previous_bytes);
+        assert_eq!(session.caches[0].keys, previous_keys);
+        assert_eq!(session.caches[0].values, previous_values);
+
+        let resumed_logits = session.forward_token(0).unwrap().to_vec();
+        assert_eq!(session.position().unwrap(), 2);
+        let mut control =
+            ScalarSession::from_bytes(post_attention_overflow_model(), policy(4)).unwrap();
+        control.forward_token(0).unwrap();
+        assert_eq!(resumed_logits, control.forward_token(0).unwrap());
     }
 
     #[test]

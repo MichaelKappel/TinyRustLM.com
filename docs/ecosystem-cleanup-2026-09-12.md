@@ -5,6 +5,37 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C90: reject normalization overflow before it becomes zeros, September 22
+
+Both scalar RMS paths could accept an infinite squared sum because its square
+root's reciprocal is finite zero. They now share ordered F32 scaling that rejects
+nonfinite sums and epsilon-adjusted means before that reciprocal. Finite arithmetic
+order and the current format are unchanged. Five new regressions cover individual
+square overflow, accumulated overflow, epsilon overflow, valid large values and
+public token failure after KV insertion with exact rollback and successful recovery.
+
+All 22 runtime tests and Clippy pass. The unchanged independent Node reference
+rejects all six corresponding normalization probes; a separate reproduction of
+the former F32 expression produces zeros. This comparison did not execute the
+previous Rust binary. All 57 affected Node/WASM checks pass with installed Edge,
+including six real-browser vector steps and two independent builds reproducing
+the updated tracked browser runtime and manifest. The first run was 55/57 because
+the expected Playwright Chromium was absent. Conformance now honors the existing
+browser-channel environment setting. Rust coverage tooling is unavailable; the
+tests are behavioral evidence, not a measured coverage percentage.
+
+Current model guidance now records the retained SmolLM2-360M source identity and
+historical failures. Its retired native Q8 rejection does not isolate source
+quality; the underlying source-framework assessment remains unresolved. The
+source exclusion contract is unchanged. See `scalar-normalization-overflow-review.json`
+for exact identities, test limitations and retained evidence.
+
+No qualified model, browser overflow injection, useful model conversation, live
+seed, NuGet publication, deployment or visual-parity claim follows. The existing
+source scan and release blocks remain. A separately identified session-policy
+admission gap requires its own regression and fix. No policy-blocked removal was
+retried; only this operation's owned temporary output is eligible for retirement.
+
 ## C89: reject impossible seed sizes and verify startup peer ordering, September 22
 
 MiniModel's static seed planner applied the model's 64-GiB ceiling to every
