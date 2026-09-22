@@ -5,6 +5,33 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C89: reject impossible seed sizes and verify startup peer ordering, September 22
+
+MiniModel's static seed planner applied the model's 64-GiB ceiling to every
+member. It now enforces the existing ACG2 limits for each role, retaining the
+exact 896-byte graph requirement. An independent in-memory comparison against
+the previous committed planner reproduces four missing overflow rejections.
+The companion fixture and full valid boundary plan remain byte-identical.
+An old test incorrectly assigned spare aggregate capacity to the tokenizer;
+the corrected boundary test derives every role's limit from the canonical profile.
+
+All 70 affected MiniModel tests pass without skips; planner line/branch coverage
+is 91.10%/97.22%. Native graph validation and browser admission already enforce
+their own limits; this correction rejects impossible upper sizes during planning,
+without replacing actual artifact validation or the tighter browser policy.
+
+The initial suspicion that bootstrap ignored a server seed listed second was
+disproved: catalog projection already prioritizes MiniModel.org. No app behavior
+changed. Extended actual Edge tests pass in all four viewport/interaction settings
+for a sole seed, seed first and seed last (12/12). Each starts acquisition without
+a chooser click and cancels while admission is pending; no competitor peer is
+contacted. This proves startup selection/cancellation, not transfer or inference.
+
+Authoritative evidence is in MiniModel.org
+`artifacts/reports/static-seed-size-review-20260922.json`. Existing source-authority,
+model qualification, live seed, NuGet and deployment gates remain open. No key,
+model payload, public publication or policy-blocked removal was involved.
+
 ## C88: retain and validate candidate shard indexes, September 22
 
 A synthetic acquisition reproduced a verified receipt containing both weight

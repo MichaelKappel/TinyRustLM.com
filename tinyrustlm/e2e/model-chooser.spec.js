@@ -729,35 +729,48 @@ test.describe("compact model chooser", () => {
     });
   }
 
-  test("bootstrap starts the server-seeded model without a chooser click and can cancel", async ({ page }) => {
-    const entry = catalogEntry({ entryId: "bootstrap", displayName: "Starter",
-      compositionSha: sha256("5"), revisionCharacter: "5", peerId: "bootstrap-peer" });
-    browserAdmissionFixture(entry);
-    const announcement = peerAnnouncementFixture({ announcementId: "bootstrap-peer",
-      compositionId: entry.composition.composition_id, pieceSetSha256: sha256("8") });
-    announcement.peer_base_url = "https://minimodel.org/";
-    announcement.signature = nodeCrypto.sign(null,
-      Buffer.from(catalogApi.peerAnnouncementSigningBytes(announcement)),
-      peerKeyPair.privateKey).toString("base64url");
-    const gate = deferred();
-    let admissionRequests = 0;
-    await page.route(`**${entry.browser_admission.route}`, async (route) => {
-      admissionRequests += 1;
-      await gate.promise;
-      await route.abort();
+  for (const peerOrder of ["only", "first", "last"]) {
+    test(`bootstrap starts and cancels with the server seed listed ${peerOrder}`, async ({ page }) => {
+      const entry = catalogEntry({ entryId: "bootstrap", displayName: "Starter",
+        compositionSha: sha256("5"), revisionCharacter: "5", peerId: "bootstrap-peer" });
+      browserAdmissionFixture(entry);
+      const announcement = peerAnnouncementFixture({ announcementId: "bootstrap-peer",
+        compositionId: entry.composition.composition_id, pieceSetSha256: sha256("8") });
+      announcement.peer_base_url = "https://minimodel.org/";
+      announcement.signature = nodeCrypto.sign(null,
+        Buffer.from(catalogApi.peerAnnouncementSigningBytes(announcement)),
+        peerKeyPair.privateKey).toString("base64url");
+      const otherPeer = peerAnnouncementFixture({ announcementId: "other-peer",
+        compositionId: entry.composition.composition_id, pieceSetSha256: sha256("8") });
+      const announcements = peerOrder === "only" ? [announcement]
+        : peerOrder === "first" ? [announcement, otherPeer] : [otherPeer, announcement];
+      entry.peer_announcement_ids = announcements.map((peer) => peer.announcement_id);
+      const gate = deferred();
+      let admissionRequests = 0;
+      let otherPeerRequests = 0;
+      await page.route(`${publicPeerBaseUrl}**`, async (route) => {
+        otherPeerRequests += 1;
+        await route.abort();
+      });
+      await page.route(`**${entry.browser_admission.route}`, async (route) => {
+        admissionRequests += 1;
+        await gate.promise;
+        await route.abort();
+      });
+      try {
+        await routeCatalog(page, { entries: [entry], announcements });
+        await page.goto("/app/", { waitUntil: "domcontentloaded" });
+        await expect.poll(() => admissionRequests).toBe(1);
+        await expect(page.locator("#simpleModelActionButton")).toBeVisible();
+        await page.locator("#simpleModelActionButton").click();
+        await expect(page.locator("#simpleModelPickerStatus")).toHaveText("Model acquisition cancelled.");
+        await expect(page.locator("#generateButton")).toBeDisabled();
+        expect(otherPeerRequests).toBe(0);
+      } finally {
+        gate.resolve();
+      }
     });
-    try {
-      await routeCatalog(page, { entries: [entry], announcements: [announcement] });
-      await page.goto("/app/", { waitUntil: "domcontentloaded" });
-      await expect.poll(() => admissionRequests).toBe(1);
-      await expect(page.locator("#simpleModelActionButton")).toBeVisible();
-      await page.locator("#simpleModelActionButton").click();
-      await expect(page.locator("#simpleModelPickerStatus")).toHaveText("Model acquisition cancelled.");
-      await expect(page.locator("#generateButton")).toBeDisabled();
-    } finally {
-      gate.resolve();
-    }
-  });
+  }
 
   test("Chat hides source conversion and manual peers until Advanced is opened", async ({ page }) => {
     const entry = catalogEntry({ entryId: "advanced-source", displayName: "Advanced Source",

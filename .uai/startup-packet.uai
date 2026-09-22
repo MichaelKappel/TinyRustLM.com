@@ -1,5 +1,5 @@
 profile: tinyrustlm.startup-packet.current.v1
-updated_utc: 2026-09-22T22:18:00Z
+updated_utc: 2026-09-22T22:29:35Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
@@ -10,6 +10,7 @@ startup_steps:
   - Preserve immutable failed operations and all campaign counters.
 
 current_truth:
+  initial_seed_handoff: C89 fixes MiniModel static planner role ceilings with 70 passing checks and unchanged healthy plan bytes. Twelve actual Edge cases verify automatic start/cancel with the server seed only, first or last; existing catalog sorting already handles peer order. Read MiniModel.org artifacts/reports/static-seed-size-review-20260922.json. No app behavior, real model transfer or publication claim; source/model/release gates remain.
   candidate_shard_index: C88 replaces inventory/receipt v2 with v3 and binds the exact shard index or explicit null for direct weights. Bounded index validation precedes payload downloads and cache reuse. All 68 affected checks pass, including a synthetic source-screen handoff; 109/109 selected changed lines are covered. Read candidate-shard-index-review.json. Real model, source-authority, browser, seed and release gates remain open; no key read or publication.
   memory_result_isolation: C87 binds current browser pull snapshots to service, route, workspace and reader, replacing unbound caches without touching queued writes. Search and packing publish only for the initiating session, request generation, filter and model. Read memory-result-isolation-review.json for baselines, tests, coverage and visual evidence. Live/model/release gates and crypto/IndexedDB duration remain open.
   memory_http: C86 replaces unbounded browser memory reads and malformed-JSON success fallback with one shared streamed JSON reader. Ordinary requests have a 30-second deadline, 16-MiB/4096-chunk ceiling and session cancellation; enrollment retains its one-MiB policy. Clearing or replacing authority ends the request generation. Workspace connect reports failed initial pulls. Read memory-http-lifetime-review.json for real Edge, coverage and visual evidence; storage/search ownership and live/model/release gates remain open.

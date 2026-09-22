@@ -16,6 +16,14 @@ Authority order is current owner instructions, inspected current contracts and b
 
 ## Current evidence and its limits
 
+**C89 initial-seed handoff:** MiniModel static planning now enforces the existing
+ACG2 per-role size ceilings; valid descriptor/configuration identities are
+unchanged. All 70 affected checks and twelve TinyRustLM Edge startup/cancellation
+cases pass. Server-seed ordering was already correct, so no app behavior changed.
+Read MiniModel.org `artifacts/reports/static-seed-size-review-20260922.json` for
+the four reproduced overflows, valid-plan comparison and test boundaries.
+No real transfer, useful model, public seed or publication follows from these checks.
+
 **C88 source acquisition:** discovery/acquisition now use inventory/receipt v3,
 binding the shard index or explicitly declaring null for direct weights. A shared
 validator rejects incomplete layouts and unsafe index mappings; acquisition

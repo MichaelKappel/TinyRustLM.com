@@ -11,6 +11,29 @@ Keep useful findings and compact evidence identities in the owning canonical
 repository. Keep source history in Git and current model payloads only in
 `D:\LLMs\TinyRustLM`.
 
+## C89: a total-size budget does not replace per-role limits
+
+- **Question:** Can the seed planner emit configuration for member sizes that
+  the existing native composition profile rejects?
+- **Inputs/method:** MiniModel parent `015d36818f339a9194f2e09591254f954b71ea96`,
+  canonical ACG2 profile, companion descriptor fixture, every role maximum plus
+  one, and the full legal maximum. Compare old/current planners in memory only.
+- **Result:** Prior code admits tokenizer 67,108,865, template 1,048,577, sampling
+  65,801 and prompt 513 bytes. Corrected planning rejects all four; two valid
+  plans remain byte-identical. Final affected tests pass 70/70 without skips.
+- **Decision:** Enforce each member's existing ceiling before planning. Correct
+  the test that redistributed unused aggregate bytes into an oversized tokenizer.
+- **Rejected hypothesis:** Bootstrap was suspected to require seed-first input.
+  Tracing proved catalog projection already sorts the server seed first. Twelve
+  actual Edge cases verify automatic start/cancel for sole/first/last seed order;
+  no implementation change was necessary.
+- **Uncertainty:** Metadata checks cannot prove artifact structure or quality;
+  browser cases cancel before member transfer. Existing source/release gates remain.
+- **Reusable lesson:** Cross-check boundary tests against the owning profile;
+  a test accepting an aggregate maximum can encode an invalid member allocation.
+  Trace upstream normalization before diagnosing a downstream first-element read.
+- **Evidence:** MiniModel.org `artifacts/reports/static-seed-size-review-20260922.json`.
+
 ## C88: verified acquisition must include the source loader's complete file set
 
 - **Question:** Can a sharded candidate marked acquired actually reach the source
