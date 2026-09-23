@@ -45,6 +45,21 @@ conversion retains its own contract and does not acquire the frozen renderer's
 source-template restriction. C95's deterministic tests establish admission
 behavior only; they do not rerun a historical conversion or qualify the source.
 
+Complete conversion retains the two admitted source-lock byte buffers and passes
+those immutable slices to the component conversion cores. The transaction no
+longer reopens either lock path. Standalone commands read their own lock once and
+use the same cores. Each component receipt must name the admitted lock SHA-256
+as well as match its producer's exact receipt identity before the transaction
+continues. This preserves the existing receipt schemas and output artifacts.
+
+One shared regular-file reader handles converter lock, configuration and receipt
+inputs. It allocates only the admitted nonzero length within the caller's limit,
+reads that fixed extent, and probes one extra byte to reject growth. Truncation,
+read failure, links/reparse points, and an opened-file length/type mismatch reject.
+This bounds reads; it does not promise an atomic filesystem snapshot against
+arbitrary concurrent source-payload mutation. Source payloads retain their own
+pre/post identity checks, separate from captured lock-byte custody.
+
 One strict source lock binds exactly these nine regular files:
 
 - `LICENSE`

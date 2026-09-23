@@ -16,6 +16,15 @@ Authority order is current owner instructions, inspected current contracts and b
 
 ## Current evidence and its limits
 
+**C96 conversion custody:** both component converters consume the exact source
+lock bytes admitted at startup; receipt input hashes must match those bytes.
+Standalone APIs share the same cores. One fixed-allocation reader replaces three
+metadata-screened but potentially unbounded reads. The replacement regression
+fails before the fix; final Rust 48/48, Node 27/27 and Clippy pass. Read
+`conversion-source-lock-custody-review.json`. These are synthetic conversion and
+bounded input tests, not real-model or browser qualification. No package or site
+was published. Source admission still reports the same 37 unreadable entries.
+
 **C95 template source admission:** complete conversion now rejects matching but
 unpinned config/tokenizer-config records before output creation. Template2 owns
 the file identities; standalone tokenizer behavior and all frozen artifact bytes

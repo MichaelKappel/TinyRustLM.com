@@ -1,6 +1,7 @@
 #![forbid(unsafe_code)]
 #![doc = "Fail-closed source-family converters for the TinyRustLM SLM2 format."]
 
+mod bounded_file;
 mod execution;
 mod qwen3;
 mod qwen3_composition;

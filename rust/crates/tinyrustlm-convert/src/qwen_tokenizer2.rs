@@ -259,14 +259,34 @@ pub fn convert_locked_qwen_tokenizer2_source(
     output_tokenizer_path: &Path,
     execution: &ConverterExecutionIdentity,
 ) -> Result<QwenTokenizer2ConversionResult, QwenTokenizer2ConversionError> {
-    validate_profile()?;
     let lock_bytes = read_bounded_regular_file(
         source_lock_path,
         SOURCE_LOCK_MAXIMUM_BYTES,
         "qwen-tokenizer2-source-lock-invalid",
     )?;
+    convert_qwen_tokenizer2_source_from_lock_bytes(
+        &lock_bytes,
+        source_directory,
+        output_tokenizer_path,
+        execution,
+    )
+}
+
+/// Converts against the captured lock bytes used for admission and receipt identity.
+pub(crate) fn convert_qwen_tokenizer2_source_from_lock_bytes(
+    lock_bytes: &[u8],
+    source_directory: &Path,
+    output_tokenizer_path: &Path,
+    execution: &ConverterExecutionIdentity,
+) -> Result<QwenTokenizer2ConversionResult, QwenTokenizer2ConversionError> {
+    validate_profile()?;
+    if lock_bytes.is_empty() || lock_bytes.len() as u64 > SOURCE_LOCK_MAXIMUM_BYTES {
+        return Err(QwenTokenizer2ConversionError::new(
+            "qwen-tokenizer2-source-lock-invalid",
+        ));
+    }
     let lock: QwenTokenizer2SourceLock =
-        parse_complete_json(&lock_bytes, "qwen-tokenizer2-source-lock-invalid")?;
+        parse_complete_json(lock_bytes, "qwen-tokenizer2-source-lock-invalid")?;
     validate_source_lock(&lock)?;
     let source_directory =
         validate_directory(source_directory, "qwen-tokenizer2-source-directory-invalid")?;
@@ -341,7 +361,7 @@ pub fn convert_locked_qwen_tokenizer2_source(
             executable_sha256: execution.executable_sha256(),
         },
         source: SourceReceipt {
-            lock_sha256: sha256_bytes(&lock_bytes),
+            lock_sha256: sha256_bytes(lock_bytes),
             model_id: &lock.model_id,
             revision: &lock.revision,
             source_kind: &lock.source_kind,
@@ -722,16 +742,8 @@ fn read_bounded_regular_file(
     maximum_bytes: u64,
     code: &'static str,
 ) -> Result<Vec<u8>, QwenTokenizer2ConversionError> {
-    let metadata =
-        fs::symlink_metadata(path).map_err(|_| QwenTokenizer2ConversionError::new(code))?;
-    if metadata_is_link(&metadata)
-        || !metadata.is_file()
-        || metadata.len() == 0
-        || metadata.len() > maximum_bytes
-    {
-        return Err(QwenTokenizer2ConversionError::new(code));
-    }
-    fs::read(path).map_err(|_| QwenTokenizer2ConversionError::new(code))
+    crate::bounded_file::read_bounded_regular_file(path, maximum_bytes)
+        .map_err(|_| QwenTokenizer2ConversionError::new(code))
 }
 
 fn validate_directory(

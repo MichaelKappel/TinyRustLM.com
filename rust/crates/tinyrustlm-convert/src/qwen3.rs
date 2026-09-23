@@ -590,13 +590,31 @@ pub fn convert_locked_qwen3_source(
     output_model_path: &Path,
     execution: &ConverterExecutionIdentity,
 ) -> Result<Qwen3ConversionResult, Qwen3ConversionError> {
-    validate_profile()?;
     let lock_bytes = read_bounded_regular_file(
         source_lock_path,
         SOURCE_LOCK_MAXIMUM_BYTES,
         "qwen3-source-lock-invalid",
     )?;
-    let lock: Qwen3SourceLock = serde_json::from_slice(&lock_bytes)
+    convert_qwen3_source_from_lock_bytes(
+        &lock_bytes,
+        source_directory,
+        output_model_path,
+        execution,
+    )
+}
+
+/// Converts against one immutable admitted lock snapshot, without reopening its path.
+pub(crate) fn convert_qwen3_source_from_lock_bytes(
+    lock_bytes: &[u8],
+    source_directory: &Path,
+    output_model_path: &Path,
+    execution: &ConverterExecutionIdentity,
+) -> Result<Qwen3ConversionResult, Qwen3ConversionError> {
+    validate_profile()?;
+    if lock_bytes.is_empty() || lock_bytes.len() as u64 > SOURCE_LOCK_MAXIMUM_BYTES {
+        return Err(Qwen3ConversionError::new("qwen3-source-lock-invalid"));
+    }
+    let lock: Qwen3SourceLock = serde_json::from_slice(lock_bytes)
         .map_err(|_| Qwen3ConversionError::new("qwen3-source-lock-invalid"))?;
     validate_source_lock(&lock)?;
     let source_directory = validate_directory(source_directory, "qwen3-source-directory-invalid")?;
@@ -656,7 +674,7 @@ pub fn convert_locked_qwen3_source(
             executable_sha256: execution.executable_sha256(),
         },
         source: SourceReceipt {
-            lock_sha256: sha256_bytes(&lock_bytes),
+            lock_sha256: sha256_bytes(lock_bytes),
             model_id: &lock.model_id,
             revision: &lock.revision,
             source_kind: &lock.source_kind,
@@ -1427,15 +1445,8 @@ fn read_bounded_regular_file(
     maximum_bytes: u64,
     code: &'static str,
 ) -> Result<Vec<u8>, Qwen3ConversionError> {
-    let metadata = fs::symlink_metadata(path).map_err(|_| Qwen3ConversionError::new(code))?;
-    if metadata_is_link(&metadata)
-        || !metadata.is_file()
-        || metadata.len() == 0
-        || metadata.len() > maximum_bytes
-    {
-        return Err(Qwen3ConversionError::new(code));
-    }
-    fs::read(path).map_err(|_| Qwen3ConversionError::new(code))
+    crate::bounded_file::read_bounded_regular_file(path, maximum_bytes)
+        .map_err(|_| Qwen3ConversionError::new(code))
 }
 
 fn validate_directory(path: &Path, code: &'static str) -> Result<PathBuf, Qwen3ConversionError> {

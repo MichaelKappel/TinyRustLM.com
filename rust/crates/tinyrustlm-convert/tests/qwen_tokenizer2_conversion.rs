@@ -339,6 +339,7 @@ fn deterministic_conversion_receipt_and_reparse_are_exact() {
         "tinyrustlm.qwen_tokenizer2_conversion_receipt.v2"
     );
     assert_eq!(receipt["status"], "pass");
+    assert_eq!(receipt["source"]["lockSha256"], sha256(&fixture.lock));
     assert_eq!(
         receipt["converterProfileId"],
         QWEN_TOKENIZER2_CONVERSION_PROFILE_ID

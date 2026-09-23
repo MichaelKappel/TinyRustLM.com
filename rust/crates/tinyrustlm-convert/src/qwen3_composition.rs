@@ -2,7 +2,7 @@ use std::collections::BTreeSet;
 use std::error::Error;
 use std::fmt::{self, Display, Formatter};
 use std::fs::{self, File, OpenOptions};
-use std::io::{Read, Write};
+use std::io::Write;
 use std::path::{Path, PathBuf};
 
 use serde::Serialize;
@@ -36,14 +36,15 @@ use tinyrustlm_tokenizer2::{
     TOKENIZER2_FORMAT_PROFILE_ID, TOKENIZER2_FORMAT_PROFILE_SHA256,
 };
 
-use crate::qwen3::QWEN3_ARCHITECTURE_PROFILE_ID;
+use crate::qwen3::{convert_qwen3_source_from_lock_bytes, QWEN3_ARCHITECTURE_PROFILE_ID};
 use crate::qwen_tokenizer2::{
-    QWEN3_TOKENIZER_ARCHITECTURE_PROFILE_ID, QWEN_TOKENIZER2_COMPOSITION_FILE,
-    QWEN_TOKENIZER2_COMPOSITION_RECEIPT_FILE, QWEN_TOKENIZER2_CONVERSION_RECEIPT_SCHEMA,
+    convert_qwen_tokenizer2_source_from_lock_bytes, QWEN3_TOKENIZER_ARCHITECTURE_PROFILE_ID,
+    QWEN_TOKENIZER2_COMPOSITION_FILE, QWEN_TOKENIZER2_COMPOSITION_RECEIPT_FILE,
+    QWEN_TOKENIZER2_CONVERSION_RECEIPT_SCHEMA,
 };
 use crate::{
-    convert_locked_qwen3_source, convert_locked_qwen_tokenizer2_source, ConverterExecutionIdentity,
-    ReceiptIdentity, QWEN3_SOURCE_LOCK_SCHEMA, QWEN_TOKENIZER2_SOURCE_LOCK_SCHEMA,
+    ConverterExecutionIdentity, ReceiptIdentity, QWEN3_SOURCE_LOCK_SCHEMA,
+    QWEN_TOKENIZER2_SOURCE_LOCK_SCHEMA,
 };
 
 const PROFILE_BYTES: &[u8] =
@@ -189,6 +190,8 @@ impl RawIdentity {
 struct SourceRelationship {
     model_lock_sha256: String,
     tokenizer_lock_sha256: String,
+    model_lock_bytes: Vec<u8>,
+    tokenizer_lock_bytes: Vec<u8>,
 }
 
 struct OutputRoot {
@@ -236,9 +239,7 @@ pub fn convert_locked_qwen3_composition(
 
     match run_started_transaction(
         &output,
-        model_source_lock_path,
         &model_source_directory,
-        tokenizer_source_lock_path,
         &tokenizer_source_directory,
         &relationship,
         execution,
@@ -255,31 +256,41 @@ pub fn convert_locked_qwen3_composition(
 
 fn run_started_transaction(
     output: &OutputRoot,
-    model_source_lock_path: &Path,
     model_source_directory: &Path,
-    tokenizer_source_lock_path: &Path,
     tokenizer_source_directory: &Path,
     relationship: &SourceRelationship,
     execution: &ConverterExecutionIdentity,
 ) -> Result<Qwen3CompositionConversionResult, Qwen3CompositionConversionError> {
     write_attempt(output, relationship, execution)?;
 
-    let model_result = convert_locked_qwen3_source(
-        model_source_lock_path,
+    let model_result = convert_qwen3_source_from_lock_bytes(
+        &relationship.model_lock_bytes,
         model_source_directory,
         &output.root.join(MODEL_FILE),
         execution,
     )
     .map_err(|error| Qwen3CompositionConversionError::new(error.code()))?;
+    let model_receipt = component_receipt(
+        model_result.receipt_path(),
+        "tinyrustlm.qwen3_conversion_receipt.v2",
+        model_result.receipt_identity(),
+        &relationship.model_lock_sha256,
+    )?;
     let model = validate_exact_model(model_result.model_path(), model_result.model_identity())?;
 
-    let tokenizer_result = convert_locked_qwen_tokenizer2_source(
-        tokenizer_source_lock_path,
+    let tokenizer_result = convert_qwen_tokenizer2_source_from_lock_bytes(
+        &relationship.tokenizer_lock_bytes,
         tokenizer_source_directory,
         &output.root.join(TOKENIZER_FILE),
         execution,
     )
     .map_err(|error| Qwen3CompositionConversionError::new(error.code()))?;
+    let tokenizer_receipt = component_receipt(
+        tokenizer_result.receipt_path(),
+        QWEN_TOKENIZER2_CONVERSION_RECEIPT_SCHEMA,
+        tokenizer_result.receipt_identity(),
+        &relationship.tokenizer_lock_sha256,
+    )?;
     let tokenizer_identity = tokenizer_result.tokenizer_identity();
     let tokenizer = RawIdentity {
         byte_length: tokenizer_identity.byte_length,
@@ -309,16 +320,6 @@ fn run_started_transaction(
     let resource_plan = verify_complete_composition(&output.root, graph, member_identities)?;
     validate_output_inventory(&output.root, false)?;
 
-    let model_receipt = component_receipt(
-        model_result.receipt_path(),
-        "tinyrustlm.qwen3_conversion_receipt.v2",
-        model_result.receipt_identity(),
-    )?;
-    let tokenizer_receipt = component_receipt(
-        tokenizer_result.receipt_path(),
-        QWEN_TOKENIZER2_CONVERSION_RECEIPT_SCHEMA,
-        tokenizer_result.receipt_identity(),
-    )?;
     let artifacts = [
         model.artifact("slm2"),
         tokenizer.artifact("tokenizer2"),
@@ -533,6 +534,8 @@ fn validate_source_relationship(
     Ok(SourceRelationship {
         model_lock_sha256: sha256_bytes(&model_bytes),
         tokenizer_lock_sha256: sha256_bytes(&tokenizer_bytes),
+        model_lock_bytes: model_bytes,
+        tokenizer_lock_bytes: tokenizer_bytes,
     })
 }
 
@@ -974,10 +977,12 @@ impl ResourcePreflight for StrictPreflight {
     }
 }
 
+/// Reconciles exact producer receipt bytes and the lock admitted for that component.
 fn component_receipt(
     path: &Path,
     expected_schema: &str,
     expected_identity: ReceiptIdentity,
+    expected_lock_sha256: &str,
 ) -> Result<ComponentReceipt, Qwen3CompositionConversionError> {
     let bytes = read_bounded_regular_file(
         path,
@@ -998,6 +1003,16 @@ fn component_receipt(
     if observed_identity != expected_identity {
         return Err(Qwen3CompositionConversionError::new(
             "composition-component-receipt-invalid",
+        ));
+    }
+    if value
+        .get("source")
+        .and_then(|source| source.get("lockSha256"))
+        .and_then(Value::as_str)
+        != Some(expected_lock_sha256)
+    {
+        return Err(Qwen3CompositionConversionError::new(
+            "composition-component-source-lock-mismatch",
         ));
     }
     let file = path
@@ -1198,28 +1213,8 @@ fn read_bounded_regular_file(
     maximum_bytes: u64,
     code: &'static str,
 ) -> Result<Vec<u8>, Qwen3CompositionConversionError> {
-    let metadata =
-        fs::symlink_metadata(path).map_err(|_| Qwen3CompositionConversionError::new(code))?;
-    if metadata_is_link(&metadata)
-        || !metadata.is_file()
-        || metadata.len() == 0
-        || metadata.len() > maximum_bytes
-    {
-        return Err(Qwen3CompositionConversionError::new(code));
-    }
-    let mut file = File::open(path).map_err(|_| Qwen3CompositionConversionError::new(code))?;
-    let length =
-        usize::try_from(metadata.len()).map_err(|_| Qwen3CompositionConversionError::new(code))?;
-    let mut bytes = Vec::new();
-    bytes
-        .try_reserve_exact(length)
-        .map_err(|_| Qwen3CompositionConversionError::new(code))?;
-    file.read_to_end(&mut bytes)
-        .map_err(|_| Qwen3CompositionConversionError::new(code))?;
-    if bytes.len() != length {
-        return Err(Qwen3CompositionConversionError::new(code));
-    }
-    Ok(bytes)
+    crate::bounded_file::read_bounded_regular_file(path, maximum_bytes)
+        .map_err(|_| Qwen3CompositionConversionError::new(code))
 }
 
 fn validate_directory(
@@ -1669,18 +1664,27 @@ mod tests {
         let root = test_root("component-receipt-identity");
         fs::create_dir(&root).expect("root");
         let path = root.join("component-receipt.json");
-        let original = b"{\"schema\":\"receipt.test\",\"status\":\"pass\",\"value\":1}\n";
-        let changed = b"{\"schema\":\"receipt.test\",\"status\":\"pass\",\"value\":2}\n";
-        fs::write(&path, original).expect("write original receipt");
-        let identity = ReceiptIdentity::from_bytes(original);
+        let expected_lock_sha256 = "1".repeat(64);
+        let mut value = serde_json::json!({
+            "schema": "receipt.test",
+            "status": "pass",
+            "source": {"lockSha256": expected_lock_sha256},
+            "value": 1
+        });
+        let original = serde_json::to_vec(&value).expect("original receipt");
+        value["value"] = Value::from(2);
+        let changed = serde_json::to_vec(&value).expect("changed receipt");
+        fs::write(&path, &original).expect("write original receipt");
+        let identity = ReceiptIdentity::from_bytes(&original);
 
-        let accepted = component_receipt(&path, "receipt.test", identity).expect("receipt");
+        let accepted = component_receipt(&path, "receipt.test", identity, &expected_lock_sha256)
+            .expect("receipt");
         assert_eq!(accepted.byte_length, identity.byte_length());
         assert_eq!(accepted.sha256, identity.sha256_hex());
 
         fs::write(&path, changed).expect("replace receipt bytes");
         assert_eq!(
-            component_receipt(&path, "receipt.test", identity)
+            component_receipt(&path, "receipt.test", identity, &expected_lock_sha256)
                 .err()
                 .expect("changed receipt bytes must fail")
                 .code(),
@@ -1688,6 +1692,73 @@ mod tests {
         );
 
         fs::remove_dir_all(&root).expect("cleanup");
+    }
+
+    /// Producer-bound receipt bytes must independently identify the originally admitted lock.
+    #[test]
+    fn component_receipts_require_the_admitted_source_lock_identity() {
+        let root = test_root("component-source-lock");
+        fs::create_dir(&root).expect("root");
+        let expected_lock_sha256 = "1".repeat(64);
+        let mut observations = Vec::new();
+        for (component, schema) in [
+            ("model", "tinyrustlm.qwen3_conversion_receipt.v2"),
+            ("tokenizer", QWEN_TOKENIZER2_CONVERSION_RECEIPT_SCHEMA),
+        ] {
+            for (case, source, accepted) in [
+                (
+                    "correct",
+                    Some(serde_json::json!({"lockSha256": expected_lock_sha256})),
+                    true,
+                ),
+                (
+                    "mismatch",
+                    Some(serde_json::json!({"lockSha256": "2".repeat(64)})),
+                    false,
+                ),
+                ("missing-hash", Some(serde_json::json!({})), false),
+                ("missing-source", None, false),
+                (
+                    "null-hash",
+                    Some(serde_json::json!({"lockSha256": null})),
+                    false,
+                ),
+                (
+                    "wrong-type",
+                    Some(serde_json::json!({"lockSha256": 1})),
+                    false,
+                ),
+            ] {
+                let mut receipt = serde_json::json!({"schema": schema, "status": "pass"});
+                if let Some(source) = source {
+                    receipt["source"] = source;
+                }
+                let bytes = serde_json::to_vec(&receipt).expect("receipt bytes");
+                let path = root.join(format!("{component}-{case}.json"));
+                fs::write(&path, &bytes).expect("receipt fixture");
+                let outcome = component_receipt(
+                    &path,
+                    schema,
+                    ReceiptIdentity::from_bytes(&bytes),
+                    &expected_lock_sha256,
+                )
+                .map(|_| ())
+                .map_err(|error| error.code());
+                observations.push((component, case, accepted, outcome));
+            }
+        }
+        fs::remove_dir_all(&root).expect("cleanup");
+        for (component, case, accepted, outcome) in observations {
+            assert_eq!(
+                outcome,
+                if accepted {
+                    Ok(())
+                } else {
+                    Err("composition-component-source-lock-mismatch")
+                },
+                "{component}: {case}"
+            );
+        }
     }
 
     #[test]
@@ -1939,6 +2010,172 @@ mod tests {
             "composition-output-already-exists"
         );
         fs::remove_dir_all(&root).expect("cleanup");
+    }
+
+    /// The started model conversion consumes the lock admitted before path replacement.
+    #[test]
+    fn started_transaction_uses_admitted_lock_bytes_after_paths_change() {
+        let root = test_root("admitted-lock-bytes");
+        fs::create_dir(&root).expect("root");
+        let model_source = root.join("model-source");
+        let tokenizer_source = root.join("tokenizer-source");
+        fs::create_dir(&model_source).expect("model source");
+        fs::create_dir(&tokenizer_source).expect("tokenizer source");
+        let model_lock_path = root.join("model-lock.json");
+        let tokenizer_lock_path = root.join("tokenizer-lock.json");
+        write_create_only_bytes(
+            &model_lock_path,
+            include_bytes!("../../../../contracts/vnext/qwen3-0.6b-base-source-lock.v2.json"),
+        )
+        .expect("model lock");
+        write_create_only_bytes(
+            &tokenizer_lock_path,
+            include_bytes!("../../../../contracts/vnext/qwen3-0.6b-tokenizer2-source-lock.v1.json"),
+        )
+        .expect("tokenizer lock");
+        let relationship = validate_source_relationship(&model_lock_path, &tokenizer_lock_path)
+            .expect("admitted source relationship");
+        let execution = ConverterExecutionIdentity::new(
+            "0.1.8",
+            "2222222222222222222222222222222222222222222222222222222222222222",
+        )
+        .expect("execution");
+        let output = prepare_output_root(
+            &root.join("output"),
+            &model_source,
+            &tokenizer_source,
+            &relationship,
+            &execution,
+        )
+        .expect("output root");
+        fs::write(&model_lock_path, b"{").expect("replace model lock path");
+        fs::write(&tokenizer_lock_path, b"{").expect("replace tokenizer lock path");
+
+        let outcome = run_started_transaction(
+            &output,
+            &model_source,
+            &tokenizer_source,
+            &relationship,
+            &execution,
+        );
+        let attempt_preserved = output.root.join(ATTEMPT_FILE).is_file();
+        let pass_created = output.root.join(RECEIPT_FILE).exists();
+        fs::remove_dir_all(&root).expect("cleanup");
+
+        assert_eq!(
+            outcome
+                .expect_err("empty model source must reject after consuming the admitted lock")
+                .code(),
+            "qwen3-source-inventory-invalid"
+        );
+        assert!(attempt_preserved, "the admitted attempt remains evidence");
+        assert!(
+            !pass_created,
+            "incomplete source cannot produce a pass receipt"
+        );
+    }
+
+    /// Tokenizer conversion consumes its admitted snapshot after the original path changes.
+    #[test]
+    fn tokenizer_conversion_uses_admitted_lock_bytes_after_path_changes() {
+        let root = test_root("tokenizer-admitted-lock-bytes");
+        fs::create_dir(&root).expect("root");
+        let source = root.join("tokenizer-source");
+        fs::create_dir(&source).expect("empty tokenizer source");
+        let model_lock_path = Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("../../../contracts/vnext/qwen3-0.6b-base-source-lock.v2.json");
+        let tokenizer_lock_path = root.join("tokenizer-lock.json");
+        write_create_only_bytes(
+            &tokenizer_lock_path,
+            include_bytes!("../../../../contracts/vnext/qwen3-0.6b-tokenizer2-source-lock.v1.json"),
+        )
+        .expect("tokenizer lock");
+        let relationship = validate_source_relationship(&model_lock_path, &tokenizer_lock_path)
+            .expect("admitted source relationship");
+        fs::write(&tokenizer_lock_path, b"{").expect("replace tokenizer lock path");
+        let execution =
+            ConverterExecutionIdentity::new("0.1.8", "2".repeat(64)).expect("execution");
+        let output_path = root.join(TOKENIZER_FILE);
+        let outcome = convert_qwen_tokenizer2_source_from_lock_bytes(
+            &relationship.tokenizer_lock_bytes,
+            &source,
+            &output_path,
+            &execution,
+        );
+        let output_created = output_path.exists();
+        fs::remove_dir_all(&root).expect("cleanup");
+
+        assert_eq!(
+            outcome
+                .expect_err("empty tokenizer source must reject after parsing the admitted lock")
+                .code(),
+            "qwen-tokenizer2-source-inventory-invalid"
+        );
+        assert!(
+            !output_created,
+            "an incomplete source cannot create a tokenizer"
+        );
+    }
+
+    /// Snapshot bounds reject before source access, while the exact limit still parses.
+    #[test]
+    fn source_lock_snapshot_bounds_precede_source_access() {
+        let root = test_root("source-lock-snapshot-bounds");
+        let source = root.join("absent-source");
+        let execution =
+            ConverterExecutionIdentity::new("0.1.8", "2".repeat(64)).expect("execution");
+        for (component, pinned, lock_error, directory_error) in [
+            (
+                "model",
+                include_bytes!("../../../../contracts/vnext/qwen3-0.6b-base-source-lock.v2.json")
+                    .as_slice(),
+                "qwen3-source-lock-invalid",
+                "qwen3-source-directory-invalid",
+            ),
+            (
+                "tokenizer",
+                include_bytes!(
+                    "../../../../contracts/vnext/qwen3-0.6b-tokenizer2-source-lock.v1.json"
+                )
+                .as_slice(),
+                "qwen-tokenizer2-source-lock-invalid",
+                "qwen-tokenizer2-source-directory-invalid",
+            ),
+        ] {
+            let mut padded = pinned.to_vec();
+            padded.resize(SOURCE_LOCK_MAXIMUM_BYTES as usize + 1, b' ');
+            for (case, bytes, expected) in [
+                ("empty", &[][..], lock_error),
+                ("oversize", padded.as_slice(), lock_error),
+                (
+                    "exact-limit",
+                    &padded[..SOURCE_LOCK_MAXIMUM_BYTES as usize],
+                    directory_error,
+                ),
+            ] {
+                let outcome = if component == "model" {
+                    convert_qwen3_source_from_lock_bytes(
+                        bytes,
+                        &source,
+                        &root.join(MODEL_FILE),
+                        &execution,
+                    )
+                    .map(|_| ())
+                    .map_err(|error| error.code())
+                } else {
+                    convert_qwen_tokenizer2_source_from_lock_bytes(
+                        bytes,
+                        &source,
+                        &root.join(TOKENIZER_FILE),
+                        &execution,
+                    )
+                    .map(|_| ())
+                    .map_err(|error| error.code())
+                };
+                assert_eq!(outcome, Err(expected), "{component}: {case}");
+                assert!(!root.exists(), "invalid source cannot create output");
+            }
+        }
     }
 
     fn exact_spec(artifact_class: ArtifactClass) -> ModelSpec {

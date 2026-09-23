@@ -5,6 +5,31 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C96: preserve source-lock bytes through component conversion, September 22
+
+The complete converter now carries both admitted source-lock buffers into the
+component cores instead of reopening their paths. Each component receipt must
+match the originally admitted lock hash as well as its producer receipt identity
+before the transaction continues. Standalone commands retain their public APIs
+and use the same cores. No format, frozen profile, or receipt schema changes.
+
+A deterministic replacement test failed on the original implementation: after
+admission, replacing the lock files made conversion parse the replacements.
+The corrected path consumes the retained bytes. Tests also cover tokenizer
+custody, both receipt schemas, missing/malformed hashes, and snapshot size limits.
+Three duplicated file readers are replaced by one owner that uses a fixed
+admitted allocation and a one-byte EOF probe. Growing streams cannot enlarge
+that allocation; short reads, read failures and observed file drift reject.
+
+All 48 Rust converter tests and 27 affected Node checks pass. The Rust test run
+reported one unused import from the reader replacement; it was removed, then
+Clippy passed with warnings denied. Rust coverage percentage is unmeasured.
+No real checkpoint or browser execution occurred; existing tiny conversion
+fixtures verify successful component receipts. The unchanged source scan still
+fails on 37 unreadable entries. NuGet, model qualification, live seeding and
+release remain open. Read
+`artifacts/ecosystem-cleanup-20260912/conversion-source-lock-custody-review.json`.
+
 ## C95: bind complete conversion to the frozen template source, September 22
 
 The complete converter compared its two caller-provided locks with each other,
@@ -33,8 +58,8 @@ package, site, qualified default, live seed, or complete release is claimed.
 Independent review found a separate preexisting boundary to investigate next:
 component converters reopen source-lock paths after admission, while the complete
 receipt path does not reconcile their consumed lock hashes with the originally
-admitted relationship. Concurrent mutation has not been reproduced; C95 does not
-claim to close that gap.
+admitted relationship. C95 did not reproduce or close that gap; C96 above now
+demonstrates deterministic replacement and removes the path reopen.
 
 ## C94: reject concealed attention and SiLU overflow, September 22
 

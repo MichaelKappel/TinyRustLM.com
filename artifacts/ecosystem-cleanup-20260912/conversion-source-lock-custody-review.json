@@ -1,0 +1,203 @@
+{
+  "schema": "tinyrustlm.conversion-source-lock-custody-review.v1",
+  "checkpoint": "C96",
+  "recordedUtc": "2026-09-23T03:56:43.485Z",
+  "parentCommit": "3707a9e47e54bc9934b09c4a31d7cf11891fec56",
+  "scope": "Exact admitted source-lock bytes through complete conversion and fixed-allocation converter file reads.",
+  "findings": [
+    {
+      "problem": "Components reopened lock paths after complete admission; complete receipts did not reconcile consumed lock identity.",
+      "fix": "Retain both admitted byte buffers, pass immutable slices to shared component cores, remove transaction lock-path parameters, and require receipt source.lockSha256 matches admitted identity before proceeding."
+    },
+    {
+      "problem": "Three metadata-screened file readers used unbounded fs::read/read_to_end after observing a maximum length.",
+      "fix": "One shared reader validates path/opened-file type and length, allocates a fixed admitted extent, read_exact into it and probes one stack byte for EOF. Observed truncation/growth rejects without expanding allocation."
+    }
+  ],
+  "preserved": [
+    "Public standalone conversion signatures",
+    "Current formats, profiles and receipt schemas",
+    "Source payload pre/post hash checks",
+    "No alternate converter implementation",
+    "UI and browser artifacts",
+    "Unrelated work and blocked cleanup cohorts"
+  ],
+  "validation": {
+    "baseline": {
+      "path": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\conversion-source-lock-custody\\tinyrustlm-operation-R4M3me\\baseline.log",
+      "bytes": 3671,
+      "sha256": "8c771144d2158d4c872c3a07e04dae50d5d5b6a1afa24499127595a7cf1acd42",
+      "status": 101,
+      "passed": 10,
+      "failed": 1,
+      "filtered": 1,
+      "arguments": [
+        "test",
+        "-p",
+        "tinyrustlm-convert",
+        "--lib",
+        "--locked",
+        "--offline",
+        "qwen3_composition::tests"
+      ],
+      "observation": "Replacing both lock files after admission changes original model conversion to qwen3-source-lock-invalid instead of consuming admitted bytes and reaching qwen3-source-inventory-invalid."
+    },
+    "rust": {
+      "path": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\conversion-source-lock-custody\\tinyrustlm-operation-R4M3me\\final-rust.log",
+      "bytes": 5474,
+      "sha256": "b45e930d3edde2f5f76311a9878412d99ef5f960424a3b705f12908d6acbe427",
+      "status": 0,
+      "passed": 48,
+      "failed": 0,
+      "ignored": 0,
+      "arguments": [
+        "test",
+        "-p",
+        "tinyrustlm-convert",
+        "--locked",
+        "--offline"
+      ],
+      "warning": "Unused Read import after centralizing readers; removed afterward. No behavioral changes after test run; final source compiled by all-target Clippy."
+    },
+    "clippy": {
+      "path": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\conversion-source-lock-custody\\tinyrustlm-operation-R4M3me\\clippy.log",
+      "bytes": 1460,
+      "sha256": "0495ec9aad36bd5c84115203f27c421a2636bf73e247f586ea1f85e95d098c23",
+      "status": 0,
+      "arguments": [
+        "clippy",
+        "-p",
+        "tinyrustlm-convert",
+        "--all-targets",
+        "--locked",
+        "--offline",
+        "--",
+        "-D",
+        "warnings"
+      ]
+    },
+    "node": {
+      "path": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\conversion-source-lock-custody\\tinyrustlm-operation-R4M3me\\node-affected.log",
+      "bytes": 2194,
+      "sha256": "91d6505a8d89ff3783bd8e0d6bb5c89811194d8a6554011e085e44892ca40d7d",
+      "status": 0,
+      "passed": 27,
+      "failed": 0,
+      "skipped": 0,
+      "files": [
+        "qwen3-composition-source-relationship-correction.test.js",
+        "qwen3-composition-verification-owner.test.js",
+        "qwen3-composition-verification-owner-profile.test.js",
+        "qwen3-slm2-converter-preregistration.test.js"
+      ]
+    },
+    "coverage": {
+      "percentage": null,
+      "reason": "cargo-llvm-cov.exe absent from pinned cargo bin; Rust percentage unmeasured.",
+      "closestEvidence": "Eight bounded-reader tests; deterministic model-transaction and tokenizer-core lock replacement; both core empty/over/exact limits; both receipt schemas with matching/different/missing/null/wrong-type source hashes; existing 25 actual tiny component conversion tests including consumed lock digest assertions."
+    },
+    "secretScan": {
+      "status": "pass",
+      "files": 15,
+      "findings": 0,
+      "reportBytes": 7641,
+      "reportSha256": "57bfa611376becec0085647ca39a0626134384ba24acaa30d6c345033493fd57",
+      "scope": "15 checkpoint files before this final cleanup/scan summary append; appended metadata was not part of that scan."
+    },
+    "memoryPointers": 17,
+    "diffAndRustfmt": "pass"
+  },
+  "sourceAdmission": {
+    "status": 1,
+    "unreadableEntries": 37,
+    "bytes": 4457,
+    "sha256": "7f8fec1c72e18e3da05f434b9f33c8b1c71ac2a42660f0bf9afdca62328384d3",
+    "reason": "Same known unreadable governed entries. No permissions or blocked-path changes."
+  },
+  "sourceIdentities": [
+    {
+      "path": "rust/crates/tinyrustlm-convert/src/lib.rs",
+      "bytes": 1056,
+      "sha256": "8cd59de579397ef4d67cb432e37de5131f08c6e1b9f229098ae72c4872c6057a"
+    },
+    {
+      "path": "rust/crates/tinyrustlm-convert/src/bounded_file.rs",
+      "bytes": 8811,
+      "sha256": "c63dc5f004af424b67e7e49802416bddfaaa02097a358f31288c2504a52d6f64"
+    },
+    {
+      "path": "rust/crates/tinyrustlm-convert/src/qwen3.rs",
+      "bytes": 58799,
+      "sha256": "d2f3b013cb3e1001676498a2d712dca91ac6345941f890fd3d04f80e7ff80ca8"
+    },
+    {
+      "path": "rust/crates/tinyrustlm-convert/src/qwen3_composition.rs",
+      "bytes": 82202,
+      "sha256": "a99a28b0cc75e033bcec47b97a4650941f1a226b5d9e795037a2e161645de053"
+    },
+    {
+      "path": "rust/crates/tinyrustlm-convert/src/qwen_tokenizer2.rs",
+      "bytes": 29867,
+      "sha256": "73ffa273b4444e4ec6e4690d8e7f600b609d2ee0f532c6c7623f83eac1bbebcc"
+    },
+    {
+      "path": "rust/crates/tinyrustlm-convert/tests/qwen_tokenizer2_conversion.rs",
+      "bytes": 17760,
+      "sha256": "5fc0f2d4d66c35ceada1e3b2fcc6cf632224c3d9300ece2fd4aaf4c478392ac5"
+    },
+    {
+      "path": "docs/architecture/qwen3-slm2-converter-implementation.md",
+      "bytes": 12657,
+      "sha256": "c2d42b282b9274a578477a190420423757e25f656a9ff14e840bdab53ab5cf89"
+    }
+  ],
+  "authorityIdentities": [
+    {
+      "path": "contracts/vnext/template2-format-profile.v1.json",
+      "bytes": 15111,
+      "sha256": "14ff1df8dd6760119ac36e719ab396fff8e71d0719c2e1c83118f58693ea7bfa"
+    },
+    {
+      "path": "contracts/vnext/qwen3-composition-conversion-profile.v4.json",
+      "bytes": 11421,
+      "sha256": "19e43c7ae532e7bc1822cbdcf179ee9bf1ed111298d3c6e5b13d37d990ee47e8"
+    },
+    {
+      "path": "contracts/vnext/qwen3-0.6b-base-source-lock.v2.json",
+      "bytes": 1901,
+      "sha256": "50a8c29e36398a9a088e4d9a224dad186809d34b1e050299d3ce3de7a01b7d0e"
+    },
+    {
+      "path": "contracts/vnext/qwen3-0.6b-tokenizer2-source-lock.v1.json",
+      "bytes": 1108,
+      "sha256": "1641e8d4ab1fe9e4b6b3d24918c394fcf8d6e60d204be1f4c821f0f6570b1c70"
+    }
+  ],
+  "review": {
+    "blockingFindings": [],
+    "scope": "Independent read-only production review; not independent execution or model qualification.",
+    "evidence": "Independent read-only review confirmed all four log identities, 11 source/authority identities and 17 memory pointers; no blocking finding."
+  },
+  "limits": [
+    "Deterministic stage-boundary replacement, not an observed production attack",
+    "No atomic filesystem snapshot or general concurrent source-payload integrity guarantee",
+    "No real model checkpoint read, conversion or inference",
+    "No browser execution or ARM64 validation",
+    "No NuGet key read, package or site publication",
+    "No fresh external CI/NuGet observation; latest feed readback remains C95 and billing readback C93",
+    "No source-authority pass, qualified model, live seed or campaign increment"
+  ],
+  "cleanup": {
+    "status": "removed",
+    "root": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\conversion-source-lock-custody\\tinyrustlm-operation-R4M3me",
+    "fileCount": 575,
+    "descendantDirectories": 119,
+    "logicalBytes": 303104063,
+    "markerBytes": 65,
+    "inventorySha256": "3b5d9bcadcc9571cb0b2f8a611d41881431664776041b20f25878563cb4ce28a",
+    "physicalStorageRecoveryBytes": null,
+    "method": "Canonical ownership helper with original creation-time root/marker identities; exact contained root inspected after all owned processes completed.",
+    "rootAbsent": true,
+    "markerAbsent": true
+  }
+}

@@ -11,6 +11,33 @@ Keep useful findings and compact evidence identities in the owning canonical
 repository. Keep source history in Git and current model payloads only in
 `D:\LLMs\TinyRustLM`.
 
+## C96: carry admitted inputs through execution rather than reopening names
+
+- **Question:** Does complete conversion consume the source-lock bytes it admits?
+- **Inputs:** Parent `3707a9e47e54bc9934b09c4a31d7cf11891fec56`, checked-in
+  diagnostic lock bytes copied only as small test data, empty distinct source
+  directories, and deterministic replacement of both lock files after admission.
+  Reader tests use short, growing/infinite and failing in-memory streams.
+- **Method:** Add a production-transaction regression, record its original
+  failure, retain exact admitted buffers, reconcile component receipt input hashes,
+  and consolidate readers to fixed-extent reads plus a one-byte EOF check.
+- **Result:** Baseline 10 pass/1 fail/1 filtered. Final converter suite 48/48 and
+  Node checks 27/27 pass. An unused import warning was removed before Clippy
+  passed with warnings denied. Both component fixture receipts bind the consumed
+  lock bytes; incorrect/missing/null/wrong-type input hashes reject.
+- **Uncertainty:** Deterministic stage-boundary replacement establishes the
+  reopen defect, not an observed production attack. Fixed read bounds do not
+  provide atomic snapshots of arbitrary concurrent payload changes. Rust coverage
+  percentage and real checkpoint/browser behavior remain unmeasured; source
+  admission still fails on 37 unreadable entries.
+- **Decision:** Use one captured lock and one conversion core per component;
+  keep existing formats and source-payload pre/post checks.
+- **Reusable lesson:** A validated pathname is not an immutable input. Carry
+  exact bytes across stages and reconcile receipt provenance. Metadata length
+  checks alone do not bound a later growing read.
+- **Evidence identity:** `artifacts/ecosystem-cleanup-20260912/conversion-source-lock-custody-review.json`
+  retains log and source identities after owned temporary output retirement.
+
 ## C95: agreement between inputs is not frozen-template authority
 
 - **Question:** Can jointly altered source locks authorize the fixed renderer?
