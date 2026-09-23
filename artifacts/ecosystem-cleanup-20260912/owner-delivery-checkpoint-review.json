@@ -3,6 +3,27 @@
   "checkpoint": "C100",
   "ownerDirectiveDate": "2026-09-23",
   "status": "source-checkpoint-not-release",
+  "postCommitReadback": {
+    "at": "2026-09-23T15:50:44.078Z",
+    "head": "4cd04ec43e66a9bd90cb6ee8e349c0d2b17832e1",
+    "branch": "codex/model-acquisition-v2",
+    "tracking": "4cd04ec43e66a9bd90cb6ee8e349c0d2b17832e1",
+    "remote": "4cd04ec43e66a9bd90cb6ee8e349c0d2b17832e1",
+    "sourceEqual": true,
+    "trackedEdits": "",
+    "stagedEdits": "",
+    "untracked": [
+      "tinyrustlm/artifacts/tests/tinyrustlm-local-web-smoke-ifOVpj/evidence/browser-smoke-report.json",
+      "tinyrustlm/artifacts/tests/tinyrustlm-local-web-smoke-ifOVpj/evidence/updates-mobile.png",
+      "tinyrustlm/tools/remove-retired-slm1-models.ps1"
+    ],
+    "validation": {
+      "exitCode": 1,
+      "bytes": 501,
+      "sha256": "ff231099c6a121800480f53ebba5c35d1dde1c9cd5ec21746ded999abcf8dbe9",
+      "output": "Deployment source custody requires a clean Git worktree.\r\nAt E:\\Source\\Rust\\TinyRustLM.com\\tinyrustlm\\tools\\deploy-tinyrustlm-web.ps1:1569 char:9\r\n+         throw \"Deployment source custody requires a clean Git worktre ...\r\n+         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\r\n    + CategoryInfo          : OperationStopped: (Deployment sour...n Git worktree.:String) [], RuntimeException\r\n    + FullyQualifiedErrorId : Deployment source custody requires a clean Git worktree.\r\n \r\n"
+    }
+  },
   "ownerPolicy": {
     "github": "Ordinary Git only; Actions disabled on all seven repositories. No paid features or billing changes.",
     "website": "Existing FTP/FTPS with exact source and target admission and HTTPS readback.",
