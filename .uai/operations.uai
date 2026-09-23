@@ -1,5 +1,5 @@
 profile: tinyrustlm.operations.current.v1
-updated_utc: 2026-09-23T15:47:58.729Z
+updated_utc: 2026-09-23T16:08:37.181Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
@@ -12,6 +12,16 @@ owner_delivery_policy:
   websites: Publish approved website bytes using the established FTP/FTPS host and credentials, with local validation, exact target verification and public HTTPS readback. Git push is source control, not website publication.
   packages: Publish NuGet directly to nuget.org over its HTTPS API after local package gates. The key location below remains authoritative; FTP is for websites, not the NuGet registry.
   source: Review and check in pending code coherently, preserve useful work, and distinguish source checkpoints from release passes. Do not commit secrets, model payloads, transient output or unreviewed obsolete executables merely to make status clean.
+
+owner_manual_cleanup:
+  requested: September23 owner explicitly requested a PowerShell script to execute locally when agent cleanup is blocked.
+  script: eng/Invoke-ReviewedCleanup.ps1
+  manifest: eng/reviewed-cleanup-manifest.json
+  instructions: eng/reviewed-cleanup.md
+  scope: 241 reviewed hash-bound files across TinyRustLM, Runtime and LMComposer; eleven directories pruned only when empty. No model-root, recursive or permission changes.
+  validation: Twelve fixture checks pass. Actual preview verified all241 files and removed zero;35 directories deny enumeration and two links remain diagnostic-only. Operator apply has not run.
+  handoff: Owner runs the exact script with -Apply in local PowerShell. Inspect its operator-cleanup-*.jsonl report, verify actual retirement, run affected checks and commit deletions before continuing FTP publication. Do not present script preparation as cleanup completion.
+  execution_boundary: Renewed exact-file deletion was again rejected before PowerShell ran with blocked by policy. The agent must not run the real cleanup through another tool or change permissions to evade that rejection.
 
 blocked_helper_retirement_2026_09_23:
   path: E:\Source\Rust\TinyRustLM.com\tinyrustlm\tools\remove-retired-slm1-models.ps1
