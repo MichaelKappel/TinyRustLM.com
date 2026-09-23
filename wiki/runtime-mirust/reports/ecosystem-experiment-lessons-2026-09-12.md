@@ -11,6 +11,31 @@ Keep useful findings and compact evidence identities in the owning canonical
 repository. Keep source history in Git and current model payloads only in
 `D:\LLMs\TinyRustLM`.
 
+## C91: admission belongs to the policy used by the operation
+
+- **Question:** Does a validated model remain admissible when session policy changes?
+- **Inputs/method:** Parent `7f5868d32e30f917b1c8857151afc4068f2f2240`,
+  canonical in-memory fixture, exact and insufficient artifact/KV/scratch budgets,
+  model context and context-plus-one, and normal independent scalar vectors.
+  Add tests before changing the constructor; compare refusal codes and legal
+  policy changes without reparsing immutable model bytes.
+- **Result:** Baseline two pass/three fail. Shared size and metadata admission
+  before session allocation closes both omissions. Final Rust 27/27, Node/WASM
+  57/57 and Clippy pass; two fresh browser builds match tracked bytes. A prior
+  Node run was interrupted, preserved as incomplete and restarted only after
+  process absence was established. Its two leftover outputs were separately
+  reviewed and retired, not adopted as original helper ownership.
+- **Decision:** Recheck all limits under the actual session policy. Preserve
+  legal policy changes and existing error precedence. Record current GitHub CI
+  refusal as an account billing lock, not a failed product test.
+- **Uncertainty:** No measured Rust coverage, real-model qualification, live
+  seed, full release or NuGet publication. Source scan and account action remain
+  blocked. Temporary logical bytes removed are not measured physical recovery.
+- **Reusable lesson:** Validation under a previous policy is not authorization
+  under a new one. An interrupted test has no result merely because some checks
+  printed success; verify process state before running it again.
+- **Evidence:** `artifacts/ecosystem-cleanup-20260912/scalar-session-policy-review.json`.
+
 ## C90: a finite final result can hide an invalid intermediate
 
 - **Question:** Can RMS scaling silently erase an overflow and commit a token?

@@ -16,6 +16,17 @@ Authority order is current owner instructions, inspected current contracts and b
 
 ## Current evidence and its limits
 
+**C91 session admission:** activating a validated model under a replacement
+policy now rechecks exact model bytes and context before KV/scratch planning
+and allocation. This resolves the separate constructor gap recorded in C90.
+Baseline three refusals were missing; final Rust 27/27, Node/WASM 57/57 and
+Clippy pass, with real Edge vector replay and reproducible updated browser
+artifacts. Read `scalar-session-policy-review.json` for interrupted-run handling,
+temporary-output retirement and the unmeasured Rust coverage boundary.
+Fresh authenticated CI readback at parent `7f5868d` confirms an account billing
+lock before all nine jobs could start. The three NuGet package indexes remain
+absent; no publication or real-model/seed qualification follows.
+
 **C90 scalar normalization:** both RMS paths now reject nonfinite squared sums
 and epsilon-adjusted means before reciprocal can turn overflow into accepted
 zeros. All 22 runtime and 57 Node/WASM checks plus Clippy pass, including native

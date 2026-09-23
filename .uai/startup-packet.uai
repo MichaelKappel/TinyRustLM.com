@@ -1,5 +1,5 @@
 profile: tinyrustlm.startup-packet.current.v1
-updated_utc: 2026-09-22T22:48:41Z
+updated_utc: 2026-09-23T02:08:44Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
@@ -10,6 +10,7 @@ startup_steps:
   - Preserve immutable failed operations and all campaign counters.
 
 current_truth:
+  session_policy: C91 rechecks exact artifact size and model context under the session's replacement policy before allocation. Baseline 2/5; final Rust 27/27, Node/WASM 57/57 and Clippy pass, with reproducible tracked browser bytes. Read scalar-session-policy-review.json. GitHub run 35794730490 is billing-blocked before all nine jobs; source scan, model, seed and publication gates remain open.
   scalar_normalization: C90 rejects nonfinite RMS sums and epsilon-adjusted means before reciprocal hides overflow. All 22 runtime and 57 Node/WASM checks plus Clippy pass; tracked browser WASM is rebuilt reproducibly. Smol360 guidance now retains historical failures without inventing source qualification. Read scalar-normalization-overflow-review.json. Real model, source scan, seed and release gates remain; no NuGet publication.
   initial_seed_handoff: C89 fixes MiniModel static planner role ceilings with 70 passing checks and unchanged healthy plan bytes. Twelve actual Edge cases verify automatic start/cancel with the server seed only, first or last; existing catalog sorting already handles peer order. Read MiniModel.org artifacts/reports/static-seed-size-review-20260922.json. No app behavior, real model transfer or publication claim; source/model/release gates remain.
   candidate_shard_index: C88 replaces inventory/receipt v2 with v3 and binds the exact shard index or explicit null for direct weights. Bounded index validation precedes payload downloads and cache reuse. All 68 affected checks pass, including a synthetic source-screen handoff; 109/109 selected changed lines are covered. Read candidate-shard-index-review.json. Real model, source-authority, browser, seed and release gates remain open; no key read or publication.

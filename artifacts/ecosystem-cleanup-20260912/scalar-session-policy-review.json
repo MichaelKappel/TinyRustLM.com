@@ -1,0 +1,427 @@
+{
+  "schema": "tinyrustlm.scalar-session-policy-review.v1",
+  "checkpoint": "C91",
+  "recordedUtc": "2026-09-23T02:12:07.220Z",
+  "parentCommit": "7f5868d32e30f917b1c8857151afc4068f2f2240",
+  "scope": "Enforce actual activation policy in the sole scalar runtime and replace its tracked browser artifact. Source/fixture evidence only.",
+  "finding": {
+    "problem": "ScalarModel admission checked model size and context, but ScalarSession::new accepted another RuntimePolicy while checking only KV/scratch budgets.",
+    "change": "One shared size validator used before initial parsing and session activation; session also reuses model metadata validation before memory planning or allocation.",
+    "boundaries": "Error codes and size-first precedence preserved. Valid stricter policies and larger context within model limit remain permitted. No model reparse or shadow copy.",
+    "allocationReview": "All four policy ceilings checked before first session try_reserve_exact. Model bytes, validated identity and spec are private after admission."
+  },
+  "validation": {
+    "baseline": {
+      "command": "cargo test -p tinyrustlm-runtime --locked --offline session_replacement_policy_ -- --nocapture",
+      "exitCode": 101,
+      "passed": 2,
+      "failed": 3,
+      "productionUnchanged": true,
+      "failures": [
+        "model-byte budget refusal missing",
+        "context-above-model refusal missing",
+        "size-first error precedence missing"
+      ],
+      "positiveCases": [
+        "exact stricter resource limits and four-token execution boundary",
+        "exact model context after initial smaller policy"
+      ]
+    },
+    "rust": {
+      "command": "cargo test -p tinyrustlm-runtime --locked --offline",
+      "passed": 27,
+      "failed": 0,
+      "ignored": 0,
+      "summaries": [
+        "test result: ok. 23 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s",
+        "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s",
+        "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+      ]
+    },
+    "clippy": {
+      "command": "cargo clippy -p tinyrustlm-runtime --all-targets --locked --offline -- -D warnings",
+      "exitCode": 0
+    },
+    "format": {
+      "passed": true,
+      "setup": "Agent rustfmt child lacked its toolchain; parent used the pinned environment, formatted before tests and checked afterward. No global toolchain setting changed."
+    },
+    "node": {
+      "passed": 57,
+      "failed": 0,
+      "skipped": 0,
+      "durationMs": 21409.359,
+      "files": [
+        "slm2-runtime-vectors.test.js",
+        "slm2-runtime-wasm-conformance.test.js",
+        "browser-runtime-web-artifact.test.js",
+        "browser-runtime-wasm-raw-abi.test.js",
+        "browser-runtime-loader_test.js"
+      ],
+      "browser": "Actual installed Edge; unchanged six-step scalar vectors and streamed loader boundary.",
+      "artifact": "Two fresh owned builds exactly reproduce updated tracked WASM/manifest."
+    },
+    "interruptedNode": {
+      "terminalResult": false,
+      "partialLog": {
+        "path": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\scalar-session-admission\\tinyrustlm-operation-ytsoTL\\node-runtime.log",
+        "byteCount": 4086,
+        "sha256": "c4c9f82a0f0d7d2759b25293f821a256f1da12422709c90e77b198a7c4e4bf87"
+      },
+      "handling": "Global execution interruption; authoritative CIM showed no node/cargo/rustc/link processes and no browser using the abandoned profile before a new run. Partial output is not a pass or measured product failure."
+    },
+    "coverage": {
+      "measured": false,
+      "reason": "cargo-llvm-cov and llvm-tools are absent; targeted parameter/boundary regressions and independent conformance are closest evidence."
+    },
+    "pointerHashesPassed": 17,
+    "secretScan": {
+      "status": "pass",
+      "secretFindingCount": 0,
+      "scannedArtifactCount": 11,
+      "scopeComplete": false,
+      "reportSha256": "1f5f55a6f484668e057564fb223ea3d531527642a147c4b2daa85be7036965ef"
+    }
+  },
+  "browserBuild": {
+    "toolchain": "C:\\Users\\AI\\.rustup\\toolchains\\stable-x86_64-pc-windows-msvc\\bin\\cargo.exe",
+    "arguments": [
+      "build",
+      "--locked",
+      "--offline",
+      "--release",
+      "--target",
+      "wasm32-unknown-unknown",
+      "--target-dir",
+      "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\scalar-session-admission\\tinyrustlm-operation-ytsoTL\\web-build",
+      "-p",
+      "tinyrustlm-browser-runtime-wasm"
+    ],
+    "oldWasm": {
+      "byteCount": 576696,
+      "sha256": "43225b5f986ed2d1f1f445157693761d99550e0cd6eb7e1ca01aba83bb217c7a"
+    },
+    "oldManifest": {
+      "byteCount": 1209,
+      "sha256": "c64f9d28a35bda7b3e39667cc512a149e78e5cda9973e4fc259b640b897ce2bb"
+    },
+    "newWasm": {
+      "byteCount": 577090,
+      "sha256": "19f905e12c0bb17c0a4f627245767d1f76750a209362dde4ad207f0571cadf3c"
+    },
+    "newManifest": {
+      "byteCount": 1209,
+      "sha256": "9249f75d85be08db72c7c7b558dfbad152a990db5c079fc7db03325f61f3eb95"
+    }
+  },
+  "releaseReadback": {
+    "public": {
+      "observedUtc": "2026-09-22T22:56:29.459Z",
+      "authenticated": false,
+      "observations": [
+        {
+          "url": "https://api.github.com/repos/MichaelKappel/TinyRustLM.com/actions/runs?per_page=5",
+          "status": 404,
+          "versions": null
+        },
+        {
+          "url": "https://api.nuget.org/v3-flatcontainer/tinyrustlm.abstractions/index.json",
+          "status": 404,
+          "versions": null
+        },
+        {
+          "url": "https://api.nuget.org/v3-flatcontainer/tinyrustlm.core/index.json",
+          "status": 404,
+          "versions": null
+        },
+        {
+          "url": "https://api.nuget.org/v3-flatcontainer/tinyrustlm.p2p/index.json",
+          "status": 404,
+          "versions": null
+        }
+      ]
+    },
+    "github": {
+      "observedUtc": "2026-09-22T22:57:35.070Z",
+      "authenticated": true,
+      "runs": [
+        {
+          "id": 35794730490,
+          "name": "TinyRustLM NuGet CI",
+          "status": "completed",
+          "conclusion": "failure",
+          "headSha": "7f5868d32e30f917b1c8857151afc4068f2f2240",
+          "createdAt": "2026-09-22T22:53:30Z",
+          "htmlUrl": "https://github.com/MichaelKappel/TinyRustLM.com/actions/runs/35794730490"
+        },
+        {
+          "id": 35793099932,
+          "name": "TinyRustLM NuGet CI",
+          "status": "completed",
+          "conclusion": "failure",
+          "headSha": "a21e39956c3cb694d27b8bdeb45386a0bae4e1b6",
+          "createdAt": "2026-09-22T22:34:28Z",
+          "htmlUrl": "https://github.com/MichaelKappel/TinyRustLM.com/actions/runs/35793099932"
+        },
+        {
+          "id": 35791941214,
+          "name": "TinyRustLM NuGet CI",
+          "status": "completed",
+          "conclusion": "failure",
+          "headSha": "31cd8364161d76082e6b3e733190a93f4d318dda",
+          "createdAt": "2026-09-22T22:21:41Z",
+          "htmlUrl": "https://github.com/MichaelKappel/TinyRustLM.com/actions/runs/35791941214"
+        },
+        {
+          "id": 35790078470,
+          "name": "TinyRustLM NuGet CI",
+          "status": "completed",
+          "conclusion": "failure",
+          "headSha": "b5888f5f249d86967ed3c1a032f2cfdc4fac3b4d",
+          "createdAt": "2026-09-22T22:01:47Z",
+          "htmlUrl": "https://github.com/MichaelKappel/TinyRustLM.com/actions/runs/35790078470"
+        },
+        {
+          "id": 35787279115,
+          "name": "TinyRustLM NuGet CI",
+          "status": "completed",
+          "conclusion": "failure",
+          "headSha": "f131190eaae284318de2fa979c24e91ffcd9b545",
+          "createdAt": "2026-09-22T21:32:39Z",
+          "htmlUrl": "https://github.com/MichaelKappel/TinyRustLM.com/actions/runs/35787279115"
+        }
+      ],
+      "latestJobs": [
+        {
+          "id": 106971263163,
+          "name": "Verify structured archive fuzz target",
+          "status": "completed",
+          "conclusion": "failure",
+          "stepCount": 0,
+          "checkRunUrl": "https://api.github.com/repos/MichaelKappel/TinyRustLM.com/check-runs/106971263163"
+        },
+        {
+          "id": 106971263337,
+          "name": "Verify archive scanner (linux-x64)",
+          "status": "completed",
+          "conclusion": "failure",
+          "stepCount": 0,
+          "checkRunUrl": "https://api.github.com/repos/MichaelKappel/TinyRustLM.com/check-runs/106971263337"
+        },
+        {
+          "id": 106971263347,
+          "name": "Verify archive scanner (linux-arm64)",
+          "status": "completed",
+          "conclusion": "failure",
+          "stepCount": 0,
+          "checkRunUrl": "https://api.github.com/repos/MichaelKappel/TinyRustLM.com/check-runs/106971263347"
+        },
+        {
+          "id": 106971263367,
+          "name": "Verify directory flush helper (win-x64)",
+          "status": "completed",
+          "conclusion": "failure",
+          "stepCount": 0,
+          "checkRunUrl": "https://api.github.com/repos/MichaelKappel/TinyRustLM.com/check-runs/106971263367"
+        },
+        {
+          "id": 106971263406,
+          "name": "Verify protected NuGet SDK",
+          "status": "completed",
+          "conclusion": "failure",
+          "stepCount": 0,
+          "checkRunUrl": "https://api.github.com/repos/MichaelKappel/TinyRustLM.com/check-runs/106971263406"
+        },
+        {
+          "id": 106971263429,
+          "name": "Verify closed companion release boundary",
+          "status": "completed",
+          "conclusion": "failure",
+          "stepCount": 0,
+          "checkRunUrl": "https://api.github.com/repos/MichaelKappel/TinyRustLM.com/check-runs/106971263429"
+        },
+        {
+          "id": 106971263469,
+          "name": "Verify directory flush helper (linux-arm64)",
+          "status": "completed",
+          "conclusion": "failure",
+          "stepCount": 0,
+          "checkRunUrl": "https://api.github.com/repos/MichaelKappel/TinyRustLM.com/check-runs/106971263469"
+        },
+        {
+          "id": 106971263481,
+          "name": "Verify directory flush helper (linux-x64)",
+          "status": "completed",
+          "conclusion": "failure",
+          "stepCount": 0,
+          "checkRunUrl": "https://api.github.com/repos/MichaelKappel/TinyRustLM.com/check-runs/106971263481"
+        },
+        {
+          "id": 106971263624,
+          "name": "Verify archive scanner (win-x64)",
+          "status": "completed",
+          "conclusion": "failure",
+          "stepCount": 0,
+          "checkRunUrl": "https://api.github.com/repos/MichaelKappel/TinyRustLM.com/check-runs/106971263624"
+        }
+      ],
+      "latestJobAnnotations": {
+        "jobId": 106971263163,
+        "observedUtc": "2026-09-22T22:58:28.103Z",
+        "annotations": [
+          {
+            "annotationLevel": "failure",
+            "title": "",
+            "message": "The job was not started because your account is locked due to a billing issue."
+          },
+          {
+            "annotationLevel": "notice",
+            "title": "",
+            "message": "\"The ubuntu-latest label will migrate to Ubuntu 26 beginning October 19, 2026. For more information, see https://github.com/actions/runner-images/issues/14748\""
+          }
+        ]
+      }
+    },
+    "interpretation": "Unauthenticated GitHub 404 was inconclusive. Existing GitHub credential-manager authentication established terminal nine-job failure before steps; annotation explicitly identifies account billing lock. No manual job retry, billing/account mutation or NuGet credential access."
+  },
+  "interruptedOutputRetirement": {
+    "authority": "Fresh bounded review under owner ecosystem-cleanup objective, not resumed C65 helper ownership and not a policy-blocked deletion retry.",
+    "reviewSha256": "7fb0051c56158c71c171a37645905806e13046bc775ff85962a5405f1c55e6aa",
+    "roots": [
+      {
+        "root": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\browser-runtime-build\\tinyrustlm-operation-0MGqTT",
+        "classification": "Abandoned empty build scratch from interrupted current web-artifact regression.",
+        "files": 1,
+        "directories": 3,
+        "logicalBytes": 65,
+        "entryManifestSha256": "5aa17ab84acd2d7020f9e4f00537ba26bcf0b03b926918141da992eecae96967",
+        "retirement": {
+          "status": "removed-and-absence-verified",
+          "completedUtc": "2026-09-23T02:08:19.020Z",
+          "physicalBytesRecovered": null
+        }
+      },
+      {
+        "root": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\runtime-loader-browser\\tinyrustlm-operation-8cWiOq",
+        "classification": "Abandoned isolated Edge profile from interrupted current loader regression.",
+        "files": 20,
+        "directories": 10,
+        "logicalBytes": 563149,
+        "entryManifestSha256": "e90432a9ed4925222dbbd69a16c04952ab72976c228dd21a357ec0b5fdd93f1d",
+        "retirement": {
+          "status": "removed-and-absence-verified",
+          "completedUtc": "2026-09-23T02:08:19.043Z",
+          "physicalBytesRecovered": null
+        }
+      }
+    ],
+    "method": "New exact-path bounded review; no original helper ownership reconstruction. Verified exclusive regular files, physical identities, hashes, ancestors and process absence; revalidated before nonrecursive leaf/empty-directory deletion, then marker retirement."
+  },
+  "limitations": [
+    "No qualified real model, useful real browser conversation, live MiniModel seed or deployment.",
+    "Source scan still incomplete on the two previously policy-blocked installer links. No deletion retry or gate bypass.",
+    "NuGet package indexes remain absent; genuine hosted ARM64/full release validation blocked by account billing lock. Owner action requested.",
+    "No screenshot/visual-parity claim; UI/styles unchanged.",
+    "Other six repositories and unrelated worktree edits preserved. Goal remains active."
+  ],
+  "sourceFiles": [
+    {
+      "path": "rust/crates/tinyrustlm-runtime/src/scalar.rs",
+      "byteCount": 58430,
+      "sha256": "cba1d6b097235692acb6e6050927a364514e52416674cd85366eb5eaf113f6e4"
+    },
+    {
+      "path": "tinyrustlm/browser-runtime/tinyrustlm-browser-runtime.wasm",
+      "byteCount": 577090,
+      "sha256": "19f905e12c0bb17c0a4f627245767d1f76750a209362dde4ad207f0571cadf3c"
+    },
+    {
+      "path": "tinyrustlm/browser-runtime/tinyrustlm-browser-runtime.wasm.manifest.json",
+      "byteCount": 1209,
+      "sha256": "9249f75d85be08db72c7c7b558dfbad152a990db5c079fc7db03325f61f3eb95"
+    },
+    {
+      "path": "tinyrustlm/tests/browser-runtime-web-artifact.test.js",
+      "byteCount": 19606,
+      "sha256": "5be5d5bff76336f113240c97aaa00cecc50f6a7f39b6e28f8a8a83ea75cbc092"
+    },
+    {
+      "path": "wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md",
+      "byteCount": 73268,
+      "sha256": "19ef12d8905514853e6b61e48b68da5ae3d17d560ea86203b8f257ec66f04354"
+    },
+    {
+      "path": "wiki/runtime-mirust/reports/ecosystem-experiment-lessons-2026-09-12.md",
+      "byteCount": 204872,
+      "sha256": "1705e10b6176eaa6c0f70ebc5fed55eeb84ccbf0fa4c01f0b5935260a7fc405b"
+    },
+    {
+      "path": "docs/ecosystem-cleanup-2026-09-12.md",
+      "byteCount": 174005,
+      "sha256": "9513eb933e1414a22a730a7607fbe6377321c2d117d0c58d577aa6b4e0d317fa"
+    },
+    {
+      "path": ".uai/startup-packet.uai",
+      "byteCount": 26041,
+      "sha256": "63339bb36953ddb66fc5705dd3dd8c34a9b51e12aaf15be4796610480ba175d5"
+    },
+    {
+      "path": ".uai/operations.uai",
+      "byteCount": 34852,
+      "sha256": "fc7210f0d5446b53436fb84979387c4bc3a2ce9fa7077a812cd57ffeca90804e"
+    },
+    {
+      "path": ".uai/short-term-memory.uai",
+      "byteCount": 29589,
+      "sha256": "8e7843712ec1fad8eb0424b92238117e57f5b5e4422efbf320db8c5826a2e016"
+    },
+    {
+      "path": ".uai/long-term-memory.uai",
+      "byteCount": 8749,
+      "sha256": "3f89406f7e2fa2a2918a359233375b57ecc87bd5e5eba9bfa21062d99d9c0724"
+    }
+  ],
+  "logs": [
+    {
+      "path": "baseline.log",
+      "byteCount": 7518,
+      "sha256": "0238d249dc4d51882dff8705b704655dbe3ad10c2c250bd9401be11bca49a169"
+    },
+    {
+      "path": "rust-final.log",
+      "byteCount": 6980,
+      "sha256": "dc7ea0bce428ea3ec5e4f8b31c1810a0d9c869737aa70cd2a68f831cc972a072"
+    },
+    {
+      "path": "clippy.log",
+      "byteCount": 3422,
+      "sha256": "6af12d2a29fe2c46793ca9890e3acd1dbee87ffe6ac047bfeb0a50b0a7477561"
+    },
+    {
+      "path": "node-runtime.log",
+      "byteCount": 4086,
+      "sha256": "c4c9f82a0f0d7d2759b25293f821a256f1da12422709c90e77b198a7c4e4bf87"
+    },
+    {
+      "path": "node-runtime-final.log",
+      "byteCount": 8068,
+      "sha256": "f06ee90cdb7221e78bd7d5f9d0f120c87b51c11407771ed1e66ebec7cf1894b8"
+    },
+    {
+      "path": "web-build.log",
+      "byteCount": 1628,
+      "sha256": "a3401f64c373565eeae6fb6e6a696a8afa175cfb30fccd0107ea32d81a876a41"
+    }
+  ],
+  "scratch": {
+    "root": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\scalar-session-admission\\tinyrustlm-operation-ytsoTL",
+    "files": 1429,
+    "directories": 334,
+    "logicalBytes": 388193913,
+    "manifestSha256": "95d755b30b45d91a016e1f312878708ed5a82512191da54ae1f37b48fc4632b6",
+    "retirement": "Original owner identity and marker revalidated; canonical helper removed root and marker; absence verified.",
+    "physicalBytesRecovered": null,
+    "removedMarkerLogicalBytes": 65,
+    "removedUtc": "2026-09-23T02:12:34.389Z"
+  }
+}

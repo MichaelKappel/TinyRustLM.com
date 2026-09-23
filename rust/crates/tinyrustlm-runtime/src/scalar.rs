@@ -177,9 +177,7 @@ impl ScalarModel {
     pub fn from_bytes(bytes: Vec<u8>, policy: RuntimePolicy) -> Result<Self, ScalarRuntimeError> {
         let model_bytes = u64::try_from(bytes.len())
             .map_err(|_| ScalarRuntimeError::new("slm2-runtime-model-size"))?;
-        if model_bytes > policy.maximum_model_bytes {
-            return Err(ScalarRuntimeError::new("slm2-runtime-model-size"));
-        }
+        validate_model_size(model_bytes, policy)?;
         let validation_policy = ValidationPolicy::new(policy.maximum_model_bytes, MAXIMUM_TENSORS)?;
         let mut cursor = Cursor::new(bytes.as_slice());
         let validated = validate_model(&mut cursor, validation_policy)?;
@@ -252,6 +250,14 @@ impl ScalarModel {
             shape: descriptor.shape(),
         })
     }
+}
+
+/// Checks the exact artifact-byte ceiling before parsing or session allocation.
+fn validate_model_size(model_bytes: u64, policy: RuntimePolicy) -> Result<(), ScalarRuntimeError> {
+    if model_bytes > policy.maximum_model_bytes {
+        return Err(ScalarRuntimeError::new("slm2-runtime-model-size"));
+    }
+    Ok(())
 }
 
 fn validate_runtime_spec(
@@ -494,8 +500,10 @@ pub struct ScalarSession {
 }
 
 impl ScalarSession {
-    /// Activates one validated model after exact memory preflight.
+    /// Readmits a validated model under this session's policy before memory preflight.
     pub fn new(model: ScalarModel, policy: RuntimePolicy) -> Result<Self, ScalarRuntimeError> {
+        validate_model_size(model.validated.identity().byte_length(), policy)?;
+        validate_runtime_spec(model.spec(), policy)?;
         let memory_plan = memory_plan(&model, policy)?;
         let spec = model.spec();
         let kv_width = checked_product_usize(spec.kv_head_count, spec.head_dimension)?;
@@ -1313,6 +1321,103 @@ mod tests {
         let model = ScalarModel::from_bytes(canonical_model(), policy).unwrap();
         let error = ScalarSession::new(model, policy).unwrap_err();
         assert_eq!(error.code(), "slm2-runtime-scratch-budget");
+    }
+
+    /// Reusing an admitted model cannot bypass a newly lowered artifact-byte ceiling.
+    #[test]
+    fn session_replacement_policy_rejects_insufficient_model_bytes() {
+        let bytes = canonical_model();
+        let maximum_model_bytes = bytes.len() as u64 - 1;
+        let replacement = RuntimePolicy::new(maximum_model_bytes, 4, 1 << 20, 1 << 20).unwrap();
+        let model = ScalarModel::from_bytes(bytes.clone(), policy(4)).unwrap();
+        assert_eq!(
+            ScalarModel::from_bytes(bytes, replacement)
+                .unwrap_err()
+                .code(),
+            "slm2-runtime-model-size"
+        );
+        assert!(
+            matches!(ScalarSession::new(model, replacement), Err(error)
+                if error.code() == "slm2-runtime-model-size"),
+            "session activation must enforce its own model-byte ceiling"
+        );
+    }
+
+    /// A second policy cannot extend execution beyond the artifact's declared context.
+    #[test]
+    fn session_replacement_policy_rejects_context_above_model_limit() {
+        let bytes = canonical_model();
+        let model = ScalarModel::from_bytes(bytes.clone(), policy(4)).unwrap();
+        let replacement = policy(model.spec().context_length + 1);
+        assert_eq!(
+            ScalarModel::from_bytes(bytes, replacement)
+                .unwrap_err()
+                .code(),
+            "slm2-runtime-unsupported-model-metadata"
+        );
+        assert!(
+            matches!(ScalarSession::new(model, replacement), Err(error)
+                if error.code() == "slm2-runtime-unsupported-model-metadata"),
+            "session activation must enforce the model context boundary"
+        );
+    }
+
+    /// Session admission preserves the constructor's model-size-before-metadata error ordering.
+    #[test]
+    fn session_replacement_policy_preserves_admission_error_precedence() {
+        let bytes = canonical_model();
+        let model = ScalarModel::from_bytes(bytes.clone(), policy(4)).unwrap();
+        let replacement = RuntimePolicy::new(
+            bytes.len() as u64 - 1,
+            model.spec().context_length + 1,
+            1 << 20,
+            1 << 20,
+        )
+        .unwrap();
+        assert_eq!(
+            ScalarModel::from_bytes(bytes, replacement)
+                .unwrap_err()
+                .code(),
+            "slm2-runtime-model-size"
+        );
+        assert!(
+            matches!(ScalarSession::new(model, replacement), Err(error)
+                if error.code() == "slm2-runtime-model-size"),
+            "session admission must retain the same first refusal as model admission"
+        );
+    }
+
+    /// Legitimate stricter byte, sequence, KV and scratch limits remain inclusive.
+    #[test]
+    fn session_replacement_policy_accepts_exact_stricter_resource_limits() {
+        let model = ScalarModel::from_bytes(canonical_model(), policy(128)).unwrap();
+        let replacement = RuntimePolicy::new(8_704, 4, 256, 592).unwrap();
+        let mut session = ScalarSession::new(model, replacement).unwrap();
+        assert_eq!(session.memory_plan().model_bytes, 8_704);
+        assert_eq!(session.memory_plan().kv_bytes, 256);
+        assert_eq!(session.memory_plan().scratch_bytes, 592);
+        for _ in 0..4 {
+            session.forward_token(0).unwrap();
+        }
+        assert_eq!(session.position().unwrap(), 4);
+        assert_eq!(
+            session.forward_token(0).unwrap_err().code(),
+            "slm2-runtime-sequence-limit"
+        );
+        assert_eq!(session.position().unwrap(), 4);
+    }
+
+    /// Admission is checked against the model, so a new session may use its exact full context.
+    #[test]
+    fn session_replacement_policy_accepts_exact_model_context() {
+        let model = ScalarModel::from_bytes(canonical_model(), policy(4)).unwrap();
+        let replacement = RuntimePolicy::new(8_704, 128, 8_192, 1_088).unwrap();
+        let mut session = ScalarSession::new(model, replacement).unwrap();
+        assert_eq!(session.spec().context_length, 128);
+        assert_eq!(session.memory_plan().kv_bytes, 8_192);
+        assert_eq!(session.memory_plan().scratch_bytes, 1_088);
+        session.forward_token(0).unwrap();
+        assert_eq!(session.position().unwrap(), 1);
     }
 
     #[test]

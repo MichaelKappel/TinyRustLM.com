@@ -5,6 +5,38 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C91: enforce the session's actual resource policy, September 22
+
+An already validated model could be activated under a different policy without
+rechecking its artifact-size ceiling or model context limit. A tests-only baseline
+reproduced three missing refusals while two legal-boundary cases passed. Session
+activation now shares the size validator and reuses model-metadata validation
+before memory planning or allocation. It preserves size-first error precedence,
+permits legitimate policy changes and does not parse or copy the model again.
+
+All 27 runtime tests and Clippy pass. All 57 affected Node/WASM checks pass with
+installed Edge, including unchanged independent scalar vectors and two fresh
+builds matching the updated tracked browser artifact. The first Node attempt was
+interrupted without a terminal result; absence of its processes was verified
+before a fresh run. Its partial log remains identified in the compact receipt.
+Two abandoned test directories received a separate bounded retirement review;
+their generated scratch/profile bytes and markers were removed and verified
+absent, without reconstructing lost helper ownership or touching blocked paths.
+Rust coverage tooling remains unavailable; no coverage percentage is claimed.
+
+Authenticated readback of NuGet CI run `35794730490` at parent `7f5868d` found
+all nine jobs failed before any steps, with an explicit account-billing-lock
+annotation. The three TinyRustLM package indexes returned HTTP 404 at
+2026-09-22T22:56:29Z. No job was manually retried, account setting changed or
+NuGet key read. Owner action on the GitHub account is pending. The source scan
+still fails on the two policy-blocked installer links; manual cleanup remains
+pending too. See `scalar-session-policy-review.json` for exact evidence.
+
+This closes the public-constructor admission gap recorded in C90. It does not
+qualify a model, complete real browser conversation, establish a live seed,
+publish NuGet packages or deploy a website. Other repositories and unrelated
+worktree edits are preserved; the ecosystem goal remains active.
+
 ## C90: reject normalization overflow before it becomes zeros, September 22
 
 Both scalar RMS paths could accept an infinite squared sum because its square
