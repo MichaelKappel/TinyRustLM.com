@@ -16,6 +16,15 @@ Authority order is current owner instructions, inspected current contracts and b
 
 ## Current evidence and its limits
 
+**C97 publication custody:** the verifier's consumed storage-policy JSON now
+joins the publisher's source identity and recheck. The regression fails before
+the fix; all 21 affected checks pass, including actual PowerShell primitives.
+Three stale count assertions were corrected against the existing 32-file
+publication inventory and 33-input scan; exact scope checks were added.
+Read `publication-policy-custody-review.json` for limits and retained failures.
+No public asset, model, credential or deployment changed; the source scan still
+fails on 37 unreadable entries and remote transport admission remains blocked.
+
 **C96 conversion custody:** both component converters consume the exact source
 lock bytes admitted at startup; receipt input hashes must match those bytes.
 Standalone APIs share the same cores. One fixed-allocation reader replaces three

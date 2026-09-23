@@ -1451,15 +1451,30 @@ function Get-DeploymentPublicationPlan {
     }
 }
 
-# Discovers the bounded local CommonJS dependency closure for publisher entry points.
+# Resolves only current publisher code and storage policy data within the canonical source.
+function Resolve-DeploymentCustodyFilePath {
+    param([string]$RepositoryRoot, [string]$RelativePath)
+
+    $root = Assert-CanonicalDeploymentSourceRoot -RepositoryRoot $RepositoryRoot
+    if ($RelativePath -cnotmatch
+        "^(?:tinyrustlm/tools/[A-Za-z0-9._/-]+\.js|tinyrustlm/tools/deploy-tinyrustlm-web\.ps1|contracts/storage/[A-Za-z0-9._/-]+\.json)$" -or
+        $RelativePath -match "(^|/)(\.{1,2}|)(/|$)") {
+        throw "Deployment source custody path is invalid."
+    }
+    $path = [IO.Path]::GetFullPath((Join-Path $root $RelativePath.Replace("/", "\")))
+    $rootPrefix = $root + [IO.Path]::DirectorySeparatorChar
+    if (-not $path.StartsWith($rootPrefix, [StringComparison]::OrdinalIgnoreCase)) {
+        throw "Deployment source custody path is invalid."
+    }
+    return $path
+}
+
+# Follows literal relative CommonJS imports; JSON policy leaves are hashed, never scanned as code.
 function Get-DeploymentNodeToolClosure {
     param([string]$RepositoryRoot, [string[]]$EntryPaths)
 
     $root = Assert-CanonicalDeploymentSourceRoot -RepositoryRoot $RepositoryRoot
-    $toolsRoot = [IO.Path]::GetFullPath(
-        (Join-Path $root "tinyrustlm\tools")
-    ).TrimEnd("\", "/")
-    $toolsPrefix = $toolsRoot + [IO.Path]::DirectorySeparatorChar
+    $rootPrefix = $root + [IO.Path]::DirectorySeparatorChar
     $queue = [Collections.Generic.Queue[string]]::new()
     foreach ($entryPath in $EntryPaths) {
         $queue.Enqueue([IO.Path]::GetFullPath($entryPath))
@@ -1468,18 +1483,20 @@ function Get-DeploymentNodeToolClosure {
         [StringComparer]::OrdinalIgnoreCase
     )
     $files = @()
-    $dependencyPattern = 'require\(\s*["''](?<path>\./[^"'']+)["'']\s*\)'
+    $dependencyPattern = 'require\s*\(\s*["''](?<path>\.\.?/[^"'']+)["'']\s*\)'
     while ($queue.Count -gt 0) {
         $path = $queue.Dequeue()
         if (-not $observed.Add($path)) {
             continue
         }
         if ($observed.Count -gt 128 -or
-            -not $path.StartsWith($toolsPrefix, [StringComparison]::OrdinalIgnoreCase) -or
+            -not $path.StartsWith($rootPrefix, [StringComparison]::OrdinalIgnoreCase) -or
             -not (Test-Path -LiteralPath $path -PathType Leaf) -or
-            -not $path.EndsWith(".js", [StringComparison]::OrdinalIgnoreCase)) {
+            [IO.Path]::GetExtension($path) -cnotin @(".js", ".json")) {
             throw "Deployment Node tool closure is invalid."
         }
+        $relative = $path.Substring($root.Length + 1).Replace("\", "/")
+        Resolve-DeploymentCustodyFilePath -RepositoryRoot $root -RelativePath $relative | Out-Null
         Assert-NoReparsePointAncestry `
             -Path $path `
             -FailureMessage "Deployment Node tool closure traverses a reparse point."
@@ -1487,11 +1504,13 @@ function Get-DeploymentNodeToolClosure {
         if ([int64]$item.Length -le 0 -or [int64]$item.Length -gt (8 * 1024 * 1024)) {
             throw "Deployment Node tool closure contains an oversized file."
         }
-        $relative = $path.Substring($root.Length + 1).Replace("\", "/")
         $files += [pscustomobject]@{
             relative_path = $relative
             byte_count = [int64]$item.Length
             sha256 = Get-FileSha256 -Path $path
+        }
+        if ([IO.Path]::GetExtension($path) -ceq ".json") {
+            continue
         }
         $text = [IO.File]::ReadAllText(
             $path,
@@ -1501,7 +1520,7 @@ function Get-DeploymentNodeToolClosure {
             $dependency = [IO.Path]::GetFullPath(
                 (Join-Path (Split-Path -Parent $path) $match.Groups["path"].Value)
             )
-            if (-not $dependency.EndsWith(".js", [StringComparison]::OrdinalIgnoreCase)) {
+            if ([string]::IsNullOrEmpty([IO.Path]::GetExtension($dependency))) {
                 $dependency += ".js"
             }
             $queue.Enqueue($dependency)
@@ -1552,6 +1571,7 @@ function New-DeploymentSourceCustody {
     $publisherRelative = $publisher.Substring(
         $root.Length + 1
     ).Replace("\", "/")
+    Resolve-DeploymentCustodyFilePath -RepositoryRoot $root -RelativePath $publisherRelative | Out-Null
     $files = @([pscustomobject]@{
         relative_path = $publisherRelative
         byte_count = [int64]$publisherItem.Length
@@ -1626,18 +1646,10 @@ function Assert-DeploymentSourceCustody {
     }
     $identityRows = @()
     foreach ($file in @($Custody.files)) {
-        if ([string]$file.relative_path -notmatch
-            "^(?:tinyrustlm/tools/)[A-Za-z0-9._/-]+$" -or
-            [string]$file.relative_path -match "(^|/)(\.{1,2}|)(/|$)" -or
-            [string]$file.sha256 -notmatch "^[0-9a-f]{64}$" -or
+        $path = Resolve-DeploymentCustodyFilePath `
+            -RepositoryRoot $root -RelativePath ([string]$file.relative_path)
+        if ([string]$file.sha256 -notmatch "^[0-9a-f]{64}$" -or
             [int64]$file.byte_count -le 0 -or [int64]$file.byte_count -gt (8 * 1024 * 1024)) {
-            throw "Deployment source custody path is invalid."
-        }
-        $path = [IO.Path]::GetFullPath(
-            (Join-Path $root ([string]$file.relative_path).Replace("/", "\"))
-        )
-        $toolsPrefix = (Join-Path $root "tinyrustlm\tools") + [IO.Path]::DirectorySeparatorChar
-        if (-not $path.StartsWith($toolsPrefix, [StringComparison]::OrdinalIgnoreCase)) {
             throw "Deployment source custody path is invalid."
         }
         if (-not (Test-Path -LiteralPath $path -PathType Leaf)) {
@@ -1687,6 +1699,11 @@ function Invoke-CustodiedNodeTool {
         throw "Node tool is outside deployment source custody."
     }
     $relative = $tool.Substring($root.Length + 1).Replace("\", "/")
+    Resolve-DeploymentCustodyFilePath -RepositoryRoot $root -RelativePath $relative | Out-Null
+    if (-not $relative.StartsWith("tinyrustlm/tools/", [StringComparison]::Ordinal) -or
+        -not $relative.EndsWith(".js", [StringComparison]::Ordinal)) {
+        throw "Node tool is outside deployment source custody."
+    }
     if (@($Custody.files | Where-Object {
         [string]$_.relative_path -eq $relative
     }).Count -ne 1) {

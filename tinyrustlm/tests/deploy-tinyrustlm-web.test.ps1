@@ -152,6 +152,7 @@ Import-DeploymentFunctions -ScriptPath $deploymentScript -Names @(
     "New-OwnedValidationMaterialization"
     "Remove-OwnedValidationMaterialization"
     "Get-DeploymentPublicationPlan"
+    "Resolve-DeploymentCustodyFilePath"
     "Get-DeploymentNodeToolClosure"
     "New-DeploymentSourceCustody"
     "Assert-DeploymentSourceCustody"
@@ -778,6 +779,15 @@ try {
     $custodyRepository = $canonicalRepositoryRoot
     $custodyPublisher = $deploymentScript
     $custodyEntry = Join-Path $canonicalRepositoryRoot "tinyrustlm\tools\web-deployment-manifest.js"
+    $custodyVerifier = Join-Path $canonicalRepositoryRoot "tinyrustlm\tools\verify-single-source-authority.js"
+    $custodyEntries = @(
+        $custodyEntry,
+        $custodyVerifier,
+        (Join-Path $canonicalRepositoryRoot "tinyrustlm\tools\site-release-contract.js"),
+        (Join-Path $canonicalRepositoryRoot "tinyrustlm\tools\web-release-secret-scan.js")
+    )
+    $custodyPolicyRelative = "contracts/storage/retired-storage-roots-2026-09-12.json"
+    $custodyPolicyPath = Join-Path $canonicalRepositoryRoot $custodyPolicyRelative
     $realProcess = (Get-Item Function:\Invoke-PinnedDeploymentProcess).ScriptBlock
     $global:CustodyStatus = @()
     $global:CustodyHead = "1" * 40
@@ -799,15 +809,29 @@ try {
     }
     try {
         $custody = New-DeploymentSourceCustody -RepositoryRoot $custodyRepository `
-            -PublisherPath $custodyPublisher -NodeToolPaths @($custodyEntry)
+            -PublisherPath $custodyPublisher -NodeToolPaths $custodyEntries
         Assert-True ([int]$custody.tool_file_count -gt 3 -and
             @($custody.files | Where-Object { $_.relative_path -eq
                 "tinyrustlm/tools/canonical-operation-scratch.js" }).Count -eq 1
         ) "Source custody did not seal the real transitive Node closure."
+        $custodyPolicyRows = @($custody.files | Where-Object {
+            [string]$_.relative_path -ceq $custodyPolicyRelative
+        })
+        Assert-True (
+            $custodyPolicyRows.Count -eq 1 -and
+            [int64]$custodyPolicyRows[0].byte_count -eq
+                [int64](Get-Item -LiteralPath $custodyPolicyPath -Force).Length -and
+            [string]$custodyPolicyRows[0].sha256 -ceq
+                (Get-FileSha256 -Path $custodyPolicyPath)
+        ) "Source custody omitted the verifier's exact storage policy JSON dependency."
+        Assert-Throws { Get-DeploymentNodeToolClosure -RepositoryRoot $custodyRepository `
+            -EntryPaths @((Join-Path $custodyRepository `
+                "contracts\vnext\template2-format-profile.v1.json")) | Out-Null
+        } "custody path is invalid"
         Assert-DeploymentSourceCustody -RepositoryRoot $custodyRepository -Custody $custody | Out-Null
         foreach ($badRoot in @($root, "E:\TinyRustLM-vnext-tools", "relative")) {
             Assert-Throws { New-DeploymentSourceCustody -RepositoryRoot $badRoot `
-                -PublisherPath $custodyPublisher -NodeToolPaths @($custodyEntry) | Out-Null
+                -PublisherPath $custodyPublisher -NodeToolPaths $custodyEntries | Out-Null
             } "canonical repository root"
             Assert-Throws { Assert-DeploymentSourceCustody -RepositoryRoot $badRoot `
                 -Custody $custody | Out-Null } "canonical repository root"
@@ -823,6 +847,34 @@ try {
         $changed.files[0].sha256 = "0" * 64
         Assert-Throws { Assert-DeploymentSourceCustody -RepositoryRoot $custodyRepository `
             -Custody $changed | Out-Null } "tool hash changed"
+        foreach ($identityField in @("byte_count", "sha256")) {
+            $changed = $custody | ConvertTo-Json -Depth 10 | ConvertFrom-Json
+            $changedPolicy = @($changed.files | Where-Object {
+                [string]$_.relative_path -ceq $custodyPolicyRelative
+            })[0]
+            if ($identityField -eq "byte_count") {
+                $changedPolicy.byte_count = [int64]$changedPolicy.byte_count + 1
+            }
+            else {
+                $changedPolicy.sha256 = "0" * 64
+            }
+            Assert-Throws { Assert-DeploymentSourceCustody -RepositoryRoot $custodyRepository `
+                -Custody $changed | Out-Null } "tool hash changed"
+        }
+        foreach ($badPolicyPath in @(
+            "contracts/vnext/template2-format-profile.v1.json",
+            "contracts/storage/../vnext/template2-format-profile.v1.json",
+            "contracts/storage/retired-storage-roots-2026-09-12.js",
+            "tinyrustlm/tools/retired-storage-roots-2026-09-12.json"
+        )) {
+            $changed = $custody | ConvertTo-Json -Depth 10 | ConvertFrom-Json
+            $changedPolicy = @($changed.files | Where-Object {
+                [string]$_.relative_path -ceq $custodyPolicyRelative
+            })[0]
+            $changedPolicy.relative_path = $badPolicyPath
+            Assert-Throws { Assert-DeploymentSourceCustody -RepositoryRoot $custodyRepository `
+                -Custody $changed | Out-Null } "custody path is invalid"
+        }
         $changed = $custody | ConvertTo-Json -Depth 10 | ConvertFrom-Json
         $changed.tool_closure_sha256 = "0" * 64
         Assert-Throws { Assert-DeploymentSourceCustody -RepositoryRoot $custodyRepository `
@@ -839,6 +891,10 @@ try {
             -Custody $custody -ToolPath $custodyEntry -Arguments @())
         Assert-True ($output.Count -eq 1 -and $output[0] -eq '{"status":"pass"}'
         ) "Custodied invocation lost its observed output."
+        Assert-Throws { Invoke-CustodiedNodeTool -RepositoryRoot $custodyRepository `
+            -Custody $custody -ToolPath (Join-Path $custodyRepository `
+                "contracts\storage\retired-storage-roots-2026-09-12.json") -Arguments @() | Out-Null
+        } "outside deployment source custody"
         $global:CustodyNodeExit = 1
         Assert-Throws { Invoke-CustodiedNodeTool -RepositoryRoot $custodyRepository `
             -Custody $custody -ToolPath $custodyEntry -Arguments @() | Out-Null

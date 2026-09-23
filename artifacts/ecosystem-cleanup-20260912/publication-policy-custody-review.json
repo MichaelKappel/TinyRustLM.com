@@ -1,0 +1,178 @@
+{
+  "schema": "tinyrustlm.publication_policy_custody_review.v1",
+  "reviewedUtc": "2026-09-23T04:10:57Z",
+  "sourceParent": "9165595691c6d711557926c1cdc04cd813eb108e",
+  "branch": "codex/model-acquisition-v2",
+  "status": "local-implementation-tested-publication-blocked",
+  "scope": "Include a consumed storage policy in canonical publisher source custody; repair related stale test expectations without changing release inventory.",
+  "changes": [
+    "Follow literal ./ and ../ CommonJS imports and append .js only when the import has no extension.",
+    "Hash contracts/storage/*.json as data leaves; share canonical path admission between producer and rechecker; keep Node invocation restricted to tinyrustlm/tools/*.js.",
+    "Keep nonempty/8 MiB/file, 128-file closure, tracking, non-reparse and clean-worktree constraints. Publisher remains the exact current PowerShell entry.",
+    "Exercise all four real publisher Node entry points, exact policy identity and successful recheck, wrong length/hash, out-of-scope data/extension/traversal, and refusal to invoke JSON.",
+    "Correct existing release inventory expectations to 32 members (30 source and two generated), plus manifest for 33 scan inputs; require exact membership."
+  ],
+  "failureInterpretation": "Incomplete source-custody evidence, not a demonstrated exploit or live publication bypass; ordinary tracked edits still fail whole-worktree cleanliness.",
+  "tests": {
+    "baseline": {
+      "command": "powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -File tinyrustlm/tests/deploy-tinyrustlm-web.test.ps1 -OperationRoot <original-owned-root>",
+      "exitCode": 1,
+      "failure": "Source custody omitted the verifier's exact storage policy JSON dependency.",
+      "log": "c97-baseline.log"
+    },
+    "firstAffectedRun": {
+      "exitCode": 1,
+      "pass": 18,
+      "fail": 3,
+      "log": "c97-deployment-tests.log",
+      "failure": "Pre-existing count expectations: custody expected31 actual32; two secret-scan assertions expected31 actual33."
+    },
+    "countHistory": [
+      {
+        "commit": "d7041a1",
+        "members": 30
+      },
+      {
+        "commit": "6ce12cb",
+        "members": 31,
+        "added": "app/operation-lifetime.js"
+      },
+      {
+        "commit": "f131190",
+        "members": 32,
+        "added": "app/memory-endpoints-http.js"
+      }
+    ],
+    "firstPassingRun": {
+      "exitCode": 0,
+      "pass": 21,
+      "fail": 0,
+      "skip": 0,
+      "log": "c97-deployment-final.log"
+    },
+    "finalRun": {
+      "command": "node --test tinyrustlm/tests/deploy-tinyrustlm-web.test.js tinyrustlm/tests/web-deployment-manifest.test.js tinyrustlm/tests/web-deployment-custody.test.js tinyrustlm/tests/web-release-secret-scan.test.js",
+      "exitCode": 0,
+      "pass": 21,
+      "fail": 0,
+      "skip": 0,
+      "log": "c97-deployment-final-four-entries.log",
+      "changedAfterPriorPass": "Custody harness expanded from verifier/manifest entries to all four production Node entry points."
+    },
+    "coverage": {
+      "powershellPercentage": null,
+      "reason": "Pester 3.4.0 is installed, but existing AST harness recreates bodies through ScriptBlock.Create and loses original file coordinates. No verified PS collector is integrated.",
+      "closestEvidence": "Actual PowerShell primitive execution including positive identity admission and changed identity/path/Node-execution negatives; no percentage inferred from Node."
+    },
+    "boundary": "Direct affected tests only, not the source-authority-gated full release command. Git and child observations in custody primitives are synthetic; canonical file reads are real. Remote transfer assertions use fixtures."
+  },
+  "sourceIdentities": [
+    {
+      "path": "tinyrustlm/tools/deploy-tinyrustlm-web.ps1",
+      "byteCount": 215425,
+      "sha256": "2a8aab78ed4a98fb38ce2589abc7a9a4322d66644adb77f3d283f39e1678c344"
+    },
+    {
+      "path": "tinyrustlm/tests/deploy-tinyrustlm-web.test.ps1",
+      "byteCount": 95225,
+      "sha256": "d01d208f71692b7c2828b7f60192a20372199c0b8918cc513242bafb12c3c89c"
+    },
+    {
+      "path": "tinyrustlm/tests/web-deployment-custody.test.js",
+      "byteCount": 7886,
+      "sha256": "248e84a78ea3a2d33ce18ed14806aa501f3d304fc9cee53d86eb40fd40d32385"
+    },
+    {
+      "path": "tinyrustlm/tests/web-release-secret-scan.test.js",
+      "byteCount": 6312,
+      "sha256": "351e2c1dfe4b5e46b8c58215ab3993ea6aa135a4af8f637f89b5ab16281af3f8"
+    },
+    {
+      "path": "contracts/storage/retired-storage-roots-2026-09-12.json",
+      "byteCount": 2889,
+      "sha256": "901d6df4be67a8c5cb96ea7959d3a2408bfb19ea36ac387e7d55c92231a9f695"
+    },
+    {
+      "path": "tinyrustlm/deploy/web-deployment-manifest.v2.json",
+      "byteCount": 4935,
+      "sha256": "dd056b9fa7177d9cf2a1832d6e32323be4740b061a25023c7a3e4ba69bbaca10"
+    }
+  ],
+  "logs": [
+    {
+      "path": "c97-baseline.log",
+      "byteCount": 444,
+      "sha256": "09c1f2fe539116e789439e1bf078fe8b80d1bd866c1666ccd4d309053245d693"
+    },
+    {
+      "path": "c97-deployment-final-four-entries.log",
+      "byteCount": 2061,
+      "sha256": "0ec40ea5bb2efa33280ae29d3f5f6f35b3fee42289956c3752318b136bc73343"
+    },
+    {
+      "path": "c97-deployment-final.log",
+      "byteCount": 2062,
+      "sha256": "d3013c60ddaa879665611b15efdb01909fc0128feb1d74b39ded951806fc0829"
+    },
+    {
+      "path": "c97-deployment-tests.log",
+      "byteCount": 4574,
+      "sha256": "045d8d7940e017426e1bf7ea2762e9c9c9ed83136642b7a26e9ace49746eed2b"
+    }
+  ],
+  "sourceAuthority": {
+    "status": "fail",
+    "stage": "source_access",
+    "unreadableEntries": 37,
+    "outputByteCount": 4457,
+    "outputSha256": "7f8fec1c72e18e3da05f434b9f33c8b1c71ac2a42660f0bf9afdca62328384d3",
+    "changedPermissions": false,
+    "blockedDeletionRetried": false
+  },
+  "independentReview": {
+    "roles": [
+      "publication dependency and boundary review",
+      "pre-existing publication-count history review"
+    ],
+    "result": "No blocking issue found. Direct producer rejection and all four production entry points added after review."
+  },
+  "limits": [
+    "Literal relative CommonJS syntax only, not general JavaScript parsing or complete dynamic fs.readFile input inventory.",
+    "No remote transport consistency, final-marker-last mutation, global publisher exclusion or live readback result. The existing transport gate remains blocked.",
+    "No real checkpoint, browser, model qualification, NuGet publication, public deployment, credential read or account change.",
+    "Last feed observation remains C95 (2026-09-23T03:34:01Z, three current package IDs HTTP404); last GitHub billing observation remains C93. Neither rechecked here.",
+    "API-key path remains recorded in .uai/operations.uai; key contents were not accessed."
+  ],
+  "ecosystem": {
+    "directoriesInventoried": "E:\\Source\\Rust direct listing; seven canonical repos unchanged, no newly discovered project.",
+    "intake": "TinyRust active Content/Improvement placeholders only.",
+    "runtimePending": "Read-only review found Runtime 1.2.0 WIP verifiers accept 302/307/308 while implementation contract emits301; separate fix pending. Fifteen tracked WIP files and policy-rejected 174-document retirement preserved."
+  },
+  "cleanup": {
+    "status": "removed-and-verified",
+    "rootPath": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\publication-policy-custody\\tinyrustlm-operation-vHkFKS",
+    "files": 11,
+    "descendantDirectories": 11,
+    "logicalFileBytes": 18860,
+    "ownerMarkerBytes": 65,
+    "inventorySha256": "a934c40c16b347a028bb10a1466e1f145228af1c5600758439e69a6561fb8715",
+    "rootAbsent": true,
+    "markerAbsent": true,
+    "physicalStorageRecoveredBytes": null
+  },
+  "secretScan": {
+    "status": "pass",
+    "scanned": 12,
+    "findings": 0,
+    "reportBytes": 6491,
+    "reportSha256": "cc3a1210b74b97847a95c90d8719553345800479428ba2b4cc7c13466616bb4f",
+    "scope": "12 checkpoint files before final receipt summary",
+    "limitations": "Receipt cleanup/scan self-summary appended after the scan; those final factual fields were not in its input."
+  },
+  "validation": {
+    "diffCheck": "pass",
+    "uaiPointersVerified": 17,
+    "originalScratchOwnerVerified": true,
+    "noLiveProcessAtCleanup": true
+  }
+}

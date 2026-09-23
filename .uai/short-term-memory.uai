@@ -1,9 +1,10 @@
 profile: tinyrustlm.short-term-memory.current.v1
-updated_utc: 2026-09-23T03:53:19Z
+updated_utc: 2026-09-23T04:10:57Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
 now:
+  publication_policy_custody: C97 reproduces and fixes an omitted policy JSON identity; four real publisher Node entry points now receive shared code/data path checks. Final 21/21 passes include PowerShell primitives, exact scope and refusal to execute JSON. Read publication-policy-custody-review.json. Next separately inspect Runtime's temporary-redirect verifier mismatch; do not retry its blocked docs deletion. Main product and release blockers persist.
   conversion_lock_custody: C96 reproduces and removes lock-path reopening after admission, binds both component receipts to original lock hashes, and bounds all shared converter file reads. Rust 48/48, Node 27/27 and Clippy pass; no real model, browser execution or publication. Read conversion-source-lock-custody-review.json.
   template_source_admission: C95 fixes the C94 converter finding with Template2-owned source identities. Six jointly altered records reject before output creation; Rust 53/53, Clippy and Node 32/32 pass. Browser bytes are unchanged. Read template-source-admission-review.json. C96 above demonstrates deterministic lock replacement and closes the separate reopen/receipt-binding gap identified in that review.
   scalar_attention: C94 completes finite-intermediate rejection and cache recovery tests; see scalar-attention-overflow-review.json. Clear optional private-model activation variables for fixture-only tests. Source scan still fails; elevated read-only ACL information is requested. C95 above fixes the subsequently reviewed Template2 source-admission defect; no real-model inference is claimed.

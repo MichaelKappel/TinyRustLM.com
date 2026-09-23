@@ -11,6 +11,28 @@ Keep useful findings and compact evidence identities in the owning canonical
 repository. Keep source history in Git and current model payloads only in
 `D:\LLMs\TinyRustLM`.
 
+## C97: bind non-code dependencies and test the actual release inventory
+
+- **Question:** Does publication custody identify the policy consumed by its first verifier?
+- **Inputs:** Current canonical publisher, four production Node entry points,
+  and `contracts/storage/retired-storage-roots-2026-09-12.json`; no copied source.
+- **Method:** AST-imported PowerShell primitives read actual files; only Git and
+  child observations are synthetic. Require exact policy identity, successful
+  recheck and rejection of changed hashes, lengths, forbidden paths and JSON execution.
+- **Result:** Baseline fails on the missing policy. Final affected suites pass
+  21/21. An intervening run passes 18/21 with three stale inventory counts;
+  earlier committed modules explain the existing 32 publication members and
+  33 scan inputs including the control manifest. Exact membership is now checked.
+- **Uncertainty:** Literal relative CommonJS discovery is not a general JS
+  dependency parser or inventory of every dynamic filesystem read. Ordinary
+  tracked edits remain covered by clean-source admission. No live publishing
+  bypass was demonstrated. PowerShell coverage percentage is unmeasured.
+- **Decision:** Include bounded storage-policy JSON in the same custody rules,
+  keep it non-executable, and preserve all release gates. Retain failed outcomes.
+- **Reusable lesson:** Source identities need consumed policy data as well as
+  code. Validate exact release membership when correcting stale count assertions.
+- **Evidence:** `artifacts/ecosystem-cleanup-20260912/publication-policy-custody-review.json`.
+
 ## C96: carry admitted inputs through execution rather than reopening names
 
 - **Question:** Does complete conversion consume the source-lock bytes it admits?

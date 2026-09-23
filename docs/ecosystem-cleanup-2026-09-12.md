@@ -5,6 +5,33 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C97: include consumed storage policy in publication custody, September 22
+
+The publisher's literal CommonJS dependency walk omitted the source-authority
+verifier's `../../contracts/storage/retired-storage-roots-2026-09-12.json` import.
+A new regression reproduced the missing identity. The walk now follows parent
+relative imports and includes bounded storage-policy JSON as data leaves. One
+shared path rule governs initial custody and rechecking; Node execution still
+admits only JavaScript tools. Existing tracking, reparse, size and clean-source
+checks remain. This was incomplete evidence, not a demonstrated publication bypass.
+
+All 21 affected Node checks pass, including actual PowerShell primitives with
+all four production Node entry points, exact policy size/hash, changed identities,
+forbidden paths and refusal to execute JSON. The initial wider run also exposed
+three pre-existing stale inventory counts. Tests now require the existing 32
+publication files and 33 scanned inputs including the manifest, with exact
+membership assertions. Neither publication inventory nor product assets changed.
+PowerShell coverage percentage is unmeasured; the AST harness recreates function
+bodies and does not retain file coordinates for the installed Pester collector.
+
+The source scan still fails on 37 unreadable entries. Remote transport capability,
+NuGet publication, qualified model and live seed remain open. No credential,
+model, browser or public deployment operation occurred. Read
+`artifacts/ecosystem-cleanup-20260912/publication-policy-custody-review.json`.
+Read-only Runtime review also found its response verifiers accept temporary
+redirects despite a 301 implementation contract; that separate WIP fix remains
+pending. Its previously rejected documentation deletion remains untouched.
+
 ## C96: preserve source-lock bytes through component conversion, September 22
 
 The complete converter now carries both admitted source-lock buffers into the

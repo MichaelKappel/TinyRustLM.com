@@ -1,5 +1,5 @@
 profile: tinyrustlm.startup-packet.current.v1
-updated_utc: 2026-09-23T03:53:19Z
+updated_utc: 2026-09-23T04:10:57Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
@@ -10,6 +10,7 @@ startup_steps:
   - Preserve immutable failed operations and all campaign counters.
 
 current_truth:
+  publication_policy_custody: C97 binds the verifier's consumed storage JSON into publication custody and rechecks; Node execution remains JS-only. All 21 affected checks pass after correcting three pre-existing inventory-count assertions and adding exact scope checks. Read publication-policy-custody-review.json. Source access, remote transport, model, seed and NuGet gates remain open.
   conversion_lock_custody: C96 carries admitted lock bytes into both component cores and reconciles receipt input hashes; standalone APIs share those cores. One fixed-allocation reader replaces three potentially growing reads. Rust 48/48, Node 27/27 and Clippy pass. Read conversion-source-lock-custody-review.json. Source access, qualified model, live seed and publication remain open.
   template_source_admission: C95 enforces frozen Template2 config/tokenizer-config identities before complete-converter output creation. Rust 53/53, Clippy and Node 32/32 pass; two fresh builds reproduce unchanged browser WASM. Read template-source-admission-review.json. C96 above closes the subsequent lock-reopen finding; model, seed and release remain open.
   scalar_attention: C94 rejects attention/softmax/SiLU overflow before nonlinear operations conceal it; Rust 33/33, Clippy and Node/WASM 58/58 pass with reproducible browser bytes. Read scalar-attention-overflow-review.json, including the initial build mismatch and inherited diagnostic activation-only test. Source-access diagnosis is pending. C95 above completes the identified frozen-template admission fix.
