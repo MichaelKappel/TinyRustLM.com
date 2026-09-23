@@ -1,0 +1,210 @@
+{
+  "schema": "tinyrustlm.ecosystem-cleanup.source-selection-ci-review.v1",
+  "reviewedUtc": "2026-09-23T03:00:43Z",
+  "sourceParent": "b942d07a6d64bcb0338bbc92efc5f30c02f9236a",
+  "scope": "Owner-authorized current-only cleanup and local CI invocation correctness; no material model or release admission.",
+  "sourceIdentity": {
+    "canonicalRoot": "E:\\Source\\Rust\\TinyRustLM.com",
+    "branch": "codex/model-acquisition-v2",
+    "headTrackingAndDirectRemoteEqual": true,
+    "intake": "Content and Improvement placeholder-only",
+    "sourceScan": {
+      "status": 1,
+      "code": "source_authority_scan_incomplete",
+      "unreadableEntries": 37,
+      "encoding": "UTF-8 stdout followed by stderr",
+      "byteLength": 4457,
+      "sha256": "7f8fec1c72e18e3da05f434b9f33c8b1c71ac2a42660f0bf9afdca62328384d3",
+      "permissionChanges": false,
+      "blockedDeletionRetried": false
+    }
+  },
+  "retirement": {
+    "files": [
+      {
+        "path": "tinyrustlm/tools/generate-vnext-source-family-selection.js",
+        "bytes": 12320,
+        "sha256": "14690f28479c4d4a0d9e6f11adbce5e3603567016605b6e4b7464c3683509baa"
+      },
+      {
+        "path": "tinyrustlm/tests/vnext-source-family-selection.test.js",
+        "bytes": 2542,
+        "sha256": "48c35d7b856ac4ddf1c93f0e3b31fe566b368c744443100db286ec1fb3f7a613"
+      }
+    ],
+    "logicalFileBytes": 14862,
+    "physicalRecoveryMeasured": false,
+    "reason": "Only direct generator consumer was its regeneration test. The obsolete Qwen2/F32 ledger generator repeated a historical profile hash without reading the profile; current rejection enforcement is independent.",
+    "historicalEmbeddedProfileHash": "aeafbc2baa25b5e6b8d3a11a40a2d96f23fab9c4dbb4809747664a97238c33eb",
+    "preservedFiles": [
+      {
+        "path": "contracts/vnext/qwen2-safetensors-conversion-profile.v1.json",
+        "bytes": 5140,
+        "sha256": "db4d16ce83460856588bda98829a16bbc23805f82ecad0f40b9380c77ea092fc"
+      },
+      {
+        "path": "tinyrustlm/training/qwen2.5-0.5b-vnext-source-family-v1/source-family-selection.v1.json",
+        "bytes": 40664,
+        "sha256": "5aafe8528e269726f3aeeb6becc49a44f43c847953f084c5736a8a5a4bb0f0af"
+      },
+      {
+        "path": "tinyrustlm/training/qwen2.5-0.5b-vnext-source-family-v1/source-lock.v1.json",
+        "bytes": 1901,
+        "sha256": "a445ab6131ff7f9b9623a443c262bdc5485bac41a8c1734358d9ee0492ba529b"
+      }
+    ],
+    "historicalReceipts": "No historical receipt was edited or regenerated; source history stays in Git."
+  },
+  "changedSourceIdentities": [
+    {
+      "path": ".github/workflows/ci.yml",
+      "bytes": 12638,
+      "sha256": "6664913786dfb2c0129ab58abc8bc7e728b86103871d9c5376d017da8dce620f"
+    },
+    {
+      "path": "tinyrustlm/tests/vnext-unit-test-gate.test.js",
+      "bytes": 7759,
+      "sha256": "0bbdfd822698c33194a3499e9025bf7c4a8eb76dad2fbac4fd65a02dae3fbced"
+    },
+    {
+      "path": "tinyrustlm/training/qwen2.5-0.5b-vnext-source-family-v1/README.md",
+      "bytes": 1211,
+      "sha256": "1c1155401472f0c6bd28e085d14f587340fb72ae0d5a4df8fa466c83ccbcc135"
+    }
+  ],
+  "ciFix": {
+    "before": "npm --prefix tinyrustlm run test:unit -- $evidenceRoot",
+    "beforeExpansion": "node tools/run-vnext-unit-test-gate.js standard <evidenceRoot>",
+    "defect": "standard forbids an evidence-root argument; after source admission it rejects with unit_gate_arguments_invalid.",
+    "after": "node tinyrustlm/tools/run-vnext-unit-test-gate.js all \"$evidenceRoot\"",
+    "preservedOrder": [
+      "source authority",
+      "evidence directory validation",
+      "standard tests",
+      "protected release surface",
+      "result output"
+    ],
+    "dispatcherChanged": false
+  },
+  "verification": {
+    "discoveryAcquisitionExclusion": {
+      "arguments": [
+        "--test",
+        "--test-concurrency=1",
+        "tinyrustlm/tests/source-candidate-exclusions.test.js",
+        "tinyrustlm/tests/huggingface-candidate-acquire.test.js",
+        "tinyrustlm/tests/huggingface-supported-candidates.test.js"
+      ],
+      "status": 0,
+      "passed": 26,
+      "failed": 0,
+      "skipped": 0,
+      "outputByteLength": 2940,
+      "outputSha256": "d5bd34d8ade80641fd68d7269495f2ba46cef563235c398c2d8eaf8b79164910",
+      "exactExclusionDecisions": 38
+    },
+    "ciRegressionBaseline": {
+      "newCases": 4,
+      "passed": 3,
+      "failed": 1,
+      "expectedFailure": "CI must pass the evidence root to all, not standard",
+      "workflowUnchanged": true
+    },
+    "ciRegressionFinal": {
+      "testFile": "tinyrustlm/tests/vnext-unit-test-gate.test.js",
+      "passed": 8,
+      "failed": 0,
+      "skipped": 0,
+      "method": "Execute extracted production main with recording boundaries and parse actual workflow command; no real gate subprocess launched."
+    },
+    "syntaxAndDiffCheck": "pass",
+    "coverage": "No numerical coverage measurement; runtime code unchanged. Behavioral regression covers invocation, argument admission, partition order and stopping after each boundary failure.",
+    "fullGate": "Not run as passing: fresh source admission fails and hosted parent jobs never started.",
+    "visual": "No app presentation files changed; no new screenshot comparison was needed or claimed."
+  },
+  "externalReadback": {
+    "commit": "b942d07a6d64b0338bbc92efc5f30c02f9236a",
+    "github": {
+      "observedUtc": "2026-09-23T02:52:40.1715689Z",
+      "url": "https://github.com/MichaelKappel/TinyRustLM.com/actions/runs/35811901846",
+      "run": 35811901846,
+      "result": "failure",
+      "jobs": 9,
+      "totalExecutedSteps": 0,
+      "annotation": "The job was not started because your account is locked due to a billing issue.",
+      "scope": "Authenticated official repo-scoped GETs using existing Git credential in memory; no key persisted, account change or rerun."
+    },
+    "nuget": {
+      "observedUtc": "2026-09-23T02:51:36Z",
+      "sourceVersion": "0.1.8",
+      "indexes": [
+        {
+          "url": "https://api.nuget.org/v3-flatcontainer/tinyrustlm.abstractions/index.json",
+          "httpStatus": 404
+        },
+        {
+          "url": "https://api.nuget.org/v3-flatcontainer/tinyrustlm.core/index.json",
+          "httpStatus": 404
+        },
+        {
+          "url": "https://api.nuget.org/v3-flatcontainer/tinyrustlm.p2p/index.json",
+          "httpStatus": 404
+        }
+      ],
+      "profileWebFetch": "Web tool failed to fetch; feed status is direct official HTTPS readback.",
+      "published": false,
+      "nugetCredentialRead": false
+    }
+  },
+  "cleanup": [
+    {
+      "root": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\source-family-retirement\\tinyrustlm-operation-Rdyj2B",
+      "immediateEntriesBefore": [],
+      "rootAbsent": true,
+      "markerAbsent": true,
+      "physicalRecoveryMeasured": false
+    },
+    {
+      "root": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\unit-gate-invocation\\tinyrustlm-operation-RxzZr9",
+      "originalHelperOwnershipPreserved": true,
+      "filesRemainingBeforeRemoval": 0,
+      "directoriesRemainingBeforeRemoval": 0,
+      "logicalBytesRemaining": 0,
+      "markerBytes": 65,
+      "rootAbsent": true,
+      "markerAbsent": true,
+      "physicalRecoveryMeasured": false
+    }
+  ],
+  "finalVerification": {
+    "removedFilesAbsent": 2,
+    "verifiedArtifactIdentities": 6,
+    "pointerHashesVerified": 17,
+    "readmeLinkTargetsExist": 2,
+    "secretScan": {
+      "status": "pass",
+      "artifacts": 10,
+      "findings": 0,
+      "reportBytes": 5626,
+      "reportSha256": "fa8488c7035ee13df1225b3f04240da7f78d7b2d76bdab1f31bf52c70be4d521",
+      "findingCodes": []
+    },
+    "scanBoundary": "Scanned ten changed non-deleted files before appending this verification/cleanup summary; scanner report identity is retained, raw temporary report removed.",
+    "secretScanCleanup": {
+      "root": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\source-selection-secret-scan\\tinyrustlm-operation-C5B9Qb",
+      "files": 2,
+      "directories": 5,
+      "logicalBytes": 7960,
+      "markerBytes": 65,
+      "rootAbsent": true,
+      "markerAbsent": true,
+      "physicalRecoveryMeasured": false
+    }
+  },
+  "limits": [
+    "No qualified default or live initial seed established.",
+    "No real model trace or browser quality qualification.",
+    "Physical linux-arm64 and clean three-RID package release remain open.",
+    "No deployment, NuGet publication, account changes, model deletions or previously rejected cleanup attempted."
+  ]
+}

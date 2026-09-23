@@ -242,7 +242,7 @@ jobs:
         run: |
           $evidenceRoot = Join-Path $env:RUNNER_TEMP 'tinyrustlm-release-surface-gate'
           New-Item -ItemType Directory -Path $evidenceRoot | Out-Null
-          npm --prefix tinyrustlm run test:unit -- $evidenceRoot
+          node tinyrustlm/tools/run-vnext-unit-test-gate.js all "$evidenceRoot"
 
       - name: Verify deployed distributed-sync wire contract against fixture
         shell: pwsh

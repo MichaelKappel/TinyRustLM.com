@@ -5,6 +5,35 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C93: retire stale source selection and correct the CI gate invocation, September 22
+
+Removed the obsolete Qwen2/F32 selection generator and its regeneration test
+after exact-path and consumer review. They repeated a historical conversion
+profile hash without inspecting the actual profile. The source lock, selection
+ledger, conversion profile and historical receipts remain unchanged. The owning
+README now describes closed evidence and points to current exclusion enforcement
+and the Qwen3 mixed-Q8 converter. All 26 discovery/acquisition/exclusion checks
+pass, including the 38 exact rejection decisions and rejection before writes.
+
+The CI workflow passed an evidence directory to `standard`, whose parser rejects
+arguments. It now invokes the existing `all` entry point, retaining both standard
+and protected release-surface tests in order. A regression reproduces the old
+invocation failure and verifies that authority or test failures stop later work.
+The four new cases initially passed 3/4 against the old workflow; the complete
+affected gate test file now passes 8/8 with no skips. Runtime gates are unchanged.
+See `artifacts/ecosystem-cleanup-20260912/source-selection-ci-review.json` for
+exact baseline/final results, preserved identities and cleanup evidence.
+
+Fresh authenticated readback of parent commit `b942d07` found CI run
+`35811901846` failed before all nine jobs started because of an account billing
+lock. This is separate from the corrected invocation defect. Official NuGet
+indexes still return 404 for Abstractions, Core and P2P; no package was published.
+The credential location remains recorded in `.uai/operations.uai`, without the
+key. A fresh source-authority scan still reports 37 unreadable entries. No access
+controls or previously blocked deletion targets were changed. Model quality,
+numerical agreement, initial seed and complete release admission remain open.
+No application presentation files changed in this checkpoint.
+
 ## C92: continue conversations after cancellation and empty output, September 22
 
 The current app retained user messages while omitting stopped or failed assistant

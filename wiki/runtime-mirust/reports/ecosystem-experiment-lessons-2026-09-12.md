@@ -11,6 +11,35 @@ Keep useful findings and compact evidence identities in the owning canonical
 repository. Keep source history in Git and current model payloads only in
 `D:\LLMs\TinyRustLM`.
 
+## C93: historical selection is not current admission; test the CI caller
+
+- **Question:** Does the current unit suite still execute obsolete selection
+  authority, and does CI invoke the current gate correctly?
+- **Inputs:** Parent `b942d07a6d64bcb0338bbc92efc5f30c02f9236a`, the exact Qwen2
+  selection generator/test/profile, their consumers, workflow, dispatcher and
+  current source exclusions. Identities are in `source-selection-ci-review.json`.
+- **Method:** Read-only consumer and identity review, exact retirement of the two
+  unused executable files, unchanged historical evidence verification, affected
+  acquisition/exclusion tests, and the production dispatcher exercised with
+  recording dependencies and the actual workflow invocation.
+- **Result:** The old generator hardcoded `aeafbc...c33eb`; the present historical
+  profile hashes to `db4d16...a092fc`. Regeneration did not validate that binding.
+  Its only code consumer was its test. Current exclusions independently retain
+  38 decisions. Separately, CI selected `standard` with a forbidden argument;
+  using `all` retains both intended partitions and failure ordering.
+  Discovery/acquisition/exclusion tests pass 26/26. The four new CI cases start
+  at 3/4 on the old workflow; the final complete gate test file passes 8/8.
+- **Uncertainty:** This is local source/fixture evidence. Hosted jobs never
+  started because of the separately verified billing lock. Source admission
+  still reports 37 unreadable entries. No model or NuGet release was qualified.
+- **Decision:** Retire the obsolete executable path; preserve the frozen evidence
+  and exclusions. Correct the caller rather than weakening the argument parser
+  or removing the release-surface gate.
+- **Reusable lesson:** A generator comparing its output to a historical ledger
+  can certify the same stale assumption twice. Test a workflow's actual command
+  against its dispatcher; package-script checks alone miss caller drift.
+- **Evidence:** `artifacts/ecosystem-cleanup-20260912/source-selection-ci-review.json`.
+
 ## C92: preserve unanswered turns without inventing assistant speech
 
 - **Question:** Can cancellation or a valid empty terminal result poison the next
