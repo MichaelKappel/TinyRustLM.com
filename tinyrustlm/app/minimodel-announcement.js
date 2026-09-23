@@ -1,18 +1,20 @@
 (function attachMiniModelAnnouncement(globalObject) {
   "use strict";
 
+  const catalogApi = typeof module === "object" && module.exports
+    ? require("./minimodel-catalog-v1.js")
+    : globalObject.TinyRustLMMiniModelCatalogV1;
+  const directPeerUrlAuthority = catalogApi && catalogApi.directPeerUrlAuthority;
+  if (!directPeerUrlAuthority ||
+      typeof directPeerUrlAuthority.normalizeBaseUrl !== "function") {
+    throw new Error("MiniModel direct peer URL authority is unavailable");
+  }
+
   const PROOF_KIND = "minimodel.external_reachability_proof";
   const NETWORK_SCOPE = "outside-host-and-local-network";
   const TRANSFER_SCOPE = "complete-artifact-piece-set";
   const MAX_VALIDITY_MS = 60 * 60 * 1000;
   const CLOCK_SKEW_MS = 5 * 60 * 1000;
-  const BLOCKED_HOSTS = new Set([
-    "tinyrustlm.com",
-    "minimodel.org",
-    "uaix.org",
-    "memoryendpoints.com",
-    "huggingface.co"
-  ]);
 
   function requireObject(value, label) {
     if (!value || typeof value !== "object" || Array.isArray(value)) {
@@ -70,36 +72,6 @@
     return { text: normalized, milliseconds };
   }
 
-  function defaultNormalizePeerUrl(value) {
-    const raw = requireString(value, "peer URL");
-    let url;
-    try {
-      url = new URL(raw);
-    } catch (_error) {
-      throw new Error("peer URL must be an absolute HTTP URL");
-    }
-    if (url.protocol !== "http:") {
-      throw new Error("peer URL must use direct HTTP");
-    }
-    if (url.username || url.password || url.search || url.hash) {
-      throw new Error("peer URL must not contain credentials, query, or fragment");
-    }
-    const host = url.hostname.toLowerCase().replace(/\.+$/, "");
-    const plainHost = host.startsWith("www.") ? host.slice(4) : host;
-    if (!host || BLOCKED_HOSTS.has(plainHost)
-        || Array.from(BLOCKED_HOSTS).some((blocked) => plainHost.endsWith(`.${blocked}`))) {
-      throw new Error("project and model-hosting domains cannot serve peer model bytes");
-    }
-    if (!/^[a-z0-9.-]+$/i.test(host) || url.pathname.includes("\\") || url.pathname.includes("..")) {
-      throw new Error("peer URL contains an unsafe host or path");
-    }
-    url.hostname = host;
-    if (!url.pathname.endsWith("/")) {
-      url.pathname += "/";
-    }
-    return url.toString();
-  }
-
   function requireMetadataOnly(value, label) {
     requireExact(value.project_server_serves_model_bytes, false, `${label}.project_server_serves_model_bytes`);
     requireExact(value.project_server_runs_model_bytes, false, `${label}.project_server_runs_model_bytes`);
@@ -141,7 +113,7 @@
     );
     requireExact(peerSource.project_server_serves_model_bytes, false, "peer_source.project_server_serves_model_bytes");
     requireExact(peerSource.project_server_runs_model_bytes, false, "peer_source.project_server_runs_model_bytes");
-    const normalizePeerUrl = options.normalizePeerUrl || defaultNormalizePeerUrl;
+    const normalizePeerUrl = directPeerUrlAuthority.normalizeBaseUrl;
     const peerBaseUrl = normalizePeerUrl(peerSource.peer_base_url);
 
     const proof = requireObject(raw.external_reachability, "external_reachability");
@@ -250,6 +222,7 @@
     NETWORK_SCOPE,
     PROOF_KIND,
     TRANSFER_SCOPE,
+    normalizePeerBaseUrl: directPeerUrlAuthority.normalizeBaseUrl,
     validate
   });
 

@@ -1,5 +1,5 @@
 profile: tinyrustlm.long-term-memory.current.v1
-updated_utc: 2026-09-23T04:41:25Z
+updated_utc: 2026-09-23T15:47:58.729Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
@@ -13,8 +13,8 @@ pointers:
     authority: reviewed_guidance
     review_state: reviewed_for_routing_and_identity
     status: current
-    last_reviewed_utc: 2026-09-23T04:41:25Z
-    sha256: 15d378d6d5a75798f33849d7d6cd5157b3723591919ce9db53d10fa09ceca828
+    last_reviewed_utc: 2026-09-23T15:47:58.729Z
+    sha256: 08087d67fb8941c6150f57ba447732b8c28869a34ae31144872db2172a793297
   - id: report-decisions
     path: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
     label: September report decisions
@@ -36,21 +36,21 @@ pointers:
   - id: experiment-lessons
     path: wiki/runtime-mirust/reports/ecosystem-experiment-lessons-2026-09-12.md
     label: Retained experiment lessons
-    summary: Open for C21-C96 observations, exact evidence, uncertainty and blocked retirement.
+    summary: Open for retained C21-C100 observations, exact evidence, uncertainty and blocked retirement.
     authority: reviewed_bounded_historical_evidence
     review_state: reviewed_for_routing_and_identity
     status: active_growing_review
-    last_reviewed_utc: 2026-09-23T04:27:04Z
-    sha256: 0b3c6dc25e21f9b70a33ad510fcce800e8cee7d9165bdd1114322cdd462ac218
+    last_reviewed_utc: 2026-09-23T15:47:58.729Z
+    sha256: cdfb651f01d71b7b5a9b535f38b3fc8979f6a339feadd2fc6a90ed1e2a26c9a5
   - id: cleanup-progress
     path: docs/ecosystem-cleanup-2026-09-12.md
     label: Ecosystem cleanup progress
-    summary: Open for C99 external/source blockers, exact CI and NuGet readback, separate candidate/diagnostic gates, and C97/C98 completed fixes.
+    summary: Open for C100 local validation, FTP policy, source checkpoints, blocked retirement and publication limits; earlier checkpoints remain historical.
     authority: owner_authorized_progress_record
     review_state: reviewed_for_routing_and_identity
     status: current
-    last_reviewed_utc: 2026-09-23T04:41:25Z
-    sha256: aedbccbbc7838468f8a89819226c30510cdc121e1c3942f07656b864d5af675c
+    last_reviewed_utc: 2026-09-23T15:47:58.729Z
+    sha256: f4d45d83fbf1a8fa50fd8daf1d9d0d04e54c083cf18e4c79d08a542eaecab1e1
   - id: source-lock
     path: contracts/vnext/qwen3-0.6b-base-source-lock.v2.json
     label: Current diagnostic source identity

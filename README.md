@@ -20,6 +20,12 @@ Repository package version: `0.1.8`.
 Lifecycle: prelaunch. No package, model, deployment, P2P-reachability, or live
 service claim follows from a local build.
 
+GitHub is used for ordinary source control. Repository Actions are disabled under
+the owner's September 23 delivery policy; validation runs on existing local
+machines. Website releases use the established FTP/FTPS hosts and require exact
+target checks and HTTPS readback. NuGet packages publish directly to nuget.org
+after their local package gates. A Git push does not publish the website.
+
 The following evidence is complete for its exact bound bytes:
 
 - the SLM2 structural parser, canonical tensor registry, hostile corpus, and

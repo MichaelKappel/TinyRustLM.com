@@ -787,7 +787,7 @@ async function runFreshBrowserConversation(options) {
     const admissionFileName =
       `${path.basename(model.artifactPath)}.browser-model-admission.json`;
     await page.locator("#modelEditButton").click();
-    await page.locator("#simpleLocalSourceButton").click();
+    await page.locator("#simpleOpenAdvancedDiscoveryButton").click();
     await page.locator("#localModelFile").setInputFiles([
       model.artifactPath,
       {
@@ -811,7 +811,7 @@ async function runFreshBrowserConversation(options) {
       selectedFile.modelSize === model.artifactByteCount &&
       selectedFile.admissionSize === Buffer.byteLength(admissionText, "utf8"),
       "browser file picker model identity changed");
-    await page.locator("#simpleImportLocalModelButton").click();
+    await page.locator("#importLocalModelButton").click();
     await page.waitForFunction(() => document.getElementById("runtimeStatus")?.textContent === "Ready", null, {
       timeout: modelLoadTimeoutMs
     });

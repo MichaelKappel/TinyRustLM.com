@@ -1,0 +1,621 @@
+{
+  "recordedUtc": "2026-09-12T15:55:47.753Z",
+  "repos": [
+    {
+      "project": "LMComposer.com",
+      "root": "E:\\Source\\Rust\\LMComposer.com",
+      "branch": "main",
+      "head": "aae94376bab9ec76710dacf8574f62f6c1eef08a",
+      "changes": [
+        {
+          "status": " M",
+          "path": ".uai/taboo.uai",
+          "sha256": "abd2af9c79c429a1913be971bd298dcff17bbbad01ad0000c9c7ecb06f822a63"
+        }
+      ]
+    },
+    {
+      "project": "MiniModel.MiRust.com",
+      "root": "E:\\Source\\Rust\\MiniModel.MiRust.com",
+      "branch": "master",
+      "head": "115ddadd53951b49055711cb123a823421800ab0",
+      "changes": [
+        {
+          "status": " M",
+          "path": ".uai/taboo.uai",
+          "sha256": "0fa3526dec3532097b26db17ce0ebfb0c458292eb283a955948a01f108d5ba21"
+        }
+      ]
+    },
+    {
+      "project": "MiniModel.org",
+      "root": "E:\\Source\\Rust\\MiniModel.org",
+      "branch": "master",
+      "head": "e260d9d4f29c1d80de5726a40e4d8ca6edae4b75",
+      "changes": [
+        {
+          "status": " M",
+          "path": ".uai/taboo.uai",
+          "sha256": "075e81b65f31443e95fd351f72f8f291ed47f6de6f491a835d21b3aa756202f1"
+        },
+        {
+          "status": " M",
+          "path": "catalog.js",
+          "sha256": "f58d11c3e4df6c4d5c61e51fa1478046c2cf92ea4ff8c419f1db0ca38ca25c54"
+        },
+        {
+          "status": " M",
+          "path": "catalog/compositions.v1.json",
+          "sha256": "d6396eb9d608e5d0b99cc0466accfb4580ae3a3a922884154d765ccf4550de0b"
+        },
+        {
+          "status": " M",
+          "path": "catalog/peer-announcements.v1.json",
+          "sha256": "b45ff62016fecdeceb44a9906fe2f1efd364fc0c52324a49500841884d4d3773"
+        },
+        {
+          "status": " M",
+          "path": "docs/catalog-boundary.md",
+          "sha256": "7269a3b07fd312a6540d902225d25a6898f6980e4b3fe5a8f1e78d27e32ea5fb"
+        },
+        {
+          "status": " M",
+          "path": "index.html",
+          "sha256": "be200517c3cf1c4cb98e2ce8ae9021610fa5087508ff3c5f171a5f516d14f83d"
+        },
+        {
+          "status": " M",
+          "path": "tests/catalog.test.js",
+          "sha256": "b33a322b228ad0587f24f6024338703893b08b7c6b616b8e056a3ad4e04406d8"
+        },
+        {
+          "status": " M",
+          "path": "workspace.uai",
+          "sha256": "4545f3f4edda2eacb0f5a378bbba8165fa7ef4b2d8879c8922d4e0328271c317"
+        },
+        {
+          "status": "??",
+          "path": "tests/catalog-contract.test.js",
+          "sha256": "d9d24d8608e225d430b4f56002dc83e7ddd0daa999a97da0413cf788997e6480"
+        },
+        {
+          "status": "??",
+          "path": "tools/build-empty-catalog.js",
+          "sha256": "3bdcb741a54033ac2031a24416a0c06641aef40a6e2fe6c05e189dcedea0cc04"
+        }
+      ]
+    },
+    {
+      "project": "MiRust.com",
+      "root": "E:\\Source\\Rust\\MiRust.com",
+      "branch": "master",
+      "head": "d91b4c1abf86416d0bca7d8b40e67bf2671c79c6",
+      "changes": [
+        {
+          "status": " M",
+          "path": ".uai/taboo.uai",
+          "sha256": "302b8967076f7bd2bdf5b47a6f20d0cfbba8aca7a75a639f3111ebd67f89148f"
+        },
+        {
+          "status": " M",
+          "path": "deploy/README.md",
+          "sha256": "c9388c87260a3720341eacc59c178540bcf11966270c4e10babb00cc9a0123b6"
+        },
+        {
+          "status": " M",
+          "path": "tests/deployment-custody.test.ps1",
+          "sha256": "496b6eea3c2179731db2f5938c2050536e5278d1db0286b332302bb3525767e8"
+        },
+        {
+          "status": " M",
+          "path": "tests/deployment-publisher.test.js",
+          "sha256": "d752befa30efed52196a0a90166f3d270255a23619dc1f5971e3aaaaacd0d452"
+        },
+        {
+          "status": " M",
+          "path": "tools/deploy-site.ps1",
+          "sha256": "124a69905bf4120885965b5c95f8abd213c07f5aa761616e0e1bc3b70a9a0ae5"
+        }
+      ]
+    },
+    {
+      "project": "Runtime.MiRust.com",
+      "root": "E:\\Source\\Rust\\Runtime.MiRust.com",
+      "branch": "master",
+      "head": "569257f5bebbcd51a3d69743529ad4a155e68056",
+      "changes": [
+        {
+          "status": " M",
+          "path": ".uai/taboo.uai",
+          "sha256": "d66e67bcc24bd8d8b20c08a0c45a7d18662051a35a93f22699c9c591288ce80a"
+        }
+      ]
+    },
+    {
+      "project": "TinyRustLM.com",
+      "root": "E:\\Source\\Rust\\TinyRustLM.com",
+      "branch": "codex/model-acquisition-v2",
+      "head": "596851ffcadbe6460260fcc221273cbcee980789",
+      "changes": [
+        {
+          "status": " M",
+          "path": ".gitignore",
+          "sha256": "e938ef4d098173fd3dd38ab3546015d2e5f5d289354a4f4bfa264e9f54877d26"
+        },
+        {
+          "status": " M",
+          "path": ".uai/short-term-memory.uai",
+          "sha256": "df7544e963a1a9d1a0a0365d6ae5ca77abf8ca686fd2450450a6bf24ac27bb81"
+        },
+        {
+          "status": " M",
+          "path": ".uai/startup-packet.uai",
+          "sha256": "cf8fa5928a471558c5d5df60f0a0f35ac496e18f6f89f758fabe763b7d42e8dc"
+        },
+        {
+          "status": " M",
+          "path": "docs/companion/README.md",
+          "sha256": "52b1e75e146ea15f0b5425d8c9f1c6f16940703b2856d37c40e64dc2dd458a78"
+        },
+        {
+          "status": " M",
+          "path": "eng/verify-tinyrustlm-ui.ps1",
+          "sha256": "c94084d5eba96b3c426415f8a6ca9202b0c16ea8288cef441bdfeea1d581cb40"
+        },
+        {
+          "status": " M",
+          "path": "eng/verify-tinyrustlm-ui.sh",
+          "sha256": "34881d088fa721173aba13f678a97233578306e38be399ea8db3ed8c109dfee9"
+        },
+        {
+          "status": " M",
+          "path": "tinyrustlm/README.md",
+          "sha256": "92064718dceaea493f56028d2c3ae5342ab089ba6dd2d1ab8c51825e6d042058"
+        },
+        {
+          "status": " M",
+          "path": "tinyrustlm/app/app.css",
+          "sha256": "4bb445e2f5b26e159e54e1cff26edcd46243699b68152dd07f44087318fa4b32"
+        },
+        {
+          "status": " M",
+          "path": "tinyrustlm/app/app.js",
+          "sha256": "4147cf22baab5acad0ef94a1ddcfe45bb6f65cae17feb6663753212a66ac8d50"
+        },
+        {
+          "status": " D",
+          "path": "tinyrustlm/app/companion-bridge.js",
+          "sha256": null
+        },
+        {
+          "status": " M",
+          "path": "tinyrustlm/app/companion-capability.js",
+          "sha256": "c19f57cc370619112c596efce5722f1a7c22ec43ce1a240ec80312cf5437c597"
+        },
+        {
+          "status": " M",
+          "path": "tinyrustlm/app/index.html",
+          "sha256": "25b9af2160358b5a4136304a0a0c81a0d43f2a232a3dc27deb85305b9c101f9a"
+        },
+        {
+          "status": " M",
+          "path": "tinyrustlm/app/minimodel-announcement.js",
+          "sha256": "f7ebe6213e285a39e23759fc924b63683ba2052cab6fb0a6386d857cce9343e5"
+        },
+        {
+          "status": " M",
+          "path": "tinyrustlm/app/model-runtime-client.js",
+          "sha256": "37e653081e821e6bbcc71ebbb5b3c248d6cbd9c5cc9f6df6a274d3129731acbd"
+        },
+        {
+          "status": " M",
+          "path": "tinyrustlm/companion/index.html",
+          "sha256": "24dffee3514039fc34d2588475eed2f92533b2001165b3cac9365f185fa1928c"
+        },
+        {
+          "status": " M",
+          "path": "tinyrustlm/deploy/web-deployment-manifest.v2.json",
+          "sha256": "56990126c0a037d76b7171b7416324d161dbe0242c332b27922a74bb251adb02"
+        },
+        {
+          "status": " M",
+          "path": "tinyrustlm/docs/architecture.md",
+          "sha256": "df0f83a313d0cbe67110734a568207c019d0f040f4f27f800fced088392293a9"
+        },
+        {
+          "status": " M",
+          "path": "tinyrustlm/e2e/conversation.spec.js",
+          "sha256": "0ab2b66136589a310cca5244c78550b3ad2d24c4e9a01a1967f27d7d8fd2ba1a"
+        },
+        {
+          "status": " M",
+          "path": "tinyrustlm/e2e/helpers/memory-endpoints-enrollment-fixture.js",
+          "sha256": "2143cba97150dbbb243ce2ae9cbeb010e18a6496705effdc5d3e46e4d124bfb8"
+        },
+        {
+          "status": " M",
+          "path": "tinyrustlm/e2e/memory-endpoints-enrollment.spec.js",
+          "sha256": "604883cd21bfdd5beff59ccb091d8083747a5fdf9eed6aecafed94fc4747f73f"
+        },
+        {
+          "status": " M",
+          "path": "tinyrustlm/e2e/ui.spec.js",
+          "sha256": "a56f5e1eaccfbb5f470f0b6810809de40023a72e001289947349f01f9e320a6e"
+        },
+        {
+          "status": " M",
+          "path": "tinyrustlm/index.html",
+          "sha256": "72eb869e0be97e52692bf769514b560f55049b5c3e2293733840f2375b02f347"
+        },
+        {
+          "status": " M",
+          "path": "tinyrustlm/package.json",
+          "sha256": "6214b8fb36a35a3319cec05e345765e4f594abbedc81854acd391c38cbe2cffc"
+        },
+        {
+          "status": " M",
+          "path": "tinyrustlm/playwright.config.js",
+          "sha256": "26c7fdbcf0d5977a8eeae721d4bc84d393ffe3c07ce5fbb25b675e237fad0934"
+        },
+        {
+          "status": " M",
+          "path": "tinyrustlm/release/site-release-ledger.v1.json",
+          "sha256": "68438a96501da563653d6fa94eb4a65cb40e0ed72b1ff65f6dcf675ebe3edda3"
+        },
+        {
+          "status": " D",
+          "path": "tinyrustlm/tests/companion-bridge.test.js",
+          "sha256": null
+        },
+        {
+          "status": " M",
+          "path": "tinyrustlm/tests/companion-capability.test.js",
+          "sha256": "c19307f2931aaf703115ee1aa0ad658fd5cf87e48a4d84952727ce2dbcfcaf4e"
+        },
+        {
+          "status": " M",
+          "path": "tinyrustlm/tests/deploy-tinyrustlm-web.test.js",
+          "sha256": "62593422822abbd84cff51ee53dd17c82357be91cf39ca45b186cc9e894ca67c"
+        },
+        {
+          "status": " M",
+          "path": "tinyrustlm/tests/deploy-tinyrustlm-web.test.ps1",
+          "sha256": "e07b5c3670c4f54710c7a0f72ca724bc38346d34a44a63ce23e2de92ba5a90de"
+        },
+        {
+          "status": " M",
+          "path": "tinyrustlm/tests/minimodel-announcement.test.js",
+          "sha256": "e292d2582e5fe72c717fc9f35068410ae97780593bbb1c3fcb9f4825c5c5dfd6"
+        },
+        {
+          "status": " M",
+          "path": "tinyrustlm/tests/model-acquisition.test.js",
+          "sha256": "2f52661beaa8659bc330a174944dbddc02943f71101f9b128911019d42f4e8af"
+        },
+        {
+          "status": " M",
+          "path": "tinyrustlm/tests/model-runtime-client.test.js",
+          "sha256": "50f9c8fa8af22187ecf13f04340a17e3f5bff187475b3220b05e0467ee2cc239"
+        },
+        {
+          "status": " M",
+          "path": "tinyrustlm/tests/site-release-browser.test.js",
+          "sha256": "d1e961629fb550baec1be6e8d35d4addf0e7008e23fa526f2c1ee95bd359a247"
+        },
+        {
+          "status": " M",
+          "path": "tinyrustlm/tests/site-release-contract.test.js",
+          "sha256": "a0c411d680328776ed1191d8448915b073f11d0ab8470c61b02d922184357326"
+        },
+        {
+          "status": " M",
+          "path": "tinyrustlm/tests/site-release-test-fixture.js",
+          "sha256": "3acb01b65f345e5d3fb5b040a6a65f332a3f385f4b74e3e591161c2e6f446ca0"
+        },
+        {
+          "status": " M",
+          "path": "tinyrustlm/tests/static-shell-parity.test.js",
+          "sha256": "edcc6b009e684f1b18f09ee892869caf30a715856c4f3ad8b4664bae409831d1"
+        },
+        {
+          "status": " M",
+          "path": "tinyrustlm/tests/tracked-model-byte-policy.test.js",
+          "sha256": "2b067170d2d7a6709112df70f2eeef16aca128e8c6abd3844dc86d53fb0e3726"
+        },
+        {
+          "status": " M",
+          "path": "tinyrustlm/tests/web-deployment-manifest.test.js",
+          "sha256": "e4a9cc99cb245f22165dfb1915c11b43a2ebf69c9ec20f18b63a93826d0a5878"
+        },
+        {
+          "status": " M",
+          "path": "tinyrustlm/tests/web-release-browser-smoke.test.js",
+          "sha256": "b362e0bd488c35046dab85c8be80e90ac3079cc3d88bf7cee91cc399e147a9f3"
+        },
+        {
+          "status": " M",
+          "path": "tinyrustlm/tests/web-release-local-smoke.test.js",
+          "sha256": "94b7929c3bb332985d7c744ab55be92ee9ed83ab827f57aed161c399904ed3ea"
+        },
+        {
+          "status": " M",
+          "path": "tinyrustlm/tests/web-release-secret-scan.test.js",
+          "sha256": "7b807c1584b4598551ed4c07fba640acc8bef60bf990d1bab8420991d3d17bee"
+        },
+        {
+          "status": " M",
+          "path": "tinyrustlm/tools/capture-ui-lock.js",
+          "sha256": "582518622fb97f1a2be5c7a8d3702f67108d654e6073f880eccf2f89b832b4b1"
+        },
+        {
+          "status": " M",
+          "path": "tinyrustlm/tools/deploy-tinyrustlm-web.ps1",
+          "sha256": "41ff0960382b5aa12d5d6950e2228527b4e36bdec4f9641a770a650553771075"
+        },
+        {
+          "status": " M",
+          "path": "tinyrustlm/tools/fresh-browser-conversation.js",
+          "sha256": "4abe59b500722526bdfdff33f12dcb2d0dd5f4c7d4ee157e72de2a05bb361d8d"
+        },
+        {
+          "status": " M",
+          "path": "tinyrustlm/tools/site-release-page.js",
+          "sha256": "62f1e9d749a4af925324797c55c4c22d8972f957c0f36fb4830678ec8c19d661"
+        },
+        {
+          "status": " M",
+          "path": "tinyrustlm/tools/static-server.js",
+          "sha256": "31875a0d81f5a0fab4956b7482438b04d70cf1d7fc7649c7f720b601fa9813c9"
+        },
+        {
+          "status": " M",
+          "path": "tinyrustlm/tools/web-deployment-manifest.js",
+          "sha256": "cf548495ab60193828f2922fbaf4c4abd04e011e564576134ee44f3fc52a09a5"
+        },
+        {
+          "status": " M",
+          "path": "tinyrustlm/tools/web-release-browser-smoke.js",
+          "sha256": "12bc6e19510a2413645a65c51a41e9a70e64e869ad9e280107814c877cb488ce"
+        },
+        {
+          "status": " M",
+          "path": "tinyrustlm/updates/index.html",
+          "sha256": "a033bce7f80c597b8dbe275c901b20d7b78956cb51e6bd3e1af5371b50def34d"
+        },
+        {
+          "status": " M",
+          "path": "wiki/runtime-mirust/index.md",
+          "sha256": "a9c209cec8f0037431cda80da21e1a150d4d048ace3d79877c4de5f1265fe34c"
+        },
+        {
+          "status": " M",
+          "path": "wiki/runtime-mirust/source-memory-guide.md",
+          "sha256": "8e44016224a636b4a9d2ce94b48c2573ff45d5f922ea80b62bf7dac59405d400"
+        },
+        {
+          "status": " M",
+          "path": "workspace.uai",
+          "sha256": "ccb964987f52d2ac2d8501e5cd1c51fc66bac55badeef950ed89099d2844a3c6"
+        },
+        {
+          "status": "??",
+          "path": "docs/server-seeded-startup-2026-09-12.md",
+          "sha256": "8f428e125138e8df74df15efab9acabf7fda7e2e6c1a5d635c3ea43557318ff9"
+        },
+        {
+          "status": "??",
+          "path": "tinyrustlm/app/catalog-admission-loader.js",
+          "sha256": "08dc9a91d34643ee9f9f07fa3fd2707d8a118dbd2de0b6d982c99cd8e8edf909"
+        },
+        {
+          "status": "??",
+          "path": "tinyrustlm/app/companion-composition-install.js",
+          "sha256": "7099cf16f30fe3fdcebb69bdc3ec8a88db24e5b83df105966b6e1c03c41cf948"
+        },
+        {
+          "status": "??",
+          "path": "tinyrustlm/app/incremental-sha256.js",
+          "sha256": "e28faf3a02617d3d6747a0061f10f20b756500ae727f5c02e18da9912c767095"
+        },
+        {
+          "status": "??",
+          "path": "tinyrustlm/app/minimodel-catalog-v1.js",
+          "sha256": "6dd76fa44f52405ffc36ebd50bbb0c213f9811540d341cc6cd04f861138c11e9"
+        },
+        {
+          "status": "??",
+          "path": "tinyrustlm/app/model-composition-store.js",
+          "sha256": "349c3589d49603e436e9860661296377de6fd777c5a0c9ca5447c03df4d0f3ca"
+        },
+        {
+          "status": "??",
+          "path": "tinyrustlm/app/p2p-composition-install.js",
+          "sha256": "55a53359bb7af64062eb8b7505251af6eab487bc94a8105a92698830ea6ae8e4"
+        },
+        {
+          "status": "??",
+          "path": "tinyrustlm/docs/interview-demo.md",
+          "sha256": "0d9b1ae1bd00a8241e1a727f412aefeaa2d8508baf8f0ea0311adec97100b127"
+        },
+        {
+          "status": "??",
+          "path": "tinyrustlm/e2e/composition-cache.spec.js",
+          "sha256": "b99a2649310b79d8567cad76c8887560320ead996bfcf1f304e160994202b483"
+        },
+        {
+          "status": "??",
+          "path": "tinyrustlm/e2e/direct-p2p-composition.spec.js",
+          "sha256": "46741ad6feaf743f5192bea027a4a6bac64ec2011ac0265cb3b747de95f83484"
+        },
+        {
+          "status": "??",
+          "path": "tinyrustlm/e2e/model-chooser.spec.js",
+          "sha256": "4ca4f0bb20876b0a3b62d1c1c45d6687bc48a9a6f800312d3d9f1c6de8805b61"
+        },
+        {
+          "status": "??",
+          "path": "tinyrustlm/tests/acquisition-playwright-gate.test.js",
+          "sha256": "08cc0c0b7dcda449f9331148abb69afbde1cc2c53542cbe08c231903d4d76684"
+        },
+        {
+          "status": "??",
+          "path": "tinyrustlm/tests/app_test.js",
+          "sha256": "15d11837250d4bcf01e0d4a76e5bf98e06f7d2ca5c2747ca29c90c13d7e415a2"
+        },
+        {
+          "status": "??",
+          "path": "tinyrustlm/tests/catalog-admission-loader.test.js",
+          "sha256": "0027720edbb2d6c95834b4d65bc0ce5f52b626fc48073e8c19021a01eb9831b4"
+        },
+        {
+          "status": "??",
+          "path": "tinyrustlm/tests/companion-composition-install.test.js",
+          "sha256": "de712487f22d2186815bb53446368329a6f197b23355d45c60417876fd1dd2cf"
+        },
+        {
+          "status": "??",
+          "path": "tinyrustlm/tests/companion-direct-seed-wire-host-helper.js",
+          "sha256": "4d87754ab135a896391c48ed15fab72522de6e5789690b215a6a18520ea10a91"
+        },
+        {
+          "status": "??",
+          "path": "tinyrustlm/tests/companion-direct-seed-wire-integration.test.js",
+          "sha256": "0116c4e1ab8adb677ddc78cbc2d591a71f7e8f66f8ae0d09fdc98b0162d30279"
+        },
+        {
+          "status": "??",
+          "path": "tinyrustlm/tests/direct-peer-url-authority.test.js",
+          "sha256": "80b1313f7385b94e14d10cba8946c109fb2fe7fd01f5ed30f906e6261b352090"
+        },
+        {
+          "status": "??",
+          "path": "tinyrustlm/tests/incremental-sha256.test.js",
+          "sha256": "75a4960f7b74df6c04c8c67871b17ec8a4dda0313aa69777c938318dda01fb26"
+        },
+        {
+          "status": "??",
+          "path": "tinyrustlm/tests/interview-demo-launcher.test.js",
+          "sha256": "9920f8d19726e8fd55e5e2addf2e41a90c09267882fac13ea9f140feb34fd59b"
+        },
+        {
+          "status": "??",
+          "path": "tinyrustlm/tests/interview-demo-preflight.test.js",
+          "sha256": "60b4b8e91702c134261db3d01e774315036406bf1d9fce946a0edeb48938e1b7"
+        },
+        {
+          "status": "??",
+          "path": "tinyrustlm/tests/interview-demo-server.test.js",
+          "sha256": "9c23e4b8d272e1b49b525750c081d19edd17bff0366e2c86445fcb3453cbce5c"
+        },
+        {
+          "status": "??",
+          "path": "tinyrustlm/tests/minimodel-catalog-v1.test.js",
+          "sha256": "26f2790c6ad3c1d9d83a6b37369d69999b8ee74eaba4c9c5d6b09444b9776f51"
+        },
+        {
+          "status": "??",
+          "path": "tinyrustlm/tests/model-acquisition-boundary-regression.test.js",
+          "sha256": "1f6b1896a0b14ad0c1af999b941d354067618187f0a482732d54103bd8f81a24"
+        },
+        {
+          "status": "??",
+          "path": "tinyrustlm/tests/model-cache-custody-integration.test.js",
+          "sha256": "34bc5c311e2e4a1c7c9ccb38142227830dddd5e8ad026fda27f53b87dbff9e9f"
+        },
+        {
+          "status": "??",
+          "path": "tinyrustlm/tests/model-composition-store.test.js",
+          "sha256": "d927da0d67a6ffc887fe727c146eccef656ed433dc64b012132b504e6ae380c7"
+        },
+        {
+          "status": "??",
+          "path": "tinyrustlm/tests/model-runtime-client-browser.test.js",
+          "sha256": "8203ee8a9bbb48001aeeb48cbd35ee5034a663f3a78ef9195e3c7a79acd26c10"
+        },
+        {
+          "status": "??",
+          "path": "tinyrustlm/tests/p2p-composition-install.test.js",
+          "sha256": "356570a67bd3ea6354de021aac73a9ddd499019c3453f45329969503c37443da"
+        },
+        {
+          "status": "??",
+          "path": "tinyrustlm/tests/run-web-release-local-smoke.test.js",
+          "sha256": "9614124d9008fcbc1e03ca98769c7fdb7445c5e4fbc3e7773bd2f83aeb04da1c"
+        },
+        {
+          "status": "??",
+          "path": "tinyrustlm/tests/synthetic-p2p-interview-demo.test.js",
+          "sha256": "1f621431d552d0ecb60d81812a3d6ae4cb118f653328174ae751122de4e5ec82"
+        },
+        {
+          "status": "??",
+          "path": "tinyrustlm/tests/web-deployment-custody.test.js",
+          "sha256": "93b8c78ee25c8432166bf387d42cc7f96e3a0935695d0c543b9fdc941da9bd8d"
+        },
+        {
+          "status": "??",
+          "path": "tinyrustlm/tools/interview-demo-launcher.js",
+          "sha256": "00feb4282fe2a894dc43acfd5824d67b358c3d5820ebe9be8fd753a4ea492ac2"
+        },
+        {
+          "status": "??",
+          "path": "tinyrustlm/tools/interview-demo-preflight.js",
+          "sha256": "5a135cb828f1feca5268339228702f8a507cefd95d0d2a9aa3b6413939cac43b"
+        },
+        {
+          "status": "??",
+          "path": "tinyrustlm/tools/interview-demo-server.js",
+          "sha256": "1504a76009fbce0d439699716520234cd2eaa6dba86c5dfa0c9d82b598933988"
+        },
+        {
+          "status": "??",
+          "path": "tinyrustlm/tools/remove-retired-slm1-models.ps1",
+          "sha256": "73ca230f25281e5b52b33e301b5b8962c8af98f40c37e434c9c8b9940f6337dd"
+        },
+        {
+          "status": "??",
+          "path": "tinyrustlm/tools/run-web-release-local-smoke.js",
+          "sha256": "20f54cc9182e43595a5c3f82d1c2106421eaae77dc40eda8d55911947f2a1131"
+        },
+        {
+          "status": "??",
+          "path": "tinyrustlm/tools/synthetic-p2p-interview-demo.js",
+          "sha256": "260d4c4ebbfa4780ac777bf9915a6516bcf8e7a295e4f92dc26f15191abdf408"
+        }
+      ]
+    },
+    {
+      "project": "TinyRustLM.MiRust.com",
+      "root": "E:\\Source\\Rust\\TinyRustLM.MiRust.com",
+      "branch": "master",
+      "head": "24e4f875a0e508827e6ddf6f94664e927261fbd5",
+      "changes": [
+        {
+          "status": " M",
+          "path": ".uai/taboo.uai",
+          "sha256": "4b55382be7c3ca7850c3a4f8ebc9ba7d1598af02a17a8c7524f1f26c1f239d86"
+        },
+        {
+          "status": " M",
+          "path": "deploy/site-deployment-manifest.v1.json",
+          "sha256": "7059e67b0f3a50a152d5687d397c39410ab93b332cfddce9139276c2b97e5735"
+        },
+        {
+          "status": " M",
+          "path": "tools/deployment-validation.test.js",
+          "sha256": "c4024b3095366259c2fd0de3acf0a324005067c323e4f678bb82147ced04cad0"
+        },
+        {
+          "status": " M",
+          "path": "tools/source-copy-retirement.test.js",
+          "sha256": "6bc1e6a811bf56f4e360ece1213155fd68b08b5b68c54ec89a1bae43e1a31e7d"
+        },
+        {
+          "status": " M",
+          "path": "tools/verify-site-deployment-input.js",
+          "sha256": "42dfd6fa0964e3ed15dcd0686be9c6853827fbd5535f14615886afd85e5a4e55"
+        }
+      ]
+    }
+  ]
+}

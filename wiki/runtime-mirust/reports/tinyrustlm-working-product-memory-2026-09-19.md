@@ -16,7 +16,25 @@ Authority order is current owner instructions, inspected current contracts and b
 
 ## Current evidence and its limits
 
-**C99 critical-path review:** no additional concrete defect was found in the
+**Owner delivery direction, September 23:** GitHub is for ordinary source control;
+do not use features that incur charges or restore hosted Actions. Run validation
+locally and publish websites through the existing FTP/FTPS hosts. All seven
+canonical repositories now have Actions disabled, with official API readback in
+`artifacts/ecosystem-cleanup-20260912/github-cost-policy-review.json`. This
+supersedes the C99 recommendation to resolve billing for CI. Local platform proof,
+source/target admission and public readback remain necessary. NuGet packages use
+nuget.org's HTTPS API after their local gates, not the website FTP transport.
+
+**C100 local delivery checkpoint:** Runtime `5986e6f` and portal `7e5cec5` preserve
+their reviewed pending code and owner policy in Git. TinyRust's sequential FTPS
+publisher passes 17 affected checks; the synthetic Edge acquisition walkthrough
+passes 13/13, with all earlier failed setup/fixture observations retained. Its
+runtime rejection remains real and explicit; no model is qualified. Source
+admission still reports 37 unreadable entries, blocked retired files remain,
+and the existing FTP target-memory path is still needed. No website or NuGet
+publication occurred. Read cleanup C100 and `owner-delivery-checkpoint-review.json`.
+
+**Historical C99 critical-path review:** no additional concrete defect was found in the
 inspected package/reference paths. Fresh official NuGet queries return 404 for
 all three package IDs; CI run `35818723229` has nine jobs with zero executed steps
 because of the account billing lock. The source check still reports 37 unreadable

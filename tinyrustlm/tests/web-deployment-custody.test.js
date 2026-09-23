@@ -135,7 +135,7 @@ test("predecessor output rejects wrong repository, ledger and scattered roots be
 test("publisher keeps source and transport admission ahead of remote writes and marker publication", () => {
   const source = fs.readFileSync(deploymentScriptPath, "utf8");
   const phases = ["deployment-input", "release-ledger-candidate-validation", "terminal-source-custody",
-    "transport-capability-blocker", "public-predecessor-gate", "credential-profile",
+    "transport-contract-admission", "public-predecessor-gate", "credential-profile",
     "host-policy-predeployment", "artifact-publication", "final-precommit-verification",
     "canonical-input-before-release-marker", "release-commit-marker"];
   let previous = -1;
@@ -147,7 +147,19 @@ test("publisher keeps source and transport admission ahead of remote writes and 
   assert.doesNotMatch(source, /deploymentSnapshot|deploymentInputRoot|GetTempPath|remove-snapshot/u);
   assert.match(source, /Publish-Artifact -DeploymentInputEntry \$publicationPlan\.commit_marker -CommitMarker/u);
   assert.match(source, /finally \{ \$script:regularArtifactsVerifiedForCommit = \$false \}/u);
-  assert.doesNotMatch(source, /\$script:releaseWideTransportCapabilityAdmitted = \$true/u);
+  const target = source.indexOf("$deploymentTargetEvidence = Assert-DeploymentTargetIdentity");
+  const probes = source.indexOf("$script:predeploymentTemporaryRouteEvidence = Test-PredeploymentTemporaryRoutePolicy", target);
+  const admission = source.indexOf("$script:artifactPublicationAdmitted = $true", probes);
+  const publication = source.indexOf('$operationPhase = "artifact-publication"', admission);
+  assert.ok(target >= 0 && probes > target && admission > probes && publication > admission);
+  assert.match(source.slice(probes, admission), /authenticated_cleanup_verified -ne \$true/u);
+  assert.match(source.slice(probes, admission), /deploymentLease\.handle\.CanRead/u);
+  assert.equal((source.match(/\$script:artifactPublicationAdmitted = \$true/gu) || []).length, 1);
+  const marker = source.indexOf("Publish-Artifact -DeploymentInputEntry $publicationPlan.commit_marker -CommitMarker");
+  assert.ok(marker > publication);
+  assert.doesNotMatch(source.slice(marker), /\n\s*(?:Publish-Artifact|Remove-PublicArtifact|Remove-RetiredModelDirectory|Ensure-RemoteDirectory)\b/u);
+  assert.match(source, /marker_was_last_remote_mutation = \$false/u);
+  assert.doesNotMatch(source, /atomic_ftps_deployment|deployment_transport_capability\.v1/u);
   assert.match(source, /local_input_cleanup_required = \$false/u);
   assert.match(source, /source_copy_created = \$false/u);
 });

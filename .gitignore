@@ -23,6 +23,7 @@ test-results/
 rust/crates/tinyrustlm-archive/fuzz/artifacts/
 rust/crates/tinyrustlm-archive/fuzz/coverage/
 tinyrustlm/artifacts/playwright/**
+tinyrustlm/e2e/.artifacts/
 artifacts/native/**
 artifacts/converter/**
 artifacts/p2p-seed/**
@@ -63,9 +64,9 @@ model*.bin
 *.prompt2
 *.acg2
 *.slm
-!tinyrustlm/models/tiny-test-model.slm
-!tinyrustlm/models/tiny-test-model-tied.slm
-!tinyrustlm/models/tiny-test-model-q8.slm
-!tinyrustlm/models/tiny-test-model-q5.slm
-!tinyrustlm/models/tiny-test-model-q4.slm
-!tinyrustlm/models/tiny-test-model-bpe.slm
+*.slm1
+*.adp1
+*.acg1
+*.slm.manifest
+*.adp1.manifest
+*.acg1.manifest

@@ -1,0 +1,169 @@
+{
+  "source": "tinyrustlm/app/app.js",
+  "beforeSha256": "4147cf22baab5acad0ef94a1ddcfe45bb6f65cae17feb6663753212a66ac8d50",
+  "afterSha256": "730910a62c02232671d73d00b690e0960f72d974eaffef71579381bf194f8e70",
+  "removedFunctions": [
+    {
+      "name": "companionPeerUrls",
+      "lines": 22,
+      "round": 0
+    },
+    {
+      "name": "fetchCompanionManifest",
+      "lines": 30,
+      "round": 0
+    },
+    {
+      "name": "prepareCompanionModel",
+      "lines": 3,
+      "round": 0
+    },
+    {
+      "name": "openMemoryEndpointsSettings",
+      "lines": 16,
+      "round": 0
+    },
+    {
+      "name": "extendAssistantMessage",
+      "lines": 10,
+      "round": 0
+    },
+    {
+      "name": "parseManifest",
+      "lines": 24,
+      "round": 0
+    },
+    {
+      "name": "fetchTextWithinBudget",
+      "lines": 14,
+      "round": 0
+    },
+    {
+      "name": "provenanceQualityClaimText",
+      "lines": 7,
+      "round": 0
+    },
+    {
+      "name": "provenanceTrainedClaimText",
+      "lines": 10,
+      "round": 0
+    },
+    {
+      "name": "provenanceNextGateText",
+      "lines": 11,
+      "round": 0
+    },
+    {
+      "name": "restoreImportedModelOptions",
+      "lines": 6,
+      "round": 0
+    },
+    {
+      "name": "hexToBytes",
+      "lines": 11,
+      "round": 0
+    },
+    {
+      "name": "fetchHfImmutableDetail",
+      "lines": 29,
+      "round": 0
+    },
+    {
+      "name": "hfDirectConversionRequest",
+      "lines": 62,
+      "round": 0
+    },
+    {
+      "name": "peerImportRequest",
+      "lines": 39,
+      "round": 0
+    },
+    {
+      "name": "hfPrimarySafetensorsFile",
+      "lines": 5,
+      "round": 0
+    },
+    {
+      "name": "hfPrimaryGgufFile",
+      "lines": 5,
+      "round": 0
+    },
+    {
+      "name": "hfEnabledP2pActionMatch",
+      "lines": 3,
+      "round": 0
+    },
+    {
+      "name": "supportedSourceShapes",
+      "lines": 15,
+      "round": 0
+    },
+    {
+      "name": "hfDefaultSourceShape",
+      "lines": 22,
+      "round": 0
+    },
+    {
+      "name": "hfDefaultQuantization",
+      "lines": 7,
+      "round": 0
+    },
+    {
+      "name": "manifestValue",
+      "lines": 3,
+      "round": 1
+    },
+    {
+      "name": "verifiedAssistantQualityEvalField",
+      "lines": 12,
+      "round": 1
+    },
+    {
+      "name": "verifiedConversationEvidenceField",
+      "lines": 13,
+      "round": 1
+    },
+    {
+      "name": "modelsWithLocalModel",
+      "lines": 10,
+      "round": 1
+    },
+    {
+      "name": "hfDetailLicenseId",
+      "lines": 14,
+      "round": 1
+    },
+    {
+      "name": "hfDetailFiles",
+      "lines": 8,
+      "round": 1
+    },
+    {
+      "name": "p2pImportBaseUrl",
+      "lines": 6,
+      "round": 1
+    },
+    {
+      "name": "peerImportFileStem",
+      "lines": 3,
+      "round": 1
+    },
+    {
+      "name": "modelsWithoutLocalModel",
+      "lines": 9,
+      "round": 2
+    },
+    {
+      "name": "catalogPeerBaseUrl",
+      "lines": 5,
+      "round": 2
+    },
+    {
+      "name": "conversionFileStem",
+      "lines": 8,
+      "round": 2
+    }
+  ],
+  "linesRemoved": 442,
+  "scope": "Unreferenced function declarations and their now-unused helpers only. Legacy active readers require separate removal."
+}

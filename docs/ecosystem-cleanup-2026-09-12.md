@@ -5,6 +5,70 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C100: local delivery policy and coherent source checkpoints, September 23
+
+The owner now requires GitHub for ordinary source control only, local validation,
+and website publication through existing FTP/FTPS hosting. Charged GitHub
+features and hosted Actions are not a release dependency. Actions were disabled
+on all seven canonical repositories and official REST readback verified each
+disabled state. This supersedes C99's billing-unlock guidance: do not pay, enable
+Actions, or retry hosted CI to make progress. NuGet publication remains the
+separate direct nuget.org path after applicable local package checks.
+
+Runtime's coherent pending source and owner policy are checked in at `f242f14`
+with evidence follow-up `5986e6f`; its final source-control state is clean. The
+local suite has 26 passes, two failures and two Apache skips. The focused
+post-commit check now passes generator identity and correctly rejects the 174
+retained historical documents. The misbound FTPS target remains unusable.
+Developer-portal commit `7e5cec5` is also clean: its pin checks pass 7/7 and
+deployment checks pass 13/14, with the remaining source-admission failure
+recorded. Portal publication remains prepared, not generated or deployed.
+
+The TinyRust publisher now describes bounded sequential FTPS through transport
+contract v2 and report v11. It captures predecessor length/hash, verifies recovery,
+preserves a verified replacement when cleanup fails, and distinguishes observed
+marker readback from completed publication. It claims neither global exclusion
+nor release-wide rollback or atomicity. All 17 affected deployment checks pass.
+An independent review found and closed the marker cleanup-error reporting gap.
+Actual validation then exposed isolated Git trust rejecting the differently-owned
+canonical checkout. Pinned Git/Node now receive an empty trust reset followed by
+exactly the seven canonical roots; hostile inherited settings remain excluded.
+Real Git and nested Node-to-Git tests pass. Actual validation now reaches the
+clean-worktree gate; no credentials or remote writes follow that refusal.
+
+The synthetic acquisition walkthrough passes all 13 checks in installed Edge
+153.0.4234.48, with Node coverage of 84.86% lines, 82.03% branches and 87.50% functions.
+The related scratch/launcher checks pass 128/128. Earlier missing-Chromium,
+long-profile OPFS and stale fixture/rejection failures remain recorded. The
+fixture now binds the current public runtime identity, observes the actual
+identity-bound worker rejection, and preserves cache/cancellation checks. It
+remains deliberately non-executable and proves no useful model or public peer.
+Review additionally closed an extra-error false-pass condition and moved notice
+writing inside owned cleanup. Negative tests exercise unrelated error history
+and notice-write failure in both public modes. Headed mode and pinned Chromium
+were not validated. Owned browser output is gone.
+
+Strict model-storage checks remain 1 pass/1 failure on 20 blocked retired files.
+The already-retired announcement suite remains 6 pass/2 failures: its obsolete
+expectations require removed app wiring and prohibit authorized server seeding.
+Reviewed existing edits in that inactive pair and the retired conversation tool
+are preserved as source history, not revived as supported functionality.
+
+The source-authority gate still reports the same 37 unreadable entries. An exact
+deletion of the obsolete, previously untracked
+`tinyrustlm/tools/remove-retired-slm1-models.ps1` was newly rejected with
+`blocked by policy`: 5,667 bytes, SHA-256
+`73ca230f25281e5b52b33e301b5b8962c8af98f40c37e434c9c8b9940f6337dd`.
+The file remains; no alternate deletion route or retry is authorized by that
+failure. Source checkpoints do not resolve physical retirement or release gates.
+
+Evidence routes are
+`artifacts/ecosystem-cleanup-20260912/github-cost-policy-review.json` and the
+consolidated
+`artifacts/ecosystem-cleanup-20260912/owner-delivery-checkpoint-review.json`.
+No publication, NuGet key read, or model run occurred. Existing failures and
+campaign counters remain unchanged; this checkpoint is not product success.
+
 ## C99: critical-path revalidation, September 22
 
 The bounded model and NuGet reviews found no additional concrete implementation

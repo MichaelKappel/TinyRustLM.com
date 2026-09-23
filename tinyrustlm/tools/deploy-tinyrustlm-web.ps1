@@ -746,6 +746,29 @@ function New-SanitizedDeploymentProcessStartInfo {
     $start.RedirectStandardOutput = $true
     $start.RedirectStandardError = $true
     $start.EnvironmentVariables.Clear()
+    # Git and the source verifier's nested Git processes must work when the
+    # canonical checkouts belong to the provisioning account. Synthesize only
+    # these exact roots, resetting any system trust list first; never inherit
+    # ambient Git configuration, trust a wildcard, or write persistent config.
+    if ([string]::Equals($path, [string]$script:gitExecutable.path, [StringComparison]::OrdinalIgnoreCase) -or
+        [string]::Equals($path, [string]$script:nodeExecutable.path, [StringComparison]::OrdinalIgnoreCase)) {
+        $gitTrustRoots = @(
+            "E:/Source/Rust/LMComposer.com",
+            "E:/Source/Rust/MiniModel.MiRust.com",
+            "E:/Source/Rust/MiniModel.org",
+            "E:/Source/Rust/MiRust.com",
+            "E:/Source/Rust/Runtime.MiRust.com",
+            "E:/Source/Rust/TinyRustLM.com",
+            "E:/Source/Rust/TinyRustLM.MiRust.com"
+        )
+        $start.EnvironmentVariables["GIT_CONFIG_COUNT"] = [string]($gitTrustRoots.Count + 1)
+        $start.EnvironmentVariables["GIT_CONFIG_KEY_0"] = "safe.directory"
+        $start.EnvironmentVariables["GIT_CONFIG_VALUE_0"] = ""
+        for ($index = 1; $index -le $gitTrustRoots.Count; $index++) {
+            $start.EnvironmentVariables["GIT_CONFIG_KEY_$index"] = "safe.directory"
+            $start.EnvironmentVariables["GIT_CONFIG_VALUE_$index"] = $gitTrustRoots[$index - 1]
+        }
+    }
     foreach ($name in @("SystemRoot", "WINDIR", "ComSpec", "TEMP", "TMP")) {
         $value = [Environment]::GetEnvironmentVariable($name, "Process")
         if ([string]::IsNullOrWhiteSpace($value) -or
@@ -920,41 +943,39 @@ function Assert-PinnedDeploymentToolVersions {
     }
 }
 
-# Produces the explicit negative capability result for the current FTPS transport.
+# Describes sequential FTPS limits; this contract alone never admits publication.
 function Get-DeploymentTransportCapability {
     return [pscustomobject]@{
-        schema = "tinyrustlm.deployment_transport_capability.v1"
-        transport = "ftps-per-artifact"
-        status = "blocked"
+        schema = "tinyrustlm.deployment_transport_capability.v2"
+        transport = "ftps-sequential"
+        status = "bounded-sequential"
+        coordination_scope = "single-host-canonical-artifacts"
+        per_artifact_recovery = "verified-predecessor-best-effort"
+        marker_ordering = "last-final-path-promotion-before-owned-cleanup"
+        mixed_publication_possible = $true
         remote_global_compare_and_swap_lease = $false
         release_wide_atomic_rollback = $false
         final_marker_can_be_last_remote_mutation = $false
-        remote_mutation_admitted = $false
     }
 }
 
-# Blocks publication until one transport can satisfy the indivisible release contract.
+# Rejects obsolete or overstated guarantees without manufacturing remote capabilities.
 function Assert-SafeDeploymentTransportCapability {
     param([object]$Capability)
 
-    if (-not $Capability -or
-        [string]$Capability.schema -ne
-            "tinyrustlm.deployment_transport_capability.v1" -or
-        [string]$Capability.transport -ne "ftps-per-artifact" -or
-        [string]$Capability.status -ne "blocked" -or
-        $Capability.remote_global_compare_and_swap_lease -ne $false -or
-        $Capability.release_wide_atomic_rollback -ne $false -or
-        $Capability.final_marker_can_be_last_remote_mutation -ne $false -or
-        $Capability.remote_mutation_admitted -ne $false) {
+    $expected = Get-DeploymentTransportCapability
+    if (-not $Capability -or @($Capability.PSObject.Properties).Count -ne
+        @($expected.PSObject.Properties).Count) {
         throw "Deployment transport capability evidence is invalid."
     }
-    $script:releaseWideTransportCapabilityAdmitted = $false
-    throw [InvalidOperationException]::new(
-        "Deployment transport capability blocker: FTPS has no bounded cross-machine " +
-        "compare-and-swap lease and no atomic release-wide commit/rollback primitive; " +
-        "it cannot both retain every predecessor through commit and make " +
-        ".well-known/site-release.json the final remote mutation."
-    )
+    foreach ($property in $expected.PSObject.Properties) {
+        $observed = $Capability.PSObject.Properties[$property.Name]
+        if (-not $observed -or $null -eq $observed.Value -or
+            $observed.Value.GetType() -ne $property.Value.GetType() -or
+            $observed.Value -cne $property.Value) {
+            throw "Deployment transport capability evidence is invalid."
+        }
+    }
 }
 
 # Creates a same-host create-only guard. It never proves remote/global exclusion.
@@ -2799,6 +2820,56 @@ function Read-BoundedFtpsArtifact {
     }
 }
 
+# Hashes an exact bounded predecessor stream without retaining its payload.
+function Get-BoundedDeploymentStreamIdentity {
+    param(
+        [IO.Stream]$Stream,
+        [ValidateRange(0, 268435456)][int64]$ExpectedBytes
+    )
+
+    $hasher = [Security.Cryptography.SHA256]::Create()
+    $buffer = [byte[]]::new(32768)
+    [int64]$total = 0
+    try {
+        while ($total -lt $ExpectedBytes) {
+            $wanted = [int][Math]::Min($buffer.Length, $ExpectedBytes - $total)
+            $count = $Stream.Read($buffer, 0, $wanted)
+            if ($count -le 0) { throw "FTPS predecessor was truncated." }
+            $hasher.TransformBlock($buffer, 0, $count, $buffer, 0) | Out-Null
+            $total += $count
+        }
+        if ($Stream.ReadByte() -ne -1) { throw "FTPS predecessor exceeded its admitted length." }
+        $hasher.TransformFinalBlock([byte[]]@(), 0, 0) | Out-Null
+        return [pscustomobject]@{
+            bytes = $total
+            sha256 = [BitConverter]::ToString($hasher.Hash).Replace("-", "").ToLowerInvariant()
+        }
+    }
+    finally { $hasher.Dispose() }
+}
+
+# Captures predecessor identity over authenticated FTPS, independent of public caches.
+function Get-FtpsArtifactIdentity {
+    param(
+        [string]$RemotePath,
+        [ValidateRange(0, 268435456)][int64]$ExpectedBytes
+    )
+
+    $validatedPath = Assert-RemoteProtocolPath -RemotePath $RemotePath
+    $request = New-FtpRequest -RemotePath $validatedPath `
+        -Method ([Net.WebRequestMethods+Ftp]::DownloadFile)
+    $response = $request.GetResponse()
+    try {
+        if ($response.ContentLength -ge 0 -and $response.ContentLength -ne $ExpectedBytes) {
+            throw "FTPS predecessor length changed before readback."
+        }
+        $stream = $response.GetResponseStream()
+        try { return Get-BoundedDeploymentStreamIdentity -Stream $stream -ExpectedBytes $ExpectedBytes }
+        finally { $stream.Dispose() }
+    }
+    finally { $response.Dispose() }
+}
+
 # Proves the authenticated FTPS root has the preregistered TinyRustLM site identity.
 function Assert-DeploymentTargetIdentity {
     param([object]$TargetBinding, [string]$PublicOrigin)
@@ -3508,8 +3579,8 @@ function Assert-DeploymentInputEntry {
 function Publish-Artifact {
     param([object]$DeploymentInputEntry, [switch]$CommitMarker)
 
-    if ($script:releaseWideTransportCapabilityAdmitted -ne $true) {
-        throw "Release-wide transport capability has not admitted remote mutation."
+    if ($script:artifactPublicationAdmitted -ne $true) {
+        throw "Sequential FTPS publication has not been admitted."
     }
     if ([string]$script:deploymentLeaseId -notmatch "^[0-9a-f]{32}$") {
         throw "An exclusive deployment lease is required before publication."
@@ -3535,6 +3606,8 @@ function Publish-Artifact {
     $script:activeArtifactRemote = $RemoteRelativePath
     $script:artifactPrimaryFailureStep = $null
     $script:artifactRollbackStatus = "not-started"
+    $script:artifactPredecessorIdentity = $null
+    $script:artifactPromotedReadbackVerified = $false
     Set-ArtifactOperationState -Step "local-validation"
     $payload = [byte[]]$inputEntry.payload
     $bytes = [int64]$inputEntry.byte_count
@@ -3564,6 +3637,7 @@ function Publish-Artifact {
     $currentSize = Get-RemoteSize -RemotePath $RemoteRelativePath
     if ($currentSize -eq $bytes -and
         (Test-RemoteArtifact -RemotePath $RemoteRelativePath -ExpectedBytes $bytes -ExpectedSha256 $sha256)) {
+        if ($isCommitMarker) { $script:releaseMarkerFinalPathReadbackObserved = $true }
         if ($isHostPolicy) {
             Set-ArtifactOperationState -Step "public-host-policy"
             $script:publicHostPolicyEvidence = Test-PublicHostPolicy
@@ -3607,30 +3681,37 @@ function Publish-Artifact {
         -ExpectedSha256 $sha256
 
     Set-ArtifactOperationState -Step "predecessor-state-read"
-    $targetExisted = (Get-RemoteSize -RemotePath $RemoteRelativePath) -ge 0
-    $rollbackAvailable = $false
+    $predecessorSize = Get-RemoteSize -RemotePath $RemoteRelativePath
+    $targetExisted = $predecessorSize -ge 0
+    $predecessor = $null
     if ($targetExisted) {
+        $predecessor = Get-FtpsArtifactIdentity -RemotePath $RemoteRelativePath -ExpectedBytes $predecessorSize
+        $script:artifactPredecessorIdentity = $predecessor
         Set-ArtifactOperationState -Step "predecessor-backup"
+        $script:publicArtifactMutationAttempted = $true
         Rename-RemoteFile -RemotePath $RemoteRelativePath -NewLeafName $backupLeaf
-        $rollbackAvailable = $true
+        if (-not (Test-RemoteArtifact -RemotePath $backupPath -ExpectedBytes $predecessor.bytes `
+            -ExpectedSha256 $predecessor.sha256 -AuthenticatedOnly)) {
+            throw "The predecessor backup identity changed; recovery state was preserved."
+        }
     }
     try {
         Set-ArtifactOperationState -Step "stage-promotion"
+        if ((Get-RemoteSize -RemotePath $RemoteRelativePath) -ge 0) {
+            throw "The publication target changed before promotion."
+        }
+        $script:publicArtifactMutationAttempted = $true
         Rename-RemoteFile -RemotePath $stagePath -NewLeafName $leaf
         Start-Sleep -Milliseconds 750
         Set-ArtifactOperationState -Step "promoted-readback"
         if (-not (Test-RemoteArtifact -RemotePath $RemoteRelativePath -ExpectedBytes $bytes -ExpectedSha256 $sha256)) {
             throw "Remote SHA-256 verification failed after promoting $RemoteRelativePath."
         }
+        $script:artifactPromotedReadbackVerified = $true
+        if ($isCommitMarker) { $script:releaseMarkerFinalPathReadbackObserved = $true }
         if ($isHostPolicy) {
             Set-ArtifactOperationState -Step "public-host-policy"
             $script:publicHostPolicyEvidence = Test-PublicHostPolicy
-        }
-        Set-ArtifactOperationState -Step "temporary-cleanup"
-        Remove-RemoteFile -RemotePath $backupPath
-        if ((Get-RemoteSize -RemotePath $backupPath) -ge 0 -or
-            (Get-RemoteSize -RemotePath $stagePath) -ge 0) {
-            throw "Deployment temporary cleanup could not be verified."
         }
     }
     catch {
@@ -3638,13 +3719,31 @@ function Publish-Artifact {
         $script:artifactPrimaryFailureStep = $script:artifactOperationStep
         $script:artifactRollbackStatus = "running"
         try {
+            # Check the exact predecessor before removing any candidate. There is
+            # no remote/global lease: a foreign target must remain untouched.
+            if ($targetExisted -and -not (Test-RemoteArtifact -RemotePath $backupPath `
+                -ExpectedBytes $predecessor.bytes -ExpectedSha256 $predecessor.sha256 -AuthenticatedOnly)) {
+                throw "The predecessor backup identity cannot be verified."
+            }
             Set-ArtifactOperationState -Step "rollback-target-removal"
-            Remove-RemoteFile -RemotePath $RemoteRelativePath
-            if ($rollbackAvailable -and (Get-RemoteSize -RemotePath $backupPath) -ge 0) {
+            if ((Get-RemoteSize -RemotePath $RemoteRelativePath) -ge 0) {
+                if (-not (Test-RemoteArtifact -RemotePath $RemoteRelativePath -ExpectedBytes $bytes `
+                    -ExpectedSha256 $sha256 -AuthenticatedOnly)) {
+                    throw "An unowned target prevents rollback."
+                }
+                Remove-RemoteFile -RemotePath $RemoteRelativePath
+            }
+            if ((Get-RemoteSize -RemotePath $RemoteRelativePath) -ge 0) {
+                throw "Rollback target removal cannot be verified."
+            }
+            if ($isCommitMarker) { $script:releaseMarkerFinalPathReadbackObserved = $false }
+            $script:artifactPromotedReadbackVerified = $false
+            if ($targetExisted) {
                 Set-ArtifactOperationState -Step "rollback-restore"
                 Rename-RemoteFile -RemotePath $backupPath -NewLeafName $leaf
-                if ((Get-RemoteSize -RemotePath $RemoteRelativePath) -lt 0) {
-                    throw "Rollback target remained absent."
+                if (-not (Test-RemoteArtifact -RemotePath $RemoteRelativePath `
+                    -ExpectedBytes $predecessor.bytes -ExpectedSha256 $predecessor.sha256 -AuthenticatedOnly)) {
+                    throw "Rollback predecessor identity could not be verified."
                 }
                 $script:artifactRollbackStatus = "restored"
             }
@@ -3668,6 +3767,31 @@ function Publish-Artifact {
         throw $promotionFailure
     }
 
+    # Cleanup is deliberately outside rollback. A failed delete acknowledgement
+    # may mean the only predecessor is gone; preserve the verified replacement.
+    Set-ArtifactOperationState -Step "temporary-cleanup"
+    try {
+        if (-not (Test-RemoteArtifact -RemotePath $RemoteRelativePath -ExpectedBytes $bytes `
+            -ExpectedSha256 $sha256 -AuthenticatedOnly)) {
+            throw "The promoted target changed before cleanup."
+        }
+        if ($targetExisted) {
+            if (-not (Test-RemoteArtifact -RemotePath $backupPath -ExpectedBytes $predecessor.bytes `
+                -ExpectedSha256 $predecessor.sha256 -AuthenticatedOnly)) {
+                throw "The predecessor backup changed before cleanup."
+            }
+            Remove-RemoteFile -RemotePath $backupPath
+        }
+        if ((Get-RemoteSize -RemotePath $backupPath) -ge 0 -or
+            (Get-RemoteSize -RemotePath $stagePath) -ge 0) {
+            throw "Deployment temporary cleanup could not be verified."
+        }
+    }
+    catch {
+        $script:artifactPrimaryFailureStep = "temporary-cleanup"
+        $script:artifactRollbackStatus = "not-attempted-after-verified-promotion"
+        throw
+    }
     Assert-DeploymentInputEntry `
         -DeploymentInputEntry $DeploymentInputEntry | Out-Null
     $script:deploymentLeaseReleasable = $true
@@ -4336,9 +4460,12 @@ $deploymentLease = $null
 $deploymentLeaseCleanup = $null
 $script:deploymentLeaseId = $null
 $script:deploymentLeaseReleasable = $false
-$script:releaseWideTransportCapabilityAdmitted = $false
+$script:artifactPublicationAdmitted = $false
+$remoteMutationAttempted = $false
+$script:publicArtifactMutationAttempted = $false
 $transportCapabilityEvidence = Get-DeploymentTransportCapability
 $releaseCommitMarkerPublished = $false
+$script:releaseMarkerFinalPathReadbackObserved = $false
 $postCommitMaintenanceFailures = @()
 $sourceCustodyEvidence = $null
 $terminalSourceCustodyEvidence = $null
@@ -4356,6 +4483,8 @@ $script:artifactOperationStep = $null
 $script:artifactOperationAttempt = $null
 $script:artifactPrimaryFailureStep = $null
 $script:artifactRollbackStatus = $null
+$script:artifactPredecessorIdentity = $null
+$script:artifactPromotedReadbackVerified = $false
 $script:predeploymentTemporaryRouteEvidence = $null
 $script:publicHostPolicyEvidence = $null
 $legacyModelDirectoryPreflight = $null
@@ -4640,7 +4769,7 @@ try {
     $terminalSourceCustodyEvidence = Assert-DeploymentSourceCustody `
         -RepositoryRoot $RepositoryRoot `
         -Custody $script:deploymentSourceCustody
-    $operationPhase = "transport-capability-blocker"
+    $operationPhase = "transport-contract-admission"
     Assert-SafeDeploymentTransportCapability `
         -Capability $transportCapabilityEvidence
 
@@ -4709,7 +4838,21 @@ try {
     $legacyModelDirectoryPreflight = Test-RetiredModelDirectoryClosure `
         -RetireEntries $legacyModelRetireEntries
     $operationPhase = "host-policy-predeployment"
+    # These bounded probes write temporary objects after exact target admission.
+    # Regular artifact publication is still disabled until their cleanup passes.
+    $remoteMutationAttempted = $true
     $script:predeploymentTemporaryRouteEvidence = Test-PredeploymentTemporaryRoutePolicy
+    if ([string]$script:predeploymentTemporaryRouteEvidence.status -ne "pass" -or
+        $script:predeploymentTemporaryRouteEvidence.authenticated_cleanup_verified -ne $true -or
+        $script:predeploymentTemporaryRouteEvidence.owned_directory_cleanup_verified -ne $true) {
+        throw "Predeployment host policy admission did not pass."
+    }
+    if (-not $deploymentLease -or -not $deploymentLease.handle.CanRead -or
+        -not $deploymentLease.handle.CanWrite -or
+        [string]$deploymentLease.lease_id -cne $script:deploymentLeaseId) {
+        throw "The same-host deployment lease is not held."
+    }
+    $script:artifactPublicationAdmitted = $true
 
     $operationPhase = "remote-directory-preparation"
     $remoteDirectories = @($deploymentInput.files |
@@ -4731,11 +4874,15 @@ try {
         $script:artifactOperationAttempt = $null
         $script:artifactPrimaryFailureStep = $null
         $script:artifactRollbackStatus = $null
+        $script:artifactPredecessorIdentity = $null
+        $script:artifactPromotedReadbackVerified = $false
     }
     $operationPhase = "retirement"
     foreach ($entry in @($deploymentManifest.retire)) {
+        $script:publicArtifactMutationAttempted = $true
         $removedPublicArtifacts += Remove-PublicArtifact -RemotePath ([string]$entry.remote)
     }
+    $script:publicArtifactMutationAttempted = $true
     $retiredModelDirectory = Remove-RetiredModelDirectory
     $operationPhase = "final-precommit-verification"
     if ($rows.Count -ne @($publicationPlan.regular).Count -or
@@ -4891,7 +5038,9 @@ finally {
         deployment_attempt_terminal = $true
         deployment_status = $status
         local_cleanup_pending = $true
-        release_commit_marker_published = $releaseCommitMarkerPublished
+        release_commit_marker_published = $script:releaseMarkerFinalPathReadbackObserved
+        release_commit_marker_readback_observed = $script:releaseMarkerFinalPathReadbackObserved
+        release_commit_marker_publication_completed = $releaseCommitMarkerPublished
         failure_identity = $failureIdentity
         failure_step = $failureStep
         source_commit = $currentSourceCommit
@@ -4934,6 +5083,18 @@ finally {
         }
         public_predecessor_gate = $publicPredecessorEvidence
         publication_summary = [pscustomobject]@{
+            transaction_scope = "bounded-sequential-per-artifact"
+            public_artifact_mutation_attempted = $script:publicArtifactMutationAttempted
+            partial_publication_possible = ($script:publicArtifactMutationAttempted -and -not $releaseCommitMarkerPublished)
+            active_artifact = if ($script:activeArtifactRemote) {
+                [pscustomobject]@{
+                    remote_relative_path = $script:activeArtifactRemote
+                    operation_step = $script:artifactOperationStep
+                    rollback_status = $script:artifactRollbackStatus
+                    predecessor_identity = $script:artifactPredecessorIdentity
+                    promoted_readback_verified = $script:artifactPromotedReadbackVerified
+                }
+            } else { $null }
             completed_file_count = $rows.Count
             readback_verified_file_count = @($rows | Where-Object {
                 $_.readback_verified -eq $true
@@ -5042,7 +5203,7 @@ finally {
         }).Count -eq 0
     )
     $report = [pscustomobject]@{
-        schema = "tinyrustlm.atomic_ftps_deployment.v10"
+        schema = "tinyrustlm.ftps_deployment.v11"
         attempt_id = $attemptId
         terminal = $true
         deployment_scope = [string]$deploymentManifest.deploymentScope
@@ -5050,7 +5211,9 @@ finally {
         started_utc = $startedUtc.ToString("o")
         completed_utc = [DateTime]::UtcNow.ToString("o")
         status = $status
-        release_commit_marker_published = $releaseCommitMarkerPublished
+        release_commit_marker_published = $script:releaseMarkerFinalPathReadbackObserved
+        release_commit_marker_readback_observed = $script:releaseMarkerFinalPathReadbackObserved
+        release_commit_marker_publication_completed = $releaseCommitMarkerPublished
         failure_identity = $failureIdentity
         failure_step = $failureStep
         failure_code = if ($status -eq "fail") {
@@ -5067,6 +5230,8 @@ finally {
                 operation_attempt = $script:artifactOperationAttempt
                 primary_failure_step = $script:artifactPrimaryFailureStep
                 rollback_status = $script:artifactRollbackStatus
+                predecessor_identity = $script:artifactPredecessorIdentity
+                promoted_readback_verified = $script:artifactPromotedReadbackVerified
             }
         }
         else {
@@ -5212,22 +5377,24 @@ finally {
         published_release_model_bytes_present = $false
         transport_capability = $transportCapabilityEvidence
         publication_transaction_scope = if (
-            $transportCapabilityEvidence.remote_mutation_admitted -eq $true
-        ) { "release-wide" } else { "blocked-before-remote-mutation" }
+            $script:artifactPublicationAdmitted -eq $true
+        ) { "bounded-sequential-per-artifact" } else { "no-publication-admission" }
         per_artifact_atomic_promotion = $false
         whole_site_atomic_promotion = $false
         release_wide_rollback_available =
             $transportCapabilityEvidence.release_wide_atomic_rollback
         remote_global_lease_available =
             $transportCapabilityEvidence.remote_global_compare_and_swap_lease
-        remote_mutation_admitted =
-            $transportCapabilityEvidence.remote_mutation_admitted
+        artifact_publication_admitted = $script:artifactPublicationAdmitted
+        remote_mutation_attempted = $remoteMutationAttempted
+        public_artifact_mutation_attempted = $script:publicArtifactMutationAttempted
+        partial_publication_possible = ($script:publicArtifactMutationAttempted -and -not $releaseCommitMarkerPublished)
+        earlier_artifacts_rolled_back = $false
         dependency_ordered_publication = $true
         final_remote_commit_marker = ".well-known/site-release.json"
-        final_remote_commit_marker_published_last = (
-            $releaseCommitMarkerPublished -and
-            $transportCapabilityEvidence.final_marker_can_be_last_remote_mutation -eq $true
-        )
+        marker_final_path_verified_after_regular_readback = $script:releaseMarkerFinalPathReadbackObserved
+        marker_was_last_remote_mutation = $false
+        marker_cleanup_follows_promotion = $true
         post_commit_maintenance = [pscustomobject]@{
             status = if ($postCommitMaintenanceFailures.Count -eq 0) {
                 "pass"

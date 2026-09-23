@@ -32,7 +32,7 @@ function validAnnouncement() {
     peer_source: {
       source_kind: "known-direct-http-peer-v0",
       transport: "direct-http-piece-server-v0",
-      peer_base_url: "http://peer.example:8123/qwen",
+      peer_base_url: "https://8.8.8.8:8123/",
       consent_status: "publisher-declared-consenting-peer",
       project_server_serves_model_bytes: false,
       project_server_runs_model_bytes: false
@@ -50,7 +50,7 @@ function validAnnouncement() {
       fleet_id: "primary-seed-fleet",
       lane_id: "seed-a",
       model_id: "tinyrustlm/qwen2.5-1.5b-q4",
-      public_base_url: "http://peer.example:8123/qwen/",
+      public_base_url: "https://8.8.8.8:8123/",
       artifact_sha256: SHA_A,
       piece_set_sha256: SHA_C,
       checked_utc: "2026-07-13T00:00:00Z",
@@ -75,7 +75,8 @@ test("TinyRustLM routes catalog peers through the external-proof verifier", () =
   const appSource = fs.readFileSync(path.join(__dirname, "..", "app", "app.js"), "utf8");
 
   assert.match(appSource, /TinyRustLMMiniModelAnnouncement/);
-  assert.match(appSource, /verifier\.validate\(raw, \{ normalizePeerUrl: normalizedPeerBaseUrl \}\)/);
+  assert.match(appSource, /const directPeerUrlAuthority = miniModelCatalogV1Api\.directPeerUrlAuthority/);
+  assert.match(appSource, /verifier\.validate\(raw\)/);
   assert.match(appSource, /peerSources: \[\],\s+peerProofs: \[\],\s+unprovenPeerClaimCount:/);
   assert.doesNotMatch(appSource, /announcement_version\) !== 0/);
   assert.doesNotMatch(appSource, /peer-source-available-metadata-only/);
@@ -85,7 +86,7 @@ test("accepts one current Rust proof-gated direct peer announcement", () => {
   const result = announcement.validate(validAnnouncement(), { now: NOW });
 
   assert.equal(result.modelId, "tinyrustlm/qwen2.5-1.5b-q4");
-  assert.equal(result.peerSource.peerBaseUrl, "http://peer.example:8123/qwen/");
+  assert.equal(result.peerSource.peerBaseUrl, "https://8.8.8.8:8123/");
   assert.equal(result.laneId, "seed-a");
   assert.equal(result.expiresUtc, "2026-07-13T00:30:00Z");
   assert.equal(Object.prototype.hasOwnProperty.call(result, "raw"), false);
@@ -135,7 +136,7 @@ test("rejects stale and overlong external receipts", () => {
 
 test("rejects identity drift between proof and announcement", () => {
   const urlDrift = validAnnouncement();
-  urlDrift.external_reachability.public_base_url = "http://other.example:8123/qwen/";
+  urlDrift.external_reachability.public_base_url = "https://1.1.1.1:8123/";
   const hashDrift = validAnnouncement();
   hashDrift.external_reachability.artifact_sha256 = SHA_B;
 
@@ -158,11 +159,12 @@ test("rejects downloaded artifact and checked-route drift", () => {
 
 test("rejects project-hosted bytes and incomplete metadata-only flags", () => {
   const projectHost = validAnnouncement();
-  projectHost.peer_source.peer_base_url = "http://minimodel.org/models/qwen/";
-  projectHost.external_reachability.public_base_url = "http://minimodel.org/models/qwen/";
+  projectHost.peer_source.peer_base_url = "https://minimodel.org/";
+  projectHost.external_reachability.public_base_url = "https://minimodel.org/";
   const missingFlag = validAnnouncement();
   delete missingFlag.external_reachability.project_server_proxies_model_bytes;
 
-  assert.throws(() => announcement.validate(projectHost, { now: NOW }), /cannot serve peer model bytes/);
+  assert.throws(() => announcement.validate(projectHost, { now: NOW }),
+    /project and service hosts cannot serve direct peer model bytes/);
   assert.throws(() => announcement.validate(missingFlag, { now: NOW }), /must be false/);
 });

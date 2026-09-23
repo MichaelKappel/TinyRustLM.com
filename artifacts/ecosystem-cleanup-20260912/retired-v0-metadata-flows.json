@@ -1,0 +1,41 @@
+{
+  "beforeSha256": "8909264a63b977a6bc532fe0ba632932575790acfe2a5e7f27a7d76403ecbc9d",
+  "afterSha256": "7821bf9647bb21766c7f5742b5eeaef092cec2f1f5ae41b213c0f8f6015e636d",
+  "removedControls": [
+    "peerContactCardFile",
+    "applyPeerContactCardButton",
+    "peerContactBookFile",
+    "applyPeerContactBookButton",
+    "peerContactBookPeers",
+    "importReceiptLedgerFile",
+    "importReceiptLedgerButton",
+    "receiptLedgerStatus",
+    "importReceiptLedgerEntries",
+    "peerStatusCheckFile",
+    "peerStatusCheckButton",
+    "checkPeerStatusButton",
+    "peerStatusCheckStatus",
+    "peerCompanionInventoryFile",
+    "peerCompanionInventoryButton",
+    "peerCompanionInventoryStatus"
+  ],
+  "removedFunctions": [
+    "applyPeerContactBookFile",
+    "applyPeerContactCardFile",
+    "selectPeerContactBookPeer",
+    "clearPeerContactBookPeers",
+    "renderPeerContactBookPeers",
+    "renderPeerContactBookPeerList",
+    "selectedPeerContactBookFile",
+    "selectedPeerContactCardFile",
+    "peerContactBookFromRaw",
+    "requirePeerContactBookSha256",
+    "requirePeerContactBookBoundary",
+    "peerContactCardFromRaw",
+    "validatePeerContactLabel",
+    "requireTrueMetadataFlag"
+  ],
+  "removedCssRules": 17,
+  "linesRemoved": 1245,
+  "remainingLegacyCatalogReview": true
+}

@@ -80,16 +80,26 @@ test("deployment orchestrator requires fresh readback and immutable attempt evid
       source.indexOf("function New-SanitizedDeploymentProcessStartInfo"),
       source.indexOf("function Invoke-PinnedDeploymentProcess")
     ),
-    /NODE_OPTIONS|GIT_CONFIG|HTTP_PROXY|HTTPS_PROXY/
+    /NODE_OPTIONS|GIT_CONFIG_GLOBAL|GIT_CONFIG_PARAMETERS|HTTP_PROXY|HTTPS_PROXY/
   );
-  const capabilityStart = source.indexOf("function Assert-SafeDeploymentTransportCapability");
+  assert.match(source, /EnvironmentVariables\["GIT_CONFIG_VALUE_0"\] = ""/u);
+  assert.doesNotMatch(source, /safe\.directory=\*|git config --global/u);
+  const trustBlock = /\$gitTrustRoots = @\(([\s\S]*?)\n\s*\)/u.exec(source);
+  assert.ok(trustBlock, "pinned children need an explicit canonical Git trust list");
+  const trustRoots = [...trustBlock[1].matchAll(/"([^"\r\n]+)"/gu)].map((match) => match[1]);
+  const authority = require("../tools/verify-single-source-authority.js");
+  assert.deepEqual(trustRoots, authority.ecosystemRepositories.map(({ root }) => root.replaceAll("\\", "/")));
+  const capabilityStart = source.indexOf("function Get-DeploymentTransportCapability");
   const capabilityEnd = source.indexOf("function New-ExclusiveDeploymentLease", capabilityStart);
   const capabilityBody = source.slice(capabilityStart, capabilityEnd);
   assert.match(capabilityBody, /remote_global_compare_and_swap_lease/);
   assert.match(capabilityBody, /release_wide_atomic_rollback/);
   assert.match(capabilityBody, /final_marker_can_be_last_remote_mutation/);
-  assert.match(capabilityBody, /throw \[InvalidOperationException\]::new/);
-  assert.doesNotMatch(capabilityBody, /return \$true/);
+  assert.match(capabilityBody, /tinyrustlm\.deployment_transport_capability\.v2/);
+  assert.match(capabilityBody, /verified-predecessor-best-effort/);
+  assert.match(capabilityBody, /last-final-path-promotion-before-owned-cleanup/);
+  assert.match(capabilityBody, /GetType\(\)/);
+  assert.doesNotMatch(capabilityBody, /artifactPublicationAdmitted = \$true/);
   assert.match(source, /function Assert-DeploymentSourceCustody/);
   assert.match(source, /function Invoke-CustodiedNodeTool/);
   assert.match(source, /deploy-\{0\}-stage-\{1\}-\{2\}\.slm/);
@@ -171,12 +181,17 @@ test("deployment orchestrator requires fresh readback and immutable attempt evid
   assert.match(source, /tinyrustlm-web-secret-scan-\{0\}\.json/);
   assert.match(source, /immutable_attempt_report = \$true/);
   assert.match(source, /fresh_artifact_readback_required = \$true/);
-  assert.match(source, /tinyrustlm\.atomic_ftps_deployment\.v10/);
+  assert.match(source, /tinyrustlm\.ftps_deployment\.v11/);
   assert.match(source, /tinyrustlm-site-release-ledger-finalized-\{0\}\.json/);
   assert.match(source, /"finalize",[\s\S]*?\$finalizedLedgerCandidatePath/);
   assert.match(source, /finalized_release_ledger_candidate_sha256/);
   assert.match(source, /finalized_release_ledger_candidate_requires_source_review_and_commit/);
   assert.match(source, /release_commit_marker_published/);
+  assert.equal((source.match(/release_commit_marker_published = \$script:releaseMarkerFinalPathReadbackObserved/gu) || []).length, 2);
+  assert.equal((source.match(/release_commit_marker_publication_completed = \$releaseCommitMarkerPublished/gu) || []).length, 2);
+  const markerReturn = source.indexOf("$markerRow = Publish-Artifact");
+  const completedLatch = source.indexOf("$releaseCommitMarkerPublished = $true", markerReturn);
+  assert.ok(markerReturn >= 0 && completedLatch > markerReturn);
   assert.match(source, /post_commit_maintenance/);
   assert.match(source, /tinyrustlm\.deployment_terminal_decision\.v1/);
   assert.match(source, /deployment_attempt_terminal = \$true/);
@@ -201,12 +216,15 @@ test("deployment orchestrator requires fresh readback and immutable attempt evid
   assert.match(source, /published_release_model_bytes_present = \$false/);
   assert.doesNotMatch(source, /project_server_model_bytes_present/);
   assert.match(source, /publication_transaction_scope = if \(/);
-  assert.match(source, /"blocked-before-remote-mutation"/);
+  assert.match(source, /"bounded-sequential-per-artifact"/);
+  assert.match(source, /"no-publication-admission"/);
   assert.match(source, /per_artifact_atomic_promotion = \$false/);
   assert.match(source, /whole_site_atomic_promotion = \$false/);
   assert.match(source, /release_wide_rollback_available/);
   assert.match(source, /remote_global_lease_available/);
-  assert.match(source, /remote_mutation_admitted/);
+  assert.match(source, /artifact_publication_admitted/);
+  assert.match(source, /partial_publication_possible/);
+  assert.match(source, /marker_was_last_remote_mutation = \$false/);
   assert.match(source, /readback_verified = \$true/);
   assert.match(source, /GetFileName\(\$ReportPath\)/);
   const deploymentTry = source.indexOf(
@@ -230,7 +248,7 @@ test("deployment orchestrator requires fresh readback and immutable attempt evid
     releaseLedgerFinalization
   );
   const transportBlocker = source.indexOf(
-    "$operationPhase = \"transport-capability-blocker\"",
+    "$operationPhase = \"transport-contract-admission\"",
     terminalCustody
   );
   const credentials = source.indexOf(
@@ -304,7 +322,7 @@ test("PowerShell deployment primitives use owned canonical scratch and verified 
       ["-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-File",
         path.join(__dirname, "deploy-tinyrustlm-web.test.ps1"), "-OperationRoot", owned.rootPath],
       { cwd: repositoryRoot, windowsHide: true, encoding: "utf8",
-        env: { ...process.env, TEMP: owned.rootPath, TMP: owned.rootPath, NODE_V8_COVERAGE: "" },
+        env: { ...process.env, TEMP: owned.rootPath, TMP: owned.rootPath, TMPDIR: owned.rootPath, NODE_V8_COVERAGE: "" },
         timeout: 170000, maxBuffer: 2 * 1024 * 1024 }
     );
     assert.equal(result.error, undefined, String(result.error));

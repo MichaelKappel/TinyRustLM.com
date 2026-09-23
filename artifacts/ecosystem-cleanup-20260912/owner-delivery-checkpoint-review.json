@@ -1,0 +1,409 @@
+{
+  "schema": "tinyrustlm.owner-delivery-checkpoint-review.v1",
+  "checkpoint": "C100",
+  "ownerDirectiveDate": "2026-09-23",
+  "status": "source-checkpoint-not-release",
+  "ownerPolicy": {
+    "github": "Ordinary Git only; Actions disabled on all seven repositories. No paid features or billing changes.",
+    "website": "Existing FTP/FTPS with exact source and target admission and HTTPS readback.",
+    "nuget": "Direct nuget.org after actual applicable local platform/package gates.",
+    "credentialMemory": "Only the owner-provided key file location is recorded; no NuGet key contents read."
+  },
+  "githubEvidence": "artifacts/ecosystem-cleanup-20260912/github-cost-policy-review.json",
+  "sourceScan": {
+    "at": "2026-09-23T15:15:48.698Z",
+    "exitCode": 1,
+    "bytes": 4457,
+    "sha256": "7f8fec1c72e18e3da05f434b9f33c8b1c71ac2a42660f0bf9afdca62328384d3",
+    "unreadable": 37
+  },
+  "checkpoints": [
+    {
+      "repository": "Runtime.MiRust.com",
+      "implementationCommit": "f242f14397acf3aa225c1921b99983a5b5ae7eec",
+      "evidenceCommit": "5986e6f3e6214fb899efd47f0c6283e2e6b32c86",
+      "remoteBranch": "master",
+      "clean": true,
+      "tests": {
+        "pass": 26,
+        "fail": 2,
+        "skip": 2,
+        "note": "Child safe.directory environment corrected; focused postcommit generator identity passes,174 retained docs still reject. Apache checks skipped."
+      },
+      "receipt": "verification/receipts/current-only-source-checkpoint-review.json"
+    },
+    {
+      "repository": "TinyRustLM.MiRust.com",
+      "commit": "7e5cec53e71ae17b6e988edaa3b312bda8ff86e7",
+      "remoteBranch": "master",
+      "clean": true,
+      "tests": {
+        "sourcePin": {
+          "pass": 7,
+          "fail": 0
+        },
+        "deployment": {
+          "pass": 13,
+          "fail": 1,
+          "note": "Known canonical source gate rejection."
+        }
+      },
+      "manifest": "Prepared-awaiting-content-commit with null source identities and no files; historical predecessor preserved. Not a generated release.",
+      "receipt": "artifacts/ftp-source-checkpoint-review-20260923.json"
+    }
+  ],
+  "ftps": {
+    "contract": "tinyrustlm sequential FTPS capability v2; deployment report v11",
+    "change": "Length/hash-bound predecessor recovery; foreign-target refusal; preserve verified replacement and lease if cleanup fails; marker observation distinct from completed publication.",
+    "limits": [
+      "No remote/global exclusion",
+      "No release-wide atomicity or rollback",
+      "No actual hosting tested"
+    ],
+    "focused": {
+      "pass": 8,
+      "fail": 0
+    },
+    "affectedBeforeGitCorrection": {
+      "command": "node --test tinyrustlm/tests/deploy-tinyrustlm-web.test.js tinyrustlm/tests/web-deployment-manifest.test.js tinyrustlm/tests/web-deployment-custody.test.js",
+      "exitCode": 0,
+      "pass": 17,
+      "fail": 0,
+      "skip": 0,
+      "evidence": "Actual local execution; output in this session. 3723.4962ms. No real hosting exercised."
+    },
+    "actualValidationBeforeGitCorrection": {
+      "at": "2026-09-23T15:38:55.988Z",
+      "exitCode": 1,
+      "bytes": 518,
+      "sha256": "6746cd008756296916a903732d475a2668c0133e97db166ff581474ada19ab89",
+      "reason": "Pinned child Git did not trust exact differently-owned canonical repository; correction under test, no credential or network stage."
+    },
+    "final": {
+      "contract": "v2/v11",
+      "publisherSha256": "a8bddeb74a8f2e645063e648b9e8904e679827b2744c2577c0806e3fd3855f2a",
+      "tests": {
+        "command": "node --test tinyrustlm/tests/deploy-tinyrustlm-web.test.js tinyrustlm/tests/web-deployment-manifest.test.js tinyrustlm/tests/web-deployment-custody.test.js",
+        "exitCode": 0,
+        "pass": 17,
+        "fail": 0,
+        "skip": 0,
+        "evidence": "Final actual local execution after isolated Git fix; output in this session.",
+        "durationMilliseconds": 3884.3326
+      },
+      "childGit": "Fixed exact seven canonical safe.directory entries after an empty reset; only pinned Git/Node children, no ambient configuration copied or global writes.",
+      "validation": {
+        "at": "2026-09-23T15:42:46.720Z",
+        "exitCode": 1,
+        "bytes": 501,
+        "sha256": "ff231099c6a121800480f53ebba5c35d1dde1c9cd5ec21746ded999abcf8dbe9",
+        "reason": "Deployment source custody requires a clean Git worktree."
+      }
+    }
+  },
+  "synthetic": {
+    "status": "13/13 pass; no skipped tests.",
+    "browser": "Explicit installed Edge153.0.4234.48",
+    "coverage": {
+      "scope": "Node whole synthetic tool; no browser-internal coverage claim",
+      "line": 84.86,
+      "branch": 82.03,
+      "function": 87.5
+    },
+    "related": {
+      "pass": 128,
+      "fail": 0
+    },
+    "failedStages": [
+      {
+        "pass": 8,
+        "fail": 2,
+        "reason": "Pinned Chromium headless-shell1228 absent."
+      },
+      {
+        "pass": 9,
+        "fail": 2,
+        "reason": "Edge OPFS InvalidStateError with long profile path."
+      },
+      {
+        "pass": 10,
+        "fail": 1,
+        "reason": "Stale cached-composition expectation."
+      },
+      {
+        "pass": 10,
+        "fail": 1,
+        "reason": "Fake runtime identity / current runtime fixture binding and wrapped rejection needed reconciliation; actual worker cause observed after fix."
+      }
+    ],
+    "pathProbe": "Owned95-character profile worked;225-character profile failed InvalidStateError. Bounded observation, not a universal Windows limit.",
+    "change": "Canonical owned scratch replaces external ad-hoc temp cleanup; shorter browser sibling root; real public runtime identity; exact catalog/worker rejection; no app bypass.",
+    "limits": [
+      "No real model loaded, activated or qualified",
+      "No public peer contacted",
+      "No headed execution",
+      "Pinned Chromium remains unavailable"
+    ],
+    "cleanup": "All three owned test/probe artifact parents have zero entries: artifacts/synthetic-p2p-demo, artifacts/browser-demo, artifacts/verification/browser-path. No container directory deletion.",
+    "final": {
+      "pass": 13,
+      "fail": 0,
+      "skip": 0,
+      "durationMilliseconds": 13641.789,
+      "transcriptEvidence": "session12666/finalchunk6af49e; raw output remains in tool transcript, no invented disk-log identity."
+    },
+    "additionalReviewFixes": [
+      "Notice-write failure now enters cleanup in both public modes; negative tests verify owned scratch retirement.",
+      "Candidate verdict requires exact ordered diagnostic history and exactly one identity-bound worker rejection; extra unrelated failures reject."
+    ],
+    "review": "Independent final readback confirmed the extra-error finding closed; frozen source/test identities matched; no independent test execution claimed."
+  },
+  "retainedStorageGate": {
+    "pass": 1,
+    "fail": 1,
+    "skip": 0,
+    "bytes": 4658,
+    "sha256": "4bfd76eb678afa60dd7adb8291bd419a7edef318d4fec9ea5d059f3641158d00",
+    "reason": "20 policy-blocked retired fixture files remain in Git. No exception reinstated, index trick or deletion attempted."
+  },
+  "pendingWorkDisposition": {
+    "historicalJson": "initial-state.json, retired-v0-metadata-flows.json and unused-app-functions.json preserved as dated historical evidence, not fresh results.",
+    "trackedInactive": "Existing edits to minimodel-announcement.js/test and fresh-browser-conversation.js preserved in source history only; these already-retired, deletion-blocked files are outside active publication and are not current supported commands.",
+    "transient": "Interrupted tinyrustlm/artifacts/tests outputs stay untracked; their compact historical receipt remains authoritative."
+  },
+  "blockedHelper": {
+    "path": "tinyrustlm/tools/remove-retired-slm1-models.ps1",
+    "bytes": 5667,
+    "sha256": "73ca230f25281e5b52b33e301b5b8962c8af98f40c37e434c9c8b9940f6337dd",
+    "state": "Untracked obsolete one-time helper. Exact-path removal rejected before execution by automatic approval review.",
+    "reason": "blocked by policy",
+    "action": "Left in place; no execution, alternate deletion route, permission change or index manipulation."
+  },
+  "publication": {
+    "website": false,
+    "nuget": false,
+    "realModelRun": false,
+    "nugetKeyRead": false,
+    "target": "TINYRUSTLM_WORKSPACE_MEMORY absent; no matching TinyRust/MiniModel profile in current FileZilla site manager. Owner asked for existing profile path, no password.",
+    "source": "37 unreadable canonical source-scan entries plus retained blocked artifacts remain. Website no-model payload mode does not itself require a qualified model.",
+    "other": "Runtime target previously misbound; portal prepared manifest and validation-only transport remain incomplete."
+  },
+  "secretScan": {
+    "status": "pass",
+    "count": 27,
+    "bytes": 1268050,
+    "findings": 0,
+    "scopeManifestSha256": "698b00a3266a7bf8bbd21a0b72b7bb0a74a0ed629f12a37f9d6ca4ca038d83e8",
+    "reportSha256": "f57781b11517790468466ff94ea2e66c91811045275df5366d1e9a337b445859",
+    "files": [
+      {
+        "path": ".gitignore",
+        "bytes": 1277,
+        "sha256": "6a3fcafa563713e44c874d6c3e591b0012ce4a684c4bb6c80636d1addb872dec",
+        "findings": []
+      },
+      {
+        "path": ".uai/long-term-memory.uai",
+        "bytes": 8763,
+        "sha256": "36e8141a857aae122f8065f64ede65018d005233467cc8757287ac1ce5ba1440",
+        "findings": []
+      },
+      {
+        "path": ".uai/operations.uai",
+        "bytes": 40915,
+        "sha256": "420bb6caae3dd8b18a86d9ce051a475752c5bc83ca9d186087a065fa2dbff055",
+        "findings": []
+      },
+      {
+        "path": ".uai/short-term-memory.uai",
+        "bytes": 33858,
+        "sha256": "26ce7b0790fb80cc0328a935ee6406d4cbdce4a9c71ef4fc8bc8f5b087ffe5b7",
+        "findings": []
+      },
+      {
+        "path": ".uai/startup-packet.uai",
+        "bytes": 30236,
+        "sha256": "ed107188ab6e1021ac756385ef68c5da6c5b24eb2899772c2c53433ed6e81836",
+        "findings": []
+      },
+      {
+        "path": ".uai/workspace-guidance.uai",
+        "bytes": 3423,
+        "sha256": "ca3f9985b714e2c157195f1e29914445c949559191048feb41cdf9899f3af7bc",
+        "findings": []
+      },
+      {
+        "path": "README.md",
+        "bytes": 17264,
+        "sha256": "f365112adfb9f6a85d7bda38a8450cfe6cd153d2857106dc3ef0c4bec223fa4f",
+        "findings": []
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/github-cost-policy-review.json",
+        "bytes": 3199,
+        "sha256": "c64577a475ef7b383c89f89a90a2e656589a94094cd6161eb11b2752b4062330",
+        "findings": []
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/initial-state.json",
+        "bytes": 23066,
+        "sha256": "e6e77ea273549ba477111d6f95aee7f8f3f144f6163831c61d18a7d13303a92f",
+        "findings": []
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/retired-v0-metadata-flows.json",
+        "bytes": 1281,
+        "sha256": "58f420cedc28665f065c51e77d4e18169222d34889c9b52b03f16a75bef4c6ad",
+        "findings": []
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/unused-app-functions.json",
+        "bytes": 3190,
+        "sha256": "f0f8ae0ff16e1e000f54c7110801dad8eb6a93a70ec71fcbbd7e6c9d0e2f882f",
+        "findings": []
+      },
+      {
+        "path": "docs/ecosystem-cleanup-2026-09-12.md",
+        "bytes": 194838,
+        "sha256": "f4d45d83fbf1a8fa50fd8daf1d9d0d04e54c083cf18e4c79d08a542eaecab1e1",
+        "findings": []
+      },
+      {
+        "path": "tinyrustlm/app/minimodel-announcement.js",
+        "bytes": 10161,
+        "sha256": "f7ebe6213e285a39e23759fc924b63683ba2052cab6fb0a6386d857cce9343e5",
+        "findings": []
+      },
+      {
+        "path": "tinyrustlm/docs/interview-demo.md",
+        "bytes": 10984,
+        "sha256": "9b430844f465c4c96105b0ba79c6a74d823c28ed03a37aefbbf10e7b7e0a0255",
+        "findings": []
+      },
+      {
+        "path": "tinyrustlm/package.json",
+        "bytes": 6710,
+        "sha256": "02bd2ae02683776ebe868d109baedd7e8c313b2e69b754512aef34d5bcee9be8",
+        "findings": []
+      },
+      {
+        "path": "tinyrustlm/tests/acquisition-playwright-gate.test.js",
+        "bytes": 4780,
+        "sha256": "e0100bd54bba9aa93a2f319c43936a30dcda3d6edfe47831142b9ed5dcec0815",
+        "findings": []
+      },
+      {
+        "path": "tinyrustlm/tests/deploy-tinyrustlm-web.test.js",
+        "bytes": 16921,
+        "sha256": "a85be1234b0c49d72135ed49877d4dcba331c15849e70bf82ed484d530bc06f2",
+        "findings": []
+      },
+      {
+        "path": "tinyrustlm/tests/deploy-tinyrustlm-web.test.ps1",
+        "bytes": 111226,
+        "sha256": "0352efab395d10e92a565971691dd9173700fda8b82e3f6fb143158715d4ac44",
+        "findings": []
+      },
+      {
+        "path": "tinyrustlm/tests/minimodel-announcement.test.js",
+        "bytes": 7292,
+        "sha256": "e292d2582e5fe72c717fc9f35068410ae97780593bbb1c3fcb9f4825c5c5dfd6",
+        "findings": []
+      },
+      {
+        "path": "tinyrustlm/tests/synthetic-p2p-interview-demo.test.js",
+        "bytes": 34505,
+        "sha256": "ea91621bf7d7ae00e7b2e535d76d1823dd542c671ef1044d6bf905f11d83de7d",
+        "findings": []
+      },
+      {
+        "path": "tinyrustlm/tests/tracked-model-byte-policy.test.js",
+        "bytes": 2769,
+        "sha256": "4edb363209867399cbfaf893674db6fff4a7887c9059bdce024f0265951f27d1",
+        "findings": []
+      },
+      {
+        "path": "tinyrustlm/tests/web-deployment-custody.test.js",
+        "bytes": 9047,
+        "sha256": "a2962f233c3a142b4a86e4099fe346e1c1ba373d19709c0257c9413618e9e35a",
+        "findings": []
+      },
+      {
+        "path": "tinyrustlm/tools/deploy-tinyrustlm-web.ps1",
+        "bytes": 224638,
+        "sha256": "a8bddeb74a8f2e645063e648b9e8904e679827b2744c2577c0806e3fd3855f2a",
+        "findings": []
+      },
+      {
+        "path": "tinyrustlm/tools/fresh-browser-conversation.js",
+        "bytes": 38230,
+        "sha256": "4abe59b500722526bdfdff33f12dcb2d0dd5f4c7d4ee157e72de2a05bb361d8d",
+        "findings": []
+      },
+      {
+        "path": "tinyrustlm/tools/synthetic-p2p-interview-demo.js",
+        "bytes": 128276,
+        "sha256": "155dddf2943470e71a2fbde080faeb60b06a209cba903c011ea233ec2bd3dff0",
+        "findings": []
+      },
+      {
+        "path": "wiki/runtime-mirust/reports/ecosystem-experiment-lessons-2026-09-12.md",
+        "bytes": 221795,
+        "sha256": "cdfb651f01d71b7b5a9b535f38b3fc8979f6a339feadd2fc6a90ed1e2a26c9a5",
+        "findings": []
+      },
+      {
+        "path": "wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md",
+        "bytes": 79406,
+        "sha256": "08087d67fb8941c6150f57ba447732b8c28869a34ae31144872db2172a793297",
+        "findings": []
+      }
+    ],
+    "note": "Exact changed-source scope only. Consolidated receipt is manually reviewed public-safe metadata; not a complete release secret scan.",
+    "initialSetup": "First scan rejected a leading-dot artifact label before producing output. Prefixing all labels with source/ fixed the invocation; scanner rules unchanged."
+  },
+  "ownedScratch": {
+    "root": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\c100\\tinyrustlm-operation-QtZHUI",
+    "originalOwnershipUsed": true,
+    "files": [
+      {
+        "path": "evidence/receipts/sha256/b2/b232354c300781a9fd53af1a3b5fe65bad6420f97277bc522a5a456fe8151b82.json",
+        "bytes": 2340,
+        "sha256": "47734d38482121712eee8f9d12e5dda99d7c5ff9d074597d592381894291101b"
+      },
+      {
+        "path": "secret-scan.json",
+        "bytes": 13682,
+        "sha256": "f57781b11517790468466ff94ea2e66c91811045275df5366d1e9a337b445859"
+      }
+    ],
+    "logicalBytesRemoved": 16087,
+    "rootAbsent": true,
+    "markerAbsent": true,
+    "physicalRecoveredBytes": null,
+    "otherPathsTouched": false
+  },
+  "trackedInactiveCheck": {
+    "command": "node --test tinyrustlm/tests/minimodel-announcement.test.js",
+    "pass": 6,
+    "fail": 2,
+    "skip": 0,
+    "reasons": [
+      "Retired test expects the active app to load the removed announcement module.",
+      "Retired test prohibits project-hosted bytes, contradicting current authorized MiniModel seeding."
+    ],
+    "disposition": "Historical inactive code is preserved as reviewed pre-existing WIP; no product gate is relaxed and no obsolete execution path is restored."
+  },
+  "otherRepositories": {
+    "remoteCheck": "Direct git ls-remote confirms all six other local HEADs match their current branch at end of C100; working trees clean.",
+    "ordinaryGitOnly": true
+  },
+  "recordedAtUtc": "2026-09-23T15:49:00Z",
+  "tinySourceCheckpoint": {
+    "branch": "codex/model-acquisition-v2",
+    "baseCommit": "24f989d2a9275a01eca15038b630cb1225489e9a",
+    "scope": "27 reviewed source/document/evidence files plus this manually reviewed consolidated receipt. Exact source hashes are in secretScan.files.",
+    "excluded": "Untracked blocked obsolete helper and two retained interrupted-smoke outputs remain. No model payloads or raw browser output added.",
+    "publication": "None"
+  }
+}

@@ -172,6 +172,8 @@ Import-DeploymentFunctions -ScriptPath $deploymentScript -Names @(
     "Remove-RemoteFile"
     "New-CurrentUserCredentialPipe"
     "Read-BoundedFtpsArtifact"
+    "Get-BoundedDeploymentStreamIdentity"
+    "Get-FtpsArtifactIdentity"
     "Assert-DeploymentTargetIdentity"
     "Read-BoundedPublicResponse"
     "Read-BoundedPublicArtifact"
@@ -221,9 +223,25 @@ try {
         [string]$toolVersions.curl_version -match "^[0-9]+\." -and
         [string]$toolVersions.git_version -match "^[0-9]+\."
     ) "Pinned deployment tool custody did not pass."
+    # Execute the real pinned Git child: this checkout may belong to another
+    # account, so sanitization must preserve only explicit canonical trust.
+    $realTopLevel = Get-DeploymentGitTopLevel -RepositoryRoot $canonicalRepositoryRoot
+    Assert-True ([string]::Equals($realTopLevel, $canonicalRepositoryRoot,
+        [StringComparison]::OrdinalIgnoreCase)) "Pinned Git did not admit the exact canonical checkout."
     $priorNodeOptions = $env:NODE_OPTIONS
+    $priorGitEnvironment = @{}
+    foreach ($name in @("GIT_CONFIG_COUNT", "GIT_CONFIG_KEY_0", "GIT_CONFIG_VALUE_0",
+        "GIT_CONFIG_KEY_99", "GIT_CONFIG_VALUE_99", "GIT_CONFIG_PARAMETERS")) {
+        $priorGitEnvironment[$name] = [Environment]::GetEnvironmentVariable($name, "Process")
+    }
     try {
         $env:NODE_OPTIONS = "--require=untrusted-deployment-hook.js"
+        $env:GIT_CONFIG_COUNT = "100"
+        $env:GIT_CONFIG_KEY_0 = "safe.directory"
+        $env:GIT_CONFIG_VALUE_0 = "*"
+        $env:GIT_CONFIG_KEY_99 = "core.hooksPath"
+        $env:GIT_CONFIG_VALUE_99 = "untrusted-hooks"
+        $env:GIT_CONFIG_PARAMETERS = "untrusted configuration"
         $sanitizedStart = New-SanitizedDeploymentProcessStartInfo `
             -Executable $script:nodeExecutable `
             -Arguments @("--version")
@@ -233,8 +251,39 @@ try {
             -not $sanitizedStart.EnvironmentVariables.ContainsKey("HTTP_PROXY") -and
             $sanitizedStart.EnvironmentVariables.ContainsKey("PATH")
         ) "Deployment subprocess inherited ambient execution configuration."
+        $expectedGitRoots = @("E:/Source/Rust/LMComposer.com", "E:/Source/Rust/MiniModel.MiRust.com",
+            "E:/Source/Rust/MiniModel.org", "E:/Source/Rust/MiRust.com", "E:/Source/Rust/Runtime.MiRust.com",
+            "E:/Source/Rust/TinyRustLM.com", "E:/Source/Rust/TinyRustLM.MiRust.com")
+        foreach ($executable in @($script:gitExecutable, $script:nodeExecutable)) {
+            $gitStart = New-SanitizedDeploymentProcessStartInfo -Executable $executable -Arguments @("--version")
+            $gitEnvironment = $gitStart.EnvironmentVariables
+            Assert-True ($gitEnvironment["GIT_CONFIG_COUNT"] -eq "8" -and
+                $gitEnvironment["GIT_CONFIG_KEY_0"] -eq "safe.directory" -and
+                $gitEnvironment["GIT_CONFIG_VALUE_0"] -ceq "" -and
+                -not $gitEnvironment.ContainsKey("GIT_CONFIG_KEY_99") -and
+                -not $gitEnvironment.ContainsKey("GIT_CONFIG_PARAMETERS")) `
+                "Child Git trust inherited ambient configuration or failed to reset trust."
+            for ($index = 1; $index -le $expectedGitRoots.Count; $index++) {
+                Assert-True ($gitEnvironment["GIT_CONFIG_KEY_$index"] -ceq "safe.directory" -and
+                    $gitEnvironment["GIT_CONFIG_VALUE_$index"] -ceq $expectedGitRoots[$index - 1]) `
+                    "Child Git trust escaped the exact canonical ecosystem roots."
+            }
+        }
+        $curlStart = New-SanitizedDeploymentProcessStartInfo -Executable $script:curlExecutable -Arguments @("--version")
+        Assert-True (-not $curlStart.EnvironmentVariables.ContainsKey("GIT_CONFIG_COUNT")) `
+            "Unrelated child received Git trust configuration."
+        $nestedGit = Invoke-PinnedDeploymentProcess -Executable $script:nodeExecutable `
+            -WorkingDirectory $canonicalRepositoryRoot -Arguments @("-e",
+            'const p=require("node:child_process").spawnSync("git",["-C",process.cwd(),"rev-parse","--show-toplevel"],{encoding:"utf8"}); if(p.error)process.exit(2); process.stdout.write(p.stdout); process.exit(p.status);')
+        Assert-True ($nestedGit.exit_code -eq 0 -and @($nestedGit.stdout_lines).Count -eq 1 -and
+            [string]::Equals([IO.Path]::GetFullPath([string]@($nestedGit.stdout_lines)[0]),
+                $canonicalRepositoryRoot, [StringComparison]::OrdinalIgnoreCase)) `
+                "Nested Node-to-Git lost canonical ownership admission."
     }
     finally {
+        foreach ($name in $priorGitEnvironment.Keys) {
+            [Environment]::SetEnvironmentVariable($name, $priorGitEnvironment[$name], "Process")
+        }
         if ($null -eq $priorNodeOptions) {
             Remove-Item Env:\NODE_OPTIONS -ErrorAction SilentlyContinue
         }
@@ -244,16 +293,95 @@ try {
     }
     $transportCapability = Get-DeploymentTransportCapability
     Assert-True (
-        [string]$transportCapability.status -eq "blocked" -and
+        [string]$transportCapability.schema -eq "tinyrustlm.deployment_transport_capability.v2" -and
+        [string]$transportCapability.status -eq "bounded-sequential" -and
         $transportCapability.remote_global_compare_and_swap_lease -eq $false -and
         $transportCapability.release_wide_atomic_rollback -eq $false -and
         $transportCapability.final_marker_can_be_last_remote_mutation -eq $false -and
-        $transportCapability.remote_mutation_admitted -eq $false
+        $transportCapability.mixed_publication_possible -eq $true
     ) "FTPS transport capability was overstated."
-    Assert-Throws {
-        Assert-SafeDeploymentTransportCapability `
-            -Capability $transportCapability
-    } "transport capability blocker|atomic release-wide|compare-and-swap"
+    Assert-SafeDeploymentTransportCapability -Capability $transportCapability
+    foreach ($field in @("remote_global_compare_and_swap_lease", "release_wide_atomic_rollback",
+        "final_marker_can_be_last_remote_mutation", "mixed_publication_possible")) {
+        $forged = $transportCapability | ConvertTo-Json | ConvertFrom-Json
+        $forged.$field = -not $forged.$field
+        Assert-Throws { Assert-SafeDeploymentTransportCapability -Capability $forged } "evidence is invalid"
+    }
+    foreach ($invalidSchema in @("tinyrustlm.deployment_transport_capability.v1", "unexpected")) {
+        $forged = $transportCapability | ConvertTo-Json | ConvertFrom-Json
+        $forged.schema = $invalidSchema
+        Assert-Throws { Assert-SafeDeploymentTransportCapability -Capability $forged } "evidence is invalid"
+    }
+    $forged = $transportCapability | ConvertTo-Json | ConvertFrom-Json
+    $forged.release_wide_atomic_rollback = "False"
+    Assert-Throws { Assert-SafeDeploymentTransportCapability -Capability $forged } "evidence is invalid"
+
+    foreach ($streamCase in @(
+        @{ bytes = [byte[]]@(1, 2, 3); admitted = 3; valid = $true },
+        @{ bytes = [byte[]]@(); admitted = 0; valid = $true },
+        @{ bytes = [byte[]]@(1, 2); admitted = 3; valid = $false },
+        @{ bytes = [byte[]]@(1, 2, 3, 4); admitted = 3; valid = $false },
+        @{ bytes = [byte[]]@(1); admitted = 0; valid = $false }
+    )) {
+        $stream = [IO.MemoryStream]::new($streamCase.bytes)
+        try {
+            if ($streamCase.valid) {
+                $identity = Get-BoundedDeploymentStreamIdentity -Stream $stream -ExpectedBytes $streamCase.admitted
+                $expectedHash = if ($streamCase.admitted -eq 0) {
+                    "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                } else { Get-ByteArraySha256 -Bytes $streamCase.bytes }
+                Assert-True ($identity.bytes -eq $streamCase.admitted -and
+                    $identity.sha256 -eq $expectedHash) `
+                    "Authenticated predecessor identity did not match its exact bytes."
+            }
+            else {
+                Assert-Throws { Get-BoundedDeploymentStreamIdentity -Stream $stream `
+                    -ExpectedBytes $streamCase.admitted | Out-Null } "truncated|admitted length"
+            }
+        }
+        finally { $stream.Dispose() }
+    }
+    Assert-Throws { Get-BoundedDeploymentStreamIdentity -Stream $null -ExpectedBytes 268435457 } "range|greater|validat"
+    $closedStream = [IO.MemoryStream]::new([byte[]]@(1))
+    $closedStream.Dispose()
+    Assert-Throws { Get-BoundedDeploymentStreamIdentity -Stream $closedStream -ExpectedBytes 1 } "closed|disposed"
+
+    # Exercise the real FTPS identity wrapper with a synthetic response only.
+    function global:New-FtpRequest {
+        param([string]$RemotePath, [string]$Method)
+        Assert-True ($RemotePath -eq "app/predecessor.js" -and $Method -eq "RETR") `
+            "Predecessor identity did not use an authenticated read-only file request."
+        $request = [pscustomobject]@{ Response = $global:SyntheticIdentityResponse }
+        $request | Add-Member ScriptMethod GetResponse { return $this.Response }
+        return $request
+    }
+    try {
+        foreach ($advertisedLength in @(3, -1, 4)) {
+            $global:IdentityResponseDisposed = $false
+            $global:SyntheticIdentityResponse = [pscustomobject]@{
+                ContentLength = $advertisedLength
+                Stream = [IO.MemoryStream]::new([byte[]]@(1, 2, 3))
+            }
+            $global:SyntheticIdentityResponse | Add-Member ScriptMethod GetResponseStream { return $this.Stream }
+            $global:SyntheticIdentityResponse | Add-Member ScriptMethod Dispose {
+                $this.Stream.Dispose()
+                $global:IdentityResponseDisposed = $true
+            }
+            if ($advertisedLength -eq 4) {
+                Assert-Throws { Get-FtpsArtifactIdentity -RemotePath "app/predecessor.js" -ExpectedBytes 3 } "length changed"
+            } else {
+                $identity = Get-FtpsArtifactIdentity -RemotePath "app/predecessor.js" -ExpectedBytes 3
+                Assert-True ($identity.bytes -eq 3 -and $identity.sha256 -eq
+                    (Get-ByteArraySha256 -Bytes ([byte[]]@(1, 2, 3)))) "FTPS wrapper identity changed."
+            }
+            Assert-True ($global:IdentityResponseDisposed -and -not $global:SyntheticIdentityResponse.Stream.CanRead) `
+                "FTPS identity response was not disposed."
+        }
+    }
+    finally {
+        Remove-Item Function:\global:New-FtpRequest
+        Remove-Variable -Scope Global -Name SyntheticIdentityResponse, IdentityResponseDisposed
+    }
 
     $sourceRoot = Join-Path $root "source"
     $profileRoot = Join-Path $root "external-profile"
@@ -1222,6 +1350,12 @@ namespace System.Net {
         }
         return [int64]-1
     }
+    function global:Get-FtpsArtifactIdentity {
+        param([string]$RemotePath, [int64]$ExpectedBytes)
+        $object = $global:FakeRemoteObjects[$RemotePath]
+        if (-not $object -or $object.bytes -ne $ExpectedBytes) { throw "synthetic predecessor length mismatch" }
+        return [pscustomobject]@{ bytes = $object.bytes; sha256 = $object.sha256 }
+    }
     function global:Start-Sleep {
         param([int]$Milliseconds)
     }
@@ -1818,6 +1952,10 @@ namespace System.Net {
     $global:FailPromotionRename = $false
     $global:FailPublicHostPolicy = $false
     $global:FailStageWrite = $false
+    $global:FailBackupCleanupAfterDelete = $false
+    $global:CorruptRestoredPredecessor = $false
+    $global:ForeignTargetDuringPromotion = $false
+    $global:RemoteMutationEvents = [Collections.Generic.List[string]]::new()
     function global:Get-RemoteSize {
         param([string]$RemotePath)
         if ($global:FakeRemoteObjects.ContainsKey($RemotePath)) {
@@ -1827,12 +1965,21 @@ namespace System.Net {
     }
     function global:Remove-RemoteFile {
         param([string]$RemotePath)
+        $global:RemoteMutationEvents.Add("delete:$RemotePath")
         $global:FakeRemoteObjects.Remove($RemotePath)
+        if ($global:FailBackupCleanupAfterDelete -and $RemotePath -match "(^|/)backup-") {
+            throw "simulated cleanup acknowledgement failure"
+        }
     }
     function global:Rename-RemoteFile {
         param([string]$RemotePath, [string]$NewLeafName)
         if ($global:FailPromotionRename -and
             $RemotePath -match "(^|/)deploy-[0-9a-f]{12}-stage-") {
+            if ($global:ForeignTargetDuringPromotion) {
+                $global:FakeRemoteObjects["app/site-release.js"] = [pscustomobject]@{
+                    bytes = 7; sha256 = "foreign"
+                }
+            }
             throw "simulated promotion failure"
         }
         if (-not $global:FakeRemoteObjects.ContainsKey($RemotePath)) {
@@ -1842,6 +1989,12 @@ namespace System.Net {
         $destination = if ($directory) { "$directory/$NewLeafName" } else { $NewLeafName }
         $global:FakeRemoteObjects[$destination] = $global:FakeRemoteObjects[$RemotePath]
         $global:FakeRemoteObjects.Remove($RemotePath)
+        $global:RemoteMutationEvents.Add("rename:$RemotePath=>$destination")
+        if ($global:CorruptRestoredPredecessor -and $RemotePath -match "(^|/)backup-") {
+            $global:FakeRemoteObjects[$destination] = [pscustomobject]@{
+                bytes = $global:FakeRemoteObjects[$destination].bytes; sha256 = "wrong-same-size"
+            }
+        }
     }
     function global:Stage-VerifiedArtifact {
         param(
@@ -1935,18 +2088,18 @@ namespace System.Net {
         }
         return $true
     }
+    $script:artifactPublicationAdmitted = $false
     Assert-Throws {
         Publish-Artifact `
             -DeploymentInputEntry $fakeReleaseInputEntry | Out-Null
-    } "Release-wide transport capability has not admitted remote mutation"
+    } "Sequential FTPS publication has not been admitted"
     Assert-True (
         $global:FakeRemoteObjects.Count -eq 0
     ) "Blocked transport admission performed a remote mutation."
 
-    # Unit-only admission exercises the bounded per-artifact primitives. The
-    # production orchestrator never sets this capability while FTPS lacks the
-    # required release-wide transaction and remote/global lease.
-    $script:releaseWideTransportCapabilityAdmitted = $true
+    # Fixture admission follows the same primitive gate; production additionally
+    # requires canonical custody, the held lease, sentinel and host-policy probes.
+    $script:artifactPublicationAdmitted = $true
     try {
         $badEntry = $fakeReleaseInputEntry | ConvertTo-Json | ConvertFrom-Json
         $badEntry.sha256 = "0" * 64
@@ -2118,10 +2271,107 @@ namespace System.Net {
         Assert-True (
             $script:artifactOperationStep -eq "complete"
         ) "Successful publication did not reach the complete substep."
+
+        # A cleanup acknowledgement can fail after deleting the only backup.
+        # The verified replacement must survive this failure without rollback.
+        $global:FakeRemoteObjects.Clear()
+        $global:FakeRemoteObjects[$fakeRemotePath] = $oldRemote
+        $global:FailBackupCleanupAfterDelete = $true
+        Assert-Throws { Publish-Artifact -DeploymentInputEntry $fakeReleaseInputEntry | Out-Null } `
+            "simulated cleanup acknowledgement failure"
+        Assert-True ($global:FakeRemoteObjects.ContainsKey($fakeRemotePath) -and
+            $global:FakeRemoteObjects[$fakeRemotePath].sha256 -eq $fakeHash -and
+            -not $script:deploymentLeaseReleasable) `
+            "Cleanup failure destroyed the verified replacement or released uncertain ownership."
+        $global:FailBackupCleanupAfterDelete = $false
+
+        $global:FakeRemoteObjects.Clear()
+        $global:FakeRemoteObjects[$fakeRemotePath] = $oldRemote
+        $global:FailPromotionRename = $true
+        $global:CorruptRestoredPredecessor = $true
+        Assert-Throws { Publish-Artifact -DeploymentInputEntry $fakeReleaseInputEntry | Out-Null } `
+            "rollback could not be verified"
+        Assert-True ($script:artifactRollbackStatus -eq "failed" -and
+            -not $script:deploymentLeaseReleasable -and
+            $global:FakeRemoteObjects[$fakeRemotePath].sha256 -eq "wrong-same-size") `
+            "Same-size corrupt restoration was accepted as the predecessor."
+        $global:CorruptRestoredPredecessor = $false
+
+        $global:FakeRemoteObjects.Clear()
+        $global:FakeRemoteObjects[$fakeRemotePath] = $oldRemote
+        $global:ForeignTargetDuringPromotion = $true
+        Assert-Throws { Publish-Artifact -DeploymentInputEntry $fakeReleaseInputEntry | Out-Null } `
+            "rollback could not be verified"
+        Assert-True ($global:FakeRemoteObjects[$fakeRemotePath].sha256 -eq "foreign" -and
+            $global:FakeRemoteObjects[$fakeBackupPath].sha256 -eq "old" -and
+            -not $script:deploymentLeaseReleasable) `
+            "Recovery removed another publisher's target or its own recovery evidence."
+        $global:ForeignTargetDuringPromotion = $false
+        $global:FailPromotionRename = $false
+
+        # A later artifact failure leaves the prior successful artifact active;
+        # the real orchestration must never advance its marker on this path.
+        $global:FakeRemoteObjects.Clear()
+        $global:FakeRemoteObjects[$fakeMarkerInputEntry.remote] = $oldRemote
+        $global:FakeRemoteObjects[".htaccess"] = $oldHostPolicy
+        $first = Publish-Artifact -DeploymentInputEntry $fakeReleaseInputEntry
+        $global:FailPublicHostPolicy = $true
+        Assert-Throws { Publish-Artifact -DeploymentInputEntry $fakeHostPolicyInputEntry | Out-Null } `
+            "simulated public host policy failure"
+        Assert-True ($first.status -eq "published" -and
+            $global:FakeRemoteObjects[$fakeRemotePath].sha256 -eq $fakeHash -and
+            $global:FakeRemoteObjects[$fakeMarkerInputEntry.remote].sha256 -eq "old" -and
+            $script:artifactRollbackStatus -eq "restored") `
+            "Partial publication evidence implied release-wide rollback or marker success."
+        $global:FailPublicHostPolicy = $false
+
+        $global:RemoteMutationEvents.Clear()
+        $script:regularArtifactsVerifiedForCommit = $true
+        try { $marker = Publish-Artifact -DeploymentInputEntry $fakeMarkerInputEntry -CommitMarker }
+        finally { $script:regularArtifactsVerifiedForCommit = $false }
+        $promotions = @($global:RemoteMutationEvents | Where-Object { $_ -match "^rename:.*-stage-" })
+        Assert-True ($marker.status -eq "published" -and $promotions.Count -eq 1 -and
+            $promotions[0].EndsWith("=>.well-known/site-release.json") -and
+            $global:RemoteMutationEvents[$global:RemoteMutationEvents.Count - 1] -match "^delete:.*backup-") `
+            "Marker ordering confused the final-path promotion with later owned cleanup."
+
+        # A marker is publicly observable before cleanup finishes. Keep that
+        # evidence even when the caller cannot latch a completed publication.
+        $global:FakeRemoteObjects.Clear()
+        $global:FakeRemoteObjects[$fakeMarkerInputEntry.remote] = $oldRemote
+        $script:releaseMarkerFinalPathReadbackObserved = $false
+        $releaseCommitMarkerPublished = $false
+        $global:FailBackupCleanupAfterDelete = $true
+        $script:regularArtifactsVerifiedForCommit = $true
+        try {
+            Assert-Throws {
+                $marker = Publish-Artifact -DeploymentInputEntry $fakeMarkerInputEntry -CommitMarker
+                $releaseCommitMarkerPublished = $true
+            } "simulated cleanup acknowledgement failure"
+        }
+        finally {
+            $script:regularArtifactsVerifiedForCommit = $false
+            $global:FailBackupCleanupAfterDelete = $false
+        }
+        Assert-True ($global:FakeRemoteObjects[$fakeMarkerInputEntry.remote].sha256 -eq $fakeMarkerInputEntry.sha256 -and
+            $script:releaseMarkerFinalPathReadbackObserved -and -not $releaseCommitMarkerPublished -and
+            $script:artifactPrimaryFailureStep -eq "temporary-cleanup" -and
+            $script:artifactRollbackStatus -eq "not-attempted-after-verified-promotion" -and
+            -not $script:deploymentLeaseReleasable) `
+            "Marker cleanup failure lost public readback evidence or claimed completed publication."
+
+        $script:releaseMarkerFinalPathReadbackObserved = $false
+        $script:regularArtifactsVerifiedForCommit = $true
+        try { $marker = Publish-Artifact -DeploymentInputEntry $fakeMarkerInputEntry -CommitMarker }
+        finally { $script:regularArtifactsVerifiedForCommit = $false }
+        Assert-True ($marker.status -eq "already-current" -and
+            $script:releaseMarkerFinalPathReadbackObserved -and -not $script:artifactPromotedReadbackVerified) `
+            "Existing marker readback was confused with a new promotion."
     }
     finally {
         foreach ($functionName in @(
             "Get-RemoteSize"
+            "Get-FtpsArtifactIdentity"
             "Remove-RemoteFile"
             "Rename-RemoteFile"
             "Stage-VerifiedArtifact"
@@ -2139,6 +2389,10 @@ namespace System.Net {
         Remove-Variable -Name FakeRemoteObjects -Scope Global -ErrorAction SilentlyContinue
         Remove-Variable -Name EnsuredRemoteDirectories -Scope Global -ErrorAction SilentlyContinue
         Remove-Variable -Name FailPromotionRename -Scope Global -ErrorAction SilentlyContinue
+        foreach ($variableName in @("FailBackupCleanupAfterDelete", "CorruptRestoredPredecessor",
+            "ForeignTargetDuringPromotion", "RemoteMutationEvents")) {
+            Remove-Variable -Name $variableName -Scope Global -ErrorAction SilentlyContinue
+        }
         Remove-Variable -Name FailPublicHostPolicy -Scope Global -ErrorAction SilentlyContinue
         Remove-Variable -Name FailStageWrite -Scope Global -ErrorAction SilentlyContinue
         $script:generatedReleaseRoot = $null
@@ -2150,7 +2404,7 @@ namespace System.Net {
         $script:artifactRollbackStatus = $null
         $script:deploymentLeaseId = $null
         $script:deploymentLeaseReleasable = $false
-        $script:releaseWideTransportCapabilityAdmitted = $false
+        $script:artifactPublicationAdmitted = $false
     }
 }
 finally {

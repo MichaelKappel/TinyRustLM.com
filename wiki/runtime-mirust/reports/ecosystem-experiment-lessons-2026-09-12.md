@@ -11,6 +11,53 @@ Keep useful findings and compact evidence identities in the owning canonical
 repository. Keep source history in Git and current model payloads only in
 `D:\LLMs\TinyRustLM`.
 
+## C100: source checkpoints and honest sequential publication
+
+- **Question:** Can delivery progress through local checks and existing FTP/FTPS
+  without a paid GitHub dependency or a misleading release claim?
+- **Inputs:** The owner's September 23 policy, official Actions settings for all
+  seven repositories, canonical Runtime and portal changes, and the TinyRust
+  FTPS publisher with synthetic predecessor, promotion and cleanup failures.
+- **Method:** Disable Actions and verify official readback; checkpoint coherent
+  source with unresolved gates recorded; run local checks. Compare exact
+  predecessor identities during recovery and inject cleanup failure after marker
+  readback. Review the distinction between public observation and completion.
+- **Result:** All seven Actions settings read back disabled. Runtime commits
+  `f242f14`/`5986e6f` and portal `7e5cec5` finish clean. Runtime's generator now
+  matches its committed source, but retained docs still reject. Portal pin checks
+  pass 7/7; deployment checks pass 13/14 with the known source failure. The v2/v11
+  FTPS path passes all 17 affected checks, including real isolated Git execution.
+  The synthetic suite passes 13/13 in installed Edge with 84.86% Node line coverage;
+  related scratch/launcher checks pass 128/128. Earlier failed setups and fixture
+  drift remain recorded. A marker can be visible despite failed backup cleanup, so
+  reports now separate observed readback from completed publication.
+- **Uncertainty:** Sequential FTPS permits mixed releases and has no global
+  compare-and-swap or release-wide rollback. Source admission still has 37
+  unreadable entries. Runtime lacks Apache evidence and a correctly bound target;
+  the portal is prepared, not generated or published. The newly rejected obsolete
+  SLM1-remover deletion remains blocked; its exact identity is recorded in C100
+  progress. No key read, model execution, or live publication follows.
+- **Decision:** Use ordinary Git, local validation, and existing verified FTP/FTPS
+  site targets. The owner policy supersedes billing-unlock and hosted-CI guidance.
+  Preserve source work with explicit limitations; do not weaken release admission
+  or repeat a blocked deletion through another mechanism.
+- **Reusable lesson:** A source checkpoint preserves work; it does not qualify a
+  release. After verified promotion, cleanup failure must not destroy the only
+  valid replacement or erase evidence that a new marker was publicly observable.
+  Report the actual per-file recovery and partial-publication limits. Isolated
+  process environments need explicit exact-path Git trust when checkout ownership
+  differs; never inherit arbitrary Git overrides. Browser fixtures must bind the
+  actual runtime and inspect its precise rejection, not hide it with a generic
+  expected-error allowance. Shorter owned browser paths resolved the observed
+  Windows OPFS failure; the 95/225-character probe is an observation, not a
+  universal path-length limit. Require the exact diagnostic sequence and reject
+  additional unrelated failures. Place the first owned write inside cleanup
+  scope; otherwise even a notice-write failure can strand temporary files.
+- **Evidence identity:**
+  `artifacts/ecosystem-cleanup-20260912/github-cost-policy-review.json` and the
+  `artifacts/ecosystem-cleanup-20260912/owner-delivery-checkpoint-review.json`;
+  Runtime retains `verification/receipts/current-only-source-checkpoint-review.json`.
+
 ## C98: validate redirect identity before libraries normalize it
 
 - **Question:** Can Runtime verification accept a response that differs from its exact 301 contract?
