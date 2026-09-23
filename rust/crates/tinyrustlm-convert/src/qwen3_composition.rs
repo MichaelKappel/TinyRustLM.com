@@ -28,7 +28,8 @@ use tinyrustlm_slm2::{
 };
 use tinyrustlm_template2::{
     write_template, Template2, Template2Policy, QWEN3_TEMPLATE2_ARTIFACT_SHA256,
-    TEMPLATE2_FORMAT_PROFILE_ID, TEMPLATE2_FORMAT_PROFILE_SHA256,
+    QWEN3_TEMPLATE2_MODEL_CONFIG, QWEN3_TEMPLATE2_TOKENIZER_CONFIG, TEMPLATE2_FORMAT_PROFILE_ID,
+    TEMPLATE2_FORMAT_PROFILE_SHA256,
 };
 use tinyrustlm_tokenizer2::{
     QWEN3_TOKENIZER2_ARTIFACT_BYTES, QWEN3_TOKENIZER2_ARTIFACT_SHA256,
@@ -508,6 +509,24 @@ fn validate_source_relationship(
         if model_files.get(field) != tokenizer_files.get(field) {
             return Err(Qwen3CompositionConversionError::new(
                 "composition-source-lock-mismatch",
+            ));
+        }
+    }
+    // Agreement between caller-supplied locks does not establish authority to emit
+    // this frozen template. Component conversion subsequently verifies source bytes
+    // against these admitted records; reject drift before creating any output.
+    for (field, expected) in [
+        ("config", QWEN3_TEMPLATE2_MODEL_CONFIG),
+        ("tokenizerConfig", QWEN3_TEMPLATE2_TOKENIZER_CONFIG),
+    ] {
+        let record = &model["files"][field];
+        if record.get("path").and_then(Value::as_str) != Some(expected.path)
+            || record.get("byteLength").and_then(Value::as_u64) != Some(expected.byte_length)
+            || record.get("sha256").and_then(Value::as_str)
+                != Some(hex_lower(&expected.sha256).as_str())
+        {
+            return Err(Qwen3CompositionConversionError::new(
+                "composition-template-source-mismatch",
             ));
         }
     }
@@ -1483,6 +1502,10 @@ mod tests {
     fn source_relationship_binds_shared_revision_and_files() {
         let root = test_root("source-locks");
         fs::create_dir(&root).expect("root");
+        let pinned: Value = serde_json::from_slice(include_bytes!(
+            "../../../../contracts/vnext/qwen3-0.6b-tokenizer2-source-lock.v1.json"
+        ))
+        .expect("pinned tokenizer lock");
         let shared = |path: &str| {
             serde_json::json!({
                 "path": path,
@@ -1496,14 +1519,14 @@ mod tests {
             "revision": "1111111111111111111111111111111111111111",
             "architectureProfileId": QWEN3_ARCHITECTURE_PROFILE_ID,
             "files": {
-                "config": shared("config.json"),
+                "config": pinned["files"]["config"].clone(),
                 "generationConfig": shared("generation_config.json"),
                 "license": shared("LICENSE"),
                 "merges": shared("merges.txt"),
                 "model": shared("model.safetensors"),
                 "readme": shared("README.md"),
                 "tokenizer": shared("tokenizer.json"),
-                "tokenizerConfig": shared("tokenizer_config.json"),
+                "tokenizerConfig": pinned["files"]["tokenizerConfig"].clone(),
                 "vocab": shared("vocab.json")
             }
         });
@@ -1513,10 +1536,10 @@ mod tests {
             "revision": "1111111111111111111111111111111111111111",
             "architectureProfileId": QWEN3_TOKENIZER_ARCHITECTURE_PROFILE_ID,
             "files": {
-                "config": shared("config.json"),
+                "config": pinned["files"]["config"].clone(),
                 "merges": shared("merges.txt"),
                 "tokenizer": shared("tokenizer.json"),
-                "tokenizerConfig": shared("tokenizer_config.json"),
+                "tokenizerConfig": pinned["files"]["tokenizerConfig"].clone(),
                 "vocab": shared("vocab.json")
             }
         });
@@ -1554,6 +1577,91 @@ mod tests {
             relationship.tokenizer_lock_sha256,
             "1641e8d4ab1fe9e4b6b3d24918c394fcf8d6e60d204be1f4c821f0f6570b1c70"
         );
+    }
+
+    /// Matching locks cannot admit a different model configuration to the fixed template.
+    #[test]
+    fn template_model_source_identity_is_checked_before_output_creation() {
+        assert_template_source_identity_rejected_before_output("config");
+    }
+
+    /// Matching tokenizer identities must still bind the exact source chat template.
+    #[test]
+    fn template_tokenizer_source_identity_is_checked_before_output_creation() {
+        assert_template_source_identity_rejected_before_output("tokenizerConfig");
+    }
+
+    /// Exercises jointly changed identity fields through the public conversion boundary.
+    fn assert_template_source_identity_rejected_before_output(source_field: &str) {
+        let root = test_root(&format!("template-source-{source_field}"));
+        fs::create_dir(&root).expect("root");
+        let model_source = root.join("model-source");
+        let tokenizer_source = root.join("tokenizer-source");
+        fs::create_dir(&model_source).expect("model source");
+        fs::create_dir(&tokenizer_source).expect("tokenizer source");
+        let original_model: Value = serde_json::from_slice(include_bytes!(
+            "../../../../contracts/vnext/qwen3-0.6b-base-source-lock.v2.json"
+        ))
+        .expect("model lock");
+        let original_tokenizer: Value = serde_json::from_slice(include_bytes!(
+            "../../../../contracts/vnext/qwen3-0.6b-tokenizer2-source-lock.v1.json"
+        ))
+        .expect("tokenizer lock");
+        let original_length = original_model["files"][source_field]["byteLength"]
+            .as_u64()
+            .expect("pinned byte length");
+        let execution = ConverterExecutionIdentity::new(
+            "0.1.8",
+            "2222222222222222222222222222222222222222222222222222222222222222",
+        )
+        .expect("execution");
+        let mut observations = Vec::new();
+        for (identity_field, replacement) in [
+            ("path", Value::String("different-config.json".to_owned())),
+            ("byteLength", Value::from(original_length + 1)),
+            (
+                "sha256",
+                Value::String(
+                    "1111111111111111111111111111111111111111111111111111111111111111".to_owned(),
+                ),
+            ),
+        ] {
+            let mut model = original_model.clone();
+            let mut tokenizer = original_tokenizer.clone();
+            model["files"][source_field][identity_field] = replacement.clone();
+            tokenizer["files"][source_field][identity_field] = replacement;
+            let model_path = root.join(format!("{identity_field}-model-lock.json"));
+            let tokenizer_path = root.join(format!("{identity_field}-tokenizer-lock.json"));
+            fs::write(&model_path, serde_json::to_vec(&model).expect("model JSON"))
+                .expect("model lock");
+            fs::write(
+                &tokenizer_path,
+                serde_json::to_vec(&tokenizer).expect("tokenizer JSON"),
+            )
+            .expect("tokenizer lock");
+            let output_root = root.join(format!("{identity_field}-output"));
+            let error = convert_locked_qwen3_composition(
+                &model_path,
+                &model_source,
+                &tokenizer_path,
+                &tokenizer_source,
+                &output_root,
+                &execution,
+            )
+            .expect_err("different template source must reject");
+            observations.push((identity_field, error.code(), output_root.exists()));
+        }
+        fs::remove_dir_all(&root).expect("cleanup");
+        for (identity_field, error_code, output_created) in observations {
+            assert_eq!(
+                error_code, "composition-template-source-mismatch",
+                "{source_field}.{identity_field}"
+            );
+            assert!(
+                !output_created,
+                "{source_field}.{identity_field} must reject before creating output"
+            );
+        }
     }
 
     #[test]
@@ -1664,6 +1772,15 @@ mod tests {
             "composition-source-lock-mismatch",
         );
 
+        let mut wrong_tokenizer_config = tokenizer.clone();
+        wrong_tokenizer_config["files"]["tokenizerConfig"]["byteLength"] = Value::from(9_733);
+        assert_rejected(
+            "shared-tokenizer-config-drift",
+            &model,
+            &wrong_tokenizer_config,
+            "composition-source-lock-mismatch",
+        );
+
         fs::remove_dir_all(&root).expect("cleanup");
     }
 
@@ -1713,6 +1830,10 @@ mod tests {
         let tokenizer_source = root.join("tokenizer-source");
         fs::create_dir(&model_source).expect("model source");
         fs::create_dir(&tokenizer_source).expect("tokenizer source");
+        let pinned: Value = serde_json::from_slice(include_bytes!(
+            "../../../../contracts/vnext/qwen3-0.6b-tokenizer2-source-lock.v1.json"
+        ))
+        .expect("pinned tokenizer lock");
         let shared = |path: &str| {
             serde_json::json!({
                 "path": path,
@@ -1726,10 +1847,10 @@ mod tests {
             "revision": "1111111111111111111111111111111111111111",
             "architectureProfileId": QWEN3_ARCHITECTURE_PROFILE_ID,
             "files": {
-                "config": shared("config.json"),
+                "config": pinned["files"]["config"].clone(),
                 "merges": shared("merges.txt"),
                 "tokenizer": shared("tokenizer.json"),
-                "tokenizerConfig": shared("tokenizer_config.json"),
+                "tokenizerConfig": pinned["files"]["tokenizerConfig"].clone(),
                 "vocab": shared("vocab.json")
             }
         });
@@ -1739,10 +1860,10 @@ mod tests {
             "revision": "1111111111111111111111111111111111111111",
             "architectureProfileId": QWEN3_TOKENIZER_ARCHITECTURE_PROFILE_ID,
             "files": {
-                "config": shared("config.json"),
+                "config": pinned["files"]["config"].clone(),
                 "merges": shared("merges.txt"),
                 "tokenizer": shared("tokenizer.json"),
-                "tokenizerConfig": shared("tokenizer_config.json"),
+                "tokenizerConfig": pinned["files"]["tokenizerConfig"].clone(),
                 "vocab": shared("vocab.json")
             }
         });

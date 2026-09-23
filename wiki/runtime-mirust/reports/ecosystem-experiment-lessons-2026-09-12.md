@@ -11,6 +11,33 @@ Keep useful findings and compact evidence identities in the owning canonical
 repository. Keep source history in Git and current model payloads only in
 `D:\LLMs\TinyRustLM`.
 
+## C95: agreement between inputs is not frozen-template authority
+
+- **Question:** Can jointly altered source locks authorize the fixed renderer?
+- **Inputs:** Parent `857b4665bb0f617bed69289d32156796f32005a3`, checked-in model
+  and tokenizer locks, and six path/length/hash mutations across their config
+  and tokenizerConfig records. Empty distinct fixture source directories ensure
+  early admission is observed without loading model payloads.
+- **Method:** Run the new public-converter regressions against unchanged
+  production, then enforce Template2-owned source identities and test the full
+  affected crates, independent vectors and reproducible browser artifact.
+- **Result:** Baseline 8 pass/2 fail. After correction, Rust 53/53, Clippy and Node
+  32/32 pass. Rejected inputs leave output absent; pinned records and standalone
+  tokenizer fixtures retain their expected behavior. Browser bytes are unchanged.
+- **Uncertainty:** No real checkpoint conversion, source-framework inference,
+  product quality, publication, or numerical coverage percentage is established.
+  The independent source scan still cannot read 37 entries. The initial scan
+  lacking Git safe-directory configuration failed earlier and is retained as a
+  setup observation, not a second source defect.
+- **Decision:** Enforce the existing frozen contract at complete-composition
+  admission, without changing historical profiles or generic tokenizer scope.
+- **Reusable lesson:** Mutually consistent untrusted declarations must also match
+  the authority of the exact artifact being emitted; output identity cannot
+  prove that discarded source semantics were compatible.
+- **Evidence identity:** `artifacts/ecosystem-cleanup-20260912/template-source-admission-review.json`
+  records exact log hashes and source identities; operation-owned output is
+  retired after bounded verification. Storage recovery is not inferred from bytes.
+
 ## C94: check intermediates before exp or division conceals overflow
 
 - **Question:** Can nonfinite scalar arithmetic produce an apparently valid

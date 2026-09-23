@@ -16,6 +16,15 @@ Authority order is current owner instructions, inspected current contracts and b
 
 ## Current evidence and its limits
 
+**C95 template source admission:** complete conversion now rejects matching but
+unpinned config/tokenizer-config records before output creation. Template2 owns
+the file identities; standalone tokenizer behavior and all frozen artifact bytes
+are unchanged. Baseline 8/10, final Rust 53/53, Clippy and Node 32/32 pass,
+including two identical fresh browser builds. Read `template-source-admission-review.json`.
+No real model was read or converted. Source admission remains incomplete and
+the three NuGet package indexes still return 404; the key location is already
+in `.uai/operations.uai`. Model qualification, live seed and release remain open.
+
 **C94 scalar arithmetic:** softmax and SiLU now reject nonfinite intermediates
 before exp/division can conceal them as zero. Four new baseline failures become
 passing regressions with exact cache rollback and replay; final Rust 33/33,
@@ -24,8 +33,7 @@ Read `scalar-attention-overflow-review.json` for the initial build mismatch and
 the inherited diagnostic activation test: real weights loaded, no tokens generated.
 No useful-model, numerical-parity or release gate follows. Source admission still
 reports 37 unreadable entries; elevated read-only ACL diagnosis is pending.
-The next reviewed defect is complete composition conversion accepting mutually
-consistent source locks without enforcing Template2's frozen source identities.
+The source-identity defect identified at C94 is corrected by C95 above.
 
 **C92 conversation continuity:** a single current Prompt2 projection now retains
 all user corrections and exact completed/stopped output; stored failure codes

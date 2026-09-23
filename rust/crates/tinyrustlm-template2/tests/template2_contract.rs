@@ -3,8 +3,8 @@
 use sha2::{Digest, Sha256};
 use tinyrustlm_template2::{
     write_template, ControlInsertion, ControlKind, Message, Role, Template2, Template2Policy,
-    ThinkingMode, QWEN3_TEMPLATE2_ARTIFACT_SHA256, TEMPLATE2_FORMAT_PROFILE_ID,
-    TEMPLATE2_FORMAT_PROFILE_SHA256,
+    ThinkingMode, QWEN3_TEMPLATE2_ARTIFACT_SHA256, QWEN3_TEMPLATE2_MODEL_CONFIG,
+    QWEN3_TEMPLATE2_TOKENIZER_CONFIG, TEMPLATE2_FORMAT_PROFILE_ID, TEMPLATE2_FORMAT_PROFILE_SHA256,
 };
 
 const PROFILE_BYTES: &[u8] =
@@ -51,6 +51,31 @@ fn profile_and_artifact_identities_are_exact() {
     assert_eq!(
         hex_lower(&parsed.source_template_sha256()),
         "a55ee1b1660128b7098723e0abcd92caa0788061051c62d51cbe87d9cf1974d8"
+    );
+}
+
+/// Public conversion pins must match the immutable profile and artifact header.
+#[test]
+fn source_file_identities_match_the_frozen_profile() {
+    let profile: serde_json::Value = serde_json::from_slice(PROFILE_BYTES).unwrap();
+    let authority = &profile["sourceAuthority"];
+    for (prefix, expected) in [
+        ("modelConfig", QWEN3_TEMPLATE2_MODEL_CONFIG),
+        ("tokenizerConfig", QWEN3_TEMPLATE2_TOKENIZER_CONFIG),
+    ] {
+        assert_eq!(authority[format!("{prefix}Path")], expected.path);
+        assert_eq!(
+            authority[format!("{prefix}ByteLength")],
+            expected.byte_length
+        );
+        assert_eq!(
+            authority[format!("{prefix}Sha256")],
+            hex_lower(&expected.sha256)
+        );
+    }
+    assert_eq!(
+        &artifact()[144..176],
+        QWEN3_TEMPLATE2_MODEL_CONFIG.sha256.as_slice()
     );
 }
 

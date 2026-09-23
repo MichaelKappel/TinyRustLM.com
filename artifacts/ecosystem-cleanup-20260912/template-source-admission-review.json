@@ -1,0 +1,205 @@
+{
+  "schema": "tinyrustlm.template-source-admission-review.v1",
+  "checkpoint": "C95",
+  "recordedUtc": "2026-09-23T03:41:53.281Z",
+  "parentCommit": "857b4665bb0f617bed69289d32156796f32005a3",
+  "scope": "Complete-converter frozen Template2 source admission, without real-model execution or publication.",
+  "finding": "Matching caller-provided locks did not establish that discarded source template/config bytes matched the frozen renderer. Complete admission now requires exact Template2-owned path/length/SHA identities before creating output.",
+  "preserved": [
+    "Frozen profiles and historical receipts",
+    "Standalone Tokenizer2 source contract",
+    "Template2/model formats",
+    "Tracked WASM bytes and all UI assets",
+    "Unrelated work and blocked cleanup cohorts"
+  ],
+  "validation": {
+    "baseline": {
+      "path": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\template-source-admission\\tinyrustlm-operation-7tTEQd\\baseline.log",
+      "bytes": 4130,
+      "sha256": "e64d48051ca79064d1242b8a742c8a12c466efe6a7e2f66173637c6cb5fe409f",
+      "status": 101,
+      "passed": 8,
+      "failed": 2,
+      "filtered": 1,
+      "arguments": [
+        "test",
+        "-p",
+        "tinyrustlm-convert",
+        "--lib",
+        "--locked",
+        "--offline",
+        "qwen3_composition::tests"
+      ]
+    },
+    "rust": {
+      "path": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\template-source-admission\\tinyrustlm-operation-7tTEQd\\final-rust.log",
+      "bytes": 6424,
+      "sha256": "7fa86c02b0b9a3e9c3d1e4b68c0876dc8cf03f95c6afee051c4af4759366dfc9",
+      "status": 0,
+      "passed": 53,
+      "failed": 0,
+      "arguments": [
+        "test",
+        "-p",
+        "tinyrustlm-convert",
+        "-p",
+        "tinyrustlm-template2",
+        "--locked",
+        "--offline"
+      ]
+    },
+    "clippy": {
+      "path": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\template-source-admission\\tinyrustlm-operation-7tTEQd\\clippy.log",
+      "bytes": 1460,
+      "sha256": "3131bbe6c61a395329db0c522e9c549ed422d0e2394e149ce1fcb5351d160f96",
+      "status": 0,
+      "arguments": [
+        "clippy",
+        "-p",
+        "tinyrustlm-convert",
+        "-p",
+        "tinyrustlm-template2",
+        "--all-targets",
+        "--locked",
+        "--offline",
+        "--",
+        "-D",
+        "warnings"
+      ]
+    },
+    "node": {
+      "path": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\template-source-admission\\tinyrustlm-operation-7tTEQd\\node-affected.log",
+      "bytes": 2798,
+      "sha256": "35a674aabb03bd6f51f48aaebc9afe430cafbd73e20399387c421bcde6b9bcad",
+      "status": 0,
+      "passed": 32,
+      "failed": 0,
+      "skipped": 0,
+      "files": [
+        "template2-format-vectors.test.js",
+        "qwen3-composition-source-relationship-correction.test.js",
+        "qwen3-composition-verification-owner.test.js",
+        "browser-runtime-web-artifact.test.js"
+      ],
+      "browserArtifact": "Two fresh owned builds reproduce the unchanged tracked WASM; no browser UI execution or real model activation."
+    },
+    "coverage": {
+      "percentage": null,
+      "reason": "cargo-llvm-cov.exe absent in pinned cargo bin; Rust percentage not measured.",
+      "closestEvidence": "Both source records and each of their three identity fields vary independently, with rejected output absence, admitted checked-in locks, one-sided disagreement, profile/header identity and standalone tokenizer regression coverage."
+    },
+    "secretScan": {
+      "status": "pass",
+      "files": 12,
+      "findings": 0,
+      "reportBytes": 6428,
+      "reportSha256": "f172475ecef5b759b27642f3a597f073c8b077e52e0cafd3f151e0fb2ce6ac02",
+      "scope": "12 checkpoint files before this final cleanup/scan summary append; final appended metadata was not part of that scan."
+    },
+    "memoryPointers": 17,
+    "diffAndRustfmt": "pass"
+  },
+  "sourceAdmission": {
+    "initialSetup": {
+      "status": 1,
+      "bytes": 64,
+      "sha256": "6d77bad8d49d1112494ff405f0b27cff5c08cd3c39dae7ca3545cc40f512c342",
+      "reason": "Omitted established Git safe-directory environment; stopped at git identity."
+    },
+    "canonicalInvocation": {
+      "status": 1,
+      "unreadableEntries": 37,
+      "bytes": 4457,
+      "sha256": "7f8fec1c72e18e3da05f434b9f33c8b1c71ac2a42660f0bf9afdca62328384d3",
+      "reason": "Same unreadable governed entries; elevated ACL diagnosis pending."
+    }
+  },
+  "nuget": {
+    "observedUtc": "2026-09-23T03:34:01Z",
+    "sourceVersion": "0.1.8",
+    "packages": [
+      {
+        "id": "tinyrustlm.abstractions",
+        "url": "https://api.nuget.org/v3-flatcontainer/tinyrustlm.abstractions/index.json",
+        "status": 404
+      },
+      {
+        "id": "tinyrustlm.core",
+        "url": "https://api.nuget.org/v3-flatcontainer/tinyrustlm.core/index.json",
+        "status": 404
+      },
+      {
+        "id": "tinyrustlm.p2p",
+        "url": "https://api.nuget.org/v3-flatcontainer/tinyrustlm.p2p/index.json",
+        "status": 404
+      }
+    ],
+    "profileReadback": "Web tool timed out; feed observations are direct official HTTPS.",
+    "keyContentsRead": false,
+    "published": false
+  },
+  "review": {
+    "blockingFindings": [],
+    "separatePreexistingFinding": "Component converters reopen source-lock paths after admission. Complete receipt validation does not reconcile their consumed source.lock_sha256 with admitted relationship. Concurrent mutation not executed; next bounded review/test should isolate this."
+  },
+  "sourceIdentities": [
+    {
+      "path": "rust/crates/tinyrustlm-template2/src/lib.rs",
+      "bytes": 1585,
+      "sha256": "0f3b35fc63060528c01adbe5d5a9cda33d88ef491863f7901c1a84fe821f809b"
+    },
+    {
+      "path": "rust/crates/tinyrustlm-template2/tests/template2_contract.rs",
+      "bytes": 12796,
+      "sha256": "2bbb6801c5c98e8edcefd21a6406b67aed5cb490f63bb68fd14b8a8441a41bf7"
+    },
+    {
+      "path": "rust/crates/tinyrustlm-convert/src/qwen3_composition.rs",
+      "bytes": 72436,
+      "sha256": "1154190a6a42e19191ebcb79d6eeaced4872da79fbb89634c25e300b540fbd0c"
+    },
+    {
+      "path": "docs/architecture/qwen3-slm2-converter-implementation.md",
+      "bytes": 11630,
+      "sha256": "978e64e8f762842bed5cda4f0620873e373546ce15c1f21d371c9d0fe365ade8"
+    }
+  ],
+  "authorityIdentities": [
+    {
+      "path": "contracts/vnext/template2-format-profile.v1.json",
+      "bytes": 15111,
+      "sha256": "14ff1df8dd6760119ac36e719ab396fff8e71d0719c2e1c83118f58693ea7bfa"
+    },
+    {
+      "path": "contracts/vnext/qwen3-0.6b-base-source-lock.v2.json",
+      "bytes": 1901,
+      "sha256": "50a8c29e36398a9a088e4d9a224dad186809d34b1e050299d3ce3de7a01b7d0e"
+    },
+    {
+      "path": "contracts/vnext/qwen3-0.6b-tokenizer2-source-lock.v1.json",
+      "bytes": 1108,
+      "sha256": "1641e8d4ab1fe9e4b6b3d24918c394fcf8d6e60d204be1f4c821f0f6570b1c70"
+    }
+  ],
+  "limits": [
+    "No real checkpoint read, conversion or inference",
+    "No numerical parity, qualified default, live seed or campaign increment",
+    "No NuGet or site publication",
+    "Source authority remains incomplete",
+    "GitHub billing block last read in C93; no fresh hosted run claim"
+  ],
+  "cleanup": {
+    "status": "removed",
+    "root": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\template-source-admission\\tinyrustlm-operation-7tTEQd",
+    "fileCount": 625,
+    "descendantDirectories": 127,
+    "logicalBytes": 331596936,
+    "markerBytes": 65,
+    "inventorySha256": "82d9345ee51a3b6d4640def299e521e16ed09a0d93f314941be3ba5345b11b9c",
+    "physicalStorageRecoveryBytes": null,
+    "method": "Canonical ownership helper with original root/marker identities; exact contained root inspected after all owned processes completed.",
+    "initialAttempt": "Ownership check refused before mutation because a manually transcribed original marker had 80 instead of 82. Reconstructed from the exact byte array in creation output, without adopting current on-disk marker.",
+    "rootAbsent": true,
+    "markerAbsent": true
+  }
+}

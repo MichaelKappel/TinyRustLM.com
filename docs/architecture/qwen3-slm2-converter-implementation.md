@@ -31,6 +31,20 @@ model conversion neither regenerates nor copies Tokenizer2 or Template2.
 
 ## Closed Inputs
 
+Complete composition conversion additionally admits `config.json` and
+`tokenizer_config.json` against the exact path, byte length and SHA-256 owned by
+the frozen Template2 profile. Matching caller-supplied locks alone do not establish
+that authority. A mismatch returns `composition-template-source-mismatch` before
+output creation or weight conversion. The component converters then verify the
+actual source bytes against those records. The Template2 library exports these
+identities, sharing its model-config digest with the artifact header; contract
+tests bind both descriptors to the unchanged machine-readable profile.
+
+This check belongs to complete composition conversion. Standalone Tokenizer2
+conversion retains its own contract and does not acquire the frozen renderer's
+source-template restriction. C95's deterministic tests establish admission
+behavior only; they do not rerun a historical conversion or qualify the source.
+
 One strict source lock binds exactly these nine regular files:
 
 - `LICENSE`

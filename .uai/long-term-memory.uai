@@ -1,5 +1,5 @@
 profile: tinyrustlm.long-term-memory.current.v1
-updated_utc: 2026-09-23T03:22:35Z
+updated_utc: 2026-09-23T03:38:49Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
@@ -13,8 +13,8 @@ pointers:
     authority: reviewed_guidance
     review_state: reviewed_for_routing_and_identity
     status: current
-    last_reviewed_utc: 2026-09-23T03:22:35Z
-    sha256: f41918b81baf35fbd7f6b848481d323be03d982687223f47b92ec2e869a138bb
+    last_reviewed_utc: 2026-09-23T03:38:49Z
+    sha256: e64889af826df590874b0e7bfcc9aa9c190b1c497440c598932561ba66b108b2
   - id: report-decisions
     path: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
     label: September report decisions
@@ -36,21 +36,21 @@ pointers:
   - id: experiment-lessons
     path: wiki/runtime-mirust/reports/ecosystem-experiment-lessons-2026-09-12.md
     label: Retained experiment lessons
-    summary: Open for C21-C94 observations, exact evidence, uncertainty and blocked retirement.
+    summary: Open for C21-C95 observations, exact evidence, uncertainty and blocked retirement.
     authority: reviewed_bounded_historical_evidence
     review_state: reviewed_for_routing_and_identity
     status: active_growing_review
-    last_reviewed_utc: 2026-09-23T03:22:35Z
-    sha256: 11065375ddae9e0a173c85401c8877db56fcf97fdf405469472c998f728405be
+    last_reviewed_utc: 2026-09-23T03:38:49Z
+    sha256: e17c4fde46662a99a55c2336e4a0fc90d63b6c18214ce476ca6530b6b67e0aa3
   - id: cleanup-progress
     path: docs/ecosystem-cleanup-2026-09-12.md
     label: Ecosystem cleanup progress
-    summary: Open for C94 scalar overflow correction, build evidence and scope limits, pending Template2 admission, and current source-access/publication blockers.
+    summary: Open for C95 frozen-template admission, unchanged browser artifact evidence, the separate lock-reopen finding and current source-access/publication blockers.
     authority: owner_authorized_progress_record
     review_state: reviewed_for_routing_and_identity
     status: current
-    last_reviewed_utc: 2026-09-23T03:22:35Z
-    sha256: 55b5e9ea9927b92f98100af3bedf73a6c8d709fd85cb6b4b1e56b7ba54ff9a88
+    last_reviewed_utc: 2026-09-23T03:38:49Z
+    sha256: 511e7eb70a591aac4ab14b53e4d6d0f183253756bea3c26e52c93785593935e9
   - id: source-lock
     path: contracts/vnext/qwen3-0.6b-base-source-lock.v2.json
     label: Current diagnostic source identity

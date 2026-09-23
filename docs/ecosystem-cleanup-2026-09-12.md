@@ -5,6 +5,37 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C95: bind complete conversion to the frozen template source, September 22
+
+The complete converter compared its two caller-provided locks with each other,
+but did not require their shared config records to match the frozen Template2
+source authority. A changed chat template could therefore be discarded while
+the emitted fixed template still claimed the original source identity. The
+converter now checks both required source identities before creating output.
+Template2 owns the public file descriptors and reuses the artifact header's
+model-config digest. Standalone tokenizer conversion remains unchanged.
+
+Two new tests fail on the original implementation. The final converter/Template2
+suite passes 53/53, Clippy passes, and 32/32 affected Node checks pass, including
+two fresh WASM builds identical to the tracked artifact. Tests cover six jointly
+altered path/length/hash records, one-sided disagreement, and checked-in lock
+acceptance. No real model bytes, historical model operation, or UI were exercised.
+Rust coverage percentage remains unmeasured. Evidence is in
+`artifacts/ecosystem-cleanup-20260912/template-source-admission-review.json`.
+
+Source admission still reports the same 37 unreadable entries. An initial scan
+omitted the established Git safe-directory environment and stopped earlier;
+the corrected invocation reproduces the prior access failure. NuGet's three
+TinyRustLM flat-container indexes returned 404 again at 03:34 UTC September 23;
+the private key location remains recorded without reading its contents. No
+package, site, qualified default, live seed, or complete release is claimed.
+
+Independent review found a separate preexisting boundary to investigate next:
+component converters reopen source-lock paths after admission, while the complete
+receipt path does not reconcile their consumed lock hashes with the originally
+admitted relationship. Concurrent mutation has not been reproduced; C95 does not
+claim to close that gap.
+
 ## C94: reject concealed attention and SiLU overflow, September 22
 
 The scalar runtime accepted a negative-infinite attention score when another
