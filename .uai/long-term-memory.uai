@@ -1,5 +1,5 @@
 profile: tinyrustlm.long-term-memory.current.v1
-updated_utc: 2026-09-23T04:27:04Z
+updated_utc: 2026-09-23T04:41:25Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
@@ -13,8 +13,8 @@ pointers:
     authority: reviewed_guidance
     review_state: reviewed_for_routing_and_identity
     status: current
-    last_reviewed_utc: 2026-09-23T04:27:04Z
-    sha256: 34c4a25ac2fa4670343c00779675e1cfb0feaf0318db37f8b7ec7a2722cb0ae3
+    last_reviewed_utc: 2026-09-23T04:41:25Z
+    sha256: 15d378d6d5a75798f33849d7d6cd5157b3723591919ce9db53d10fa09ceca828
   - id: report-decisions
     path: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
     label: September report decisions
@@ -45,12 +45,12 @@ pointers:
   - id: cleanup-progress
     path: docs/ecosystem-cleanup-2026-09-12.md
     label: Ecosystem cleanup progress
-    summary: Open for C96 source-lock custody and bounded-reader correction, fixture evidence and current source-access/publication blockers.
+    summary: Open for C99 external/source blockers, exact CI and NuGet readback, separate candidate/diagnostic gates, and C97/C98 completed fixes.
     authority: owner_authorized_progress_record
     review_state: reviewed_for_routing_and_identity
     status: current
-    last_reviewed_utc: 2026-09-23T04:27:04Z
-    sha256: e8f67ed7f6762ca290c755a0be1944e88bbb35d85c4a4b6dcef514397c8b535f
+    last_reviewed_utc: 2026-09-23T04:41:25Z
+    sha256: aedbccbbc7838468f8a89819226c30510cdc121e1c3942f07656b864d5af675c
   - id: source-lock
     path: contracts/vnext/qwen3-0.6b-base-source-lock.v2.json
     label: Current diagnostic source identity

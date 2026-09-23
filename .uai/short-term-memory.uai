@@ -1,9 +1,10 @@
 profile: tinyrustlm.short-term-memory.current.v1
-updated_utc: 2026-09-23T04:27:04Z
+updated_utc: 2026-09-23T04:41:25Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
 now:
+  critical_path_blocked: C99 found no additional concrete defect in the inspected package/reference paths. Resolve external billing and source-access blockers before affected execution; do not repeat unchanged CI or invent product progress. Candidate source screening needs one admitted distinct checkpoint and is separate from the missing diagnostic v3 registration. Read cleanup progress C99; goal incomplete, no publication.
   runtime_redirect_verification: C98 completes the C97 Runtime predicate follow-up, including Framework URI normalization and shell raw-control failures. Runtime cd8f6e09a328030315122e3774fdd01ab9f32bd9 is pushed; full26pass2fail2skip is not a release pass. Original fifteen WIP files and blocked docs remain. Continue the full ecosystem/model/seed goal; no credential or live action occurred.
   publication_policy_custody: C97 reproduces and fixes an omitted policy JSON identity; four real publisher Node entry points now receive shared code/data path checks. Final 21/21 passes include PowerShell primitives, exact scope and refusal to execute JSON. Read publication-policy-custody-review.json. C98 above closes Runtime's temporary-redirect verifier mismatch; its blocked docs deletion remains untouched. Main product and release blockers persist.
   conversion_lock_custody: C96 reproduces and removes lock-path reopening after admission, binds both component receipts to original lock hashes, and bounds all shared converter file reads. Rust 48/48, Node 27/27 and Clippy pass; no real model, browser execution or publication. Read conversion-source-lock-custody-review.json.

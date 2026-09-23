@@ -1,5 +1,5 @@
 profile: tinyrustlm.startup-packet.current.v1
-updated_utc: 2026-09-23T04:27:04Z
+updated_utc: 2026-09-23T04:41:25Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
@@ -10,6 +10,7 @@ startup_steps:
   - Preserve immutable failed operations and all campaign counters.
 
 current_truth:
+  critical_path_blocked: C99 revalidates the impasse after C97/C98 fixes. Official NuGet indexes remain404; CI35818723229 has nine jobs with zero steps due account billing lock; source admission still reports37 unreadable entries. Read cleanup progress C99 for exact evidence and resume conditions. No new model execution, qualification, seed or publication. The overall goal remains incomplete.
   runtime_redirect_verification: C98 Runtime commit cd8f6e09a328030315122e3774fdd01ab9f32bd9 enforces exact301 with raw header identity; targeted cases and actual PHP pass. Full suite remains26pass2fail2skip due generator/docs blockers and unavailable Apache. Read sibling Runtime verification/receipts/redirect-status-contract-review.json. Fifteen WIP files preserved; no publication. TinyRust source scan still37 unreadable entries.
   publication_policy_custody: C97 binds the verifier's consumed storage JSON into publication custody and rechecks; Node execution remains JS-only. All 21 affected checks pass after correcting three pre-existing inventory-count assertions and adding exact scope checks. Read publication-policy-custody-review.json. Source access, remote transport, model, seed and NuGet gates remain open.
   conversion_lock_custody: C96 carries admitted lock bytes into both component cores and reconciles receipt input hashes; standalone APIs share those cores. One fixed-allocation reader replaces three potentially growing reads. Rust 48/48, Node 27/27 and Clippy pass. Read conversion-source-lock-custody-review.json. Source access, qualified model, live seed and publication remain open.

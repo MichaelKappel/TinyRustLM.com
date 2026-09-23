@@ -16,6 +16,16 @@ Authority order is current owner instructions, inspected current contracts and b
 
 ## Current evidence and its limits
 
+**C99 critical-path review:** no additional concrete defect was found in the
+inspected package/reference paths. Fresh official NuGet queries return 404 for
+all three package IDs; CI run `35818723229` has nine jobs with zero executed steps
+because of the account billing lock. The source check still reports 37 unreadable
+entries. Read cleanup progress C99 for timestamps, evidence and resume conditions.
+The overall goal is incomplete and blocked pending external/source resolution.
+A future seven-case product source screen needs an admitted distinct checkpoint;
+it is independent of the missing Qwen diagnostic v3 registration. No model run,
+qualification, seed or publication occurred. Preserve rejected-candidate decisions.
+
 **C98 Runtime verification:** sibling Runtime commit `cd8f6e09a328030315122e3774fdd01ab9f32bd9`
 is pushed. Its exact-301 checks now preserve raw Location spelling and reject
 malformed headers; direct/raw PowerShell and shell cases plus actual PHP routes

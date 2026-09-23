@@ -5,6 +5,48 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C99: critical-path revalidation, September 22
+
+The bounded model and NuGet reviews found no additional concrete implementation
+defect in the inspected paths. This pass records an impasse, not another product
+milestone. The external/source blockers persisted through C97, C98 and C99;
+the earlier independent fixes are complete, but the overall goal is incomplete.
+
+- At `2026-09-23T04:34:37.425Z`, direct official NuGet flat-container requests for
+  `tinyrustlm.abstractions`, `tinyrustlm.core` and `tinyrustlm.p2p` each returned
+  HTTP 404. Source version 0.1.8 is not established as published. The separate web
+  tool's timeout/access failures were not used as package-availability evidence.
+- GitHub run [35818723229](https://github.com/MichaelKappel/TinyRustLM.com/actions/runs/35818723229)
+  binds pushed head `1747a37d5bafb1ca63983875b505283d620976e5`. All nine jobs failed
+  with zero steps; the annotation says, "The job was not started because your
+  account is locked due to a billing issue." Readback used the existing Git
+  credential in memory only, to the fixed official API. No rerun/account change
+  or NuGet key read occurred. Required Windows x64, Linux x64 and Linux ARM64
+  package consumers remain unsatisfied; earlier local results do not replace them.
+- At `2026-09-23T04:41:01.152Z`, the source-authority command exited 1 and reported
+  `source_authority_scan_incomplete` with the same 37 unreadable entries on stderr.
+  Stdout was empty. The earlier C99 process handle no longer existed and its
+  completion output was unavailable; this fresh read-only invocation supplies
+  the observed result. No ACL or rejected-deletion operation was attempted.
+- The diagnostic profile's nine implementation/dependency bindings still match.
+  A real v3 numerical preregistration is absent, and the execution owner also
+  requires passing source admission and clean, remote-exact registration custody.
+  None of those conditions is satisfied by fixture tests or closed v2 evidence.
+- Product source screening is a separate route: after admitting one genuinely
+  distinct, provenance-complete checkpoint, run the existing seven-case development
+  screen (224 maximum output tokens) once with declared publisher-template,
+  system/thinking and greedy settings. Retain all raw answers. This screen does
+  not require the Qwen diagnostic v3 registration and is not final qualification.
+  No selected eligible checkpoint is established; Smol360's historical source
+  evidence remains unresolved. Unchanged rejected checkpoints remain excluded.
+
+The next external actions are resolution of the GitHub billing lock and the
+pending elevated read-only filesystem-access diagnosis. Resume material work
+after the applicable source/experiment gates are met. Do not replace blocked
+execution with further speculative patches or unchanged CI retries. No model
+run, new scratch, payload removal, storage recovery, live seed or publication
+occurred. Existing unrelated work and campaign counters remain unchanged.
+
 ## C98: verify Runtime's exact redirect contract, September 22
 
 Runtime commit `cd8f6e09a328030315122e3774fdd01ab9f32bd9` is pushed and
