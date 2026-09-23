@@ -16,6 +16,17 @@ Authority order is current owner instructions, inspected current contracts and b
 
 ## Current evidence and its limits
 
+**C94 scalar arithmetic:** softmax and SiLU now reject nonfinite intermediates
+before exp/division can conceal them as zero. Four new baseline failures become
+passing regressions with exact cache rollback and replay; final Rust 33/33,
+Clippy and Node/WASM 58/58 pass. The corrected pinned build reproduces twice.
+Read `scalar-attention-overflow-review.json` for the initial build mismatch and
+the inherited diagnostic activation test: real weights loaded, no tokens generated.
+No useful-model, numerical-parity or release gate follows. Source admission still
+reports 37 unreadable entries; elevated read-only ACL diagnosis is pending.
+The next reviewed defect is complete composition conversion accepting mutually
+consistent source locks without enforcing Template2's frozen source identities.
+
 **C92 conversation continuity:** a single current Prompt2 projection now retains
 all user corrections and exact completed/stopped output; stored failure codes
 project as empty assistant content. Strict paired-role and target validation

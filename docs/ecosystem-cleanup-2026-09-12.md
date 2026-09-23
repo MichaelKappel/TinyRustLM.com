@@ -5,6 +5,45 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C94: reject concealed attention and SiLU overflow, September 22
+
+The scalar runtime accepted a negative-infinite attention score when another
+score was finite; exponentiation converted it to zero. Finite score subtraction
+and the SiLU exponential had similar concealed-overflow paths. Four new tests
+failed on the original Rust implementation. Softmax now validates its inputs and
+shifted scores, and SiLU validates its denominator and output. The operation
+order, format, oracle and tolerance contract are unchanged. Public-session tests
+prove exact prior-cache restoration and successful replay after rejection.
+
+Final verification passes 33 Rust tests, Clippy and 58 Node/WASM checks, including
+actual Edge vector replay and two fresh builds matching the updated tracked WASM.
+The first generated WASM differed from the test's pinned environment, and four
+artifact checks failed. Rebuilding with explicit compiler paths and toolchain-owner
+path mapping resolved that mismatch without weakening the checks. Both outcomes
+are retained in `artifacts/ecosystem-cleanup-20260912/scalar-attention-overflow-review.json`.
+Rust coverage percentage was not measured. New overflow cases run natively;
+browser conformance replays the unchanged ordinary vector corpus.
+
+An inherited private-activation test option loaded and verified the existing
+598,308,416-byte diagnostic model in both Node/WASM runs. It generated no tokens,
+modified no historical receipt or model payload, and establishes activation only.
+The option is cleared for subsequent checks. No source-framework parity, useful
+answer quality, qualified default, live seed or publication is claimed.
+
+Fresh source admission still fails on 37 unreadable entries. Read-only checks
+confirm access denial on three ordinary child directories despite readable
+parents; the current token has medium integrity. Child ACLs, pending deletion
+and filesystem filtering remain unresolved possibilities, not diagnoses. An
+elevated read-only ACL check was requested; permissions and blocked cleanup
+targets are unchanged.
+
+Next concrete source finding: complete Qwen3 composition conversion does not
+enforce the frozen Template2 source-config identities before emitting that
+template. The two supplied source locks can agree on changed source-template
+bytes while the tokenizer output stays identical. This is a reviewed code-path
+finding, not an executed conversion or a fix in C94. Enforce the existing pinned
+source authority before output creation and test this boundary next.
+
 ## C93: retire stale source selection and correct the CI gate invocation, September 22
 
 Removed the obsolete Qwen2/F32 selection generator and its regeneration test

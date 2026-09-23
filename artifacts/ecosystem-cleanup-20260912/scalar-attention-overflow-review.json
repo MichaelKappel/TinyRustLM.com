@@ -1,0 +1,359 @@
+{
+  "schema": "tinyrustlm.scalar-attention-overflow-review.v1",
+  "checkpoint": "C94",
+  "recordedUtc": "2026-09-23T03:22:35Z",
+  "parentCommit": "f8fd6e457b907aa3eaebaff54dcc26f34b160c0b",
+  "scope": "Current scalar finite-intermediate enforcement and matching browser artifact; does not qualify a model or release.",
+  "finding": {
+    "problem": "Negative attention overflow and finite softmax subtraction overflow become zero after exp; SiLU exponential overflow becomes finite signed zero after division.",
+    "change": "Validate every softmax input and shifted score, return a bounded error for nonfinite SiLU denominator/output, and propagate through existing per-token rollback.",
+    "preserved": "Ordered F32 operations, sole model format, independent oracle/vectors, finite underflow, cache contract, UI and release gates.",
+    "oracle": {
+      "oraclePath": "E:\\Source\\Rust\\TinyRustLM.com\\tinyrustlm\\tools\\slm2-runtime-reference.js",
+      "oracleSha256": "8d76a559790d0d9996c9d17990d982c32e227ce767dbfef17a045181444d4f0e",
+      "method": "Unchanged independent Node reference evaluated in memory with bounded private-function exposure; no model execution.",
+      "records": [
+        {
+          "id": "negative-dot-overflow",
+          "error": "reference arithmetic became non-finite"
+        },
+        {
+          "id": "finite-softmax-subtraction-overflow",
+          "error": "reference arithmetic became non-finite"
+        },
+        {
+          "id": "silu-exponential-overflow",
+          "error": "reference arithmetic became non-finite"
+        },
+        {
+          "id": "finite-softmax",
+          "result": [
+            1.8048513285848406e-35,
+            1
+          ]
+        },
+        {
+          "id": "finite-silu",
+          "result": -1.4438811087856206e-33
+        }
+      ]
+    }
+  },
+  "validation": {
+    "baseline": {
+      "arguments": [
+        "test",
+        "-p",
+        "tinyrustlm-runtime",
+        "--locked",
+        "--offline",
+        "--lib",
+        "--",
+        "--nocapture"
+      ],
+      "exitCode": 101,
+      "byteLength": 5584,
+      "sha256": "84347f5a7c618918c57e8b1568c823eda82af5193d14f2fe7e0480e9c9624e3c",
+      "productionUnchanged": true,
+      "passed": 25,
+      "failed": 4,
+      "ignored": 0,
+      "failures": [
+        "attention_score_overflow_rejects_negative_products_and_sums",
+        "attention_score_overflow_rolls_back_public_forward_token",
+        "softmax_shift_overflow_rejects_finite_extreme_scores",
+        "silu_exponential_overflow_rolls_back_public_forward_token"
+      ]
+    },
+    "rust": {
+      "arguments": [
+        "test",
+        "-p",
+        "tinyrustlm-runtime",
+        "--locked",
+        "--offline"
+      ],
+      "exitCode": 0,
+      "byteLength": 3592,
+      "sha256": "7f6e6d07001597c9d04ba82709e87ae83ba92af323c83031e7ca080ff1c67034",
+      "passed": 33,
+      "failed": 0,
+      "ignored": 0
+    },
+    "clippy": {
+      "arguments": [
+        "clippy",
+        "-p",
+        "tinyrustlm-runtime",
+        "--all-targets",
+        "--locked",
+        "--offline",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exitCode": 0,
+      "byteLength": 1352,
+      "sha256": "dc25ed110df61e512ba64edecca321d1f290c6a5081c6cfe46840a2cf461cfc6"
+    },
+    "format": "rustfmt --edition 2021 --check and git diff --check pass",
+    "initialNode": {
+      "arguments": [
+        "--test",
+        "--test-concurrency=1",
+        "tinyrustlm/tests/slm2-runtime-vectors.test.js",
+        "tinyrustlm/tests/slm2-runtime-wasm-conformance.test.js",
+        "tinyrustlm/tests/browser-runtime-web-artifact.test.js",
+        "tinyrustlm/tests/browser-runtime-wasm-raw-abi.test.js",
+        "tinyrustlm/tests/browser-runtime-loader_test.js"
+      ],
+      "exitCode": 1,
+      "byteLength": 8377,
+      "sha256": "13509b1ba2c35dae021dbe0a29688b5ddf2ef9adc633f2492405d1b7070f3cd0",
+      "passed": 54,
+      "failed": 4,
+      "skipped": 0,
+      "reason": "Fresh artifact builds agree with one another but differ from the initially generated tracked artifact."
+    },
+    "finalNode": {
+      "arguments": [
+        "--test",
+        "--test-concurrency=1",
+        "tinyrustlm/tests/slm2-runtime-vectors.test.js",
+        "tinyrustlm/tests/slm2-runtime-wasm-conformance.test.js",
+        "tinyrustlm/tests/browser-runtime-web-artifact.test.js",
+        "tinyrustlm/tests/browser-runtime-wasm-raw-abi.test.js",
+        "tinyrustlm/tests/browser-runtime-loader_test.js"
+      ],
+      "exitCode": 0,
+      "byteLength": 4188,
+      "sha256": "98ed2aaf845b026bf83f1b77e2a22a56ef53cca0cd26fc883d91882bfeb34fe7",
+      "passed": 58,
+      "failed": 0,
+      "skipped": 0,
+      "files": [
+        "slm2-runtime-vectors.test.js",
+        "slm2-runtime-wasm-conformance.test.js",
+        "browser-runtime-web-artifact.test.js",
+        "browser-runtime-wasm-raw-abi.test.js",
+        "browser-runtime-loader_test.js"
+      ],
+      "browser": "Installed msedge channel selected; unchanged ordinary vectors replayed in real headless Chromium/Edge."
+    },
+    "coverage": {
+      "measured": false,
+      "closestEvidence": "Six new native regressions, public token/cache rollback and recovery, independent scalar vectors, raw ABI and actual browser conformance.",
+      "limits": "New overflow fixtures have one layer and run natively. No independent browser replay of these new negative vectors; no whole-runtime coverage percentage."
+    }
+  },
+  "browserBuild": {
+    "initial": {
+      "args": [
+        "build",
+        "--locked",
+        "--offline",
+        "--release",
+        "--target",
+        "wasm32-unknown-unknown",
+        "--target-dir",
+        "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\scalar-attention-overflow\\tinyrustlm-operation-M3f3IK\\web-build",
+        "-p",
+        "tinyrustlm-browser-runtime-wasm"
+      ],
+      "status": 0,
+      "oldWasm": {
+        "bytes": 577090,
+        "sha256": "19f905e12c0bb17c0a4f627245767d1f76750a209362dde4ad207f0571cadf3c"
+      },
+      "oldManifest": {
+        "bytes": 1209,
+        "sha256": "9249f75d85be08db72c7c7b558dfbad152a990db5c079fc7db03325f61f3eb95"
+      },
+      "newWasm": {
+        "bytes": 576866,
+        "sha256": "7a4f5aba61087918b6d2aa16d651c7945ba926ce88874c69a76f4fcef18fcbb3"
+      },
+      "newManifest": {
+        "bytes": 1209,
+        "sha256": "7f396eda2ab80bd6b56d910464580608a3d9f458b243f2e38957d4c7c25610aa"
+      },
+      "buildLog": {
+        "bytes": 1628,
+        "sha256": "06b9c866f9b267ff48e047dccf8676c391d7bbb26c05f088429c097597595e9b"
+      }
+    },
+    "corrected": {
+      "cargoPath": "C:/Users/AI/.rustup/toolchains/stable-x86_64-pc-windows-msvc/bin/cargo.exe",
+      "rustcPath": "C:\\Users\\AI\\.rustup\\toolchains\\stable-x86_64-pc-windows-msvc\\bin\\rustc.exe",
+      "ownerRemapping": "C:\\Users\\AI",
+      "args": [
+        "build",
+        "--locked",
+        "--offline",
+        "--release",
+        "--target",
+        "wasm32-unknown-unknown",
+        "--target-dir",
+        "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\scalar-attention-overflow\\tinyrustlm-operation-M3f3IK\\web-build-pinned",
+        "-p",
+        "tinyrustlm-browser-runtime-wasm"
+      ],
+      "status": 0,
+      "oldWasm": {
+        "bytes": 576866,
+        "sha256": "7a4f5aba61087918b6d2aa16d651c7945ba926ce88874c69a76f4fcef18fcbb3"
+      },
+      "oldManifest": {
+        "bytes": 1209,
+        "sha256": "7f396eda2ab80bd6b56d910464580608a3d9f458b243f2e38957d4c7c25610aa"
+      },
+      "newWasm": {
+        "bytes": 576938,
+        "sha256": "6bd1b7b9180c1c083e24dc40b5198cdeb3be52c98fc14cd9949badb9265236da"
+      },
+      "newManifest": {
+        "bytes": 1209,
+        "sha256": "3d68c9bc6b216568c9d05b4cc515137e3d5b4caf3aa3e6124560341f41567de2"
+      },
+      "buildLog": {
+        "bytes": 1628,
+        "sha256": "7696a69c7fab16293d0a6e4363f0b95b2b71ab42fdf904036536d4e0db184e2c"
+      }
+    },
+    "verified": "Two fresh owned builds reproduce the corrected tracked artifact and manifest.",
+    "lesson": "Initial environment differed from pinned test environment. Corrected build uses explicit stable cargo/rustc paths and toolchain-owner USERPROFILE mapping. This comparison does not isolate a single environment factor."
+  },
+  "privateActivation": {
+    "optIn": "TINYRUSTLM_BROWSER_RUNTIME_PRIVATE_COMPOSITION_ROOT",
+    "origin": "Inherited from earlier browser fixture work; explicitly cleared after scope inspection.",
+    "executions": 2,
+    "result": "Existing exact six-member diagnostic composition loaded and activated in Node WASM; no begin_request or token generation.",
+    "executionIdentityReferenced": "qwen3-composition-c1899de-908e73f-20260826-v12",
+    "model": {
+      "byteLength": 598308416,
+      "sha256": "a0e351cdba8a4567d703e0f77c73c77ed08f783bb5420a19dfeef733c97cb2e7"
+    },
+    "composition": {
+      "byteLength": 896,
+      "sha256": "af154f02efdcaf24b8512bf9a8a21d37d5304dda98cbc347f07fbaf4425cbf94"
+    },
+    "historicalResult": "contracts/vnext/qwen3-real-composition-execution-result.v12.json",
+    "realWeightBytesRead": true,
+    "weightsOrHistoricalReceiptsModified": false,
+    "inference": false,
+    "qualification": false,
+    "limits": "Activation only does not satisfy complete source admission, reference parity, quality, browser product or publication gates."
+  },
+  "sourceAuthority": {
+    "exitCode": 1,
+    "code": "source_authority_scan_incomplete",
+    "unreadableEntries": 37,
+    "output": {
+      "encoding": "UTF-8 stdout then stderr",
+      "byteLength": 4457,
+      "sha256": "7f8fec1c72e18e3da05f434b9f33c8b1c71ac2a42660f0bf9afdca62328384d3"
+    },
+    "gitIdentity": "Parent HEAD, tracking and direct remote equal f8fd6e4; root is the same canonical direct checkout; active intake is placeholder-only."
+  },
+  "accessDiagnosis": {
+    "observedUtc": "2026-09-23T03:07:06Z",
+    "representativeChildren": [
+      "artifacts/performance/qwen2.5-1.5b-reference-logits",
+      "artifacts/training/quality-sequence-v1/dataset",
+      "artifacts/verification/qwen3-environment-install/tinyrustlm-operation-C3ZUt9/bootstrap/Lib/site-packages/distlib"
+    ],
+    "observed": "Ordinary Directory metadata, no reparse attribute; Get-Acl throws UnauthorizedAccessException 0x80070005. Immediate parents have readable inherited ACLs.",
+    "currentToken": "PLUTO\\Michael, medium integrity; Administrators deny-only; no backup/restore/take-ownership privileges listed.",
+    "uncertainty": "Child ACL, delete-pending/open handle and filesystem/filter causes not distinguished. No deny entry, sharing violation or exact handle state established.",
+    "nextAction": "Operator elevated read-only Get-Acl for one exact child and parent requested; if still denied, exact-path handle/filesystem diagnostics before choosing remedy.",
+    "permissionsChanged": false,
+    "blockedDeletionRetried": false
+  },
+  "nextFinding": {
+    "status": "Confirmed by source inspection; unimplemented and no real conversion executed.",
+    "files": [
+      "contracts/vnext/template2-format-profile.v1.json",
+      "rust/crates/tinyrustlm-convert/src/qwen3_composition.rs",
+      "rust/crates/tinyrustlm-convert/src/qwen_tokenizer.rs"
+    ],
+    "problem": "Complete composition source-relationship validation binds the two supplied locks to each other but not to Template2's frozen config/tokenizerConfig identities. A template-only change can leave Tokenizer2 bytes unchanged while emitted Template2 still advertises old source hashes.",
+    "next": "Enforce Template2-owned pinned identities before output creation; regress mutually consistent altered source records. Keep standalone tokenizer conversion under its own generic contract."
+  },
+  "sourceFiles": [
+    {
+      "path": "rust/crates/tinyrustlm-runtime/src/scalar.rs",
+      "bytes": 69574,
+      "sha256": "9bd80ca01f4d38e419e52ac1920e6e7919e3084e3890433c3820abd2d93a10a3"
+    },
+    {
+      "path": "tinyrustlm/browser-runtime/tinyrustlm-browser-runtime.wasm",
+      "bytes": 576938,
+      "sha256": "6bd1b7b9180c1c083e24dc40b5198cdeb3be52c98fc14cd9949badb9265236da"
+    },
+    {
+      "path": "tinyrustlm/browser-runtime/tinyrustlm-browser-runtime.wasm.manifest.json",
+      "bytes": 1209,
+      "sha256": "3d68c9bc6b216568c9d05b4cc515137e3d5b4caf3aa3e6124560341f41567de2"
+    },
+    {
+      "path": "tinyrustlm/tests/browser-runtime-web-artifact.test.js",
+      "bytes": 19606,
+      "sha256": "011baa32037d9cdc1423d17723fd6d97ccd786745649f818c57e347061218fe0"
+    },
+    {
+      "path": "tinyrustlm/tools/slm2-runtime-reference.js",
+      "bytes": 19745,
+      "sha256": "8d76a559790d0d9996c9d17990d982c32e227ce767dbfef17a045181444d4f0e"
+    },
+    {
+      "path": "contracts/vnext/slm2-runtime-q8-vectors.v1.json",
+      "bytes": 50801,
+      "sha256": "c437ebb5e59c9059c49324d12d43e556493e62f5d6b2e857e369ca08674333a0"
+    },
+    {
+      "path": "contracts/vnext/template2-format-profile.v1.json",
+      "bytes": 15111,
+      "sha256": "14ff1df8dd6760119ac36e719ab396fff8e71d0719c2e1c83118f58693ea7bfa"
+    },
+    {
+      "path": "rust/crates/tinyrustlm-convert/src/qwen3_composition.rs",
+      "bytes": 66665,
+      "sha256": "c571823f4802086f7bd927f6d414c14ce8299f183cc835fe6c569f033281b4f2"
+    },
+    {
+      "path": "rust/crates/tinyrustlm-convert/src/qwen_tokenizer.rs",
+      "bytes": 22557,
+      "sha256": "9d9d10a7cd79485a70a6d17c0d3bb2b54938f243d3dbff80cb9137430396d9c0"
+    }
+  ],
+  "temporaryOutput": {
+    "root": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\scalar-attention-overflow\\tinyrustlm-operation-M3f3IK",
+    "files": 1790,
+    "descendantDirectories": 421,
+    "logicalFileBytes": 478333425,
+    "inventorySha256": "d5be70ebf9b174dbda3412356c1f261bcf613b753b53caaeaf6c74115d8f72c0",
+    "markerBytes": 65,
+    "originalOwnershipVerified": true,
+    "physicalStorageRecoveryMeasured": false,
+    "rootAbsent": true,
+    "markerAbsent": true
+  },
+  "finalChecks": {
+    "pointerHashesVerified": 17,
+    "sourceIdentitiesVerified": 9,
+    "secretScan": {
+      "status": "pass",
+      "artifacts": 13,
+      "findings": 0,
+      "reportBytes": 6855,
+      "reportSha256": "c19b176f796f20e18c41a3ba840b0a76d00019c669775d3f0264f83e94965628",
+      "findingCodes": []
+    },
+    "scanBoundary": "The thirteen changed files were scanned before appending this final check/retirement summary. Raw logs, report and build output were then retired; hashes preserve the observations."
+  },
+  "limits": [
+    "No qualified default, source-framework numerical parity, useful browser answer or live initial seed.",
+    "No NuGet/site publication, account change, permission change or previously blocked deletion.",
+    "No visual redesign or presentation asset change; runtime WASM changed and ordinary browser conformance passed."
+  ]
+}

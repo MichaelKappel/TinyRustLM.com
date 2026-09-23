@@ -11,6 +11,39 @@ Keep useful findings and compact evidence identities in the owning canonical
 repository. Keep source history in Git and current model payloads only in
 `D:\LLMs\TinyRustLM`.
 
+## C94: check intermediates before exp or division conceals overflow
+
+- **Question:** Can nonfinite scalar arithmetic produce an apparently valid
+  result and commit the failed token's cache?
+- **Inputs:** Finite Q/K vectors whose negative product or sum overflows; finite
+  softmax scores `[-f32::MAX, f32::MAX]`; tiny in-memory writer models with SiLU
+  gate weights -89/-100, plus finite -88/-80/0/+100 controls. Parent `f8fd6e4`.
+- **Method:** Add six regressions before changing production, execute the current
+  Rust library, compare independent unchanged Node arithmetic, then verify the
+  corrected runtime and rebuild its tracked browser artifact.
+- **Result:** Baseline 25/29 Rust library tests passed; four regressions failed
+  because the runtime accepted the invalid arithmetic. Final Rust 33/33 and
+  Node/WASM 58/58 pass with Clippy. Public-session tests verify prior keys, values,
+  positions and byte counts after rejection, then compare replay to a fresh run.
+  Finite exponential underflow and ordinary vector results remain accepted.
+- **Build lesson:** The first WASM build did not match the reproducibility test's
+  environment. The first Node run passed 54/58, failing four artifact checks.
+  Explicit pinned compiler paths and owner path mapping produced bytes matching
+  two fresh builds. This comparison does not isolate which changed environment
+  input caused the earlier difference; preserve the failure rather than changing
+  expected bytes to bypass reproducibility.
+- **Scope caution:** An inherited opt-in also exercised existing diagnostic
+  six-member activation in Node/WASM twice. Real weight bytes were read and
+  loaded, but no token generation or source-framework comparison ran. Clear
+  optional model-test variables explicitly when preparing a fixture-only lane.
+- **Uncertainty:** Overflow rollback fixtures use one layer; new failure vectors
+  are not independently replayed in browser WASM. Rust coverage is unmeasured.
+  Source admission still fails on 37 unreadable entries; elevated read-only
+  diagnosis is pending. Model, seed and publication gates remain open.
+- **Decision:** Reject nonfinite scores, shifts and SiLU division inputs under
+  the existing contract; retain normal underflow, scalar order and cache rollback.
+- **Evidence:** `artifacts/ecosystem-cleanup-20260912/scalar-attention-overflow-review.json`.
+
 ## C93: historical selection is not current admission; test the CI caller
 
 - **Question:** Does the current unit suite still execute obsolete selection

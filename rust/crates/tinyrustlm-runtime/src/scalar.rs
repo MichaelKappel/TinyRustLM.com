@@ -896,7 +896,7 @@ fn forward_layer(
         &mut scratch.up,
     )?;
     for (gate, up) in scratch.gate.iter_mut().zip(&scratch.up) {
-        *gate = silu(*gate) * *up;
+        *gate = silu(*gate)? * *up;
     }
     finite_slice(&scratch.gate)?;
     record_trace(
@@ -1158,7 +1158,9 @@ fn grouped_query_attention(
     finite_slice(output)
 }
 
+/// Normalizes finite scores without allowing exp to conceal negative overflow.
 fn softmax(values: &mut [f32]) -> Result<(), ScalarRuntimeError> {
+    finite_slice(values)?;
     let maximum = values
         .iter()
         .copied()
@@ -1169,7 +1171,11 @@ fn softmax(values: &mut [f32]) -> Result<(), ScalarRuntimeError> {
     }
     let mut sum = 0.0_f32;
     for value in values.iter_mut() {
-        *value = (*value - maximum).exp();
+        let shifted = *value - maximum;
+        if !shifted.is_finite() {
+            return Err(ScalarRuntimeError::new("slm2-runtime-nonfinite"));
+        }
+        *value = shifted.exp();
         sum += *value;
     }
     if !sum.is_finite() || sum <= 0.0 {
@@ -1201,8 +1207,17 @@ fn residual_add(values: &mut [f32], residual: &[f32]) -> Result<(), ScalarRuntim
     finite_slice(values)
 }
 
-fn silu(value: f32) -> f32 {
-    value / (1.0 + (-value).exp())
+/// Preserves ordered F32 SiLU while rejecting overflow before division hides it.
+fn silu(value: f32) -> Result<f32, ScalarRuntimeError> {
+    let denominator = 1.0 + (-value).exp();
+    if !denominator.is_finite() {
+        return Err(ScalarRuntimeError::new("slm2-runtime-nonfinite"));
+    }
+    let output = value / denominator;
+    if !output.is_finite() {
+        return Err(ScalarRuntimeError::new("slm2-runtime-nonfinite"));
+    }
+    Ok(output)
 }
 
 fn finite_slice(values: &[f32]) -> Result<(), ScalarRuntimeError> {
@@ -1632,6 +1647,248 @@ mod tests {
             ScalarSession::from_bytes(post_attention_overflow_model(), policy(4)).unwrap();
         control.forward_token(0).unwrap();
         assert_eq!(resumed_logits, control.forward_token(0).unwrap());
+    }
+
+    /// Writes finite weights whose second token overflows a score against the first cached key.
+    fn negative_attention_score_overflow_model() -> Vec<u8> {
+        use tinyrustlm_slm2::{required_model_tensors, write_model, ArtifactClass, TensorInput};
+
+        let spec = ModelSpec {
+            artifact_class: ArtifactClass::BaseModel,
+            vocabulary_size: 2,
+            context_length: 4,
+            embedding_size: 2,
+            feed_forward_size: 2,
+            layer_count: 1,
+            head_count: 1,
+            kv_head_count: 1,
+            head_dimension: 2,
+            rope_theta: 10_000.0,
+            normalization_epsilon: 1e-5,
+            tied_embeddings: true,
+            qkv_bias: false,
+            qk_normalization: false,
+        };
+        let mut tensors = required_model_tensors(&spec, 64)
+            .unwrap()
+            .into_iter()
+            .map(|tensor| {
+                let count = tensor.shape().iter().product::<u64>() as usize;
+                let values = match tensor.semantic_role() {
+                    "model.token-embedding.weight" => vec![1.0, 0.0, 0.0, 1.0],
+                    "layer.attention.query-projection.weight" => vec![0.0, 1e20, 0.0, 0.0],
+                    "layer.attention.key-projection.weight" => vec![-1e20, 0.0, 0.0, 0.0],
+                    role if role.ends_with("normalization.weight") => vec![1.0; count],
+                    _ => vec![0.0; count],
+                };
+                let payload = values
+                    .iter()
+                    .flat_map(|value: &f32| value.to_le_bytes())
+                    .collect::<Vec<_>>();
+                TensorInput::new(tensor, Cursor::new(payload))
+            })
+            .collect::<Vec<_>>();
+        let mut output = Cursor::new(Vec::new());
+        write_model(&mut output, &spec, &mut tensors).unwrap();
+        output.into_inner()
+    }
+
+    /// Negative score overflow must undo the second KV append and permit exact replay recovery.
+    #[test]
+    fn attention_score_overflow_rolls_back_public_forward_token() {
+        let mut session =
+            ScalarSession::from_bytes(negative_attention_score_overflow_model(), policy(4))
+                .unwrap();
+        // The first token has a zero query and a large finite key; its score is exactly zero.
+        session.forward_token(0).unwrap();
+        assert_eq!(session.position().unwrap(), 1);
+        let previous_keys = session.caches[0].keys.clone();
+        let previous_values = session.caches[0].values.clone();
+        let previous_bytes = session.committed_kv_bytes().unwrap();
+        assert!(previous_keys.iter().all(|value| value.is_finite()));
+        assert!(previous_values.iter().all(|value| value.is_finite()));
+
+        // At position one, RoPE leaves a positive query component facing the negative prior key.
+        // Its dot product overflows negatively; the current zero key gives a finite zero score.
+        assert_eq!(
+            session.forward_token(1).unwrap_err().code(),
+            "slm2-runtime-nonfinite"
+        );
+        assert_eq!(session.position().unwrap(), 1);
+        assert_eq!(session.committed_kv_bytes().unwrap(), previous_bytes);
+        assert_eq!(session.caches[0].keys, previous_keys);
+        assert_eq!(session.caches[0].values, previous_values);
+
+        let resumed_logits = session.forward_token(0).unwrap().to_vec();
+        let mut control =
+            ScalarSession::from_bytes(negative_attention_score_overflow_model(), policy(4))
+                .unwrap();
+        control.forward_token(0).unwrap();
+        assert_eq!(resumed_logits, control.forward_token(0).unwrap());
+        assert_eq!(session.position().unwrap(), 2);
+        assert_eq!(session.caches[0].keys, control.caches[0].keys);
+        assert_eq!(session.caches[0].values, control.caches[0].values);
+        assert_eq!(
+            session.committed_kv_bytes().unwrap(),
+            control.committed_kv_bytes().unwrap()
+        );
+    }
+
+    /// Like the independent Node oracle, reject overflowing products and finite-product sums.
+    #[test]
+    fn attention_score_overflow_rejects_negative_products_and_sums() {
+        for (query, first_key) in [
+            (vec![1e20_f32, 0.0], vec![-1e20_f32, 0.0]),
+            (vec![1e19_f32; 4], vec![-1e19_f32; 4]),
+        ] {
+            assert!(query
+                .iter()
+                .chain(&first_key)
+                .all(|value| value.is_finite()));
+            let dimension = query.len();
+            let mut keys = first_key;
+            keys.extend(vec![0.0; dimension]);
+            let cache = LayerCache {
+                keys,
+                values: vec![1.0; dimension * 2],
+            };
+            let mut scores = vec![0.0; 2];
+            let mut output = vec![0.0; dimension];
+            assert_eq!(
+                grouped_query_attention(
+                    &query,
+                    &cache,
+                    1,
+                    1,
+                    dimension as u32,
+                    1,
+                    &mut scores,
+                    &mut output,
+                )
+                .unwrap_err()
+                .code(),
+                "slm2-runtime-nonfinite"
+            );
+        }
+    }
+
+    /// Finite scores can overflow during max subtraction before exp hides the infinity.
+    #[test]
+    fn softmax_shift_overflow_rejects_finite_extreme_scores() {
+        let mut scores = [-f32::MAX, f32::MAX];
+        assert!(scores.iter().all(|value| value.is_finite()));
+        assert_eq!(
+            softmax(&mut scores).unwrap_err().code(),
+            "slm2-runtime-nonfinite"
+        );
+    }
+
+    /// Finite extreme shifts and finite exponential underflow remain legitimate probabilities.
+    #[test]
+    fn softmax_shift_preserves_finite_extreme_controls() {
+        for mut scores in [[-f32::MAX, 0.0], [-f32::MAX / 2.0, f32::MAX / 2.0]] {
+            softmax(&mut scores).unwrap();
+            assert_eq!(scores, [0.0, 1.0]);
+        }
+        let mut scores = [-80.0, 0.0];
+        softmax(&mut scores).unwrap();
+        assert!(scores[0] > 0.0 && scores[0].is_finite());
+        assert_eq!(scores[1], 1.0);
+    }
+
+    /// Writes a zero-token control and a finite nonzero token with the requested FFN gate weight.
+    fn silu_gate_model(gate_weight: f32) -> Vec<u8> {
+        use tinyrustlm_slm2::{required_model_tensors, write_model, ArtifactClass, TensorInput};
+
+        let spec = ModelSpec {
+            artifact_class: ArtifactClass::BaseModel,
+            vocabulary_size: 2,
+            context_length: 4,
+            embedding_size: 2,
+            feed_forward_size: 2,
+            layer_count: 1,
+            head_count: 1,
+            kv_head_count: 1,
+            head_dimension: 2,
+            rope_theta: 10_000.0,
+            normalization_epsilon: 1e-5,
+            tied_embeddings: true,
+            qkv_bias: false,
+            qk_normalization: false,
+        };
+        let mut tensors = required_model_tensors(&spec, 64)
+            .unwrap()
+            .into_iter()
+            .map(|tensor| {
+                let count = tensor.shape().iter().product::<u64>() as usize;
+                let values = match tensor.semantic_role() {
+                    "model.token-embedding.weight" => vec![0.0, 0.0, 1.0, 1.0],
+                    "layer.feed-forward.gate-projection.weight" => {
+                        vec![gate_weight, 0.0, gate_weight, 0.0]
+                    }
+                    "layer.feed-forward.up-projection.weight" => vec![1.0; count],
+                    role if role.ends_with("normalization.weight") => vec![1.0; count],
+                    _ => vec![0.0; count],
+                };
+                let payload = values
+                    .iter()
+                    .flat_map(|value: &f32| value.to_le_bytes())
+                    .collect::<Vec<_>>();
+                TensorInput::new(tensor, Cursor::new(payload))
+            })
+            .collect::<Vec<_>>();
+        let mut output = Cursor::new(Vec::new());
+        write_model(&mut output, &spec, &mut tensors).unwrap();
+        output.into_inner()
+    }
+
+    /// Exponential overflow must reject rather than become finite signed zero after division.
+    #[test]
+    fn silu_exponential_overflow_rolls_back_public_forward_token() {
+        for gate_weight in [-89.0, -100.0] {
+            let mut session =
+                ScalarSession::from_bytes(silu_gate_model(gate_weight), policy(4)).unwrap();
+            session.forward_token(0).unwrap();
+            let previous_keys = session.caches[0].keys.clone();
+            let previous_values = session.caches[0].values.clone();
+            let previous_bytes = session.committed_kv_bytes().unwrap();
+            assert_eq!(
+                session.forward_token(1).unwrap_err().code(),
+                "slm2-runtime-nonfinite"
+            );
+            assert_eq!(session.position().unwrap(), 1);
+            assert_eq!(session.committed_kv_bytes().unwrap(), previous_bytes);
+            assert_eq!(session.caches[0].keys, previous_keys);
+            assert_eq!(session.caches[0].values, previous_values);
+
+            let resumed_logits = session.forward_token(0).unwrap().to_vec();
+            let mut control =
+                ScalarSession::from_bytes(silu_gate_model(gate_weight), policy(4)).unwrap();
+            control.forward_token(0).unwrap();
+            assert_eq!(resumed_logits, control.forward_token(0).unwrap());
+            assert_eq!(session.position().unwrap(), 2);
+            assert_eq!(session.caches[0].keys, control.caches[0].keys);
+            assert_eq!(session.caches[0].values, control.caches[0].values);
+            assert_eq!(
+                session.committed_kv_bytes().unwrap(),
+                control.committed_kv_bytes().unwrap()
+            );
+        }
+    }
+
+    /// Nearby finite negative gates, zero, and positive exponential-underflow gates remain valid.
+    #[test]
+    fn silu_exponential_preserves_finite_neighbor_controls() {
+        for gate_weight in [-88.0, -80.0, 0.0, 100.0] {
+            let mut session =
+                ScalarSession::from_bytes(silu_gate_model(gate_weight), policy(4)).unwrap();
+            session.forward_token(0).unwrap();
+            let logits = session.forward_token(1).unwrap();
+            assert_eq!(logits.len(), 2);
+            assert!(logits.iter().all(|value| value.is_finite()));
+            assert_eq!(session.position().unwrap(), 2);
+            assert_eq!(session.committed_kv_bytes().unwrap(), 32);
+        }
     }
 
     #[test]

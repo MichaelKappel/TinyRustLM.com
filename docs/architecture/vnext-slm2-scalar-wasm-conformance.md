@@ -15,7 +15,7 @@ publish a package, or advance a campaign counter.
 
 ## Scalar Runtime
 
-`tinyrustlm-slm2-runtime` retains one validated SLM2 byte vector. Tensor views
+`tinyrustlm-runtime` retains one validated SLM2 byte vector. Tensor views
 carry their exact parser-validated element type. Matrix and embedding roles
 must be row-wise Q8; normalization and bias roles must be F32. A Q8 element is
 read directly from its row scale and signed code at execution time. There is no
@@ -25,6 +25,12 @@ Activation preflights exact model, scratch, and maximum F32 KV-cache bytes
 before reserving session state. Checked arithmetic and stable bounded errors
 cover model size, sequence length, tensor bounds, shape, allocation, cache
 consistency, token range, Q8 payload validity, and non-finite arithmetic.
+
+Softmax rejects nonfinite attention scores before reduction and rejects overflow
+in max subtraction before exponentiation. SiLU rejects a nonfinite denominator
+before division can turn exponential overflow into a finite zero. Finite
+exponential underflow remains valid. These checks preserve the ordered F32
+contract and propagate through the existing token-level cache rollback.
 
 The implemented operator order is:
 

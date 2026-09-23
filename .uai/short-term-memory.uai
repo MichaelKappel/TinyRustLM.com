@@ -1,9 +1,10 @@
 profile: tinyrustlm.short-term-memory.current.v1
-updated_utc: 2026-09-23T03:00:43Z
+updated_utc: 2026-09-23T03:22:35Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
 now:
+  scalar_attention: C94 completes finite-intermediate rejection and cache recovery tests; see scalar-attention-overflow-review.json. Clear optional private-model activation variables for fixture-only tests. Source scan still fails; elevated read-only ACL information is requested. Next confirmed defect is complete-converter Template2 source-identity admission; no fix or real-model inference is claimed yet.
   source_selection_ci: C93 removes obsolete Qwen2 selection regeneration and corrects the CI caller to retain both test partitions. Read source-selection-ci-review.json and cleanup progress for verification. Model, seed, source-access and NuGet release blockers remain; key location is already in operations.uai.
   conversation_terminal_history: C92 preserves corrected user turns and exact stopped/empty assistant output in strict Prompt2 roles; stored error codes never become model speech. Dead handwritten formatting is removed. All 49 conversation/contract and 10 shell checks plus 16 real Edge fixture cases pass; three startup screenshot pairs match. Read conversation-terminal-history-review.json. Source scan now reports 37 unreadable entries, including representative access-denied directories and the two known dangling links; no permission or blocked deletion change. Model, seed and NuGet/release gates remain open.
   session_policy: C91 rechecks exact artifact size and model context under the session's replacement policy before allocation. Baseline 2/5; final Rust 27/27, Node/WASM 57/57 and Clippy pass, with reproducible tracked browser bytes. Read scalar-session-policy-review.json. GitHub run 35794730490 is billing-blocked before all nine jobs; source scan, model, seed and publication gates remain open.
