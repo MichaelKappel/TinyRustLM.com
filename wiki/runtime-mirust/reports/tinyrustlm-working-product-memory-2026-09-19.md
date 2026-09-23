@@ -16,6 +16,15 @@ Authority order is current owner instructions, inspected current contracts and b
 
 ## Current evidence and its limits
 
+**C98 Runtime verification:** sibling Runtime commit `cd8f6e09a328030315122e3774fdd01ab9f32bd9`
+is pushed. Its exact-301 checks now preserve raw Location spelling and reject
+malformed headers; direct/raw PowerShell and shell cases plus actual PHP routes
+pass. Full Runtime results remain 26 pass, 2 fail, 2 Apache skips because the
+generator WIP and blocked docs retirement remain. Read that repository's
+`verification/receipts/redirect-status-contract-review.json`. Fifteen earlier
+WIP files are preserved. No live or model result; the fresh source scan still
+has 37 unreadable entries. The C97 Runtime follow-up below is now implemented.
+
 **C97 publication custody:** the verifier's consumed storage-policy JSON now
 joins the publisher's source identity and recheck. The regression fails before
 the fix; all 21 affected checks pass, including actual PowerShell primitives.

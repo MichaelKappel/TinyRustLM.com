@@ -1,5 +1,5 @@
 profile: tinyrustlm.long-term-memory.current.v1
-updated_utc: 2026-09-23T04:10:57Z
+updated_utc: 2026-09-23T04:27:04Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
@@ -13,8 +13,8 @@ pointers:
     authority: reviewed_guidance
     review_state: reviewed_for_routing_and_identity
     status: current
-    last_reviewed_utc: 2026-09-23T04:10:57Z
-    sha256: b1278b5b97a742d4e48aedbf2dc01ff148f1f0cfced5d403eb372907b4571e31
+    last_reviewed_utc: 2026-09-23T04:27:04Z
+    sha256: 34c4a25ac2fa4670343c00779675e1cfb0feaf0318db37f8b7ec7a2722cb0ae3
   - id: report-decisions
     path: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
     label: September report decisions
@@ -40,8 +40,8 @@ pointers:
     authority: reviewed_bounded_historical_evidence
     review_state: reviewed_for_routing_and_identity
     status: active_growing_review
-    last_reviewed_utc: 2026-09-23T04:10:57Z
-    sha256: c033fbc96966abaf91fa3a5b711c41bc21fefde985c36c7813e989f020973603
+    last_reviewed_utc: 2026-09-23T04:27:04Z
+    sha256: 0b3c6dc25e21f9b70a33ad510fcce800e8cee7d9165bdd1114322cdd462ac218
   - id: cleanup-progress
     path: docs/ecosystem-cleanup-2026-09-12.md
     label: Ecosystem cleanup progress
@@ -49,8 +49,8 @@ pointers:
     authority: owner_authorized_progress_record
     review_state: reviewed_for_routing_and_identity
     status: current
-    last_reviewed_utc: 2026-09-23T04:10:57Z
-    sha256: 6d3a4502883eacb8d004031f9ca8a464d61ccef1b807b8626199629f703d5a70
+    last_reviewed_utc: 2026-09-23T04:27:04Z
+    sha256: e8f67ed7f6762ca290c755a0be1944e88bbb35d85c4a4b6dcef514397c8b535f
   - id: source-lock
     path: contracts/vnext/qwen3-0.6b-base-source-lock.v2.json
     label: Current diagnostic source identity

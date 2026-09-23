@@ -5,6 +5,33 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C98: verify Runtime's exact redirect contract, September 22
+
+Runtime commit `cd8f6e09a328030315122e3774fdd01ab9f32bd9` is pushed and
+read back from origin. Both response verifiers require HTTP 301 and one exact
+Location. Baselines accepted temporary redirects; shell parsing also hid control
+bytes. An in-memory .NET probe confirmed typed Location reads normalize URIs.
+PowerShell therefore reuses the bounded raw TLS reader and rejects folded/control
+headers while trimming only HTTP field whitespace. Shell uses binary-input awk
+validation. Nine direct PowerShell, twelve raw PowerShell and eighteen shell
+redirect cases now pass, along with existing terminal and actual PHP route tests.
+
+The full Runtime suite reports **26 pass, 2 fail, 2 skipped**. Remaining failures
+are its pre-existing generator/HEAD mismatch and the 174 policy-blocked documents
+still present; Apache is unavailable for the two skipped integrations. The
+first run additionally found Windows text-mode CR stripping and an unset Python
+selector; both were corrected and the outcomes retained. Only owned hunks were
+committed, preserving all fifteen prior Runtime WIP files. Current routing notes
+now use the canonical TinyRust source and Git history instead of an archive corpus.
+
+Evidence is in the sibling Runtime repository at
+`verification/receipts/redirect-status-contract-review.json`. Owned temporary
+output was removed and verified; 23,210 logical file bytes plus a 64-byte marker
+were retired, with physical recovery unmeasured. No public readback, deployment,
+credential or model operation occurred. The fresh TinyRust source scan still
+fails on the same 37 unreadable entries; model, seed, package and hosting gates
+remain open. No rejected deletion was retried.
+
 ## C97: include consumed storage policy in publication custody, September 22
 
 The publisher's literal CommonJS dependency walk omitted the source-authority

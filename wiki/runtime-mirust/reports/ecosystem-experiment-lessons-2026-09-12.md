@@ -11,6 +11,29 @@ Keep useful findings and compact evidence identities in the owning canonical
 repository. Keep source history in Git and current model payloads only in
 `D:\LLMs\TinyRustLM`.
 
+## C98: validate redirect identity before libraries normalize it
+
+- **Question:** Can Runtime verification accept a response that differs from its exact 301 contract?
+- **Inputs:** Canonical Runtime PowerShell/Bash verifiers, in-memory response
+  headers and loopback PHP. No public requests or copied source.
+- **Method:** Extract existing predicates, reproduce temporary-redirect
+  acceptance, then compare actual Framework header parsing and raw bytes.
+- **Result:** Both old predicates accept 302/307; Framework URI parsing changes
+  uppercase hosts, and broad whitespace trimming hides malformed bytes.
+  Windows awk also consumed a CR in text mode. Exact status, raw header identity,
+  HTTP-only whitespace and binary awk input close the observed cases.
+- **Uncertainty:** Full Runtime suite is 26/2/2 (pass/fail/skip); pending generator
+  and blocked docs retirement cause failures, and Apache is unavailable. Shell
+  coverage percentage and live response behavior are unmeasured. Existing raw
+  connect/read timeouts are not a total request deadline.
+- **Decision:** Commit only the verifier and current-guidance fixes, preserving
+  all fifteen earlier WIP files and the rejected deletion. No release claim.
+- **Reusable lesson:** Exercise the actual header ingress, not only already
+  parsed strings. When staging selected zero-context insertions, rebase their
+  offsets around excluded hunks and inspect the index before committing.
+- **Evidence:** Runtime commit `cd8f6e09a328030315122e3774fdd01ab9f32bd9`,
+  `verification/receipts/redirect-status-contract-review.json` in that repository.
+
 ## C97: bind non-code dependencies and test the actual release inventory
 
 - **Question:** Does publication custody identify the policy consumed by its first verifier?

@@ -1,5 +1,5 @@
 profile: tinyrustlm.operations.current.v1
-updated_utc: 2026-09-23T04:10:57Z
+updated_utc: 2026-09-23T04:27:04Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
@@ -10,6 +10,7 @@ historical_checkpoint:
   boundary: These August 28 source/test counts are historical. They do not describe current implementation or establish real-model qualification or deployment.
 
 current_state:
+  runtime_redirect_verification: C98 Runtime exact301/raw Location fix is committed and pushed as cd8f6e09a328030315122e3774fdd01ab9f32bd9. Full suite26pass2fail2Apache skips; generator/docs blockers remain, with all fifteen prior WIP files preserved. Owned output removed, physical recovery unmeasured. Read the sibling Runtime receipt; no blocked deletion, public request, credential or model action. Fresh source scan remains37 unreadable entries.
   publication_policy_custody: C97 includes the source verifier's storage policy JSON in publisher custody and preserves the blocked remote transport gate. All 21 affected checks pass; source scan remains 37 unreadable entries. No credential, real-model, browser or public operation. Read publication-policy-custody-review.json; literal-import coverage and PowerShell coverage limitations remain explicit.
   conversion_lock_custody: C96 uses exact captured lock bytes throughout complete conversion and requires matching component receipt source hashes. Shared fixed-length file reads reject observed growth/truncation without extending allocation. Rust 48/48, Node 27/27 and Clippy pass. Source scan still fails on 37 unreadable entries; no key read, package publication or material model run.
   template_source_admission: C95 admits frozen Template2 config records before output creation; standalone tokenizer remains unchanged. Rust 53/53, Clippy and Node 32/32 pass, including two exact browser builds. No model payload read or historical operation rerun. Source scan retains 37 unreadable entries; key location remains below and publication gates are open. C96 above closes the subsequent lock-reopen finding.
