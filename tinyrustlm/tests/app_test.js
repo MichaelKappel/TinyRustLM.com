@@ -6,6 +6,7 @@ const path = require("node:path");
 const test = require("node:test");
 const source = fs.readFileSync(path.join(__dirname, "../app/app.js"), "utf8");
 const peerAuthority = require("../app/minimodel-catalog-v1.js").directPeerUrlAuthority;
+const conversationApi = require("../app/active-conversation.js");
 const start = source.indexOf("  function chooseBootstrapModelRoute(");
 const end = source.indexOf("\n  // Resolves selection", start);
 assert.ok(start >= 0 && end > start);
@@ -52,6 +53,79 @@ function functionText(name) {
   assert.ok(end > start, name);
   return source.slice(start, end);
 }
+
+// Exercise the live app projection with real persisted conversation normalization.
+function conversationHarness(priorStatus = "stopped", priorText = "") {
+  const now = "2026-09-23T02:00:00Z";
+  let chat = conversationApi.createConversation({ id: "chat", now });
+  const turn = (id, text, status, reply) => {
+    chat = conversationApi.appendTurn(chat,
+      conversationApi.createMessage({ id: `${id}-u`, turnId: id, role: "user", text, createdAt: now }),
+      conversationApi.createMessage({ id: `${id}-a`, turnId: id, role: "assistant", text: reply, status, createdAt: now }), now);
+  };
+  turn("correction", "My current name is Morgan.", priorStatus, priorText);
+  turn("current", "What is my current name?", "generating", "");
+  const projection = Function("activeConversation", "conversationApi",
+    `${functionText("prompt2ConversationMessages")}; return prompt2ConversationMessages;`)(() => chat, conversationApi);
+  const state = { generation: { sequence: 7, inFlight: true, assistantMessageId: "current-a",
+    stopRequested: true, abortController: {} }, runtimeState: {}, modelLoaded: true };
+  const events = [];
+  const values = { state, conversationApi, paths: { models: { fixture: {} } },
+    el: { runtimeStatus: "runtime", errorState: "error" },
+    updateAssistantMessage: (id, patch) => { chat = conversationApi.updateMessage(chat, id, patch, now); },
+    setText: (...args) => events.push(args),
+    setGenerationUi: (status) => { state.generation.inFlight = status !== "idle"; },
+    setControls: () => events.push("controls"), renderDiagnostics: () => events.push("diagnostics"),
+    runPendingGenerationAction: () => events.push("pending-action") };
+  const deliver = Function(...Object.keys(values),
+    `${functionText("deliverGeneratedOutput")}; return deliverGeneratedOutput;`)(...Object.values(values));
+  return { projection, deliver, state, events, chat: () => chat };
+}
+
+test("live Prompt2 history retains corrections and raw stopped output with alternating roles", () => {
+  for (const [status, text, content] of [["stopped", "", ""], ["stopped", "Partial answer", "Partial answer"],
+    ["failed", "runtime-failure-code", ""], ["rejected", "prompt2-budget", ""],
+    ["completed", "Hello Morgan", "Hello Morgan"]]) {
+    const h = conversationHarness(status, text);
+    assert.deepEqual(h.projection("current-a"), [
+      { role: "user", content: "My current name is Morgan." },
+      { role: "assistant", content },
+      { role: "user", content: "What is my current name?" }
+    ], status);
+    assert.equal(h.chat().messages[1].text, text, "stored failure/partial evidence stays unchanged");
+  }
+});
+
+test("empty successful terminal output reaches idle and round-trips without an invented answer", async () => {
+  for (const kind of ["context-limit", "stop-token", "maximum-new-tokens", "cancelled"]) {
+    const h = conversationHarness("completed", "Hello Morgan");
+    await h.deliver("current-a", { status: { kind }, text: "", tokenIds: [], committedKvBytes: 64 }, null, 7);
+    assert.equal(h.state.generation.inFlight, false, kind);
+    assert.equal(h.state.generation.assistantMessageId, "");
+    assert.equal(h.state.generation.abortController, null);
+    assert.equal(h.state.generation.stopRequested, false);
+    const saved = conversationApi.parseConversationStore(conversationApi.serializeConversationStore([h.chat()]));
+    assert.equal(saved.rejectedCount, 0);
+    assert.equal(saved.conversations[0].messages[3].text, "");
+    assert.equal(saved.conversations[0].messages[3].status, kind === "cancelled" ? "stopped" : "completed");
+    assert.ok(h.events.includes("pending-action"));
+  }
+});
+
+test("terminal failures and stale deliveries preserve generation ownership", async () => {
+  const h = conversationHarness();
+  await h.deliver("current-a", null, { code: "obsolete-result" }, 6);
+  assert.equal(h.state.generation.inFlight, true);
+  assert.equal(h.events.length, 0);
+  await h.deliver("current-a", null, { code: "prompt2-budget", status: 1 }, 7);
+  assert.equal(h.state.generation.inFlight, false);
+  assert.equal(h.chat().messages[3].status, "rejected");
+  assert.equal(h.chat().messages[3].text, "prompt2-budget");
+  const failed = conversationHarness();
+  await failed.deliver("current-a", null, new Error("failure"), 7);
+  assert.equal(failed.chat().messages[3].status, "failed");
+  assert.equal(failed.chat().messages[3].errorCode, "model-runtime-client-generation-failed");
+});
 
 // Build only the signed-list orchestration boundary; no network or model bytes.
 function listingHarness(options = {}) {

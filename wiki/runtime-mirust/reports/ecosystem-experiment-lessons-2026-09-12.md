@@ -11,6 +11,34 @@ Keep useful findings and compact evidence identities in the owning canonical
 repository. Keep source history in Git and current model payloads only in
 `D:\LLMs\TinyRustLM`.
 
+## C92: preserve unanswered turns without inventing assistant speech
+
+- **Question:** Can cancellation or a valid empty terminal result poison the next
+  conversation request or leave the UI busy?
+- **Inputs/method:** Parent `0b8ec0e0c59eeb96a07ca04a6e8fbc86bf987dd5`;
+  latest-name correction, stopped partial/empty output, stored failure codes,
+  malformed turn pairs, stale terminal delivery and exact 128-token context.
+  Exercise the production app functions, independent Prompt2 request parsing,
+  real worker/WASM and normal Stop/New Chat controls with synthetic weights.
+- **Result:** Tests-only baseline 7/9, with both targeted defects reproduced.
+  Final 49 conversation/contract and 10 shell/server checks pass; all 16 browser
+  cases pass in four layouts. Three startup screenshot pairs are identical.
+  An initial whitespace test had literal backslashes instead of whitespace;
+  corrected only that input before the final tests. Stale shell hashes blocked
+  the first browser attempt and the initial visual comparison; regenerate
+  current asset references before testing the changed application.
+- **Decision:** Preserve all stored user turns and exact completed/stopped text;
+  project stored diagnostic errors as empty assistant slots already supported by
+  Template2. Reject malformed pairing and unresolved prior active turns. Permit
+  successful empty assistant output without inserting a substitute answer.
+- **Uncertainty:** Synthetic weights establish flow, not useful answers or model
+  qualification. Mobile is desktop Edge emulation. The historical visual gate,
+  source-access failures, live seed and full NuGet/release gates remain open.
+- **Reusable lesson:** Filtering individual roles can break a stricter downstream
+  conversation contract. A terminal generation need not emit text. A source
+  change is not executable through content-bound HTML until its references agree.
+- **Evidence:** `artifacts/ecosystem-cleanup-20260912/conversation-terminal-history-review.json`.
+
 ## C91: admission belongs to the policy used by the operation
 
 - **Question:** Does a validated model remain admissible when session policy changes?

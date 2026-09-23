@@ -10581,6 +10581,7 @@ if (view.matches.length) {
     if (action === "new-chat") window.requestAnimationFrame(startNewConversation);
   }
 
+  // Settle only the owning generation, retaining exact empty or partial terminal output.
   async function deliverGeneratedOutput(assistantMessageId, output, failure, sequence) {
     if (sequence !== state.generation.sequence) return;
     if (failure) {
@@ -11013,21 +11014,11 @@ if (view.matches.length) {
     }
   }
 
+  // Keep transcript projection in the conversation owner; Rust owns template serialization.
   function prompt2ConversationMessages(assistantMessageId) {
     const conversation = activeConversation();
     if (!conversation) throw new Error("The active conversation is unavailable");
-    const messages = [];
-    for (const message of conversation.messages) {
-      if (message.id === assistantMessageId) break;
-      if (message.role === "user" ||
-          (message.role === "assistant" && message.status === "completed")) {
-        messages.push({ role: message.role, content: message.text });
-      }
-    }
-    if (messages.length === 0 || messages[messages.length - 1].role !== "user") {
-      throw new Error("Prompt2 context must end with the current user turn");
-    }
-    return Object.freeze(messages);
+    return conversationApi.prompt2Messages(conversation, assistantMessageId);
   }
 
   function prompt2Sampling(admission) {

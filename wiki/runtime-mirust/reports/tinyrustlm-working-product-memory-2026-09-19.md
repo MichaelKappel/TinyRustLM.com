@@ -16,6 +16,18 @@ Authority order is current owner instructions, inspected current contracts and b
 
 ## Current evidence and its limits
 
+**C92 conversation continuity:** a single current Prompt2 projection now retains
+all user corrections and exact completed/stopped output; stored failure codes
+project as empty assistant content. Strict paired-role and target validation
+prevents malformed histories. Valid empty terminal output reaches idle and
+persists without an invented answer. The unused handwritten formatter is removed.
+All 49 conversation/contract checks, 10 shell/server checks and 16 real Edge
+fixture cases pass, including Stop/next-turn and context-limit/New Chat recovery.
+Three startup screenshot pairs match. Read `conversation-terminal-history-review.json`.
+The fresh source scan reports 37 unreadable entries, with representative access
+denials distinct from the two known dangling links. No permissions or blocked
+paths were changed; real-model, live-seed and full release gates remain open.
+
 **C91 session admission:** activating a validated model under a replacement
 policy now rechecks exact model bytes and context before KV/scratch planning
 and allocation. This resolves the separate constructor gap recorded in C90.

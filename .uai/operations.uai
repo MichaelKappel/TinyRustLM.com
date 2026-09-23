@@ -1,5 +1,5 @@
 profile: tinyrustlm.operations.current.v1
-updated_utc: 2026-09-23T02:08:44Z
+updated_utc: 2026-09-23T02:39:00Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
@@ -10,6 +10,7 @@ historical_checkpoint:
   boundary: These August 28 source/test counts are historical. They do not describe current implementation or establish real-model qualification or deployment.
 
 current_state:
+  conversation_terminal_history: C92 preserves corrected user turns and exact stopped/empty assistant output in strict Prompt2 roles; stored error codes never become model speech. Dead handwritten formatting is removed. All 49 conversation/contract and 10 shell checks plus 16 real Edge fixture cases pass; three startup screenshot pairs match. Read conversation-terminal-history-review.json. Source scan now reports 37 unreadable entries, including representative access-denied directories and the two known dangling links; no permission or blocked deletion change. Model, seed and NuGet/release gates remain open.
   session_policy: C91 rechecks exact artifact size and model context under the session's replacement policy before allocation. Baseline 2/5; final Rust 27/27, Node/WASM 57/57 and Clippy pass, with reproducible tracked browser bytes. Read scalar-session-policy-review.json. GitHub run 35794730490 is billing-blocked before all nine jobs; source scan, model, seed and publication gates remain open.
   scalar_normalization: C90 rejects nonfinite RMS sums and epsilon-adjusted means before reciprocal hides overflow. All 22 runtime and 57 Node/WASM checks plus Clippy pass; tracked browser WASM is rebuilt reproducibly. Smol360 guidance now retains historical failures without inventing source qualification. Read scalar-normalization-overflow-review.json. Real model, source scan, seed and release gates remain; no NuGet publication.
   initial_seed_handoff: C89 fixes MiniModel static planner role ceilings with 70 passing checks and unchanged healthy plan bytes. Twelve actual Edge cases verify automatic start/cancel with the server seed only, first or last; existing catalog sorting already handles peer order. Read MiniModel.org artifacts/reports/static-seed-size-review-20260922.json. No app behavior, real model transfer or publication claim; source/model/release gates remain.

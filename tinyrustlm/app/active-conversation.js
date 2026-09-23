@@ -14,8 +14,6 @@
   const maxMessages = 200;
   const maxMessageCharacters = 32 * 1024;
   const maxSerializedBytes = 1024 * 1024;
-  const maxInferenceTurns = 6;
-  const maxInferencePromptCharacters = 64 * 1024;
   const titleCharacters = 52;
   const allowedRoles = new Set(["user", "assistant"]);
   const allowedStatuses = new Set([
@@ -125,6 +123,7 @@
     return credentialPatterns.some((pattern) => pattern.test(text));
   }
 
+  // Preserve raw assistant output, including valid empty EOS/context-limit completions.
   function normalizeMessage(value, options) {
     if (!value || typeof value !== "object" || Array.isArray(value)) {
       throw new TypeError("conversation message must be an object");
@@ -144,7 +143,7 @@
       value.text,
       "message.text",
       maxMessageCharacters,
-      role === "assistant" && status !== "completed"
+      role === "assistant"
     );
     if (role === "user" && status !== "completed") {
       throw new TypeError("user messages must be completed");
@@ -400,153 +399,36 @@
     return null;
   }
 
-  function completedInferenceHistory(conversation, options) {
-    if (!conversation) {
-      return [];
-    }
+  // Project stored turns into strict Template2 roles without dropping user corrections.
+  // Empty assistant slots preserve unanswered turns; error codes are diagnostics, not replies.
+  function prompt2Messages(conversation, assistantMessageId) {
     const normalized = normalizeConversation(conversation);
-    const requestedMaxTurns = options && options.maxTurns !== undefined
-      ? Number(options.maxTurns)
-      : maxInferenceTurns;
-    if (!Number.isInteger(requestedMaxTurns) || requestedMaxTurns < 0 || requestedMaxTurns > maxInferenceTurns) {
-      throw new RangeError(`inference history maxTurns must be between 0 and ${maxInferenceTurns}`);
-    }
-    if (requestedMaxTurns === 0) {
-      return [];
-    }
-
-    const turns = [];
-    const byId = new Map();
-    for (const message of normalized.messages) {
-      let turn = byId.get(message.turnId);
-      if (!turn) {
-        turn = { turnId: message.turnId, user: null, assistant: null };
-        byId.set(message.turnId, turn);
-        turns.push(turn);
+    requireString(assistantMessageId, "assistantMessageId", 128, false);
+    const messages = [];
+    for (let index = 0; index < normalized.messages.length; index += 2) {
+      const user = normalized.messages[index];
+      const assistant = normalized.messages[index + 1];
+      if (user.role !== "user" || !assistant || assistant.role !== "assistant" ||
+          user.turnId !== assistant.turnId) {
+        throw new TypeError("Prompt2 conversation must contain ordered matching turns");
       }
-      turn[message.role] = message;
-    }
-
-    return turns
-      .filter((turn) =>
-        turn.user &&
-        turn.assistant &&
-        turn.user.status === "completed" &&
-        turn.assistant.status === "completed" &&
-        turn.user.text.trim() &&
-        turn.assistant.text.trim())
-      .slice(-requestedMaxTurns)
-      .flatMap((turn) => [
-        { role: "user", text: turn.user.text, turnId: turn.turnId },
-        { role: "assistant", text: turn.assistant.text, turnId: turn.turnId }
-      ]);
-  }
-
-  function normalizeInferenceHistory(history) {
-    const messages = Array.isArray(history) ? history : [];
-    if (messages.length > maxInferenceTurns * 2 || messages.length % 2 !== 0) {
-      throw new TypeError("inference history must contain bounded complete turns");
-    }
-    const normalized = [];
-    for (let index = 0; index < messages.length; index += 2) {
-      const user = messages[index];
-      const assistant = messages[index + 1];
-      if (
-        !user ||
-        !assistant ||
-        user.role !== "user" ||
-        assistant.role !== "assistant" ||
-        typeof user.turnId !== "string" ||
-        user.turnId !== assistant.turnId
-      ) {
-        throw new TypeError("inference history roles or turn identity are invalid");
+      messages.push(Object.freeze({ role: "user", content: user.text }));
+      if (assistant.id === assistantMessageId) {
+        if (!activeStatuses.has(assistant.status) || index + 2 !== normalized.messages.length) {
+          throw new TypeError("Prompt2 target must be the final active assistant");
+        }
+        return Object.freeze(messages);
       }
-      normalized.push(
-        {
-          role: "user",
-          text: requireString(user.text, "inference history user text", maxMessageCharacters, false),
-          turnId: requireString(user.turnId, "inference history turnId", 128, false)
-        },
-        {
-          role: "assistant",
-          text: requireString(assistant.text, "inference history assistant text", maxMessageCharacters, false),
-          turnId: user.turnId
-        }
-      );
-    }
-    return normalized;
-  }
-
-  function neutralizeTemplateControlTokens(value) {
-    return String(value || "")
-      .replaceAll("<|im_start|>", "< |im_start|>")
-      .replaceAll("<|im_end|>", "< |im_end|>")
-      .replaceAll("[INST]", "[ INST]")
-      .replaceAll("[/INST]", "[/ INST]")
-      .replaceAll("<<SYS>>", "<< SYS>>")
-      .replaceAll("<</SYS>>", "<</ SYS>>");
-  }
-
-  function plainPromptWithHistory(prompt, history) {
-    if (!history.length) {
-      return prompt;
-    }
-    const transcript = history.map((message) =>
-      `${message.role === "user" ? "User" : "Assistant"}: ${neutralizeTemplateControlTokens(message.text)}`);
-    return [
-      "[Conversation history]",
-      ...transcript,
-      "[End conversation history]",
-      "",
-      "[Current user]",
-      neutralizeTemplateControlTokens(prompt),
-      "[Assistant]",
-      ""
-    ].join("\n");
-  }
-
-  function formatInferencePrompt(options) {
-    const source = options || {};
-    const prompt = requireString(source.prompt, "inference prompt", maxInferencePromptCharacters, false);
-    const promptFormat = requireString(source.promptFormat, "inference prompt format", 64, false);
-    const systemPrompt = requireString(
-      source.systemPrompt || "",
-      "inference system prompt",
-      maxInferencePromptCharacters,
-      true
-    );
-    const history = normalizeInferenceHistory(source.history);
-    const currentPrompt = neutralizeTemplateControlTokens(prompt);
-
-    switch (promptFormat) {
-      case "raw-completion-v1":
-        return plainPromptWithHistory(currentPrompt, history);
-      case "alpaca-instruct-v1":
-        return `### Instruction:\n${plainPromptWithHistory(currentPrompt, history)}\n\n### Response:\n`;
-      case "chatml-v1":
-      case "qwen3-chatml-no-think-v1": {
-        const sections = [];
-        if (systemPrompt) {
-          sections.push(`<|im_start|>system\n${systemPrompt}<|im_end|>\n`);
-        }
-        for (const message of history) {
-          sections.push(
-            `<|im_start|>${message.role}\n${neutralizeTemplateControlTokens(message.text)}<|im_end|>\n`
-          );
-        }
-        sections.push(`<|im_start|>user\n${currentPrompt}<|im_end|>\n`);
-        sections.push(
-          promptFormat === "qwen3-chatml-no-think-v1"
-            ? "<|im_start|>assistant\n<think>\n\n</think>\n\n"
-            : "<|im_start|>assistant\n"
-        );
-        return sections.join("");
+      if (activeStatuses.has(assistant.status)) {
+        throw new TypeError("Prompt2 previous assistant is still active");
       }
-      case "llama2-chat-v1":
-        return `[INST] ${plainPromptWithHistory(currentPrompt, history)} [/INST]`;
-      default:
-        throw new TypeError(`inference prompt format is unsupported: ${promptFormat}`);
+      messages.push(Object.freeze({
+        role: "assistant",
+        content: assistant.status === "completed" || assistant.status === "stopped"
+          ? assistant.text : ""
+      }));
     }
+    throw new TypeError("Prompt2 target assistant was not found");
   }
 
   function isNearBottom(metrics, threshold) {
@@ -564,7 +446,6 @@
     maxConversations,
     maxMessages,
     maxMessageCharacters,
-    maxInferenceTurns,
     allowedStatuses: Object.freeze(Array.from(allowedStatuses)),
     createConversation,
     createMessage,
@@ -578,8 +459,7 @@
     deriveTitle,
     latestAssistantMessage,
     previousUserMessage,
-    completedInferenceHistory,
-    formatInferencePrompt,
+    prompt2Messages,
     isNearBottom
   });
 }));

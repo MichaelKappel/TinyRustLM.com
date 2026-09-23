@@ -5,6 +5,37 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C92: continue conversations after cancellation and empty output, September 22
+
+The current app retained user messages while omitting stopped or failed assistant
+turns, producing consecutive user roles that the strict Rust template rejected.
+It also rejected valid empty assistant completions before clearing generation
+state. A tests-only baseline reproduced both defects.
+
+One conversation-owned Prompt2 projection now keeps exact user and completed or
+stopped assistant text. Failed/rejected diagnostic strings remain in the stored
+record but project as empty assistant content. Ordered matching turns and the
+final active target are checked explicitly. Empty terminal output persists
+unchanged, while user messages remain nonempty. The unused six-turn selector and
+handwritten raw/Alpaca/ChatML/Llama formatters are removed; Rust Template2 remains
+the sole serializer and retains its control-token/content limits.
+
+All 49 conversation/contract checks, 10 shell/server checks and 16 actual Edge
+cases pass without skips or retries. Browser checks cover exact request bytes
+after real Stop, zero-output context completion, New Chat recovery, catalog
+rejection and ordinary two-turn operation in all four configured layouts.
+The first browser attempt exposed stale script hashes; it was stopped, both
+shell references were regenerated, and the complete corrected run passed.
+Startup screenshots at 1440, 768 and 375 pixels match parent source exactly.
+This bounded visual comparison does not close the older historical visual gate.
+
+The fresh source scan reports 37 unreadable entries. Metadata review distinguishes
+three representative ordinary access-denied E: directories from the two known
+ENOENT installer links; D:\LLMs\TinyRustLM remains reachable. The cause of child
+access restrictions is unverified. No ACL change or blocked deletion was tried.
+No model quality, public seed, package publication or site deployment is claimed.
+See `artifacts/ecosystem-cleanup-20260912/conversation-terminal-history-review.json`.
+
 ## C91: enforce the session's actual resource policy, September 22
 
 An already validated model could be activated under a different policy without

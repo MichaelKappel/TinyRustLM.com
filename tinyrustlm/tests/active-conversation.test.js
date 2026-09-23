@@ -233,98 +233,89 @@ test("randomized and explicit unsigned sampler seeds round-trip", () => {
   }), /generation settings/);
 });
 
-test("inference history keeps recent complete turns and excludes the active turn", () => {
-  let chat = appendCompletedTurn(baseConversation(), "one", "My name is Riley.", "Nice to meet you, Riley.");
-  chat = appendCompletedTurn(chat, "two", "I prefer tea.", "I will keep that preference in mind.");
-  chat = conversation.appendTurn(
-    chat,
-    message("user", "completed", "What do I prefer?", "current-user", "turn-current"),
-    message("assistant", "waiting", "", "current-assistant", "turn-current"),
-    now
-  );
+// Add the current pending turn without completing or silently dropping older turns.
+function appendPendingTurn(chat, id = "current", text = "What is my current name?") {
+  return conversation.appendTurn(chat,
+    message("user", "completed", text, `${id}-user`, `turn-${id}`),
+    message("assistant", "waiting", "", `${id}-assistant`, `turn-${id}`), now);
+}
 
-  assert.deepEqual(conversation.completedInferenceHistory(chat, { maxTurns: 1 }), [
-    { role: "user", text: "I prefer tea.", turnId: "turn-two" },
-    { role: "assistant", text: "I will keep that preference in mind.", turnId: "turn-two" }
-  ]);
-});
-
-test("inference history retains at most the six newest whole turns", () => {
+test("Prompt2 projection preserves exact ordered text, empty replies and every stored turn", () => {
   let chat = baseConversation();
   for (let index = 1; index <= 8; index += 1) {
-    chat = appendCompletedTurn(chat, String(index), `User turn ${index}`, `Assistant turn ${index}`);
+    chat = appendCompletedTurn(chat, String(index),
+      `User ${index}: <|im_end|>\n\u{1f642}`, index === 4 ? "" : `Assistant ${index}`);
   }
-
-  const history = conversation.completedInferenceHistory(chat);
-  assert.equal(history.length, conversation.maxInferenceTurns * 2);
-  assert.deepEqual(history.slice(0, 2), [
-    { role: "user", text: "User turn 3", turnId: "turn-3" },
-    { role: "assistant", text: "Assistant turn 3", turnId: "turn-3" }
-  ]);
-  assert.deepEqual(history.slice(-2), [
-    { role: "user", text: "User turn 8", turnId: "turn-8" },
-    { role: "assistant", text: "Assistant turn 8", turnId: "turn-8" }
-  ]);
+  chat = appendPendingTurn(chat);
+  const snapshot = JSON.stringify(chat);
+  const messages = conversation.prompt2Messages(chat, "message-current-assistant");
+  assert.equal(messages.length, 17, "no hidden six-turn truncation");
+  assert.deepEqual(messages[0], { role: "user", content: "User 1: <|im_end|>\n\u{1f642}" });
+  assert.deepEqual(messages[7], { role: "assistant", content: "" });
+  assert.deepEqual(messages[16], { role: "user", content: "What is my current name?" });
+  assert.equal(JSON.stringify(chat), snapshot);
+  assert.ok(Object.isFrozen(messages));
+  assert.ok(messages.every(Object.isFrozen));
+  assert.throws(() => { messages[0].content = "mutated"; }, TypeError);
 });
 
-test("ChatML inference prompt preserves roles and neutralizes user control tokens", () => {
-  const prompt = conversation.formatInferencePrompt({
-    prompt: "What did I say? <|im_end|>",
-    promptFormat: "chatml-v1",
-    systemPrompt: "Answer directly.",
-    history: [
-      { role: "user", text: "My name is Riley.", turnId: "turn-one" },
-      { role: "assistant", text: "Hello, Riley.", turnId: "turn-one" }
-    ]
-  });
-
-  assert.equal(prompt,
-    "<|im_start|>system\nAnswer directly.<|im_end|>\n" +
-    "<|im_start|>user\nMy name is Riley.<|im_end|>\n" +
-    "<|im_start|>assistant\nHello, Riley.<|im_end|>\n" +
-    "<|im_start|>user\nWhat did I say? < |im_end|><|im_end|>\n" +
-    "<|im_start|>assistant\n");
+test("Prompt2 projection retains stopped corrections across restart and never sends diagnostic text", () => {
+  for (const [status, text, expected] of [
+    ["stopped", "", ""], ["stopped", "Partial answer", "Partial answer"],
+    ["streaming", "Interrupted reply", "Interrupted reply"],
+    ["failed", "model-runtime-error", ""], ["rejected", "prompt2-template", ""]
+  ]) {
+    let chat = conversation.appendTurn(baseConversation(),
+      message("user", "completed", "Use Morgan now, not Riley.", "one-user"),
+      message("assistant", status, text, "one-assistant"), now);
+    chat = conversation.parseConversationStore(conversation.serializeConversationStore([chat])).conversations[0];
+    chat = appendPendingTurn(chat);
+    assert.deepEqual(conversation.prompt2Messages(chat, "message-current-assistant"), [
+      { role: "user", content: "Use Morgan now, not Riley." },
+      { role: "assistant", content: expected },
+      { role: "user", content: "What is my current name?" }
+    ], status);
+    assert.equal(chat.messages[1].text, text);
+  }
 });
 
-test("Qwen no-think prompt uses history as prior messages and one current assistant prefix", () => {
-  const prompt = conversation.formatInferencePrompt({
-    prompt: "Continue.",
-    promptFormat: "qwen3-chatml-no-think-v1",
-    systemPrompt: "Be concise.",
-    history: [
-      { role: "user", text: "Start a list.", turnId: "turn-one" },
-      { role: "assistant", text: "1. First item.", turnId: "turn-one" }
-    ]
-  });
-
-  assert.equal((prompt.match(/<think>/g) || []).length, 1);
-  assert.match(prompt, /<\|im_start\|>assistant\n1\. First item\.<\|im_end\|>/);
-  assert.ok(prompt.endsWith("<|im_start|>assistant\n<think>\n\n</think>\n\n"));
+test("Prompt2 projection rejects missing, terminal or non-final targets and unfinished earlier turns", () => {
+  const pending = appendPendingTurn(baseConversation());
+  for (const id of ["", null, "x".repeat(129), "absent", "message-current-user"]) {
+    assert.throws(() => conversation.prompt2Messages(pending, id));
+  }
+  assert.throws(() => conversation.prompt2Messages(baseConversation(), "absent"), /not found/);
+  for (const status of ["waiting", "generating", "streaming"]) {
+    const earlier = conversation.updateMessage(pending, "message-current-assistant", { status }, now);
+    const later = appendPendingTurn(earlier, "later");
+    assert.throws(() => conversation.prompt2Messages(later, "message-later-assistant"), /still active/);
+    assert.throws(() => conversation.prompt2Messages(later, "message-current-assistant"), /final active/);
+  }
+  for (const status of ["completed", "stopped", "failed", "rejected"]) {
+    const terminal = conversation.updateMessage(pending, "message-current-assistant", { status }, now);
+    assert.throws(() => conversation.prompt2Messages(terminal, "message-current-assistant"), /final active/);
+  }
 });
 
-test("raw inference prompt labels bounded prior roles without changing single-turn prompts", () => {
-  assert.equal(conversation.formatInferencePrompt({
-    prompt: "Hello",
-    promptFormat: "raw-completion-v1",
-    history: []
-  }), "Hello");
+test("Prompt2 projection refuses malformed role order or missing/mismatched turn pairs", () => {
+  const chat = appendPendingTurn(baseConversation());
+  for (const messages of [
+    [chat.messages[0]], [chat.messages[1], chat.messages[0]],
+    [chat.messages[0], { ...chat.messages[1], turnId: "different" }],
+    [chat.messages[0], { ...chat.messages[1], role: "user", status: "completed", text: "Not an assistant", turnId: "different" }]
+  ]) {
+    assert.throws(() => conversation.prompt2Messages({ ...chat, messages }, "message-current-assistant"), /ordered matching/);
+  }
+  assert.throws(() => conversation.prompt2Messages(null, "assistant"), /must be an object/);
+});
 
-  assert.equal(conversation.formatInferencePrompt({
-    prompt: "What is my preference?",
-    promptFormat: "raw-completion-v1",
-    history: [
-      { role: "user", text: "I prefer tea.", turnId: "turn-one" },
-      { role: "assistant", text: "Understood.", turnId: "turn-one" }
-    ]
-  }), [
-    "[Conversation history]",
-    "User: I prefer tea.",
-    "Assistant: Understood.",
-    "[End conversation history]",
-    "",
-    "[Current user]",
-    "What is my preference?",
-    "[Assistant]",
-    ""
-  ].join("\n"));
+test("empty and whitespace assistant completions persist exactly while empty user messages reject", () => {
+  for (const text of ["", " \n\t"]) {
+    const chat = appendCompletedTurn(baseConversation(), "empty", "Hello", text);
+    const result = conversation.parseConversationStore(conversation.serializeConversationStore([chat]));
+    assert.equal(result.rejectedCount, 0);
+    assert.equal(result.conversations[0].messages[1].text, text);
+    assert.equal(result.conversations[0].messages[1].status, "completed");
+    assert.throws(() => message("user", "completed", text, "invalid"), /must not be empty/);
+  }
 });

@@ -1,0 +1,360 @@
+{
+  "schema": "ecosystem.conversation-terminal-history-review/1",
+  "reviewedUtc": "2026-09-23T02:39:00Z",
+  "sourceParent": "0b8ec0e0c59eeb96a07ca04a6e8fbc86bf987dd5",
+  "purpose": "Fix current conversation continuity after stopped/failed turns and successful empty terminal output; retire unused handwritten prompt serialization.",
+  "findings": [
+    "Filtering stopped/failed assistant records while retaining their user messages produced consecutive user roles and Template2 rejection on later turns.",
+    "Empty successful output was labelled completed then rejected by local normalization before generation returned to idle.",
+    "Unused completedInferenceHistory and handwritten formatInferencePrompt helpers had only obsolete unit-test callers."
+  ],
+  "implementation": [
+    "prompt2Messages owns a strict ordered-pair projection through the final active assistant, keeping every user correction and exact completed/stopped assistant text.",
+    "Failed/rejected stored diagnostic codes remain unchanged in evidence/UI but project as empty assistant content; Template2 already supports that content.",
+    "Empty assistant terminal output persists exactly; empty/whitespace user messages still reject. No new response status, schema, model speech, hidden truncation or control-token repair.",
+    "Remove dead raw/Alpaca/ChatML/Qwen-no-think/Llama formatting and six-turn selector/tests; sole current Rust Template2 behavior remains unchanged.",
+    "Regenerate only the two changed script identity references in each HTML shell."
+  ],
+  "causalHistory": [
+    {
+      "stage": "tests-only baseline",
+      "passed": 7,
+      "failed": 2,
+      "observation": "Current app projection loses assistant slot; empty terminal update throws message.text must not be empty."
+    },
+    {
+      "stage": "first implementation unit check",
+      "passed": 23,
+      "failed": 1,
+      "observation": "New whitespace test accidentally used literal backslash characters; corrected its input, with no production change."
+    },
+    {
+      "stage": "initial browser/visual",
+      "status": "failed/incomplete",
+      "observation": "Old HTML script hashes return 404 by design, leaving System Ready and no worker. Stopped the browser run; initial visual attempt timed out after one baseline capture. Verified no node/cargo/rustc/link writers before regenerating shells. No complete initial browser report exists."
+    },
+    {
+      "stage": "complete corrected verification",
+      "status": "pass",
+      "observation": "49 contract/conversation checks, 10 shell/server checks, all 16 actual Edge cases and three exact startup screenshot pairs pass."
+    }
+  ],
+  "tests": {
+    "node": {
+      "passed": 49,
+      "failed": 0,
+      "skipped": 0,
+      "files": [
+        "active-conversation.test.js",
+        "app_test.js",
+        "prompt2-request-browser-writer.test.js",
+        "prompt2-format-vectors.test.js",
+        "template2-format-vectors.test.js"
+      ]
+    },
+    "shell": {
+      "passed": 10,
+      "failed": 0,
+      "skipped": 0,
+      "files": [
+        "static-shell-parity.test.js",
+        "static-server.test.js"
+      ],
+      "contentBoundAssets": 21
+    },
+    "coverage": {
+      "file": "tinyrustlm/app/active-conversation.js",
+      "linePercent": 87.1,
+      "branchPercent": 76.55,
+      "functionPercent": 89.66,
+      "newProjection": "All 18 V8 block ranges have positive counts in the targeted unit process.",
+      "appBoundary": "Production functions extracted in memory by existing harness; whole app.js coverage is not measured."
+    },
+    "browser": {
+      "passed": 16,
+      "failed": 0,
+      "skipped": 0,
+      "retries": 0,
+      "flaky": 0,
+      "durationMilliseconds": 126260.677,
+      "browser": "Microsoft Edge 153.0.4234.48",
+      "projects": [
+        "desktop 1365x768",
+        "narrow-desktop 1024x768",
+        "mobile 390x844 emulation",
+        "reduced-motion 1365x768"
+      ],
+      "checks": [
+        "Catalog exclusion before activation",
+        "Ordinary two-turn real worker/WASM and prompt locality",
+        "Normal Stop after begin-generation, real cancelled terminal with no step; next request retains exact correction and empty assistant in independently parsed Prompt2 bytes",
+        "Actual exactly-128-token prefill produces empty context-limit; UI becomes idle; New Chat resets context and real generation resumes"
+      ],
+      "boundaries": "Synthetic weights built by current Rust SLM2 writer; immutable tokenizer/template dependencies, no real checkpoint weights, qualification or public service."
+    }
+  },
+  "visual": {
+    "browser": "153.0.4234.48",
+    "records": [
+      {
+        "width": 1440,
+        "height": 900,
+        "zoom": 1,
+        "theme": "dark",
+        "state": "empty startup; external requests fixed to 503",
+        "captures": [
+          {
+            "phase": "before",
+            "sha256": "79871c675660339c34613489b3f3753daf9e816f1bfc764af2ae1a88264c56ea",
+            "bytes": 442770,
+            "pageErrors": []
+          },
+          {
+            "phase": "after",
+            "sha256": "79871c675660339c34613489b3f3753daf9e816f1bfc764af2ae1a88264c56ea",
+            "bytes": 442770,
+            "pageErrors": []
+          }
+        ],
+        "identical": true
+      },
+      {
+        "width": 768,
+        "height": 900,
+        "zoom": 1,
+        "theme": "dark",
+        "state": "empty startup; external requests fixed to 503",
+        "captures": [
+          {
+            "phase": "before",
+            "sha256": "587a508a5d2de21f3297d84d9387e4a6177e5b00e9080194d2ae877894f9dbae",
+            "bytes": 209987,
+            "pageErrors": []
+          },
+          {
+            "phase": "after",
+            "sha256": "587a508a5d2de21f3297d84d9387e4a6177e5b00e9080194d2ae877894f9dbae",
+            "bytes": 209987,
+            "pageErrors": []
+          }
+        ],
+        "identical": true
+      },
+      {
+        "width": 375,
+        "height": 900,
+        "zoom": 1,
+        "theme": "dark",
+        "state": "empty startup; external requests fixed to 503",
+        "captures": [
+          {
+            "phase": "before",
+            "sha256": "7216d3be54b827b85b2b125fc5b35d4e43dbfea13885c1f6075e9e986a354d40",
+            "bytes": 122723,
+            "pageErrors": []
+          },
+          {
+            "phase": "after",
+            "sha256": "7216d3be54b827b85b2b125fc5b35d4e43dbfea13885c1f6075e9e986a354d40",
+            "bytes": 122723,
+            "pageErrors": []
+          }
+        ],
+        "identical": true
+      }
+    ],
+    "method": "Read exact parent HTML/JS with git show into memory only, intercept baseline source responses on loopback, then current canonical source. Full-page PNG, fonts ready, locale en-US, reduced motion, animations disabled equally, no masks. Desktop/mobile after images inspected. No copied source files.",
+    "boundary": "Empty startup comparison only, plus existing conversation geometry assertions in all four browser projects. This does not close prior historical baseline differences."
+  },
+  "sourceAdmission": {
+    "status": "fail",
+    "exitCode": 1,
+    "code": "source_authority_scan_incomplete",
+    "unreadableEntries": 37,
+    "representativeOrdinaryDirectories": [
+      "artifacts/performance/qwen2.5-1.5b-reference-logits",
+      "artifacts/training/quality-sequence-v1/dataset",
+      "artifacts/verification/qwen3-environment-install/tinyrustlm-operation-C3ZUt9/bootstrap/Lib/site-packages/distlib"
+    ],
+    "representativeMetadata": {
+      "executionIdentity": "PLUTO\\Michael",
+      "lstatAndStat": "directory, not symlink",
+      "realpathAndScandir": "EPERM errno -4048",
+      "childAclRead": "UnauthorizedAccessException HRESULT 0x80070005",
+      "parentAcl": "readable, permits Modify for current identity",
+      "cause": "specific ACL/filter cause unverified"
+    },
+    "knownLinks": {
+      "parent": "artifacts/verification/qwen3-environment-install/tinyrustlm-operation-C3ZUt9/install-temp",
+      "names": [
+        "TmP6xn2evdh-b",
+        "TmPeq63_hr7-b"
+      ],
+      "target": "same-directory sibling without -b",
+      "resolution": "ENOENT errno -4058"
+    },
+    "canonicalModelRoot": {
+      "path": "D:\\LLMs\\TinyRustLM",
+      "reachable": true,
+      "immediateEntries": 49
+    },
+    "boundary": "Representative metadata only; do not infer every unreadable entry has the same cause. No ACL mutation, payload read, deletion attempt or alternate route for blocked paths."
+  },
+  "reviewedFollowup": {
+    "scope": "historical Qwen2 source-selection generator",
+    "observation": "No active converter reads the obsolete F32 profile, but its generator and unit test still regenerate old selection using a hardcoded profile hash. Actual tracked profile is 5140 bytes SHA256 db4d16ce83460856588bda98829a16bbc23805f82ecad0f40b9380c77ea092fc; hardcoded hash is aeafbc2baa25b5e6b8d3a11a40a2d96f23fab9c4dbb4809747664a97238c33eb.",
+    "next": "Retire current executable regeneration/test and correct current README after bounded review; preserve frozen receipts/profile/selection bytes as historical evidence. No Qwen2 Q8 support claim.",
+    "status": "read-only finding; not changed in this checkpoint"
+  },
+  "sourceIdentities": [
+    {
+      "path": "tinyrustlm/app/active-conversation.js",
+      "bytes": 17010,
+      "sha256": "376e7c9ac4964d36868607ecb4d4ebd77958fc968453c842bd37baa2e6e60e50"
+    },
+    {
+      "path": "tinyrustlm/app/app.js",
+      "bytes": 471736,
+      "sha256": "ba36e6abf16de29de0c9794ab0645c7077ef18dfefcb42bd45028f473027607b"
+    },
+    {
+      "path": "tinyrustlm/app/index.html",
+      "bytes": 48731,
+      "sha256": "0f64c431f9573f7ed3dabc2fd8d49cef6071764e473d9b53d21ecf5bcef6d972"
+    },
+    {
+      "path": "tinyrustlm/index.html",
+      "bytes": 48815,
+      "sha256": "d2e0da42960de4847c42f62b5027970fd33cc0b16a8873f8509057607cf02ccf"
+    },
+    {
+      "path": "tinyrustlm/tests/active-conversation.test.js",
+      "bytes": 12669,
+      "sha256": "072ff3c9e68dbdb73996831110f6872d5f1e6a944aff8e9a12cf59fe57b1175f"
+    },
+    {
+      "path": "tinyrustlm/tests/app_test.js",
+      "bytes": 12132,
+      "sha256": "77fd640a0399007635bbc8bcaf181d9b2d47e61591022a9ec4fd011ca868d282"
+    },
+    {
+      "path": "tinyrustlm/e2e/conversation.spec.js",
+      "bytes": 23352,
+      "sha256": "a08c7325faf2318e8fbbb7e42501a06e4b2861d82e9289106d050a8eb5f7f1c4"
+    }
+  ],
+  "outputIdentities": [
+    {
+      "path": "node-tests.log",
+      "bytes": 20400,
+      "sha256": "fcc53f7343e59b977ebff8dc5ea3058428b0dc39b87ca0a531e05f355851d2db"
+    },
+    {
+      "path": "source-scan.log",
+      "bytes": 9752,
+      "sha256": "ca356be7b5ddb15c9eba73dde65d39af9a2936868526d98b5345263fd205e51a"
+    },
+    {
+      "path": "browser-tests.log",
+      "bytes": 48746,
+      "sha256": "b161e1be31807dd415445b3e177722aa5d2fe50cd604b0659432f06f081009bd"
+    },
+    {
+      "path": "browser-final-results.json",
+      "bytes": 23948,
+      "sha256": "2cf9407590f81d7b7c275dd41ce752615fc0d21d24413aea9d8fba4bf16d3a2d"
+    },
+    {
+      "path": "browser-final-tests.log",
+      "bytes": 7520,
+      "sha256": "836b2cd84defd9e5a87e5b27e46c706dcc0bc89997d7078779863fe23f70c7c2"
+    },
+    {
+      "path": "shell-tests.log",
+      "bytes": 2006,
+      "sha256": "9966ca31928e4f74ab1f0cfb18c85cbefc9899703923821dd948d7b1210c36ed"
+    },
+    {
+      "path": "visual-final/comparison.json",
+      "bytes": 1832,
+      "sha256": "c224c3fca3823487eae4ed1dc5087d01825b18b7b61f83831129e17bed2682d0"
+    }
+  ],
+  "credentialsAndRelease": {
+    "nugetKeyLocationRecordedIn": ".uai/operations.uai",
+    "nugetKeyRead": false,
+    "packagePublished": false,
+    "siteDeployed": false,
+    "lastExternalEvidence": "C91 receipt: NuGet IDs absent at 2026-09-22T22:56:29Z; GitHub run 35794730490 billing-blocked before nine jobs. No fresh external readback in C92."
+  },
+  "limits": [
+    "No qualified default, useful model response, fresh numerical parity, actual mobile device, outside-network seed or full release evidence.",
+    "Previously blocked cleanup remains untouched; source-authority failure is not waived.",
+    "Other repositories and unrelated worktree changes preserved. Full ecosystem goal remains active."
+  ],
+  "ownedOutput": {
+    "root": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\conversation-terminal-history\\tinyrustlm-operation-QVR9sn",
+    "status": "removed",
+    "originalOwnershipVerified": true,
+    "files": 61,
+    "descendantDirectories": 29,
+    "logicalBytes": 8190618,
+    "externalMarkerBytes": 65,
+    "inventorySha256": "373615d58604d4b0cfec5750d90c3638da845c0c37a2d94d81739289fc2ce85b",
+    "physicalRecoveryMeasured": false,
+    "rootAbsent": true,
+    "markerAbsent": true,
+    "method": "Terminal processes confirmed absent, original directory/marker identities verified, bounded inventory recorded and canonical ownership helper removed output and marker."
+  },
+  "secretScan": {
+    "status": "fail",
+    "scannedArtifactCount": 16,
+    "secretFindingCount": 6,
+    "scopeComplete": false,
+    "report": {
+      "bytes": 8267,
+      "sha256": "6ad798c740877e91bb21f32cc99976514110e3bff324048bda80755cc9420a91"
+    },
+    "classification": {
+      "path": "tinyrustlm/tests/active-conversation.test.js",
+      "codes": [
+        "assigned_secret_value",
+        "aws_access_key",
+        "bearer_credential",
+        "github_token",
+        "openai_api_key",
+        "private_key_material"
+      ],
+      "result": "Six rules match pre-existing literal dummy credentials in negative persistence tests; exact fixture section matches sourceParent after line-ending normalization. No real credential was introduced, read, logged or copied.",
+      "unchangedSectionSha256": "f5206687fd9e62dc88f46dd91a25a261026d891337ad632d7655c7d7a0ad89c3"
+    },
+    "otherArtifacts": "Fifteen scoped files have no findings.",
+    "boundary": "Do not relabel the automated scan as passed; manual classification applies to unchanged negative-test literals. Final cleanup/accounting fields added to this receipt afterward."
+  },
+  "memoryPointers": {
+    "verified": 17,
+    "mismatches": 0
+  },
+  "abandonedFixtureOutput": {
+    "reviewSha256": "9a6d6bfc3bfb3f833b86c72fcaa67c2b897c78f9989d0c4c20718ff650d66fa5",
+    "root": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\browser-conversation-fixture\\tinyrustlm-operation-xbnF9G",
+    "marker": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\browser-conversation-fixture\\tinyrustlm-operation-xbnF9G.owner.v2",
+    "status": "removed and absence verified",
+    "counts": {
+      "descendantDirectories": 64,
+      "regularFiles": 185,
+      "symlinks": 0,
+      "otherEntries": 0,
+      "logicalBytes": 37593256,
+      "markerBytes": 65,
+      "logicalBytesIncludingMarker": 37593321,
+      "uniqueFileIdentityBytes": 24899240,
+      "uniqueFileIdentityBytesIncludingMarker": 24899305,
+      "hardlinkGroups": 14
+    },
+    "method": "Fresh bounded exact-path retirement review; revalidated every ancestor, leaf hash and contained hardlink group before nonrecursive removal. Original helper ownership was not reconstructed.",
+    "physicalRecoveryMeasured": false,
+    "reviewBytes": 165907,
+    "generatedSourceBoundary": "Only two tiny Cargo-generated serde private modules; no tracked source or Git/workspace authority markers."
+  }
+}
