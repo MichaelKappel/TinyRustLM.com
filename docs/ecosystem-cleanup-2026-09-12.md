@@ -5,6 +5,19 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C111: real bounded target reader exercises byte-array identity
+
+Fresh attempt20260927T2136244324978Z-fcdad6fbc16e passed predecessor validation
+and cleanup, then failed with PSInvalidCastException at target identity read.
+The reader correctly returns a single byte-array object; its caller incorrectly
+wrapped it in an object array before casting. Direct typed assignment preserves
+the actual bytes. Target hash, JSON identity, encoding and size checks remain.
+The test now mocks only the transport response and exercises the real bounded
+stream reader; it covers matching identity, oversized input, changed bytes and
+wrong site identity. All18 deployment tests pass with zero skips. No numeric
+PowerShell coverage was measured. Both immutable failed-attempt receipts are
+preserved byte-exact; no remote mutation or application publication occurred.
+
 ## C110: canonical predecessor cleanup repaired after real publication attempt
 
 Attempt 20260927T2128349309317Z-9ff696926cb3 passed source custody and

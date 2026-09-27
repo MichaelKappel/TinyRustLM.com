@@ -708,10 +708,20 @@ Password: test:password=value
 
     $global:SyntheticSentinelBytes = $sentinelBytes
     $global:SyntheticSentinelReads = 0
-    function global:Read-BoundedFtpsArtifact {
-        param([string]$RemotePath, [int]$MaximumBytes)
+    # Mock only transport, preserving the real bounded stream and byte-array return.
+    function global:New-FtpRequest {
+        param([string]$RemotePath, [string]$Method)
         $global:SyntheticSentinelReads += 1
-        return [byte[]]$global:SyntheticSentinelBytes
+        $request = [pscustomobject]@{}
+        $request | Add-Member ScriptMethod GetResponse {
+            $response = [pscustomobject]@{ ContentLength = $global:SyntheticSentinelBytes.Length }
+            $response | Add-Member ScriptMethod GetResponseStream {
+                return [IO.MemoryStream]::new([byte[]]$global:SyntheticSentinelBytes)
+            }
+            $response | Add-Member ScriptMethod Dispose {}
+            return $response
+        }
+        return $request
     }
     try {
         $targetEvidence = Assert-DeploymentTargetIdentity `
@@ -723,6 +733,10 @@ Password: test:password=value
             $targetEvidence.sentinel_sha256 -eq $sentinelSha256 -and
             $global:SyntheticSentinelReads -eq 1
         ) "Read-only deployment root identity changed."
+
+        Assert-Throws {
+            Read-BoundedFtpsArtifact -RemotePath $targetBinding.sentinel_path -MaximumBytes 32
+        } "exceeds its byte limit"
 
         $global:SyntheticSentinelBytes = $utf8.GetBytes(
             $sentinelText.Replace("tinyrustlm.com", "wrong.example")
@@ -755,7 +769,7 @@ Password: test:password=value
     }
     finally {
         Remove-Item `
-            -LiteralPath Function:\global:Read-BoundedFtpsArtifact `
+            -LiteralPath Function:\global:New-FtpRequest `
             -Force
         Remove-Variable `
             -Name SyntheticSentinelBytes `

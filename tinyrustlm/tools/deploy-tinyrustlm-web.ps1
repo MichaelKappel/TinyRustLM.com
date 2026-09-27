@@ -2873,7 +2873,8 @@ function Assert-DeploymentTargetIdentity {
         )) {
         throw "The deployment root sentinel identity is invalid."
     }
-    [byte[]]$bytes = @(
+    # The bounded reader returns one byte-array object, not a pipeline of bytes.
+    [byte[]]$bytes = (
         Read-BoundedFtpsArtifact `
             -RemotePath ([string]$TargetBinding.sentinel_path) `
             -MaximumBytes 4096
