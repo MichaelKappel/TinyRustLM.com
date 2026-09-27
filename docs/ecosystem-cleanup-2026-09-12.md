@@ -5,6 +5,69 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C117: tokenizer-compatible source screen and precise format rejection
+
+Registered-root source admission and remote-exact custody passed before both
+declared launches. Active intake remains placeholder-only. The next distinct
+checkpoint was Biggiraffe/Qwen3-0.6B-JSON-SFT-GRPO at
+0063adcd7b5169b4e7816b8326de6e18281d2256. Its pinned card, reviewed metadata and
+development plan were pushed as 0fbf242 before acquisition/execution. The downloader
+verified five files, including the 1192135096-byte weight SHA-256
+2a98da2269b343113ea2663e66a90defdf6c9dafa322ca1643af7f1d991fac19.
+
+The first launch stopped in tokenizer initialization: this checkpoint has list-valued
+extra_special_tokens, while the pinned Transformers4.51 loader expects a mapping.
+Its exception handler then reported missing protobuf. No answers or raw screen
+were produced. The immutable failed execution is retained; this is not a model
+quality failure and no package was installed or checkpoint metadata rewritten.
+The installed loader and the upstream v4.51 source were inspected:
+https://github.com/huggingface/transformers/blob/v4.51.0/src/transformers/tokenization_utils_base.py.
+
+The existing D:\LLMs\TinyRustLM\training-env-py312 environment supports this
+tokenizer representation. An isolated import preflight verified Python3.12.10,
+torch2.13.0+cpu, Transformers5.13.1 and tokenizers0.22.2. Its interpreter and tokenizer
+implementation hashes were bound in a separate plan pushed as 2d0ab7e. The original
+numerical-reference environment and locks remain unchanged. This new plan used
+the same six public development cases, greedy generation, CPU float32 and explicit
+non-thinking template option, with one generation call per case and no output repair.
+It exited0, produced the full transcript and removed owned scratch.
+
+The declared criteria yielded 5 passes and 1 failure: the color-only answer was
+"The pens in Box B are red." The fact was correct; the failure is answer format.
+JSON extraction, READY, the latest Friday correction and the library summary passed.
+The checklist passed the narrow pen-and-paper resource criterion but assumed an
+academic-paper context; it does not prove broad workflow usefulness. The earlier
+loader failure is not included in these quality counts. These public cases are
+neither independent human review nor an untouched holdout.
+
+Raw transcript SHA-256 is
+ea53d1fe7adf28606ef963af72de32df47f101ed650d9d0cb5e0d2aafe077e2a.
+The source/assessment validators pass against actual source hashes. The declared
+any-failure rule therefore rejects this checkpoint for product selection, and the
+41-entry exclusion contract now blocks its revision and weight identity. All29
+discovery/acquisition/exclusion checks pass, including stale-inventory selection1.
+The other ljh728 JSON checkpoint remains metadata-only. No source/runtime rerun,
+conversion, qualified default, seed or web publication is claimed by this checkpoint.
+
+Retirement of the rejected download was denied before execution by automatic
+approval review with "blocked by policy". Six files totaling1203582213 logical
+bytes remain at the source-c90e9dd369b4e3fa75139583aad7eda46eb564897277a02458b2434f84c4db14
+directory under D:\LLMs\TinyRustLM\sources. No bytes were removed. Do not retry
+agent deletion through another API, permission change, rename or parent deletion.
+One current owner-only tool now covers both pending reviewed source retirements;
+it replaces the C116 CodeExpert-only script. Both six-file previews, PowerShell
+parse and invalid-selection rejection pass. Apply and deletion-branch coverage
+remain unverified; no measured physical recovery is claimed.
+
+Owner commands:
+`& 'E:\Source\Rust\TinyRustLM.com\eng\Remove-ReviewedRejectedSource.ps1' -Candidate CodeExpert -Apply`
+`& 'E:\Source\Rust\TinyRustLM.com\eng\Remove-ReviewedRejectedSource.ps1' -Candidate Biggiraffe -Apply`
+
+Current test guidance now distinguishes source-loader compatibility from model
+quality and removes the stale .vs admission blocker. A bounded Rust source search
+found SLM1 references only in rejection tests/fuzz input, which are retained.
+This is not an exhaustive ecosystem completion audit. C114 public files are unchanged.
+
 ## C116: distinct source acquisition, real screen, and cleanup boundary
 
 The previous checkpoint adc6cb2 is pushed and remote-exact. Registered-root

@@ -164,3 +164,4 @@ artifacts/web-deployments/*.json -text whitespace=cr-at-eol
 # Preserve the hash-bound source execution transcript exactly as emitted.
 artifacts/ecosystem-cleanup-20260912/smollm2-source-development-raw-20260927.json -text whitespace=cr-at-eol
 artifacts/ecosystem-cleanup-20260912/qwen3-code-expert-source-development-raw-20260927.json -text whitespace=cr-at-eol
+artifacts/ecosystem-cleanup-20260912/qwen3-json-biggiraffe-source-development-v2-raw-20260927.json -text whitespace=cr-at-eol

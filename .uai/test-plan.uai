@@ -13,7 +13,7 @@ rust_engineering_review:
   behavioral_tests: Pair round trips with independent known-answer and hostile rejection cases; cover arithmetic, allocation ceilings, malformed text, cancellation and transitions. Producer/consumer agreement can hide a shared bug.
   specialized_checks: Select bounded fuzzing for parsers, Miri for exercised unsafe invariants and Loom for custom synchronization when warranted and supported. Listed tools are not completed evidence; no dependency addition is implied.
   performance: Measure release workloads and native/browser phase memory, cold/warm latency and cancellation before optimization. Microbenchmarks cannot establish actual model or browser viability.
-  limits: September27 intake validates custody/guidance only; source authority stops at unexpected E:\Source\Rust\.vs. No Rust execution, coverage, clean release or qualification is claimed.
+  limits: September27 intake validates custody/guidance only. Its original .vs/source-access blockers were resolved by C101-C107; fresh registered-root checks pass in C114-C117. Read current cleanup progress for actual execution and publication evidence; intake itself proves neither.
 
 gate_1_contracts:
   - Sole closed schemas, deterministic cross-language vectors, duplicate/unknown/trailing/overflow negatives, operation graph, exact member closure, and independent recomputation.
@@ -65,6 +65,7 @@ counters: Stay 0/20, 0/50, 0/25, 0/40, 0/20 until exact live receipts pass the c
 reviewed_diagnostic_matrix:
   reports: R01, R02, R03, R04, R08
   source_before_conversion: Exact source revision/weight/license admission, reference useful-answer screen, then converted runtime; unchanged rejected ancestry stays diagnostic-only.
+  source_runtime: Inspect tokenizer requirements before choosing a source-screen interpreter. C117 records a Transformers4.51 list-valued extra_special_tokens loader failure with zero answers; the existing5.13.1 environment supports that format. Bind the selected runtime before execution, preserve failed launches, and keep numerical-reference locks separate. Never count loader failure as model-quality failure or rewrite checkpoint metadata to make it load.
   arms: original source; independently reconstructed quantized source; scalar Rust; optimized native where implemented; actual browser WASM.
   isolation: Original-vs-reconstructed measures compression; reconstructed-vs-scalar isolates conversion/arithmetic; later arms test backend effects. Teacher-force exact IDs before sampled free running.
   cases: one/two tokens; uneven lengths; repeated tokens; near-empty prompts; UTF-8/emoji/combining marks/whitespace/code/JSON; special-token data; multi-turn correction; edited/cancelled race; cache/context boundary.

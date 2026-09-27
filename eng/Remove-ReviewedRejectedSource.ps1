@@ -1,17 +1,35 @@
 [CmdletBinding()]
-param([switch]$Apply)
+param(
+    [Parameter(Mandatory=$true)]
+    [ValidateSet('CodeExpert','Biggiraffe')]
+    [string]$Candidate,
+    [switch]$Apply
+)
 
 # Owner-operated retirement of one rejected checkpoint; default mode only verifies.
 $ErrorActionPreference = 'Stop'
 $repo = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 if ($repo -ne 'E:\Source\Rust\TinyRustLM.com') { throw 'Unexpected source root' }
-$manifestPath = Join-Path $repo 'artifacts\ecosystem-cleanup-20260912\qwen3-code-expert-source-cleanup-review-20260927.json'
-if ((Get-FileHash -LiteralPath $manifestPath -Algorithm SHA256).Hash -ne '788dedf03a6ca85671771767bc5b6ed59eb7c5776d2342c7f0e9ef6a9ba8cedf') {
+$targets = @{
+    CodeExpert = @{
+        Review = 'qwen3-code-expert-source-cleanup-review-20260927.json'
+        Sha256 = '788dedf03a6ca85671771767bc5b6ed59eb7c5776d2342c7f0e9ef6a9ba8cedf'
+        Directory = 'source-7a4326b580591db0f6bf2127509b3c4a46f08969d78c4a9952a43264180bca4a'
+    }
+    Biggiraffe = @{
+        Review = 'qwen3-json-biggiraffe-source-cleanup-review-20260927.json'
+        Sha256 = 'a40a66315139d5737b83445c63b298d52a85c2f4566a65f778f28044d9c8b4e2'
+        Directory = 'source-c90e9dd369b4e3fa75139583aad7eda46eb564897277a02458b2434f84c4db14'
+    }
+}
+$selected = $targets[$Candidate]
+$manifestPath = Join-Path (Join-Path $repo 'artifacts\ecosystem-cleanup-20260912') $selected.Review
+if ((Get-FileHash -LiteralPath $manifestPath -Algorithm SHA256).Hash -ne $selected.Sha256) {
     throw 'Cleanup review changed'
 }
 $manifest = Get-Content -LiteralPath $manifestPath -Raw | ConvertFrom-Json
 $target = [IO.Path]::GetFullPath($manifest.root)
-$expectedTarget = 'D:\LLMs\TinyRustLM\sources\source-7a4326b580591db0f6bf2127509b3c4a46f08969d78c4a9952a43264180bca4a'
+$expectedTarget = Join-Path 'D:\LLMs\TinyRustLM\sources' $selected.Directory
 if ($target -ne $expectedTarget -or [IO.Path]::GetDirectoryName($target) -ne 'D:\LLMs\TinyRustLM\sources') {
     throw 'Unexpected cleanup target'
 }

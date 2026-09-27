@@ -13,7 +13,7 @@ const policy = require("../../contracts/vnext/source-candidate-exclusions.v1.jso
 const rejected = policy.entries.find((entry) => entry.modelId === "Qwen/Qwen2.5-1.5B-Instruct");
 
 test("current exclusions preserve all exact prior decisions and their evidence identities", () => {
-  assert.equal(policy.entries.length, 40);
+  assert.equal(policy.entries.length, 41);
   assert.equal(policy.entries.filter((entry) => entry.kind === "preflight").length, 9);
   for (const entry of policy.entries) {
     assert.match(entry.evidence.path, /^(tinyrustlm\/training\/[^/]+\/assessment-control-v\d+|contracts\/vnext\/qwen3-0\.6b-base-source-lock\.v2)\.json$/);
@@ -49,14 +49,16 @@ test("exclusions are exact negative evidence, not a family ban or positive admis
   }
 });
 
-for (const inventoryName of ["smollm2-current-candidate-inventory-20260927.json",
-  "qwen3-expanded-candidate-inventory-20260927.json"]) {
-test(`source rejection blocks ${inventoryName} without fetching or writing`, async () => {
+for (const [inventoryName, start] of [["smollm2-current-candidate-inventory-20260927.json", 0],
+  ["qwen3-expanded-candidate-inventory-20260927.json", 0],
+  ["qwen3-expanded-candidate-inventory-20260927.json", 1]]) {
+test(`source rejection blocks ${inventoryName} selection ${start} without fetching or writing`, async () => {
   const inventory = JSON.parse(fs.readFileSync(path.join(root,
     "artifacts/ecosystem-cleanup-20260912", inventoryName)));
   const output = path.join(root, "artifacts", "tests", `source-exclusion-${crypto.randomUUID()}`);
   let fetched = false;
   await assert.rejects(acquire.acquireInventory(inventory, output, {
+    start,
     count: 1,
     fetchImpl: async () => { fetched = true; throw new Error("Unexpected fetch"); }
   }), /prior_source_quality_rejected/);

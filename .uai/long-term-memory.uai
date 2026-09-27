@@ -54,12 +54,12 @@ pointers:
   - id: cleanup-progress
     path: docs/ecosystem-cleanup-2026-09-12.md
     label: Ecosystem cleanup progress
-    summary: Open for C115 real source-model failure and enforced exclusion, C114 publication, completed owner cleanup and remaining model/seed limits.
+    summary: Open for C117 source-runtime compatibility and format rejection, C114 publication, current owner cleanup commands and remaining model/seed limits.
     authority: owner_authorized_progress_record
     review_state: reviewed_for_routing_and_identity
     status: current
     last_reviewed_utc: 2026-09-27T18:27:14Z
-    sha256: 903517d8d01036135d0be28873151cb8da546df726f95209d5493f6d4fffbaa7
+    sha256: 63368e4ee30322f4cac6a94a5adc41b32cc3f81d9d446af5ddf4fa297fa38616
   - id: source-lock
     path: contracts/vnext/qwen3-0.6b-base-source-lock.v2.json
     label: Current diagnostic source identity

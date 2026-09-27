@@ -1,0 +1,27 @@
+{
+  "schema": "tinyrustlm.source_model_screen_assessment.v1",
+  "sourceModelId": "Biggiraffe/Qwen3-0.6B-JSON-SFT-GRPO",
+  "sourceRevision": "0063adcd7b5169b4e7816b8326de6e18281d2256",
+  "sourceModelArtifactSha256": "2a98da2269b343113ea2663e66a90defdf6c9dafa322ca1643af7f1d991fac19",
+  "sourceScreenSha256": "ea53d1fe7adf28606ef963af72de32df47f101ed650d9d0cb5e0d2aafe077e2a",
+  "decision": "rejected",
+  "decisionAuthority": "engineering-source-screen-v1",
+  "architectureFamily": "qwen3-dense-gqa",
+  "runtimeAdmission": "not-admitted-current-slm2",
+  "licenseDisposition": "apache-2.0-upstream-metadata-verified",
+  "blockerCode": "model_quality_rejected",
+  "criticalFailureCodes": ["answer-format-violated"],
+  "caseDispositions": [
+    { "index": 0, "status": "pass", "failureCodes": [] },
+    { "index": 1, "status": "pass", "failureCodes": [] },
+    { "index": 2, "status": "pass", "failureCodes": [] },
+    { "index": 3, "status": "pass", "failureCodes": [] },
+    { "index": 4, "status": "fail", "failureCodes": ["answer-format-violated"] },
+    { "index": 5, "status": "pass", "failureCodes": [] }
+  ],
+  "officialReferences": [
+    "https://huggingface.co/Biggiraffe/Qwen3-0.6B-JSON-SFT-GRPO/tree/0063adcd7b5169b4e7816b8326de6e18281d2256",
+    "https://huggingface.co/Biggiraffe/Qwen3-0.6B-JSON-SFT-GRPO/blob/0063adcd7b5169b4e7816b8326de6e18281d2256/tokenizer_config.json",
+    "https://www.apache.org/licenses/LICENSE-2.0.txt"
+  ]
+}
