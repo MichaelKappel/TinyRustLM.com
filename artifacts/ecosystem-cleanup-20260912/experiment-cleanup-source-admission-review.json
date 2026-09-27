@@ -1,0 +1,48 @@
+{
+  "schema": "tinyrustlm.experiment_cleanup_source_admission_review.v1",
+  "reviewDate": "2026-09-27",
+  "ownerReceipt": {
+    "path": "artifacts/ecosystem-cleanup-20260912/ignored-experiment-cleanup-receipt.json",
+    "sha256": "224719dd251e6e36c05ea33896a83aa6d69e124d67dc7909b680f4ef9541460c",
+    "reviewedPathsMatched": 26,
+    "independentlyAbsentPaths": 26,
+    "logicalBytesRemoved": 8599953,
+    "measuredStorageRecoveryBytes": null
+  },
+  "sourceAdmission": {
+    "implementationCommit": "a73381dd89f4d4ad02bac10bd6226bd72c40d534",
+    "testsPassed": 49,
+    "testsFailed": 0,
+    "testsSkipped": 0,
+    "registeredRootScan": "pass",
+    "wholeVolumeInventoryPerformed": false,
+    "referenceEnvironmentModified": false,
+    "thirdPartyFixtureIdentity": "sha256:01845c437f4655e3cf9cc4fc4e49cfd607431f22675e1b611129a90239f34822",
+    "portalCommit": "3706bbdcc91fb72e7fc0b343a38a078db2e59ce0",
+    "portalPreflightTestsPassed": 7
+  },
+  "publicationInputValidation": {
+    "implementationCommitPrefix": "38c05f6",
+    "credentialProfileOnly": "pass",
+    "validateOnly": "pass",
+    "validatedFiles": 32,
+    "affectedTestsPassed": 18,
+    "affectedTestsFailed": 0,
+    "affectedTestsSkipped": 0,
+    "numericCoverageMeasured": false,
+    "ownedValidationOutputAbsent": true,
+    "worktreeCleanAfterValidation": true,
+    "initialFailures": [
+      "Legacy FETCH_HEAD equality check rejected a pushed commit until declared branches were fetched.",
+      "ValidateOnly created unignored owned scratch and rejected its own dirty status; corrected to existing ignored verification storage."
+    ]
+  },
+  "published": false,
+  "qualifiedDefaultModelEstablished": false,
+  "remaining": [
+    "Remote target marker and transport/publication gates.",
+    "Qualified real default model, MiniModel seed and product execution evidence.",
+    "Package release gates including actual required platform execution.",
+    "Remaining ecosystem cleanup and the legacy FETCH_HEAD policy contradiction."
+  ]
+}

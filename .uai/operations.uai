@@ -23,7 +23,7 @@ current_experiment_cleanup:
 
 publisher_validation_c108:
   result: Real ValidateCredentialProfileOnly passes after fresh declared-branch fetches align the legacy FETCH_HEAD comparison. ValidateOnly reached owned output creation but then saw its unignored scratch as dirty source; cleanup succeeded.
-  correction: Disposable validation output now belongs to existing ignored artifacts/verification/web-deployments. Durable deployment reports remain visible to Git. All18 affected tests pass; full CLI rerun from the pushed commit remains required. No public writes.
+  correction: Disposable validation output now belongs to existing ignored artifacts/verification/web-deployments. Durable deployment reports remain visible to Git. All18 affected tests pass. Complete ValidateOnly CLI from pushed38c05f6 passes for32 files; owned output absent and worktree clean afterward. Remote marker/transport, actual publication and real-model release gates remain. No public writes.
 
 owner_manual_cleanup:
   requested: September23 owner explicitly requested a PowerShell script to execute locally when agent cleanup is blocked.

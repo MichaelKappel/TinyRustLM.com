@@ -23,8 +23,12 @@ source custody and persistent deployment report visibility are unchanged.
 The new regression uses actual Git ignore evaluation to verify disposable
 scratch is ignored while durable deployment reports remain visible. All 18
 affected deployment tests pass, including the real PowerShell primitive checks.
-Numeric PowerShell coverage is unmeasured. A complete CLI rerun from the pushed
-commit is still required; no upload or public change has occurred.
+Numeric PowerShell coverage is unmeasured. The complete ValidateOnly CLI rerun
+from pushed commit38c05f6 passes for all32 deployment files, and its owned output
+is independently absent afterward. The worktree remains clean. This validates
+local publication inputs; remote marker, transport/recovery, actual publication
+and the real-model release gates are not proven. No upload or public change
+has occurred.
 
 ## C107: distinguish registered dependency data from copied ecosystem source
 
