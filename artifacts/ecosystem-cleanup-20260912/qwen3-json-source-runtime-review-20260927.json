@@ -1,0 +1,28 @@
+{
+  "schema": "tinyrustlm.source_development_runtime_review.v1",
+  "reviewedAtUtc": "2026-09-27T23:48:15.857Z",
+  "runtime": {
+    "python": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+    "torch": "2.13.0+cpu",
+    "transformers": "5.13.1",
+    "tokenizers": "0.22.2",
+    "cuda_available": false
+  },
+  "fileBindings": [
+    {
+      "path": "D:\\LLMs\\TinyRustLM\\training-env-py312\\Scripts\\python.exe",
+      "bytes": 274424,
+      "sha256": "0b471133e110cfb53a061cad528ce8e517d7b9ac41a0a396c39ad795a487fc14"
+    },
+    {
+      "path": "D:\\LLMs\\TinyRustLM\\training-env-py312\\Lib\\site-packages\\transformers\\tokenization_utils_base.py",
+      "bytes": 183764,
+      "sha256": "f86fc8ce6ad86bcbb4bad93b84b3cde9f7b93b516703b5d220889c66bbdd7b5a"
+    }
+  ],
+  "standardError": "",
+  "dependencyChanges": false,
+  "numericalReferenceRuntimeChanged": false,
+  "modelExecution": false,
+  "reason": "Existing runtime supports list-valued extra_special_tokens; pinned numerical reference4.51 remains unchanged."
+}
