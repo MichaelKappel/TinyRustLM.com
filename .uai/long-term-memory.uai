@@ -54,12 +54,12 @@ pointers:
   - id: cleanup-progress
     path: docs/ecosystem-cleanup-2026-09-12.md
     label: Ecosystem cleanup progress
-    summary: Open for C106 completed cleanup and C107 dependency-fixture classification, passing registered-root scan and remaining release gates.
+    summary: Open for C106 cleanup, C107 passing source scan and C108 publisher credential validation and owned-scratch correction.
     authority: owner_authorized_progress_record
     review_state: reviewed_for_routing_and_identity
     status: current
     last_reviewed_utc: 2026-09-27T18:27:14Z
-    sha256: 0e780146b2fc04e40e024160b0b7ce0d03abb48cc9e429934f6291199415d89e
+    sha256: 66fafcab3e45d38271a1d8a2c02ca2016ff2225f94c00aac020c0fc1408c5414
   - id: source-lock
     path: contracts/vnext/qwen3-0.6b-base-source-lock.v2.json
     label: Current diagnostic source identity

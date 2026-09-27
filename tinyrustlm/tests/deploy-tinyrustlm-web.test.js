@@ -4,6 +4,7 @@ const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
 const test = require("node:test");
+const { spawnSync } = require("node:child_process");
 
 const deploymentScriptPath = path.resolve(
   __dirname,
@@ -11,6 +12,21 @@ const deploymentScriptPath = path.resolve(
   "tools",
   "deploy-tinyrustlm-web.ps1"
 );
+
+test("validation scratch does not dirty source while durable reports remain visible", () => {
+  const source = fs.readFileSync(deploymentScriptPath, "utf8");
+  const parent = /\$validationParent = Assert-CanonicalDeploymentArtifactPath\s*`\s*-Path \(Join-Path \$RepositoryRoot "([^"]+)"\)/u.exec(source);
+  assert.ok(parent);
+  const scratch = `${parent[1].replaceAll("\\", "/")}/tinyrustlm-web-validation-${"a".repeat(32)}/owner.v1.json`;
+  const root = path.resolve(__dirname, "../..");
+  const result = spawnSync("git", ["-c", `safe.directory=${root.replaceAll("\\", "/")}`,
+    "check-ignore", "--no-index", "--stdin"], {
+    cwd: root, encoding: "utf8", windowsHide: true,
+    input: `${scratch}\nartifacts/web-deployments/tinyrustlm-web-deployment-review.json\n`
+  });
+  assert.equal(result.status, 0, result.stderr);
+  assert.deepEqual(result.stdout.trim().split(/\r?\n/u), [scratch]);
+});
 
 test("deployment orchestrator requires fresh readback and immutable attempt evidence", () => {
   const source = fs.readFileSync(deploymentScriptPath, "utf8");

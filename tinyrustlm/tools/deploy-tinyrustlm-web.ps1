@@ -4285,7 +4285,7 @@ if ($ValidateCredentialProfileOnly) {
 if ($ValidateOnly) {
     $validationOperationId = [Guid]::NewGuid().ToString("N")
     $validationParent = Assert-CanonicalDeploymentArtifactPath `
-        -Path (Join-Path $RepositoryRoot "artifacts\web-deployments") -SourceRoot $RepositoryRoot
+        -Path (Join-Path $RepositoryRoot "artifacts\verification\web-deployments") -SourceRoot $RepositoryRoot
     [IO.Directory]::CreateDirectory($validationParent) | Out-Null
     $validationOperationRoot = Join-Path $validationParent (
         "tinyrustlm-web-validation-{0}" -f $validationOperationId

@@ -5,6 +5,27 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C108: publisher validation uses ignored owned scratch
+
+After C107 was pushed, the real publisher's credential-validation mode passed
+with the prepared external configuration and full clean-source custody.
+Its first attempt failed because the implementation still compares FETCH_HEAD;
+a fresh fetch of each declared branch restored equality across all seven roots.
+Local HEAD, upstream and the direct remote already agreed before that fetch.
+The conflict between this old FETCH_HEAD check and newer policy remains a
+separate maintenance issue; no history or remote source was reset.
+
+The subsequent ValidateOnly mode rejected its own newly created, unignored
+validation directory as dirty source. Its finally block removed that output;
+the worktree returned clean. Validation scratch now uses the existing ignored
+`artifacts/verification/web-deployments/` area. Owned creation and cleanup,
+source custody and persistent deployment report visibility are unchanged.
+The new regression uses actual Git ignore evaluation to verify disposable
+scratch is ignored while durable deployment reports remain visible. All 18
+affected deployment tests pass, including the real PowerShell primitive checks.
+Numeric PowerShell coverage is unmeasured. A complete CLI rerun from the pushed
+commit is still required; no upload or public change has occurred.
+
 ## C107: distinguish registered dependency data from copied ecosystem source
 
 The C106 ZIP is upstream setuptools test data, not an extra TinyRustLM source

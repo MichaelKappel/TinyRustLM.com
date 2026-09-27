@@ -21,6 +21,10 @@ current_experiment_cleanup:
   execution: Owner completed the reviewed script after the agent deletion was policy-rejected. The helper and test are now retired to Git dac9934; do not rerun or recreate them.
   next_gate: C107 distinguishes the exact hash-bound setuptools test fixture from ecosystem source without exempting any directory or altering reference bytes. Both independent scans agree on its separate third-party inventory. The complete registered-root source CLI now passes; clean committed custody, remote equality, model and release gates remain. Read cleanup C107. Older37/26-path and fixture blockers below are historical; no publication is claimed.
 
+publisher_validation_c108:
+  result: Real ValidateCredentialProfileOnly passes after fresh declared-branch fetches align the legacy FETCH_HEAD comparison. ValidateOnly reached owned output creation but then saw its unignored scratch as dirty source; cleanup succeeded.
+  correction: Disposable validation output now belongs to existing ignored artifacts/verification/web-deployments. Durable deployment reports remain visible to Git. All18 affected tests pass; full CLI rerun from the pushed commit remains required. No public writes.
+
 owner_manual_cleanup:
   requested: September23 owner explicitly requested a PowerShell script to execute locally when agent cleanup is blocked.
   historical_source: Git b1736b7 contains the completed Invoke-ReviewedCleanup script, test, manifest and instructions; retired from current source after verified completion.
