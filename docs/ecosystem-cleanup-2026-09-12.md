@@ -5,6 +5,40 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C106: all 26 authorized experiment directories removed
+
+The owner executed the reviewed helper at 2026-09-27T18:23:58.6784658Z.
+Its receipt lists exactly the 26 authorized paths, reports all removed with
+none already absent, and records 8,599,953 logical bytes. Physical storage
+recovery was not measured. Independent lstat checks confirm every path absent.
+The receipt is preserved byte-for-byte in Git at
+`artifacts/ecosystem-cleanup-20260912/ignored-experiment-cleanup-receipt.json`,
+SHA-256 `224719dd251e6e36c05ea33896a83aa6d69e124d67dc7909b680f4ef9541460c`.
+The completed helper and validation test are retired; their source remains in
+commit `dac99345e651c384c04f9f02f3d20bda310ad878`. Do not rerun that cleanup.
+
+The next complete source scan no longer reports the 26 access failures. It
+stops at `source_authority_source_archive_present` for the 1,809-byte setuptools
+test fixture `my-test-package.zip`, SHA-256
+`01845c437f4655e3cf9cc4fc4e49cfd607431f22675e1b611129a90239f34822`, under
+`artifacts/external/qwen3-numerical-oracle/environment/Lib/site-packages/pkg_resources/tests/data/my-test-package-zip/`.
+Inspection found eight ZIP members containing a tiny third-party packaging
+example, not TinyRustLM source. The exact archive is listed in setuptools
+80.3.1's installed RECORD; the numerical environment lock validates that file
+closure. It remains intact pending a coherent resolution of the archive
+classification and environment-integrity requirements. This is a different
+finding, not evidence that the owner's cleanup failed. No source-gate pass,
+model qualification, website publication or package release is claimed.
+
+The bounded ignored-source review also compared four portal staging files with
+their tracked counterparts: three match current files byte-for-byte and the
+fourth matches historical commit `fb074cf05af3dea4b4e477032e8a5bb266f7be50`
+after line-ending normalization. These inspected copies contain no unique
+authored work; this does not establish that every ignored file is recoverable.
+
+The C105 and earlier sections below retain their dated observations. Current
+cleanup status is the verified removal above, not their earlier pending state.
+
 ## C105: installer removal verified; remaining ignored cleanup explicitly authorized
 
 The owner's September27T18:04:34.2374304Z receipt reports431 regular files and

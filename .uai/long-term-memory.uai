@@ -1,5 +1,5 @@
 profile: tinyrustlm.long-term-memory.current.v1
-updated_utc: 2026-09-27T18:11:11Z
+updated_utc: 2026-09-27T18:27:14Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
@@ -54,12 +54,12 @@ pointers:
   - id: cleanup-progress
     path: docs/ecosystem-cleanup-2026-09-12.md
     label: Ecosystem cleanup progress
-    summary: Open for C105 verified installer removal, authorized ignored-output cleanup, source-control verification and remaining release gates.
+    summary: Open for C106 verified experiment removal, exact owner receipt, retired helper and the newly reached dependency-fixture classification gate.
     authority: owner_authorized_progress_record
     review_state: reviewed_for_routing_and_identity
     status: current
-    last_reviewed_utc: 2026-09-27T18:11:11Z
-    sha256: 65af910cf06f9436b76e8acf1b9bbd60212b0f656f47ba78790cca3bedaa556a
+    last_reviewed_utc: 2026-09-27T18:27:14Z
+    sha256: 1eb0bdf53e41c4dc59487a9a05b28dc359fa659fce1f6334d5be52fc90e039c1
   - id: source-lock
     path: contracts/vnext/qwen3-0.6b-base-source-lock.v2.json
     label: Current diagnostic source identity

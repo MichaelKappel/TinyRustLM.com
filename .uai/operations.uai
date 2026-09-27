@@ -1,5 +1,5 @@
 profile: tinyrustlm.operations.current.v1
-updated_utc: 2026-09-27T18:11:11Z
+updated_utc: 2026-09-27T18:27:14Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
@@ -17,9 +17,9 @@ owner_delivery_policy:
 current_experiment_cleanup:
   authority: September27 owner explicitly selected Delete the ignored experiment outputs too after being told Git cannot restore them.
   completed: Owner receipt941ae6204f71ecb53ed888d3b379ef25b4112a9f907062745f27d2bce4078483 verifies431 installer files and2 links removed; exact root independently absent and reference interpreter present. Logical296933889 bytes, physical recovery unmeasured. Completed installer helper/test retired to Git history.
-  remaining: Fresh source scan reports26 unreadable experiment directories. All26 are ignored and have zero tracked files; all seven repository heads match their fetched/direct remotes.
-  execution: Agent native PowerShell deletion was rejected before execution by automatic approval review with blocked by policy. Do not retry via another tool or ACL change.
-  operator_command: Run tinyrustlm/tools/remove-authorized-experiment-outputs.ps1 in Administrator PowerShell. It validates exact listed scope, current Git tracking/ignore status, containment, ordinary ancestry and contents before deletion, and writes ignored-experiment-cleanup-receipt.json afterward. Validation tests pass on owned fixtures; real deletion remains pending.
+  remaining: None of the authorized26 paths remains. Owner receipt at18:23:58.6784658Z matches the reviewed path list; independent lstat confirms all absent. Logical8599953 bytes removed; physical recovery unmeasured. Receipt SHA256224719dd251e6e36c05ea33896a83aa6d69e124d67dc7909b680f4ef9541460c is preserved byte-exact in Git.
+  execution: Owner completed the reviewed script after the agent deletion was policy-rejected. The helper and test are now retired to Git dac9934; do not rerun or recreate them.
+  next_gate: Current source scan stops at source_authority_source_archive_present for the1809-byte setuptools my-test-package.zip fixture. Its exact bytes belong to the locked installed package RECORD. Preserve reference integrity while resolving classification; read cleanup C106. Older37/26-path blockers below are historical. No source-gate pass or publication is claimed.
 
 owner_manual_cleanup:
   requested: September23 owner explicitly requested a PowerShell script to execute locally when agent cleanup is blocked.

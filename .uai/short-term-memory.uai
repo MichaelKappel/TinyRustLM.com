@@ -1,10 +1,10 @@
 profile: tinyrustlm.short-term-memory.current.v1
-updated_utc: 2026-09-27T18:11:11Z
+updated_utc: 2026-09-27T18:27:14Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
 now:
-  owner_cleanup_followthrough: C105 verifies installer removal; source errors drop37 to26. Owner authorizes permanent deletion of the remaining ignored experiment outputs. Agent removal was rejected before execution; use the prepared remove-authorized-experiment-outputs.ps1 administrator handoff. Zero tracked files under all26 targets; all seven repositories were fetched and remote-exact. No deployment; regular source/result pushes remain required.
+  owner_cleanup_followthrough: C106 verifies all26 authorized ignored experiment directories absent and the exact owner receipt preserved. Logical8599953 bytes, physical recovery unmeasured. Completed helper/test retired to Git dac9934. Current source scan stops on a locked setuptools ZIP test fixture; preserve reference integrity while resolving classification. Prior37/26-path and pending-cleanup observations below are historical. No deployment; regular pushes remain mandatory.
   prepared_deployment_target: C104 external target memory is at E:\Source\Rust\.local-secrets\tinyrustlm-deployment.uai, referring to the existing password file without copying it. Canonical marker and production-function validation pass locally; all17 deployment checks pass. Read tinyrustlm/deploy/README.md. No remote setup/publication;37 source paths and pending operator cleanup remain.
   ftp_credential_reader: C103 replaces the obsolete FileZilla adapter with the verified FTP export format, using deployment_ftp_credentials_file and exact domain/account selection. All17 affected checks pass; actual file selection succeeds without credential disclosure or network access. Read cleanup C103/ftp-credential-reader-review.json. Source37-path, sentinel and target configuration gates remain open.
   ftps_target_discovery: C102 verifies actual TinyRustLM/MiniModel FTPS accounts and public homepage equality; MiniModel catalog/feed remain empty and match predecessor hashes. Sentinel reads return550; FileZilla-only publisher credential integration remains open. Fresh source scan still reports37 unreadable entries; owner numerical cleanup receipt is absent. Read cleanup C102 and its compact receipt; no remote writes or publication.

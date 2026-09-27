@@ -25,13 +25,13 @@ from denied access before any separately reviewed marker installation. Do not
 overwrite an existing differing marker or treat the prepared local file as proof
 of remote authority.
 
-The source scan now fails on 26 unreadable experiment directories. The owner-run
-numerical installer cleanup is verified complete, as is the earlier 241-file
-cleanup; both completed helpers are retired. The owner explicitly authorized
-deleting the remaining ignored experiment outputs. Run
-`tinyrustlm/tools/remove-authorized-experiment-outputs.ps1` in Administrator
-PowerShell, then recheck source admission. It refuses tracked files and links.
-Do not change ACLs or use another deletion API to evade an automatic refusal.
+The owner-run 26-directory experiment cleanup is independently verified complete,
+along with the numerical installer and earlier 241-file cleanup. Their completed
+helpers are retired to Git history. Do not rerun them. The source scan now stops
+on a setuptools ZIP test fixture in the reference environment; it is part of the
+locked installed package closure. Resolve that classification/integrity conflict
+before claiming source admission. Read cleanup C106 for the exact identity and
+receipt. No release-gate exemption or environment change has been applied.
 
 After the source and release prerequisites are satisfied, use the prepared
 configuration explicitly from the canonical root:
