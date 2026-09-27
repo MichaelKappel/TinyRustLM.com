@@ -5,6 +5,71 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C114: actual TinyRustLM publication and current handoff
+
+TinyRustLM0.5.0 was published through the authorized FTPS host from commit
+78665b15ceda70bf933c11e92241ec1555ebe6c5. Attempt
+20260927T2151371153188Z-31896acdc817 passed all32 file checks and verified
+all7 retired routes absent. Final marker, host policy, temporary remote cleanup
+and same-host lease cleanup passed. The immutable deployment report in
+artifacts/web-deployments has SHA-256
+2eb57661aa984990fd06c01b0247deb474ca4d607d2f3695598c10ca921e0f86.
+Independent public HTTPS reads exactly matched the1836-byte current record
+and15500-byte history. Publication identity is
+3f73e22ef8b0f52e504e0897a1365ecfe933c4a63f6895615265bded52cc65d6.
+Only this successful attempt's finalized ledger was promoted; its13291 bytes
+and SHA-2566994589071a1c4c9669b29ed9bc6413b26df9dcb0ea65f442fa8754fa8e48843
+match the receipt. Ledger and public-record validation pass.
+
+Real Edge154.0.4258.37 smoke checks passed12 cases across root, app, companion
+and updates at1440,900 and390 pixels. Console/page errors, unnamed buttons
+and horizontal overflow were zero. The live report and12 screenshots are in
+artifacts/web-deployments/live-browser-20260927T2305; report SHA-256
+8aefb0c17f702c3afc28a1c5d8b35d5cd30db5cd43a0bbae39993358cd1e1455.
+Desktop/mobile root screenshots were inspected. This uses an intercepted empty
+catalog fixture and blocked service workers: no working model, actual seed or
+before/after visual parity is established. Local smoke also passed12 cases;
+one earlier zero-argument CLI failure was not reproduced by the subsequent
+instrumented wrapper and remains unexplained. Both outcomes are retained.
+
+Current startup guidance now routes to current publication and cleanup facts
+instead of repeating superseded source-access/installer blockers. History stays
+in this document and Git. Reviewed source and durable evidence are pushed;
+credentials and model payloads stay outside Git. All18 publisher tests passed
+before publication; PowerShell numeric coverage remains unmeasured. Final ledger
+promotion exposed six stale-state test failures and a further predecessor test
+failure. Preparation-date labels now stay stable across finalization, and the
+predecessor generator uses the latest recorded publication rather than fixed
+0.4.1/0.5.0 assumptions. Exact candidate rejection remains enforced. All47 final
+release, publication and memory checks pass with zero skips; all32 public files
+still exactly match the completed deployment receipt. This correction changes
+local tooling and tests, not public page bytes.
+
+The27 failed-attempt empty directories remain untouched after automatic review
+rejected their removal with "blocked by policy". The owner-only command is:
+
+```powershell
+& 'E:\Source\Rust\TinyRustLM.com\eng\Remove-ReviewedEmptyPublicationFolders.ps1' -Apply
+```
+
+The successful attempt added5 empty scan directories after its useful receipt
+was preserved. Their removal was also rejected before execution, without retry.
+The combined32-directory list is in publication-checkpoint-review.json.
+Omitting -Apply previews that exact receipt-pinned list. Parser and actual preview
+pass32 present directories with zero removal. The script removes only empty
+reviewed directories without recursion, file deletion or ACL changes; the agent
+has not run Apply. Previous owner241-file, installer and26-directory cleanups
+are complete and must not be presented as pending.
+
+Remaining work includes a qualified default, real MiniModel seed, numerical v3
+registration and package/platform evidence. No other website or package was
+published by this attempt. The FTPS publisher still uses system temporary space
+for authenticated readback files, removed in finally; move this into canonical
+owned artifacts in the next source change. Transfers were slow and occasionally
+stalled but completed with byte verification. No global remote lock or atomic
+whole-site rollback is claimed. The release marker identifies a verified source
+publication, not owner acceptance of a fully working model product.
+
 ## C113: distinguish missing legacy directories from inaccessible ones
 
 Attempt20260927T2143131808736Z-6bdedba227c5 passed target identity and acquired

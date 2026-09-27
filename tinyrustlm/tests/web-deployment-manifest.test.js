@@ -13,8 +13,9 @@ const {
   validateRetirementClosure,
   validateWebDeploymentManifest
 } = require("../tools/web-deployment-manifest.js");
-const { materializeSourceReleaseState, materializeSourceReleaseAt, temporaryDirectory } =
+const { materializeSourceReleaseState, writePendingLedger, temporaryDirectory } =
   require("./site-release-test-fixture.js");
+const { materializeReleasePublication } = require("../tools/site-release-contract.js");
 
 const siteRoot = path.resolve(__dirname, "..");
 const deploymentManifestPath = path.join(
@@ -56,17 +57,20 @@ test("deployment input binds real canonical files without a source snapshot", (c
     expectedInputId: "0".repeat(64) }), /changed after binding/);
 });
 
-test("deployment input rejects a separately valid changed publication identity", (context) => {
+test("finalized deployment input rejects a different valid candidate publication", (context) => {
   const initialRoot = materializedRelease(context);
   const { input } = bindDeploymentInput({ siteRoot, generatedRoot: initialRoot });
   const changedRoot = temporaryDirectory(context, "tinyrustlm-changed-publication-");
-  materializeSourceReleaseAt({ outputRoot: changedRoot, sourceRevision: "b".repeat(40),
+  materializeReleasePublication({ ledgerPath: writePendingLedger(context),
+    outputRoot: changedRoot, sourceRevision: "b".repeat(40),
     publishedAt: "2026-08-31T23:16:30.000Z" });
-  const changed = bindDeploymentInput({ siteRoot, generatedRoot: changedRoot }).input;
+  const changed = JSON.parse(fs.readFileSync(path.join(changedRoot,
+    ".well-known/site-release.json"), "utf8"));
   assert.notEqual(changed.publicationId, input.publicationId);
-  assert.notEqual(changed.inputId, input.inputId);
+  assert.throws(() => bindDeploymentInput({ siteRoot, generatedRoot: changedRoot }),
+    /Current release record does not match its source ledger/);
   assert.throws(() => verifyDeploymentInput({ siteRoot, generatedRoot: changedRoot,
-    expectedInputId: input.inputId }), /changed after binding/);
+    expectedInputId: input.inputId }), /Current release record does not match its source ledger/);
 });
 
 test("web deployment manifest is the exact no-model publication closure", (context) => {

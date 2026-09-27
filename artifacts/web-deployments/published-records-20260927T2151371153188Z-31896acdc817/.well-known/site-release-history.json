@@ -1,0 +1,315 @@
+{
+  "schema": "uaix.site_release_history.v1",
+  "siteId": "tinyrustlm.com",
+  "name": "TinyRustLM",
+  "canonicalOrigin": "https://tinyrustlm.com",
+  "generatedAt": "2026-09-27T21:51:37.137Z",
+  "releases": [
+    {
+      "schema": "uaix.site_release.v1",
+      "siteId": "tinyrustlm.com",
+      "name": "TinyRustLM",
+      "canonicalOrigin": "https://tinyrustlm.com",
+      "releaseId": "tinyrustlm.com@0.1.0",
+      "version": "0.1.0",
+      "releaseDate": "2026-08-02",
+      "publishedAt": "2026-08-02T19:47:18.581Z",
+      "sourceRevision": "7d6b9e05ec242f46ff3adc669ed422859ee21e69",
+      "sourceLedgerSha256": "c264b0242632e19df4589356fd6d048d3b4d013c66faac9039638ee87966cebc",
+      "releaseEntrySha256": "e76e13252942d1613c5a08b7043886fe6658b6e04bcdc3fdc706e345e575afc2",
+      "publicationId": "fc5661c3b41fc3bc0c46f5b4d3af4540fb794dbd61ce5a79fb951c3a1cd5e909",
+      "updatesUrl": "https://tinyrustlm.com/updates/",
+      "summary": "Introduces a verifiable public release record and update history for the TinyRustLM dogfood site.",
+      "changes": [
+        {
+          "type": "added",
+          "summary": "Added a visible site version, release date, last-published status, and human-readable update history."
+        },
+        {
+          "type": "added",
+          "summary": "Added strict machine-readable current-release and release-history records under .well-known."
+        },
+        {
+          "type": "changed",
+          "summary": "Bound web publication to clean source identity, exact release metadata, secret scanning, and HTTPS readback evidence."
+        }
+      ]
+    },
+    {
+      "schema": "uaix.site_release.v1",
+      "siteId": "tinyrustlm.com",
+      "name": "TinyRustLM",
+      "canonicalOrigin": "https://tinyrustlm.com",
+      "releaseId": "tinyrustlm.com@0.1.1",
+      "version": "0.1.1",
+      "releaseDate": "2026-08-02",
+      "publishedAt": "2026-08-02T21:04:43.725Z",
+      "sourceRevision": "4b00bd625f11dfdf49e5659a4737ad0dd2ca8727",
+      "sourceLedgerSha256": "5f65661a5b40b200d879aa083416c8c90ad626b06938fdcd4e0bdb8eefd147bd",
+      "releaseEntrySha256": "bd79ad14c8c4ed993696e49290520ecae9b8be270e3e6027b6180a162a451a17",
+      "publicationId": "aa5e5cc4a32e367c617dd4ee4d425c50c2ccf017829e7c0413784e5a09ec9d07",
+      "updatesUrl": "https://tinyrustlm.com/updates/",
+      "summary": "Makes the TinyRustLM release record fully readable and reachable across app viewports.",
+      "changes": [
+        {
+          "type": "fixed",
+          "summary": "Removed desktop footer truncation from the version, release date, and last-published facts."
+        },
+        {
+          "type": "added",
+          "summary": "Added a compact release summary and updates link for narrow-desktop and mobile layouts."
+        },
+        {
+          "type": "fixed",
+          "summary": "Aligned the initial no-model status with the authoritative browser model-admission state."
+        },
+        {
+          "type": "changed",
+          "summary": "Expanded browser release verification to require visible, in-viewport, unclipped release facts on every published app and history view."
+        }
+      ]
+    },
+    {
+      "schema": "uaix.site_release.v1",
+      "siteId": "tinyrustlm.com",
+      "name": "TinyRustLM",
+      "canonicalOrigin": "https://tinyrustlm.com",
+      "releaseId": "tinyrustlm.com@0.1.2",
+      "version": "0.1.2",
+      "releaseDate": "2026-08-02",
+      "publishedAt": "2026-08-02T21:23:27.068Z",
+      "sourceRevision": "3f8b2b6b3faa4e2c5e698dced36f249ee6438389",
+      "sourceLedgerSha256": "7d59e0a3aaff37b032ec9f06c966a1adee7191914f8f86ee1dcbfc47e915976c",
+      "releaseEntrySha256": "347ea127737328dac34b72b5e4d34f99740b7c228b8fa863aa40668f12582e3e",
+      "publicationId": "0e9da90d20943afb4dab388860792cff8a9e20fb2825e9a7e6a614d2299647be",
+      "updatesUrl": "https://tinyrustlm.com/updates/",
+      "summary": "Completes the release-readability deployment and hardens publication recovery.",
+      "changes": [
+        {
+          "type": "fixed",
+          "summary": "Completed the app and update-history surfaces left inconsistent by the interrupted 0.1.1 publication attempt."
+        },
+        {
+          "type": "fixed",
+          "summary": "Made the current-release JSON the final publication commit marker after all site content and release history."
+        },
+        {
+          "type": "fixed",
+          "summary": "Reconciled ambiguous FTPS rename responses through bounded read-only observations before rollback."
+        },
+        {
+          "type": "changed",
+          "summary": "Preserved the publicly observed 0.1.1 identity and advanced recovery as a distinct version."
+        }
+      ]
+    },
+    {
+      "schema": "uaix.site_release.v1",
+      "siteId": "tinyrustlm.com",
+      "name": "TinyRustLM",
+      "canonicalOrigin": "https://tinyrustlm.com",
+      "releaseId": "tinyrustlm.com@0.2.0",
+      "version": "0.2.0",
+      "releaseDate": "2026-08-08",
+      "publishedAt": "2026-08-08T22:15:40.943Z",
+      "sourceRevision": "3bd6637360399a38b6f433f6f61dfcd233358bfe",
+      "sourceLedgerSha256": "5e4e136d109c05edd31ee80a278e9f875007837d9b67faf59621f4d64b22086c",
+      "releaseEntrySha256": "b931dd79792b898891c654e1c891fe65742675e9997fbb8795193bd3fb443381",
+      "publicationId": "75d5f72656635eed58644b705acdf7c8fb18512fd2225f402563cf1756a2ea10",
+      "updatesUrl": "https://tinyrustlm.com/updates/",
+      "summary": "Replaces model handoff downloads with direct P2P-first acquisition and companion-managed local conversion.",
+      "changes": [
+        {
+          "type": "added",
+          "summary": "Added one-action acquisition that imports a complete verified MiniModel P2P offer before considering source conversion."
+        },
+        {
+          "type": "added",
+          "summary": "Added protocol-v2 companion download, resume, review, Rust conversion, validation, and direct browser loading for immutable supported Hugging Face sources."
+        },
+        {
+          "type": "added",
+          "summary": "Added receipt-bound streaming and activation of both the converted `.slm` model and its immutable `.acg1` composition graph."
+        },
+        {
+          "type": "removed",
+          "summary": "Removed model-acquisition and P2P-sharing README, TXT, PowerShell, request JSON, conversion-kit, and share-kit downloads from the browser."
+        },
+        {
+          "type": "security",
+          "summary": "Kept prompts, responses, source tensors, model bytes, and composition bytes off TinyRustLM and related project servers."
+        }
+      ]
+    },
+    {
+      "schema": "uaix.site_release.v1",
+      "siteId": "tinyrustlm.com",
+      "name": "TinyRustLM",
+      "canonicalOrigin": "https://tinyrustlm.com",
+      "releaseId": "tinyrustlm.com@0.2.1",
+      "version": "0.2.1",
+      "releaseDate": "2026-08-08",
+      "publishedAt": "2026-08-08T23:47:22.420Z",
+      "sourceRevision": "e964a095ede1c077b36b6476af5ee85b087f52f8",
+      "sourceLedgerSha256": "b10ed6695c4b1f29f4b1272710c64aa37012b15576e019cfad556e2973adbcfc",
+      "releaseEntrySha256": "a193ff4d8979ced33ad8bac41b3da2dd26918aba10b481a9bbf7ee81ab0b7e0f",
+      "publicationId": "aea1e08b74f6b7835473ffb482baeddd42c97346d0a08868a66574f1a5d089ce",
+      "updatesUrl": "https://tinyrustlm.com/updates/",
+      "summary": "Makes the public desktop companion immediately discoverable from TinyRustLM and replaces private-feed installation guidance.",
+      "changes": [
+        {
+          "type": "added",
+          "summary": "Added a Get companion action that opens a version-pinned install page linked to the public NuGet.org tool package without creating browser handoff files."
+        },
+        {
+          "type": "changed",
+          "summary": "Changed the canonical install guide from a private folder feed to the public signed 0.2.0 library, tool, and symbol packages."
+        },
+        {
+          "type": "changed",
+          "summary": "Recorded clean public package installation, repository-signature verification, payload verification, and companion doctor evidence."
+        },
+        {
+          "type": "documentation",
+          "summary": "Kept unpublished self-contained archives out of public availability claims until independent distribution evidence exists."
+        }
+      ]
+    },
+    {
+      "schema": "uaix.site_release.v1",
+      "siteId": "tinyrustlm.com",
+      "name": "TinyRustLM",
+      "canonicalOrigin": "https://tinyrustlm.com",
+      "releaseId": "tinyrustlm.com@0.3.0",
+      "version": "0.3.0",
+      "releaseDate": "2026-08-24",
+      "publishedAt": "2026-08-25T04:57:20.279Z",
+      "sourceRevision": "dca8a3a2107d8f6992291a59ae3eb1f319b332f4",
+      "sourceLedgerSha256": "6abb747cd2e50f684fbcf3c935e610660e8f41132d1da1ab782b7a1072cbd831",
+      "releaseEntrySha256": "7086de157f7dd8209c78664ec9adcf1ee5e7013e77b8706400ff470517283bf3",
+      "publicationId": "cc53b43f55557aa9808264776c73168a750600c7b53c4d6a6bc61815afa0e3b2",
+      "updatesUrl": "https://tinyrustlm.com/updates/",
+      "summary": "Publishes the clean-slate SLM2 browser shell while keeping model acquisition local or direct P2P and withholding unavailable companion claims.",
+      "changes": [
+        {
+          "type": "changed",
+          "summary": "Changed Get model to prefer an exact verified peer and otherwise request reviewed local source acquisition and conversion through the companion."
+        },
+        {
+          "type": "removed",
+          "summary": "Removed TXT, PowerShell, request JSON, conversion-kit, share-kit, package URL, and install-command handoffs from the browser experience."
+        },
+        {
+          "type": "fixed",
+          "summary": "Replaced stale companion availability language with exact Public package pending and Deployment blocked states."
+        },
+        {
+          "type": "security",
+          "summary": "Kept prompts, responses, source tensors, model bytes, and composition bytes off TinyRustLM and related project servers."
+        },
+        {
+          "type": "documentation",
+          "summary": "Updated companion and browser-runtime guidance to distinguish implemented source from unavailable packages, deployment, and live proof."
+        }
+      ]
+    },
+    {
+      "schema": "uaix.site_release.v1",
+      "siteId": "tinyrustlm.com",
+      "name": "TinyRustLM",
+      "canonicalOrigin": "https://tinyrustlm.com",
+      "releaseId": "tinyrustlm.com@0.4.0",
+      "version": "0.4.0",
+      "releaseDate": "2026-08-29",
+      "publishedAt": "2026-08-30T00:39:55.591Z",
+      "sourceRevision": "fe8e49eb73332787dfe75040b0c39068bcfc5252",
+      "sourceLedgerSha256": "96710b72b9d8a6afc6553dbaadcebf3c834c7dcbad6221a9fd9c00bb6b76a8ec",
+      "releaseEntrySha256": "7b0c2e9431344b4590584abb24651e009dc91b014ea4603d99639ec9cad8fdc3",
+      "publicationId": "c7e900472d59d97c0fec33b2ac73ec4f4c15b09e030e8646e5ca65efbcadc847",
+      "updatesUrl": "https://tinyrustlm.com/updates/",
+      "summary": "Publishes the sole worker-owned SLM2 browser runtime and authenticated local Companion control path without legacy execution code.",
+      "changes": [
+        {
+          "type": "added",
+          "summary": "Added the canonical SLM2 WebAssembly runtime, bounded loader, dedicated worker, typed runtime client, and Prompt2 request boundary."
+        },
+        {
+          "type": "changed",
+          "summary": "Changed the browser app to one worker-owned SLM2 execution path and removed the obsolete in-page runtime implementation instead of retaining compatibility code."
+        },
+        {
+          "type": "added",
+          "summary": "Added an authenticated, origin-bound Companion capability client with bounded model acquisition, conversion, verification, and activation operations."
+        },
+        {
+          "type": "fixed",
+          "summary": "Closed the deployment inventory over every current runtime dependency so the published shell cannot reference missing worker, loader, capability, or WebAssembly files."
+        },
+        {
+          "type": "security",
+          "summary": "Kept prompts, responses, model bytes, composition bytes, credentials, and private evidence outside TinyRustLM project servers and public release records."
+        }
+      ]
+    },
+    {
+      "schema": "uaix.site_release.v1",
+      "siteId": "tinyrustlm.com",
+      "name": "TinyRustLM",
+      "canonicalOrigin": "https://tinyrustlm.com",
+      "releaseId": "tinyrustlm.com@0.4.1",
+      "version": "0.4.1",
+      "releaseDate": "2026-08-30",
+      "publishedAt": "2026-08-30T20:58:12.460Z",
+      "sourceRevision": "8d4340794ab54d7aa6bc7b68438b060a1b566b6e",
+      "sourceLedgerSha256": "e2c1bd41dc5b501e8d6d694a8f9331d392142ea4c1bff1bc3d79bfa85a8a68b4",
+      "releaseEntrySha256": "e51b76591df8b63dfe71e0ed5afc5a1259d8e2efef7d483805aa7061313d3920",
+      "publicationId": "57d6cac123bad531275aae19388f66059ff6fa7931a4b1012285580c1a9197ae",
+      "updatesUrl": "https://tinyrustlm.com/updates/",
+      "summary": "Makes model selection more compact by removing the duplicate Edit Model command while preserving the single model chooser.",
+      "changes": [
+        {
+          "type": "removed",
+          "summary": "Removed the duplicate Edit Model button from the model toolbar."
+        },
+        {
+          "type": "changed",
+          "summary": "Kept Choose model as the sole command for opening model selection and reduced the toolbar to one row at supported desktop widths."
+        }
+      ]
+    },
+    {
+      "schema": "uaix.site_release.v1",
+      "siteId": "tinyrustlm.com",
+      "name": "TinyRustLM",
+      "canonicalOrigin": "https://tinyrustlm.com",
+      "releaseId": "tinyrustlm.com@0.5.0",
+      "version": "0.5.0",
+      "releaseDate": "2026-08-31",
+      "publishedAt": "2026-09-27T21:51:37.137Z",
+      "sourceRevision": "78665b15ceda70bf933c11e92241ec1555ebe6c5",
+      "sourceLedgerSha256": "9b02fa419d7f5b23c672713389cd71da2570bab96544292dda9edafdec4a19b4",
+      "releaseEntrySha256": "9160d067934b1ab8c6a7be731138c8f91be1a0d9bfa31b1e594ee28a0b0f20b0",
+      "publicationId": "3f73e22ef8b0f52e504e0897a1365ecfe933c4a63f6895615265bded52cc65d6",
+      "updatesUrl": "https://tinyrustlm.com/updates/",
+      "summary": "Simplifies startup around a verified cached composition or a small MiniModel.org server seed, with technical acquisition controls in Advanced.",
+      "changes": [
+        {
+          "type": "changed",
+          "summary": "Restores an admitted cached composition first; otherwise automatically starts the smallest eligible MiniModel.org server-seeded composition, with visible progress and cancellation. Hugging Face, files, conversion and manual peer settings remain in Advanced."
+        },
+        {
+          "type": "added",
+          "summary": "Added strict six-member catalog admission, bounded direct-peer streaming, browser OPFS persistence, restart verification, cancellation, and atomic activation."
+        },
+        {
+          "type": "changed",
+          "summary": "Routes a qualified local-conversion result through the authenticated companion into the same verified browser cache and activation path."
+        },
+        {
+          "type": "security",
+          "summary": "Keeps inference and prompts local, allows MiniModel.org to supply the initial verified seed, and distinguishes signed listings from current peer reachability. An unavailable or unqualified model is shown honestly."
+        }
+      ]
+    }
+  ]
+}

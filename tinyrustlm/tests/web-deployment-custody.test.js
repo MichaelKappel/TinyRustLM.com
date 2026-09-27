@@ -89,13 +89,16 @@ test("predecessor metadata retains exact historical identity and verified cleanu
   const result = deployment.materializeExpectedPublicPredecessor({
     repositoryRoot, ledgerPath, outputRoot
   });
-  assert.equal(result.predecessorVersion, "0.4.1");
-  assert.equal(result.pendingVersion, "0.5.0");
+  assert.equal(result.predecessorVersion, "0.5.0");
+  assert.equal(result.pendingVersion, null);
+  assert.equal(result.pendingReleaseId, null);
+  assert.equal(result.predecessorPublicationId,
+    "3f73e22ef8b0f52e504e0897a1365ecfe933c4a63f6895615265bded52cc65d6");
   assert.equal(result.files.length, 2);
   const expectedFiles = result.files.map(({ relativePath, byteCount, sha256 }) =>
     ({ relativePath, byteCount, sha256 }));
   const publicFiles = result.files.map((entry) => JSON.parse(fs.readFileSync(entry.filePath, "utf8")));
-  assert.ok(publicFiles.some((value) => value.version === "0.4.1"));
+  assert.ok(publicFiles.some((value) => value.version === "0.5.0"));
   const wrong = expectedFiles.map((entry, index) =>
     index === 0 ? { ...entry, sha256: "0".repeat(64) } : entry);
   assert.throws(() => deployment.removeExpectedPublicPredecessor({

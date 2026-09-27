@@ -164,6 +164,20 @@ test("failed live metadata leaves static release facts and marks last publish un
   assert.equal(view.containers[0].dataset.releaseState, "unavailable");
 });
 
+test("finalizing publication preserves the exact prepared page bytes", () => {
+  const { files, api } = inMemoryReleaseSurfaces();
+  const ledgerPath = path.join(siteRoot, "release/site-release-ledger.v1.json");
+  const ledger = JSON.parse(files.get(ledgerPath).toString("utf8"));
+  assert.equal(ledger.publications.length, ledger.releases.length);
+  const finalized = api.verifyReleaseSurfaces(siteRoot);
+  ledger.publications.pop();
+  files.set(ledgerPath, Buffer.from(`${JSON.stringify(ledger, null, 2)}\n`));
+  const pending = api.verifyReleaseSurfaces(siteRoot);
+  assert.equal(finalized.html, pending.html);
+  assert.equal(finalized.companionHtml, pending.companionHtml);
+  assert.equal(finalized.releaseLabel, "Prepared");
+});
+
 test("updates page is generated exactly from the release ledger and content-bound assets", (context) => {
   const isolatedRoot = siteRoot;
   const { files, api } = inMemoryReleaseSurfaces();

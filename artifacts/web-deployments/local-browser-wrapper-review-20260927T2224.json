@@ -1,0 +1,18 @@
+{
+  "schema": "tinyrustlm.local_smoke_wrapper_diagnostic.v1",
+  "startedUtc": "2026-09-27T22:24:25.631Z",
+  "priorCliAttempt": {
+    "status": "fail",
+    "failureCode": "local_web_release_smoke_failed",
+    "temporaryOutputCleanup": "verified",
+    "diagnosticUnavailable": true
+  },
+  "diagnostic": null,
+  "result": {
+    "status": "pass",
+    "observationCount": 12,
+    "reportSha256": "163fba088a0afc9d1f85ca5ae886f0455c9cef558731535816fd4434db05bc32",
+    "temporaryOutputCleanup": "verified"
+  },
+  "completedUtc": "2026-09-27T22:24:57.427Z"
+}

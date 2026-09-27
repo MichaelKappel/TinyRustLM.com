@@ -1,0 +1,268 @@
+{
+  "schema": "tinyrustlm.publication_checkpoint_review.v1",
+  "observedUtc": "2026-09-27T23:13:50.431Z",
+  "publication": {
+    "status": "pass",
+    "sourceCommit": "78665b15ceda70bf933c11e92241ec1555ebe6c5",
+    "attemptId": "20260927T2151371153188Z-31896acdc817",
+    "reportPath": "artifacts/web-deployments/tinyrustlm-web-deployment-20260927T2151371153188Z-31896acdc817.json",
+    "reportSha256": "2eb57661aa984990fd06c01b0247deb474ca4d607d2f3695598c10ca921e0f86",
+    "version": "0.5.0",
+    "publicationId": "3f73e22ef8b0f52e504e0897a1365ecfe933c4a63f6895615265bded52cc65d6",
+    "verifiedFiles": 32,
+    "retiredRoutes": 7,
+    "leaseCleanupVerified": true,
+    "publicHttpsRecheck": {
+      "atUtc": "2026-09-27T23:04:43.961Z",
+      "currentSha256": "58b0bd91ee44c28a17ccd37173ae06fbb835f1a73a265bea219cdc2fa0f4cbca",
+      "historySha256": "6eb6ff5cdd1698d8fe0145ddea6fdcb381785885711fcb17f176011df5ddaef9"
+    }
+  },
+  "validation": {
+    "finalTests": {
+      "passed": 47,
+      "failed": 0,
+      "skipped": 0
+    },
+    "initialAfterLedgerPromotion": {
+      "passed": 23,
+      "failed": 6
+    },
+    "laterCustodyCheck": {
+      "passed": 17,
+      "failed": 1
+    },
+    "corrections": [
+      "Stable preparation date labels preserve deployed page bytes after ledger finalization.",
+      "Latest recorded publication replaces hard-coded predecessor versions.",
+      "Negative candidate tests retain rejection against finalized authority."
+    ],
+    "liveBrowser": {
+      "passed": 12,
+      "reportPath": "artifacts/web-deployments/live-browser-20260927T2305/browser-smoke-report.json",
+      "sha256": "8aefb0c17f702c3afc28a1c5d8b35d5cd43a0bbae39993358cd1e1455",
+      "catalogMode": "intercepted-current-empty-fixture",
+      "visualParityClaimed": false,
+      "modelExecutionClaimed": false
+    },
+    "localBrowser": {
+      "passed": 12,
+      "earlierCliFailureNotReproduced": true,
+      "wrapperDiagnosticPath": "artifacts/web-deployments/local-browser-wrapper-review-20260927T2224.json"
+    },
+    "publicFilesUnchangedAfterFinalization": true
+  },
+  "cleanup": {
+    "status": "empty-directories-policy-blocked",
+    "priorBlockedDirectories": 27,
+    "newlyBlockedDirectories": 5,
+    "reason": "Automatic approval review rejected both removals before execution: blocked by policy.",
+    "agentRetriedRejectedDeletion": false,
+    "operatorScript": "eng/Remove-ReviewedEmptyPublicationFolders.ps1",
+    "operatorApplyRunByAgent": false,
+    "physicalStorageRecoveryMeasured": false
+  },
+  "remainingEmptyDirectories": [
+    "artifacts/verification/web-deployments/tinyrustlm-web-release-assets-20260927T2128349309317Z-9ff696926cb3",
+    "artifacts/verification/web-deployments/tinyrustlm-web-release-assets-20260927T2128349309317Z-9ff696926cb3/.well-known",
+    "artifacts/verification/web-deployments/tinyrustlm-web-secret-scan-evidence-20260927T2128349309317Z-9ff696926cb3",
+    "artifacts/verification/web-deployments/tinyrustlm-web-secret-scan-evidence-20260927T2128349309317Z-9ff696926cb3/quarantine",
+    "artifacts/verification/web-deployments/tinyrustlm-web-secret-scan-evidence-20260927T2128349309317Z-9ff696926cb3/receipts",
+    "artifacts/verification/web-deployments/tinyrustlm-web-secret-scan-evidence-20260927T2128349309317Z-9ff696926cb3/receipts/sha256",
+    "artifacts/verification/web-deployments/tinyrustlm-web-release-assets-20260927T2136244324978Z-fcdad6fbc16e",
+    "artifacts/verification/web-deployments/tinyrustlm-web-release-assets-20260927T2136244324978Z-fcdad6fbc16e/.well-known",
+    "artifacts/verification/web-deployments/tinyrustlm-web-secret-scan-evidence-20260927T2136244324978Z-fcdad6fbc16e",
+    "artifacts/verification/web-deployments/tinyrustlm-web-secret-scan-evidence-20260927T2136244324978Z-fcdad6fbc16e/quarantine",
+    "artifacts/verification/web-deployments/tinyrustlm-web-secret-scan-evidence-20260927T2136244324978Z-fcdad6fbc16e/receipts",
+    "artifacts/verification/web-deployments/tinyrustlm-web-secret-scan-evidence-20260927T2136244324978Z-fcdad6fbc16e/receipts/sha256",
+    "artifacts/verification/web-deployments/tinyrustlm-web-secret-scan-evidence-20260927T2136244324978Z-fcdad6fbc16e/receipts/sha256/9a",
+    "artifacts/verification/web-deployments/tinyrustlm-web-release-assets-20260927T2139149302975Z-516d949e956a",
+    "artifacts/verification/web-deployments/tinyrustlm-web-release-assets-20260927T2139149302975Z-516d949e956a/.well-known",
+    "artifacts/verification/web-deployments/tinyrustlm-web-secret-scan-evidence-20260927T2139149302975Z-516d949e956a",
+    "artifacts/verification/web-deployments/tinyrustlm-web-secret-scan-evidence-20260927T2139149302975Z-516d949e956a/quarantine",
+    "artifacts/verification/web-deployments/tinyrustlm-web-secret-scan-evidence-20260927T2139149302975Z-516d949e956a/receipts",
+    "artifacts/verification/web-deployments/tinyrustlm-web-secret-scan-evidence-20260927T2139149302975Z-516d949e956a/receipts/sha256",
+    "artifacts/verification/web-deployments/tinyrustlm-web-secret-scan-evidence-20260927T2139149302975Z-516d949e956a/receipts/sha256/14",
+    "artifacts/verification/web-deployments/tinyrustlm-web-release-assets-20260927T2143131808736Z-6bdedba227c5",
+    "artifacts/verification/web-deployments/tinyrustlm-web-release-assets-20260927T2143131808736Z-6bdedba227c5/.well-known",
+    "artifacts/verification/web-deployments/tinyrustlm-web-secret-scan-evidence-20260927T2143131808736Z-6bdedba227c5",
+    "artifacts/verification/web-deployments/tinyrustlm-web-secret-scan-evidence-20260927T2143131808736Z-6bdedba227c5/quarantine",
+    "artifacts/verification/web-deployments/tinyrustlm-web-secret-scan-evidence-20260927T2143131808736Z-6bdedba227c5/receipts",
+    "artifacts/verification/web-deployments/tinyrustlm-web-secret-scan-evidence-20260927T2143131808736Z-6bdedba227c5/receipts/sha256",
+    "artifacts/verification/web-deployments/tinyrustlm-web-secret-scan-evidence-20260927T2143131808736Z-6bdedba227c5/receipts/sha256/43",
+    "artifacts/verification/web-deployments/tinyrustlm-web-secret-scan-evidence-20260927T2151371153188Z-31896acdc817",
+    "artifacts/verification/web-deployments/tinyrustlm-web-secret-scan-evidence-20260927T2151371153188Z-31896acdc817/quarantine",
+    "artifacts/verification/web-deployments/tinyrustlm-web-secret-scan-evidence-20260927T2151371153188Z-31896acdc817/receipts",
+    "artifacts/verification/web-deployments/tinyrustlm-web-secret-scan-evidence-20260927T2151371153188Z-31896acdc817/receipts/sha256",
+    "artifacts/verification/web-deployments/tinyrustlm-web-secret-scan-evidence-20260927T2151371153188Z-31896acdc817/receipts/sha256/23"
+  ],
+  "publicFiles": [
+    {
+      "path": ".htaccess",
+      "bytes": 977,
+      "sha256": "7172deb05492c7e8cc6b5d6fb210ad9b693775ba337bd738030a050b4a234536"
+    },
+    {
+      "path": "browser-runtime/tinyrustlm-browser-runtime.wasm",
+      "bytes": 576938,
+      "sha256": "6bd1b7b9180c1c083e24dc40b5198cdeb3be52c98fc14cd9949badb9265236da"
+    },
+    {
+      "path": "browser-runtime/tinyrustlm-browser-runtime.wasm.manifest.json",
+      "bytes": 1209,
+      "sha256": "3d68c9bc6b216568c9d05b4cc515137e3d5b4caf3aa3e6124560341f41567de2"
+    },
+    {
+      "path": "app/active-conversation.js",
+      "bytes": 17010,
+      "sha256": "376e7c9ac4964d36868607ecb4d4ebd77958fc968453c842bd37baa2e6e60e50"
+    },
+    {
+      "path": "app/calculator-tool.js",
+      "bytes": 2228,
+      "sha256": "96e1fd491f059eb0d132472f76a6d0c6b26c575822875a36993ca5a8a6b35498"
+    },
+    {
+      "path": "app/companion-capability.js",
+      "bytes": 105348,
+      "sha256": "ef16f044cac16ad8ce441b4c10e82bd3673b484715619f01379b4bd7203bfa25"
+    },
+    {
+      "path": "app/minimodel-catalog-v1.js",
+      "bytes": 74811,
+      "sha256": "5c690e1b3cb96843f87f3951fcdc1a46ccc2418a7d2b0fbf16b97ba689ccd98b"
+    },
+    {
+      "path": "app/incremental-sha256.js",
+      "bytes": 9404,
+      "sha256": "e28faf3a02617d3d6747a0061f10f20b756500ae727f5c02e18da9912c767095"
+    },
+    {
+      "path": "app/memory-endpoints-enrollment.js",
+      "bytes": 22096,
+      "sha256": "92ee09d71918379d882d5bf6333add268c98e9b60b0a2b8fdf2711cc65384138"
+    },
+    {
+      "path": "app/memory-endpoints-http.js",
+      "bytes": 7954,
+      "sha256": "0328842b85ec11eb0e34dc005c3d4f20a6b74e54136b3cfad7ebf91cc30723c2"
+    },
+    {
+      "path": "app/memory-endpoints-distributed-sync-v1.js",
+      "bytes": 52711,
+      "sha256": "b115f61694d9eb937b027d9c7da6d52722dbc0c936b313cf8a08f978f0b8545c"
+    },
+    {
+      "path": "app/memory-endpoints-sync.js",
+      "bytes": 128088,
+      "sha256": "19f1f1f71334af4ae87debf060fd5f716b48f1ac8af57826151c0d7fea399c0d"
+    },
+    {
+      "path": "app/browser-model-admission.js",
+      "bytes": 14858,
+      "sha256": "87cdc059e71435f1572b3ad03fcce17701d5b73e83c3a6172e078a3349e5b683"
+    },
+    {
+      "path": "app/operation-lifetime.js",
+      "bytes": 2292,
+      "sha256": "4a9d907a3c62b679f896d859e843124bf4252e6d2be0f8aacc7e754113a9f570"
+    },
+    {
+      "path": "app/catalog-admission-loader.js",
+      "bytes": 38187,
+      "sha256": "623bb655aacdb075ea575193a64ef91469c6eda545e54b1dd4718fcf22493951"
+    },
+    {
+      "path": "app/model-composition-store.js",
+      "bytes": 89171,
+      "sha256": "dd57705dadf0d46674cb8f61e0a94b347c0a1f1f4adfc88c9a0312f446546534"
+    },
+    {
+      "path": "app/companion-composition-install.js",
+      "bytes": 34992,
+      "sha256": "711cf9b2d69f57be2b84802fd43992b58e546f7704aeeec933b04e742fdd6330"
+    },
+    {
+      "path": "app/p2p-composition-install.js",
+      "bytes": 50631,
+      "sha256": "3dc954f00dc9345ffc365a10c0c47efa5ba55ceb83caa8ff6009d31b73ccbe41"
+    },
+    {
+      "path": "app/browser-runtime-loader.js",
+      "bytes": 13096,
+      "sha256": "1836fb805c7be0a43508a54359fe3f128f9b4c1cbf888d2392908f8b4c6717b8"
+    },
+    {
+      "path": "app/prompt2-request.js",
+      "bytes": 9045,
+      "sha256": "781b025f9b92664c5b4ee41698555b3a95efa0022754aba37632ffbe8d209405"
+    },
+    {
+      "path": "app/model-runtime-client.js",
+      "bytes": 41095,
+      "sha256": "10da2c66df5693c7611279e85f86dc7ff357107deb6955ef25d6c47306393527"
+    },
+    {
+      "path": "app/model-runtime-worker.js",
+      "bytes": 54452,
+      "sha256": "5309a68a5c9e22bb581970aa0ffb1d209475f84edff47f839a4c7d5902e77fb2"
+    },
+    {
+      "path": "app/site-release.js",
+      "bytes": 7691,
+      "sha256": "6f8715fa77ad1a4bcc0c42a9050c0467825acdb402afe96e1a963cc535aea6a9"
+    },
+    {
+      "path": "app/app.css",
+      "bytes": 80372,
+      "sha256": "c7eba56563a327d4db924b9c4dc4b6d49e0c95a6a27df1d169289d6df975cb4e"
+    },
+    {
+      "path": "app/app.js",
+      "bytes": 471736,
+      "sha256": "ba36e6abf16de29de0c9794ab0645c7077ef18dfefcb42bd45028f473027607b"
+    },
+    {
+      "path": "updates/updates.css",
+      "bytes": 4316,
+      "sha256": "7ac24ad6754dcb7010cfb401c96ec077ab42ffb2559121808e63988e7ae8af19"
+    },
+    {
+      "path": "companion/index.html",
+      "bytes": 3616,
+      "sha256": "24dffee3514039fc34d2588475eed2f92533b2001165b3cac9365f185fa1928c"
+    },
+    {
+      "path": "updates/index.html",
+      "bytes": 13360,
+      "sha256": "a385ff23fdd8b57be1449a358f57b2a21ce9aab89d2e9096e81a378e09691fa7"
+    },
+    {
+      "path": "app/index.html",
+      "bytes": 48731,
+      "sha256": "0f64c431f9573f7ed3dabc2fd8d49cef6071764e473d9b53d21ecf5bcef6d972"
+    },
+    {
+      "path": "index.html",
+      "bytes": 48815,
+      "sha256": "d2e0da42960de4847c42f62b5027970fd33cc0b16a8873f8509057607cf02ccf"
+    },
+    {
+      "path": ".well-known/site-release-history.json",
+      "bytes": 15500,
+      "sha256": "6eb6ff5cdd1698d8fe0145ddea6fdcb381785885711fcb17f176011df5ddaef9"
+    },
+    {
+      "path": ".well-known/site-release.json",
+      "bytes": 1836,
+      "sha256": "58b0bd91ee44c28a17ccd37173ae06fbb835f1a73a265bea219cdc2fa0f4cbca"
+    }
+  ],
+  "remaining": [
+    "Qualified default and real MiniModel seed",
+    "Fresh numerical v3 material registration",
+    "NuGet and actual ARM64 consumer evidence",
+    "Canonical confinement of future FTPS readback scratch",
+    "Unreviewed historical remote backup files"
+  ]
+}

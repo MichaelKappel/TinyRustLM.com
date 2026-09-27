@@ -1,0 +1,34 @@
+{
+  "schema": "uaix.site_release.v1",
+  "siteId": "tinyrustlm.com",
+  "name": "TinyRustLM",
+  "canonicalOrigin": "https://tinyrustlm.com",
+  "releaseId": "tinyrustlm.com@0.5.0",
+  "version": "0.5.0",
+  "releaseDate": "2026-08-31",
+  "publishedAt": "2026-09-27T21:51:37.137Z",
+  "sourceRevision": "78665b15ceda70bf933c11e92241ec1555ebe6c5",
+  "sourceLedgerSha256": "9b02fa419d7f5b23c672713389cd71da2570bab96544292dda9edafdec4a19b4",
+  "releaseEntrySha256": "9160d067934b1ab8c6a7be731138c8f91be1a0d9bfa31b1e594ee28a0b0f20b0",
+  "publicationId": "3f73e22ef8b0f52e504e0897a1365ecfe933c4a63f6895615265bded52cc65d6",
+  "updatesUrl": "https://tinyrustlm.com/updates/",
+  "summary": "Simplifies startup around a verified cached composition or a small MiniModel.org server seed, with technical acquisition controls in Advanced.",
+  "changes": [
+    {
+      "type": "changed",
+      "summary": "Restores an admitted cached composition first; otherwise automatically starts the smallest eligible MiniModel.org server-seeded composition, with visible progress and cancellation. Hugging Face, files, conversion and manual peer settings remain in Advanced."
+    },
+    {
+      "type": "added",
+      "summary": "Added strict six-member catalog admission, bounded direct-peer streaming, browser OPFS persistence, restart verification, cancellation, and atomic activation."
+    },
+    {
+      "type": "changed",
+      "summary": "Routes a qualified local-conversion result through the authenticated companion into the same verified browser cache and activation path."
+    },
+    {
+      "type": "security",
+      "summary": "Keeps inference and prompts local, allows MiniModel.org to supply the initial verified seed, and distinguishes signed listings from current peer reachability. An unavailable or unqualified model is shown honestly."
+    }
+  ]
+}

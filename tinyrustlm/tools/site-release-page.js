@@ -118,12 +118,12 @@ function releasePaths(siteRoot) {
   });
 }
 
-// Derive public labels and asset identities from the current ledger.
+// Keep preparation dates stable; live metadata alone establishes publication time.
 function expectedPage(siteRoot) {
   const locations = releasePaths(siteRoot);
   const parsedLedger = parseReleaseLedger(fs.readFileSync(locations.ledgerPath));
   const ledger = parsedLedger.ledger;
-  const releaseLabel = parsedLedger.pendingRelease ? "Prepared" : "Released";
+  const releaseLabel = "Prepared";
   const cssSha256 = sha256File(locations.cssPath);
   const scriptSha256 = sha256File(locations.scriptPath);
   return Object.freeze({

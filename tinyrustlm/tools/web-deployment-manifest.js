@@ -705,6 +705,7 @@ function assertOwnedDirectoryAtDeletion(operationRoot, relativePath, expectedSta
   return candidate;
 }
 
+// Materialize the latest recorded publication from the canonical ledger, pending or finalized.
 function materializeExpectedPublicPredecessor(options = {}) {
   const roots = requireOperationRoot({
     repositoryRoot: options.repositoryRoot,
@@ -728,20 +729,17 @@ function materializeExpectedPublicPredecessor(options = {}) {
     "Public predecessor release ledger identity changed");
   const ledgerResult = parseReleaseLedger(ledgerBytes.bytes);
   const pending = ledgerResult.pendingRelease;
-  const predecessor = ledgerResult.ledger.releases.at(-2);
+  const predecessor = ledgerResult.ledger.releases.at(pending ? -2 : -1);
   const publication = ledgerResult.ledger.publications.at(-1);
-  invariant(pending?.releaseId === "tinyrustlm.com@0.5.0" && pending.version === "0.5.0",
-    "Public predecessor oracle requires pending TinyRustLM 0.5.0");
-  invariant(predecessor?.releaseId === "tinyrustlm.com@0.4.1" &&
-    predecessor.version === "0.4.1",
-  "Public predecessor oracle requires published TinyRustLM 0.4.1");
-  invariant(publication?.releaseId === predecessor.releaseId &&
-    ledgerResult.ledger.publications.length === ledgerResult.ledger.releases.length - 1,
+  invariant(predecessor && publication?.releaseId === predecessor.releaseId &&
+    ledgerResult.ledger.publications.length ===
+      ledgerResult.ledger.releases.length - (pending ? 1 : 0),
   "Public predecessor publication sequence is invalid");
   const predecessorLedger = Object.freeze({
     schema: ledgerResult.ledger.schema,
     site: ledgerResult.ledger.site,
-    releases: Object.freeze(ledgerResult.ledger.releases.slice(0, -1)),
+    releases: Object.freeze(pending ? ledgerResult.ledger.releases.slice(0, -1)
+      : ledgerResult.ledger.releases),
     publications: ledgerResult.ledger.publications
   });
   const predecessorLedgerBytes = Buffer.from(canonicalJson(predecessorLedger), "utf8");
@@ -778,8 +776,8 @@ function materializeExpectedPublicPredecessor(options = {}) {
       predecessorReleaseId: predecessor.releaseId,
       predecessorVersion: predecessor.version,
       predecessorPublicationId: publication.publicationId,
-      pendingReleaseId: pending.releaseId,
-      pendingVersion: pending.version,
+      pendingReleaseId: pending?.releaseId || null,
+      pendingVersion: pending?.version || null,
       predecessorLedgerSha256,
       outputRoot: roots.operationRoot,
       files
