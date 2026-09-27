@@ -276,6 +276,12 @@ test("deployment orchestrator requires fresh readback and immutable attempt evid
     "$operationPhase = \"transport-contract-admission\"",
     terminalCustody
   );
+  const leaseAcquisition = source.indexOf('$operationPhase = "deployment-lease"', terminalCustody);
+  assert.ok(leaseAcquisition > terminalCustody && leaseAcquisition < transportBlocker);
+  // HttpClient settings are immutable after the predecessor request starts.
+  const timeoutAssignments = [...source.matchAll(/\$script:httpClient\.Timeout\s*=/gu)];
+  assert.equal(timeoutAssignments.length, 1);
+  assert.ok(timeoutAssignments[0].index < source.indexOf('$publicPredecessorEvidence = Assert-PublicReleasePredecessor'));
   const credentials = source.indexOf(
     "$operationPhase = \"credential-profile\"",
     transportBlocker

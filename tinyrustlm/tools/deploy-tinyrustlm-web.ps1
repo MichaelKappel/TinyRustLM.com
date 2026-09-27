@@ -4762,6 +4762,15 @@ try {
     $terminalSourceCustodyEvidence = Assert-DeploymentSourceCustody `
         -RepositoryRoot $RepositoryRoot `
         -Custody $script:deploymentSourceCustody
+    $operationPhase = "deployment-lease"
+    $deploymentLease = New-ExclusiveDeploymentLease `
+        -LeasePath $deploymentLeasePath `
+        -AttemptId $attemptId `
+        -ReleaseId $releaseId `
+        -SourceCommit $currentSourceCommit `
+        -ToolClosureSha256 ([string]$script:deploymentSourceCustody.tool_closure_sha256)
+    $script:deploymentLeaseId = [string]$deploymentLease.lease_id
+    $script:deploymentLeaseReleasable = $true
     $operationPhase = "transport-contract-admission"
     Assert-SafeDeploymentTransportCapability `
         -Capability $transportCapabilityEvidence
@@ -4820,7 +4829,6 @@ try {
         $deploymentTargetEvidence.read_only -ne $true) {
         throw "The deployment root sentinel identity did not pass."
     }
-    $script:httpClient.Timeout = [TimeSpan]::FromMinutes(60)
     $operationPhase = "legacy-model-directory-preflight"
     $legacyModelRetireEntries = @($deploymentManifest.retire | Where-Object {
         ([string]$_.remote).StartsWith(
@@ -4834,7 +4842,18 @@ try {
     # These bounded probes write temporary objects after exact target admission.
     # Regular artifact publication is still disabled until their cleanup passes.
     $remoteMutationAttempted = $true
-    $script:predeploymentTemporaryRouteEvidence = Test-PredeploymentTemporaryRoutePolicy
+    $script:deploymentLeaseReleasable = $false
+    try {
+        $script:predeploymentTemporaryRouteEvidence = Test-PredeploymentTemporaryRoutePolicy
+    }
+    finally {
+        # Failed probes may release the guard only after their exact cleanup passed.
+        $script:deploymentLeaseReleasable = (
+            $script:predeploymentTemporaryRouteEvidence -and
+            $script:predeploymentTemporaryRouteEvidence.authenticated_cleanup_verified -eq $true -and
+            $script:predeploymentTemporaryRouteEvidence.owned_directory_cleanup_verified -eq $true
+        )
+    }
     if ([string]$script:predeploymentTemporaryRouteEvidence.status -ne "pass" -or
         $script:predeploymentTemporaryRouteEvidence.authenticated_cleanup_verified -ne $true -or
         $script:predeploymentTemporaryRouteEvidence.owned_directory_cleanup_verified -ne $true) {

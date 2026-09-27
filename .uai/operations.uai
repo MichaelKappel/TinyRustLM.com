@@ -14,14 +14,10 @@ owner_delivery_policy:
   source: Review and check in pending code coherently, preserve useful work, and distinguish source checkpoints from release passes. Do not commit secrets, model payloads, transient output or unreviewed obsolete executables merely to make status clean.
   regular_push_requirement: September27 owner reiterates that work must not remain only on this computer. Commit and push each coherent source/script/documentation change and reviewed non-sensitive durable result before handoff; verify direct remote equality. A clean Git status is not proof that ignored work is recoverable. Review ignored outputs explicitly; never conceal unique source or durable results behind broad artifact ignore rules. Credentials, private payloads, model binaries and disposable dependency/build output are not automatically authorized for Git publication.
 
-publication_c111:
-  result: Attempt20260927T2136244324978Z-fcdad6fbc16e passes predecessor cleanup then fails at target reader byte-array conversion before remote writes. Immutable receipts in artifacts/web-deployments.
-  correction: Direct typed assignment preserves the real reader byte array. Transport-only mock now exercises actual stream reader plus identity/hash/size failures. All18 tests pass; application publication still unproven. Read cleanup C111.
-
-publication_c110:
-  result: Actual attempt20260927T2128349309317Z-9ff696926cb3 failed after public predecessor gate passed because local cleanup rejected canonical artifact paths. Immutable receipts in artifacts/web-deployments; no application mutation or lease acquired.
-  correction: Canonical artifact containment now uses existing validator; exact owner and byte verifier preserved. All18 deployment tests pass. Prior predecessor removed through production exact-byte remover with cleanupVerified=true. Read cleanup C110 before fresh publication.
-  boundary: Failed candidate ledger is not publication truth. Application/model/default/seed/package acceptance remains incomplete.
+publication_c112:
+  result: Three real attempts stopped before remote application changes. C110 fixes canonical predecessor cleanup; C111 preserves the real sentinel byte-array return; C112 removes illegal post-request Timeout mutation and wires the existing same-host lease into the entrypoint.
+  validation: All18 deployment tests pass. Actual entrypoint lease acquisition and probe failure cleanup decisions exercised. Immutable attempt/terminal receipts remain byte-exact in artifacts/web-deployments. Read cleanup C110-C112.
+  boundary: Application/model/default/seed/package acceptance remains incomplete. Failed candidate ledgers are not source publication truth. No remote global lease or whole-release rollback is claimed.
 
 publication_c109:
   result: Exact126-byte target marker installed and verified over FTPS/HTTPS; working output moved to ignored canonical artifacts while durable receipts remain Git-visible. Read cleanup C109 and ftps-target-marker-installation.json. Marker is not application publication.

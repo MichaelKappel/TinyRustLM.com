@@ -806,12 +806,20 @@ Password: test:password=value
     }
 
     $leasePath = Join-Path $root "tinyrustlm.com.deployment-lease.v1.json"
-    $lease = New-ExclusiveDeploymentLease `
-        -LeasePath $leasePath `
-        -AttemptId "20260831T1200000000000Z-0123456789ab" `
-        -ReleaseId "tinyrustlm.com@0.5.0" `
-        -SourceCommit ("1" * 40) `
-        -ToolClosureSha256 ("2" * 64)
+    # Execute the actual entrypoint acquisition block, not a separate test-only call.
+    $deploymentText = [IO.File]::ReadAllText($deploymentScript)
+    $leaseStart = $deploymentText.IndexOf('$operationPhase = "deployment-lease"')
+    $leaseEnd = $deploymentText.IndexOf('$operationPhase = "transport-contract-admission"', $leaseStart)
+    Assert-True ($leaseStart -ge 0 -and $leaseEnd -gt $leaseStart) "Entrypoint lease acquisition is missing."
+    $deploymentLeasePath = $leasePath
+    $attemptId = "20260831T1200000000000Z-0123456789ab"
+    $releaseId = "tinyrustlm.com@0.5.0"
+    $currentSourceCommit = "1" * 40
+    $script:deploymentSourceCustody = [pscustomobject]@{ tool_closure_sha256 = ("2" * 64) }
+    . ([scriptblock]::Create($deploymentText.Substring($leaseStart, $leaseEnd - $leaseStart)))
+    $lease = $deploymentLease
+    Assert-True ($script:deploymentLeaseId -ceq $lease.lease_id -and $script:deploymentLeaseReleasable) `
+        "Entrypoint did not retain its acquired lease identity."
     Assert-True (
         (Test-Path -LiteralPath $leasePath -PathType Leaf) -and
         [string]$lease.lease_id -match "^[0-9a-f]{32}$" -and
@@ -847,6 +855,32 @@ Password: test:password=value
         [IO.File]::ReadAllText($leasePath, $utf8) -eq "crash-residue`n"
     ) "Crash residue was guessed stale or rewritten."
     [IO.File]::Delete($leasePath)
+
+    # Exercise entrypoint probe failure handling without any network request.
+    $probeStart = $deploymentText.IndexOf('$remoteMutationAttempted = $true',
+        $deploymentText.IndexOf('$operationPhase = "host-policy-predeployment"'))
+    $probeEnd = $deploymentText.IndexOf('    if ([string]$script:predeploymentTemporaryRouteEvidence.status', $probeStart)
+    Assert-True ($probeStart -ge 0 -and $probeEnd -gt $probeStart) "Entrypoint probe guard is missing."
+    $probeBlock = [scriptblock]::Create($deploymentText.Substring($probeStart, $probeEnd - $probeStart))
+    function global:Test-PredeploymentTemporaryRoutePolicy {
+        $script:predeploymentTemporaryRouteEvidence = [pscustomobject]@{
+            authenticated_cleanup_verified = $global:SyntheticProbeCleanup
+            owned_directory_cleanup_verified = $global:SyntheticProbeCleanup
+        }
+        throw "synthetic probe policy failure"
+    }
+    try {
+        foreach ($cleanupPassed in @($true, $false)) {
+            $global:SyntheticProbeCleanup = $cleanupPassed
+            Assert-Throws { . $probeBlock } "synthetic probe policy failure"
+            Assert-True ($script:deploymentLeaseReleasable -eq $cleanupPassed) `
+                "Probe failure released an unverified guard or retained a fully cleaned one."
+        }
+    }
+    finally {
+        Remove-Item Function:\global:Test-PredeploymentTemporaryRoutePolicy
+        Remove-Variable SyntheticProbeCleanup -Scope Global
+    }
 
     $publicationPlan = Get-DeploymentPublicationPlan -Entries @(
         [pscustomobject]@{ remote = "app/app.js" }

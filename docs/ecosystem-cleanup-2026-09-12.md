@@ -5,6 +5,25 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C112: HTTP client lifecycle and real lease acquisition
+
+Attempt20260927T2139149302975Z-516d949e956a passed the target marker reader,
+then failed while changing HttpClient.Timeout after predecessor requests had
+started. Its stale phase label says target identity; independent read-only
+reproduction confirms the immutable-after-first-request property error.
+The existing five-minute request timeout is now configured once before use.
+This attempt made no remote mutation; its exact terminal receipts are retained.
+
+Entry-point review also found that the publisher tested for a held local lease
+but never acquired it. It now acquires the existing create-only same-host lease
+after source custody and before predecessor/transport admission. Probe writes
+make the lease non-releasable until both authenticated and directory cleanup
+pass. No global FTP exclusivity or whole-site rollback is claimed. Tests execute
+the actual entrypoint acquisition block with a real local lock, including
+concurrent creation and crash residue, and the actual probe failure block for
+verified versus incomplete cleanup. All18 deployment tests pass, zero skips;
+PowerShell numeric coverage is still unmeasured. These fixes are not publication.
+
 ## C111: real bounded target reader exercises byte-array identity
 
 Fresh attempt20260927T2136244324978Z-fcdad6fbc16e passed predecessor validation
