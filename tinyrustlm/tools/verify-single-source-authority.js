@@ -613,6 +613,37 @@ function neutralProbeDirectoryEntries(entries, directory) {
   return entries;
 }
 
+// Exact upstream setuptools fixture: third-party package data, not ecosystem source.
+// Keep its installed bytes intact because the numerical environment RECORD binds it.
+const registeredThirdPartyArchive = Object.freeze({
+  path: path.join(canonicalRoot, "artifacts/external/qwen3-numerical-oracle",
+    "environment/Lib/site-packages/pkg_resources/tests/data",
+    "my-test-package-zip/my-test-package.zip"),
+  byteLength: 1809,
+  sha256: "01845c437f4655e3cf9cc4fc4e49cfd607431f22675e1b611129a90239f34822"
+});
+
+// Candidate location and bytes must both match; no dependency subtree is exempt.
+// The optional inspector supports isolated tests; production uses a bounded direct read.
+function classifyRegisteredThirdPartyArchive(candidate, options = {}) {
+  if (typeof candidate !== "string" || !hasCanonicalPathSegments(candidate) ||
+      !samePath(candidate, registeredThirdPartyArchive.path)) return false;
+  const inspectFile = options.inspectFile || ((filePath) => {
+    const bytes = readBoundedRegularFile(filePath,
+      registeredThirdPartyArchive.byteLength, options);
+    return bytes === null ? null : {
+      byteLength: bytes.length,
+      sha256: crypto.createHash("sha256").update(bytes).digest("hex")
+    };
+  });
+  if (typeof inspectFile !== "function") {
+    fail("source_authority_archive_classifier_invalid", candidate);
+  }
+  const identity = inspectFile(candidate);
+  return identity?.byteLength === registeredThirdPartyArchive.byteLength &&
+    identity?.sha256 === registeredThirdPartyArchive.sha256;
+}
+
 // Recognizes archive-container suffixes without granting an evidence exemption.
 function isSourceArchiveName(fileName) {
   if (!isCanonicalPathSegment(fileName)) return false;
@@ -1671,6 +1702,7 @@ function discoverSourceArchives(scopes = sourceArchiveScanScopes, options = {}) 
   const fileSystem = options.fileSystem || fs;
   const archives = new Set();
   const permittedBinaryReleaseArchives = new Set();
+  const permittedThirdPartyArchives = new Set();
   const nonCanonicalEntries = new Set();
   const unscannedSubtrees = new Set();
   const unreadable = new Set();
@@ -1738,7 +1770,9 @@ function discoverSourceArchives(scopes = sourceArchiveScanScopes, options = {}) 
       if (isSourceArchiveName(path.basename(candidate)) &&
           isEcosystemIdentityShapedPath(candidate)) {
         try {
-          if (classifyBinaryRelease(candidate)) {
+          if (classifyRegisteredThirdPartyArchive(candidate, { fileSystem })) {
+            permittedThirdPartyArchives.add(path.resolve(candidate));
+          } else if (classifyBinaryRelease(candidate)) {
             permittedBinaryReleaseArchives.add(path.resolve(candidate));
           } else {
             archives.add(path.resolve(candidate));
@@ -1804,6 +1838,7 @@ function discoverSourceArchives(scopes = sourceArchiveScanScopes, options = {}) 
   return Object.freeze({
     archives: Object.freeze([...archives].sort((left, right) =>
       left.localeCompare(right))),
+    permittedThirdPartyArchives: Object.freeze([...permittedThirdPartyArchives]),
     nonCanonicalEntries: Object.freeze([...nonCanonicalEntries].sort(
       (left, right) => left.localeCompare(right))),
     permittedBinaryReleaseArchives: Object.freeze(
@@ -1898,6 +1933,7 @@ function discoverEcosystemAuthorityFiles(
   const permittedLeafSymlinks = new Set();
   const permittedReparses = new Set();
   const permittedBinaryReleaseArchives = new Set();
+  const permittedThirdPartyArchives = new Set();
   const reparseTargetDrift = new Set();
   const depthExceeded = new Set();
   const nonRegular = new Set();
@@ -2153,7 +2189,9 @@ function discoverEcosystemAuthorityFiles(
       if (isSourceArchive) {
         if (entry.isFile()) {
           try {
-            if (classifyBinaryRelease(child)) {
+            if (classifyRegisteredThirdPartyArchive(child, { fileSystem })) {
+              permittedThirdPartyArchives.add(path.resolve(child));
+            } else if (classifyBinaryRelease(child)) {
               permittedBinaryReleaseArchives.add(path.resolve(child));
             } else {
               sourceArchives.add(path.resolve(child));
@@ -2236,6 +2274,7 @@ function discoverEcosystemAuthorityFiles(
       left.localeCompare(right))),
     permittedLeafSymlinks: Object.freeze([...permittedLeafSymlinks].sort(
       (left, right) => left.localeCompare(right))),
+    permittedThirdPartyArchives: Object.freeze([...permittedThirdPartyArchives]),
     permittedBinaryReleaseArchives: Object.freeze(
       [...permittedBinaryReleaseArchives].sort((left, right) =>
         left.localeCompare(right))),
@@ -2401,6 +2440,7 @@ function verifyEcosystemAuthorityFileDiscovery(discovery) {
     "nonRegular",
     "partialGitRoots",
     "permittedBinaryReleaseArchives",
+    "permittedThirdPartyArchives",
     "permittedLeafSymlinks",
     "permittedReparses",
     "reparses",
@@ -2472,10 +2512,12 @@ function verifySourceArchiveDiscovery(discovery) {
   if (!discovery || !Array.isArray(discovery.archives) ||
       !Array.isArray(discovery.nonCanonicalEntries) ||
       !Array.isArray(discovery.permittedBinaryReleaseArchives) ||
+      !Array.isArray(discovery.permittedThirdPartyArchives) ||
       !Array.isArray(discovery.unscannedSubtrees) ||
       !Array.isArray(discovery.unreadable) ||
       [discovery.archives, discovery.nonCanonicalEntries,
         discovery.permittedBinaryReleaseArchives,
+        discovery.permittedThirdPartyArchives,
         discovery.unscannedSubtrees, discovery.unreadable].some((values) =>
         values.some((candidate) => typeof candidate !== "string" ||
           candidate.length === 0))) {
@@ -3114,6 +3156,14 @@ function verifySingleSourceAuthority(options = {}) {
     fail("source_authority_discovery_invalid",
       "binary_release_evidence_mismatch");
   }
+  const authorityThirdParty = new Set(
+    authorityFileDiscovery.permittedThirdPartyArchives.map(pathIdentity));
+  const archiveThirdParty = new Set(
+    archiveDiscovery.permittedThirdPartyArchives.map(pathIdentity));
+  if (authorityThirdParty.size !== archiveThirdParty.size ||
+      [...authorityThirdParty].some((identity) => !archiveThirdParty.has(identity))) {
+    fail("source_authority_discovery_invalid", "third_party_archive_mismatch");
+  }
   return Object.freeze({
     canonicalLayoutAvailable: true,
     canonicalEcosystemRoot,
@@ -3130,6 +3180,7 @@ function verifySingleSourceAuthority(options = {}) {
     localScanPerformed,
     permittedBinaryReleaseEvidenceArchives:
       archiveDiscovery.permittedBinaryReleaseArchives,
+    permittedThirdPartyArchives: archiveDiscovery.permittedThirdPartyArchives,
     policyPaths: policyVerification.policyPaths,
     unreadableRoots: Object.freeze([
       ...new Set([
@@ -3218,6 +3269,8 @@ module.exports = Object.freeze({
   canonicalRoot,
   classifyRegisteredBinaryNugetArchive,
   classifyRegisteredBinaryReleaseArchive,
+  classifyRegisteredThirdPartyArchive,
+  registeredThirdPartyArchive,
   cliVerificationOptions,
   discoverCanonicalEcosystemRootEntries,
   discoverEcosystemAuthorityFiles,

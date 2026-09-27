@@ -27,11 +27,11 @@ of remote authority.
 
 The owner-run 26-directory experiment cleanup is independently verified complete,
 along with the numerical installer and earlier 241-file cleanup. Their completed
-helpers are retired to Git history. Do not rerun them. The source scan now stops
-on a setuptools ZIP test fixture in the reference environment; it is part of the
-locked installed package closure. Resolve that classification/integrity conflict
-before claiming source admission. Read cleanup C106 for the exact identity and
-receipt. No release-gate exemption or environment change has been applied.
+helpers are retired to Git history. Do not rerun them. C107 corrects a false
+ecosystem-source classification of one exact hash-bound setuptools fixture,
+preserving the locked reference environment. The registered-root source scan
+now passes. Clean committed source, remote equality and all other release gates
+remain required; this scan alone does not establish publication readiness.
 
 After the source and release prerequisites are satisfied, use the prepared
 configuration explicitly from the canonical root:

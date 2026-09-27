@@ -30,6 +30,8 @@ const {
   canonicalRoot,
   classifyRegisteredBinaryNugetArchive,
   classifyRegisteredBinaryReleaseArchive,
+  classifyRegisteredThirdPartyArchive,
+  registeredThirdPartyArchive,
   cliVerificationOptions,
   discoverCanonicalEcosystemRootEntries,
   discoverEcosystemAuthorityFiles,
@@ -206,6 +208,7 @@ function canonicalAuthorityFileDiscovery(overrides = {}) {
     nonRegular: [],
     partialGitRoots: [],
     permittedBinaryReleaseArchives: [],
+    permittedThirdPartyArchives: [],
     permittedLeafSymlinks: [],
     permittedReparses: [],
     reparses: [],
@@ -2217,9 +2220,50 @@ test("detects ecosystem source archives without claiming unrelated archives", ()
     archives: [],
     nonCanonicalEntries: [],
     permittedBinaryReleaseArchives: [],
+    permittedThirdPartyArchives: [],
     unscannedSubtrees: [],
     unreadable: []
   });
+});
+
+test("distinguishes the exact upstream fixture from ecosystem archives", () => {
+  const profile = registeredThirdPartyArchive;
+  const identity = { byteLength: profile.byteLength, sha256: profile.sha256 };
+  let inspected = 0;
+  const inspectFile = (candidate) => {
+    inspected += 1;
+    assert.equal(candidate, profile.path);
+    return identity;
+  };
+  assert.equal(classifyRegisteredThirdPartyArchive(profile.path, { inspectFile }), true);
+  assert.equal(inspected, 1);
+  for (const candidate of [null, "", `${profile.path}.zip`,
+    path.join(path.dirname(profile.path), "copy.zip"),
+    path.join(canonicalRoot, "artifacts", "my-test-package.zip")]) {
+    assert.equal(classifyRegisteredThirdPartyArchive(candidate, { inspectFile }), false);
+  }
+  assert.equal(inspected, 1, "unregistered paths must not be opened");
+  for (const observed of [null, {}, { ...identity, byteLength: 1808 },
+    { ...identity, byteLength: 1810 }, { ...identity, sha256: "0".repeat(64) }]) {
+    assert.equal(classifyRegisteredThirdPartyArchive(profile.path,
+      { inspectFile: () => observed }), false);
+  }
+  assert.throws(() => classifyRegisteredThirdPartyArchive(profile.path,
+    { inspectFile: true }), /source_authority_archive_classifier_invalid/);
+  const denied = Object.assign(new Error("denied"), { code: "EACCES" });
+  assert.throws(() => classifyRegisteredThirdPartyArchive(profile.path,
+    { inspectFile: () => { throw denied; } }), (error) => error === denied);
+  const { fileSystem } = fakeAuthorityFileSystem(path.dirname(profile.path), [
+    [path.dirname(profile.path), [{ kind: "file", name: path.basename(profile.path) }]]
+  ]);
+  fileSystem.realpathSync = { native: (candidate) => candidate };
+  fileSystem.readFileSync = () => Buffer.from("altered");
+  const discovery = discoverSourceArchives([
+    { root: path.dirname(profile.path), maximumDepth: 1 }
+  ], { fileSystem });
+  assert.deepEqual(discovery.permittedThirdPartyArchives, []);
+  assert.ok(discovery.archives.includes(profile.path) || discovery.unreadable.includes(profile.path),
+    "modified dependency bytes must remain blocking");
 });
 
 test("admits only exact registered binary release evidence identities", () => {

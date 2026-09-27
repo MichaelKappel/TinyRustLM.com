@@ -5,6 +5,30 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C107: distinguish registered dependency data from copied ecosystem source
+
+The C106 ZIP is upstream setuptools test data, not an extra TinyRustLM source
+copy. Its eight inspected members contain packaging metadata and a 104-byte
+setup example. Removing it would violate the reference environment's installed
+RECORD and recorded closure. The scanner now classifies only its exact canonical
+path, 1,809-byte length and SHA-256 as registered third-party data. No directory
+is excluded. Both archive and authority-file scans independently inspect the
+ordinary file and must agree on the accepted third-party inventory. Links,
+unreadable paths, changed bytes and unregistered copies remain blocking. The
+existing binary-release inventory remains separate and unchanged.
+
+The real fixture passes the bounded production reader without any environment
+modification. The complete registered-root CLI now returns pass with
+`localScanPerformed=true`, `canonicalLayoutAvailable=true` and
+`wholeVolumeInventoryPerformed=false`. This is bounded source-location evidence,
+not a whole-volume inventory, clean-source custody, numerical qualification or
+publication. The portal's canonical verifier pin is updated to these exact
+bytes; all seven portal preflight tests and all 49 source-policy tests pass,
+with zero failures or skips. Numeric coverage is not measured. Regressions
+cover wrong paths, altered identities, denied reads and changed fixture bytes,
+alongside the existing nested-source, archive, link and incomplete-scan checks.
+No public content, model or package changed.
+
 ## C106: all 26 authorized experiment directories removed
 
 The owner executed the reviewed helper at 2026-09-27T18:23:58.6784658Z.
