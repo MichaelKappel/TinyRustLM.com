@@ -1,0 +1,15 @@
+{
+  "schema": "tinyrustlm.source_candidate_review.v1",
+  "reviewedAtUtc": "2026-09-27T23:36:02.099Z",
+  "modelId": "suayptalha/Qwen3-0.6B-Code-Expert",
+  "revision": "02c021dfc15bb3c2d4bd6d26671aba778fc4e840",
+  "sourceCardUrl": "https://huggingface.co/suayptalha/Qwen3-0.6B-Code-Expert/raw/02c021dfc15bb3c2d4bd6d26671aba778fc4e840/README.md",
+  "sourceCardSha256": "30a1da9505df470ef309d745f1e4cf09ff242b4c87d92c5a48d7bc995d5f9893",
+  "sourceCard": "---\nlicense: apache-2.0\ntags:\n- unsloth\n- trl\n- sft\n- code\n- reasoning\ndatasets:\n- nvidia/OpenCodeReasoning\nlanguage:\n- en\nbase_model:\n- Qwen/Qwen3-0.6B\npipeline_tag: text-generation\nlibrary_name: transformers\n---\n\n# Qwen3-0.6B-Code-Expert\n\nThis project performs full fine-tuning on the **Qwen3-0.6B** language model to enhance its code reasoning and generation capabilities. Training was conducted exclusively on the `nvidia/OpenCodeReasoning` dataset, and the model was optimized using the bfloat16 (bf16) data type.\n\n## Training Procedure\n\n1. **Dataset Preparation**\n\n   * `nvidia/OpenCodeReasoning` dataset was used.\n   * Each example consists of code snippets paired with detailed step-by-step reasoning in Chain-of-Thought (CoT) style.\n\n2. **Model Loading and Configuration**\n\n   * Qwen3-0.6B base model weights were loaded via the `unsloth` library in bf16 precision.\n   * Full fine-tuning (`full_finetuning=True`) was applied to all layers for optimal adaptation to code reasoning.\n\n3. **Supervised Fine-Tuning**\n\n   * Employed the Hugging Face TRL library with the Supervised Fine-Tuning (SFT) approach.\n   * The model was trained to generate correct code solutions along with the corresponding reasoning chains.\n\n## Purpose and Outcome\n\n* The model’s capacity for understanding, reasoning about, and generating code was significantly improved through specialized, single-dataset training in bf16 precision.\n* Outputs include both intermediate reasoning steps and final code solutions, enabling transparent and interpretable code generation.\n\n## License\n\nThis project is licensed under the Apache License 2.0. See the [LICENSE](./LICENSE) file for details.\n\n## Support\n\n<a href=\"https://www.buymeacoffee.com/suayptalha\" target=\"_blank\"><img src=\"https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png\" alt=\"Buy Me A Coffee\" style=\"height: 60px !important;width: 217px !important;\" ></a>",
+  "selectedFor": "Bounded basic assistant development screen; code-specialist scope may not meet general default requirements.",
+  "publisherClaimsVerified": false,
+  "metadataAdmissionOnly": true,
+  "qualified": false,
+  "templateSupportsExplicitNonThinking": true,
+  "otherCandidates": "Two JSON-specialist weight sets retained in inventory; neither acquired nor tested."
+}

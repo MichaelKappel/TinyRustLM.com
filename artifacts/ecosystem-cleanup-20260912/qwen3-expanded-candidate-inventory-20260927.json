@@ -1,0 +1,1605 @@
+{
+  "schema": "tinyrustlm.huggingface_supported_candidate_inventory.v3",
+  "generatedUtc": "2026-09-27T23:34:47.347Z",
+  "authority": "huggingface-primary-api-revision-files-and-apache-license-authority",
+  "profileId": "qwen3-0.6b-bpe",
+  "search": "Qwen3-0.6B",
+  "searchLimit": 500,
+  "requestedCandidateLimit": 3,
+  "candidateCount": 3,
+  "candidates": [
+    {
+      "sourceTemplate": "qwen3-0.6b-bpe",
+      "modelId": "suayptalha/Qwen3-0.6B-Code-Expert",
+      "revision": "02c021dfc15bb3c2d4bd6d26671aba778fc4e840",
+      "downloads": 957,
+      "likes": 9,
+      "pipelineTag": "text-generation",
+      "licenseId": "apache-2.0",
+      "licenseEvidenceKind": "revision-metadata-plus-apache-authority-text",
+      "licenseSourceUrl": "https://www.apache.org/licenses/LICENSE-2.0.txt",
+      "licenseSha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+      "configSha256": "e1c2016bde5968dd5517608d2b87a0471083aef54c4200111dd882c569605d0f",
+      "tokenizer": {
+        "filename": "tokenizer.json",
+        "byteCount": 11422654,
+        "sha256": "aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4",
+        "gitBlobId": null
+      },
+      "tokenizerConfig": {
+        "filename": "tokenizer_config.json",
+        "byteCount": 10391,
+        "sha256": null,
+        "gitBlobId": "8d3e7ed22f5f77aebd450605551fa15d1dbef2ed"
+      },
+      "chatTemplateKind": "revision-chatml-template-v1",
+      "chatTemplateSha256": "8428c815ac94d82064e35ff1e841dcbe260e7e53a8d0bd3b94afa2eefa9bccab",
+      "sourceWeightByteCount": 1192135096,
+      "weightIdentity": "a20e328eb34bf19cd139be67da8d27d0acbdfc0e6ed25e9c52b5d1b40274dc14",
+      "weightIndex": null,
+      "weightFiles": [
+        {
+          "filename": "model.safetensors",
+          "byteCount": 1192135096,
+          "sha256": "42d978d981c7e8a83a1364346b35b70fd83bc18fd55af313560d86e9a8bd2163"
+        }
+      ]
+    },
+    {
+      "sourceTemplate": "qwen3-0.6b-bpe",
+      "modelId": "Biggiraffe/Qwen3-0.6B-JSON-SFT-GRPO",
+      "revision": "0063adcd7b5169b4e7816b8326de6e18281d2256",
+      "downloads": 500,
+      "likes": 0,
+      "pipelineTag": "text-generation",
+      "licenseId": "apache-2.0",
+      "licenseEvidenceKind": "revision-metadata-plus-apache-authority-text",
+      "licenseSourceUrl": "https://www.apache.org/licenses/LICENSE-2.0.txt",
+      "licenseSha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+      "configSha256": "a6aac2955e282444e8cf4eafad16300f82efc190f45cbc7ffd13e97881177901",
+      "tokenizer": {
+        "filename": "tokenizer.json",
+        "byteCount": 11422924,
+        "sha256": "476870a1f2fb6f6a2759a6ede2383bf9d5d738f17844563b65c91965b722ae09",
+        "gitBlobId": null
+      },
+      "tokenizerConfig": {
+        "filename": "tokenizer_config.json",
+        "byteCount": 9799,
+        "sha256": null,
+        "gitBlobId": "2797f158d7327584072fee640d5dc6d851b455f4"
+      },
+      "chatTemplateKind": "revision-chatml-template-v1",
+      "chatTemplateSha256": "a55ee1b1660128b7098723e0abcd92caa0788061051c62d51cbe87d9cf1974d8",
+      "sourceWeightByteCount": 1192135096,
+      "weightIdentity": "7ad8643cdd9c6ab0a910b05a3bd2dc529d0b38dc45470c446f44b35b6de8c1e0",
+      "weightIndex": null,
+      "weightFiles": [
+        {
+          "filename": "model.safetensors",
+          "byteCount": 1192135096,
+          "sha256": "2a98da2269b343113ea2663e66a90defdf6c9dafa322ca1643af7f1d991fac19"
+        }
+      ]
+    },
+    {
+      "sourceTemplate": "qwen3-0.6b-bpe",
+      "modelId": "ljh728/Qwen3-0.6B-JSON-SFT-GRPO",
+      "revision": "619d4065a649556ccc232dd81a9b2c42d19afb46",
+      "downloads": 336,
+      "likes": 0,
+      "pipelineTag": "text-generation",
+      "licenseId": "apache-2.0",
+      "licenseEvidenceKind": "revision-metadata-plus-apache-authority-text",
+      "licenseSourceUrl": "https://www.apache.org/licenses/LICENSE-2.0.txt",
+      "licenseSha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+      "configSha256": "a6aac2955e282444e8cf4eafad16300f82efc190f45cbc7ffd13e97881177901",
+      "tokenizer": {
+        "filename": "tokenizer.json",
+        "byteCount": 11422924,
+        "sha256": "476870a1f2fb6f6a2759a6ede2383bf9d5d738f17844563b65c91965b722ae09",
+        "gitBlobId": null
+      },
+      "tokenizerConfig": {
+        "filename": "tokenizer_config.json",
+        "byteCount": 9799,
+        "sha256": null,
+        "gitBlobId": "2797f158d7327584072fee640d5dc6d851b455f4"
+      },
+      "chatTemplateKind": "revision-chatml-template-v1",
+      "chatTemplateSha256": "a55ee1b1660128b7098723e0abcd92caa0788061051c62d51cbe87d9cf1974d8",
+      "sourceWeightByteCount": 1192135096,
+      "weightIdentity": "9959ac18d404ca49f3d17e0126f732d423821bf73745958bd24862356812df5d",
+      "weightIndex": null,
+      "weightFiles": [
+        {
+          "filename": "model.safetensors",
+          "byteCount": 1192135096,
+          "sha256": "9036e56fa9a3c5b57c895f41e6d58cf6581bcfd82cc805123c7fa2b7be598c4b"
+        }
+      ]
+    }
+  ],
+  "rejections": [
+    {
+      "modelId": "Qwen/Qwen3-0.6B",
+      "code": "prior_source_quality_rejected"
+    },
+    {
+      "modelId": "Qwen/Qwen3-Embedding-0.6B",
+      "code": "not_conversation_model"
+    },
+    {
+      "modelId": "Qwen/Qwen3-Reranker-0.6B",
+      "code": "not_conversation_model"
+    },
+    {
+      "modelId": "Qwen/Qwen3-TTS-12Hz-0.6B-CustomVoice",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "Qwen/Qwen3-0.6B-Base",
+      "code": "not_conversation_model"
+    },
+    {
+      "modelId": "Qwen/Qwen3-TTS-12Hz-0.6B-Base",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "Qwen/Qwen3-ASR-0.6B",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "Qwen/Qwen3-ForcedAligner-0.6B",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "Qwen/Qwen3-0.6B-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "Qwen/Qwen3-0.6B-FP8",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "MaziyarPanahi/Qwen3-0.6B-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mlx-community/Qwen3-ASR-0.6B-8bit",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "PrimeIntellect/Qwen3-0.6B",
+      "code": "prior_weight_quality_rejected"
+    },
+    {
+      "modelId": "unsloth/Qwen3-0.6B",
+      "code": "not_conversation_model"
+    },
+    {
+      "modelId": "tomaarsen/Qwen3-Reranker-0.6B-seq-cls",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "Qwen/Qwen3Guard-Gen-0.6B",
+      "code": "not_conversation_model"
+    },
+    {
+      "modelId": "Qwen/Qwen3-Embedding-0.6B-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "Qwen/Qwen3-ASR-0.6B-hf",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "handy-computer/Qwen3-ASR-0.6B-gguf",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "unsloth/Qwen3-0.6B-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "Skywork/Skywork-Reward-V2-Qwen3-0.6B",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "mlx-community/Qwen3-0.6B-8bit",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "Qwen/Qwen3-ForcedAligner-0.6B-hf",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "bartowski/Qwen_Qwen3-0.6B-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "ggml-org/Qwen3-Reranker-0.6B-Q8_0-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/Qwen3-Reranker-0.6B-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "ggml-org/Qwen3-0.6B-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "unsloth/Qwen3-0.6B-unsloth-bnb-4bit",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "litert-community/Qwen3-0.6B",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "mlx-community/Qwen3-0.6B-4bit",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "unslothai/Qwen3-ASR-0.6B-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "PrimeIntellect/Qwen3-0.6B-Reverse-Text-SFT",
+      "code": "not_conversation_model"
+    },
+    {
+      "modelId": "OpenASR/qwen3-asr-0.6b",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "onnx-community/Qwen3-Embedding-0.6B-ONNX",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mlx-community/Qwen3-Embedding-0.6B-4bit-DWQ",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "ggml-org/Qwen3-ASR-0.6B-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "RedHatAI/Qwen3-0.6B-quantized.w4a16",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "seanghay/Qwen3-ASR-0.6B-Khmer",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "onnx-community/Qwen3-0.6B-ONNX",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "lmstudio-community/Qwen3-0.6B-MLX-4bit",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "VoidWalkercero/Qwen3-0.6B-Particle-SousVide-R128-Perfect",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "lmstudio-community/Qwen3-0.6B-MLX-bf16",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "Voodisss/Qwen3-Reranker-0.6B-GGUF-llama_cpp",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "dllm-hub/Qwen3-0.6B-diffusion-mdlm-v0.1",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "icml2026-7516/ThinkSafe-Qwen3-0.6B",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "mlc-ai/Qwen3-0.6B-q4f16_1-MLC",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "OpenASR/qwen3-forced-aligner-0.6b",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "bd2lcco/Qwen3-0.6B-finetuned",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "geoffmunn/Qwen3-0.6B-f16",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "RedHatAI/Qwen3-0.6B-FP8-BLOCK",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mlx-community/Qwen3-Embedding-0.6B-8bit",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "Johnnyfans/TFRank-GRPO-Qwen3-0.6B",
+      "code": "not_conversation_model"
+    },
+    {
+      "modelId": "unsloth/Qwen3-Embedding-0.6B",
+      "code": "not_conversation_model"
+    },
+    {
+      "modelId": "reaperdoesntknow/Qwen3-0.6B-Distilled-30B-A3B-Thinking-SFT",
+      "code": "shape_mismatch"
+    },
+    {
+      "modelId": "aufklarer/Qwen3-ASR-0.6B-MLX-4bit",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "aufklarer/Qwen3-ForcedAligner-0.6B-4bit",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "reaperdoesntknow/Qwen3-0.6B-Distilled-30B-A3B",
+      "code": "shape_mismatch"
+    },
+    {
+      "modelId": "litert-community/Qwen3-0.6B-int4",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "kwisschen/qwen3-embedding-0.6b-patent-oa-rejections",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "mlx-community/Qwen3-TTS-12Hz-0.6B-Base-bf16",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "inference-optimization/Qwen3.8-1.0B-A0.6B",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "NobodyWho/Qwen_Qwen3-0.6B-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "drawais/Qwen3-Reranker-0.6B-AWQ-INT4",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "unsloth/Qwen3-0.6B-Base",
+      "code": "not_conversation_model"
+    },
+    {
+      "modelId": "mlx-community/Qwen3-TTS-12Hz-0.6B-CustomVoice-8bit",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mlx-community/Qwen3-TTS-12Hz-0.6B-Base-8bit",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "furiosa-ai/Qwen3-Embedding-0.6B",
+      "code": "not_conversation_model"
+    },
+    {
+      "modelId": "Qwen/Qwen3Guard-Stream-0.6B",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "lmstudio-community/Qwen3-0.6B-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "cstr/qwen3-forced-aligner-0.6b-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "furiosa-ai/Qwen3-Reranker-0.6B",
+      "code": "not_conversation_model"
+    },
+    {
+      "modelId": "NANI-Nithin/Qwen3-0.6B-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "SamsBuk/Qwen3-0.6B-Gensyn-Swarm-burrowing_subtle_parrot",
+      "code": "not_conversation_model"
+    },
+    {
+      "modelId": "OpenVoiceOS/qwen3-forced-aligner-0.6b-q4-k-m",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "michaelfeil/Qwen3-Embedding-0.6B-auto",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "mlx-community/Qwen3-ASR-0.6B-4bit",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "Lordnyx/qwen3loop-0.6b-sft-deep-supervision-v1",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "OpenVINO/Qwen3-0.6B-int4-ov",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "cstr/qwen3-asr-0.6b-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "unsloth/Qwen3-0.6B-bnb-4bit",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "a1ex971/Qwen3-0.6B-Gensyn-Swarm-slithering_whiskered_komodo",
+      "code": "not_conversation_model"
+    },
+    {
+      "modelId": "thomasavare/Qwen3-Embedding-0.6B-211",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "Mungert/Qwen3-Reranker-0.6B-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "futur/Qwen3-Embedding-0.6B-model2vec-onnx",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "cstr/qwen3-tts-0.6b-customvoice-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "PeterAM4/Qwen3-Embedding-0.6B-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "dnotitia/Qwen3-0.6B",
+      "code": "prior_weight_quality_rejected"
+    },
+    {
+      "modelId": "reaperdoesntknow/Qwen3-0.6B-Distilled-30B-A3B-Thinking-SFT-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/Qwen3-0.9B-A0.6B-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/Qwen3-0.6B-heretic-abliterated-uncensored-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "PrimeIntellect/Qwen3-0.6B-Reverse-Text-RL",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "bartowski/mlabonne_Qwen3-0.6B-abliterated-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "moorlee/qwen3-asr-0.6b-hinglish",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "iromu/Qwen3-0.6B-tools",
+      "code": "not_conversation_model"
+    },
+    {
+      "modelId": "JunHowie/Qwen3-0.6B-GPTQ-Int4",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "QuantFactory/Qwen3-0.6B-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "paulalesius/Qwen3-Reranker-0.6B-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/Qwen3-0.6B-heretic-decensored-i1-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "saidutta69/Qwen3-0.6B-heretic",
+      "code": "source_evidence_invalid"
+    },
+    {
+      "modelId": "mlx-community/Qwen3-TTS-12Hz-0.6B-Base-4bit",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "emperorfutures/Qwen3-0.6B-Gensyn-Swarm-miniature_foxy_ferret",
+      "code": "not_conversation_model"
+    },
+    {
+      "modelId": "Bobalo/Qwen3-0.6B-Gensyn-Swarm-territorial_zealous_lobster",
+      "code": "not_conversation_model"
+    },
+    {
+      "modelId": "dllm-hub/Qwen3-0.6B-diffusion-bd3lm-v0.1",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "mradermacher/Qwen3-0.6B-heretic-abliterated-uncensored-i1-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mlx-community/Qwen3-ForcedAligner-0.6B-8bit",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "cstr/qwen3-tts-0.6b-base-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "litert-community/Qwen3-ASR-0.6B",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "mku64/Qwen3-Reranker-0.6B-mlx-8Bit",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "OpenVoiceOS/qwen3-asr-0.6b-f16",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "mlx-community/Qwen3-0.6B-bf16",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/Qwen3-0.6B-abliterated-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mlc-ai/Qwen3-0.6B-q4f32_1-MLC",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "mradermacher/Qwen3-TTS-12Hz-0.6B-Base-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "phh/Qwen3-0.6B-TLDR-Lora",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "unsloth/Qwen3-0.6B-Base-unsloth-bnb-4bit",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "jmb95/Qwen3-0.6B-UD-IQ1_S-sharded",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "Null-Guard/Qwen3-0.6B-Uncensored-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/Qwen3-0.6B-Base-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/Qwen3-Embedding-0.6B-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/Qwen3-0.6B-Base-i1-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "0xgr3y/Qwen3-0.6B-Gensyn-Swarm-tall_tame_panther",
+      "code": "not_conversation_model"
+    },
+    {
+      "modelId": "OpenVINO/Qwen3-Embedding-0.6B-int8-ov",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/Qwen3-Embedding-Medical-0.6B-i1-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "NotoriousH2/Qwen3-0.6B-JSON-SFT",
+      "code": "license_evidence_not_supported"
+    },
+    {
+      "modelId": "Alcoft/dnotitia_Smoothie-Qwen3-0.6B-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/Qwen3Guard-Gen-0.6B-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mlx-community/Qwen3-Reranker-0.6B-4bit",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "ObleeSzn/Qwen3-0.6B-Gensyn-Swarm-moist_robust_gerbil",
+      "code": "not_conversation_model"
+    },
+    {
+      "modelId": "Mungert/Qwen3-0.6B-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/Qwen-3-0.6B-Claude-4.7-Opus-Distilled-i1-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "Nicolassuez/Qwen3-Reranker-0.6B-W8A16-g128-gptq-resident",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "Qwen/Qwen3-0.6B-MLX-4bit",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "akahana/qwen3-0.6b-text-embedding",
+      "code": "not_conversation_model"
+    },
+    {
+      "modelId": "mradermacher/Gabliterated-Qwen3-0.6B-i1-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "lm-kit/qwen-3-0.6b-instruct-gguf",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "BricksDisplay/Qwen3-TTS-12Hz-0.6B-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "AbhishekG711/Qwen3-0.6B-Insight-Extractor",
+      "code": "not_conversation_model"
+    },
+    {
+      "modelId": "mradermacher/rStar-Coder-Qwen3-0.6B-i1-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "willcb/Qwen3-0.6B",
+      "code": "license_evidence_not_supported"
+    },
+    {
+      "modelId": "Forturne/Qwen3-Reranker-0.6B-FP8",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "programasweights/Qwen3-0.6B-GGUF-Q6_K",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/qwen3-0.6b-abliterated-i1-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/Qwen3Guard-Gen-0.6B-heretic-i1-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "hb-dev/Qwen3-0.6B-ONNX",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "second-state/Qwen3-0.6B-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "Alibaba-NLP/LaSER-Qwen3-0.6B",
+      "code": "not_conversation_model"
+    },
+    {
+      "modelId": "yakimask2/qwen3-0.6B-japanese-thinking",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "duyntnet/Qwen3-0.6B-imatrix-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "litert-community/Qwen3-TTS-12Hz-0.6B-Base",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "Mouserat/qwen3-tts-0.6b-base-gguf",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/Qwen3-Embedding-0.6B-i1-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "aufklarer/Qwen3-ASR-0.6B-MLX-8bit",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/Qwen3-0.6B-heretic-Base-i1-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mlx-community/Qwen3-TTS-12Hz-0.6B-CustomVoice-4bit",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "drawais/Qwen3-Embedding-0.6B-AWQ-INT4",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/Jinx-Qwen3-0.6B-i1-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "QuantFactory/Qwen3-Reranker-0.6B-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "unsloth/Qwen3-0.6B-Base-bnb-4bit",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/Qwen3-0.6B-Heretic-Heresy-Edition-i1-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "ENOSYS/Qwen3-Embedding-0.6B-250-v1-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "FastFlowLM/Qwen3-0.6B-NPU2",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "xthor/Qwen3-Embedding-0.6B-GraphQL",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "anthonym21/qwen3-0.6b-rlcd-decision",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "tmatthias29/Qwen3-0.6B-Gensyn-Swarm-secretive_coiled_deer",
+      "code": "not_conversation_model"
+    },
+    {
+      "modelId": "mlx-community/Qwen3-TTS-12Hz-0.6B-CustomVoice-bf16",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/Qwen3-0.6B-Treatment-i1-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/Qwen3-ASR-0.6B-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mgoin/Qwen3-0.6B-MXFP8",
+      "code": "not_conversation_model"
+    },
+    {
+      "modelId": "onnx-community/Qwen3-0.6B-Instruct-ONNX",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/Heretic-Qwen3-0.6B-Psychological-Support-i1-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "Raskoll/qwen3-0.6b-engram",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "amd/PARD-Qwen3-0.6B",
+      "code": "not_conversation_model"
+    },
+    {
+      "modelId": "davidnichols-ops/qwen3-0.6b-devin-draft",
+      "code": "not_conversation_model"
+    },
+    {
+      "modelId": "Mungert/Qwen3-0.6B-abliterated-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "onnx-community/Qwen3-Reranker-0.6B-ONNX",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "dinghar/qwen3-0.6b-pangram-sft",
+      "code": "license_evidence_not_supported"
+    },
+    {
+      "modelId": "mradermacher/Qwen3-0.6B-i1-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "ishamf/Qwen3-0.6B-ONNX-Instrumented",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "zhiqian99/Qwen3-Embedding-0.6B-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "n24q02m/Qwen3-Embedding-0.6B-ONNX",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/Qwen3-0.6B-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/LaSER-Qwen3-0.6B-i1-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "RedHatAI/Qwen3-0.6B-FP8-dynamic",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/Ektome-Qwen3-0.6B-PristinelyUncensored-i1-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/Newstar-Qwen3-0.6B-KTO-i1-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/Qwen3-0.6B-Code-Expert-abliterated-i1-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "Mungert/Qwen3-Embedding-0.6B-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "enacimie/Qwen3-Embedding-0.6B-Q4_K_M-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/PARD-Qwen3-0.6B-i1-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "hamidboss/Qwen3-0.6B-Gensyn-Swarm-grazing_grassy_albatross",
+      "code": "not_conversation_model"
+    },
+    {
+      "modelId": "mradermacher/Qwen3-0.6B-Prompt-Gen-v0.1-i1-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "Qwen/Qwen3-0.6B-GPTQ-Int8",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/Qwen3-psychological-reasoning-0.6B-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "prithivMLmods/Qwen3-Reranker-0.6B-seq-cls-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "Andycurrent/Qwen3-0.6B-heretic-abliterated-uncensored-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "rijulpaul/Qwen3-TTS-12Hz-0.6B-Wriothesley-LoRa-16",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "mradermacher/Qwen3-0.6B-Mini-Reasoning-Coder-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/Qwen3-0.6B-Diagnose-i1-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/Deneb-Qwen3-Radiation-0.6B-i1-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "emillykkejensen/Qwen3-Embedding-Scandi-0.6B",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "mradermacher/Xiaolong-Qwen3-0.6B-i1-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "woodx/Qwen3-Embedding-0.6B-SGLang",
+      "code": "not_conversation_model"
+    },
+    {
+      "modelId": "mradermacher/Qwen3-0.9B-A0.6B-i1-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/Qwen3-TTS-12Hz-0.6B-Base-i1-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "iromu/Qwen3-0.6B-tools-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/Heretic-Qwen3-0.6B-Treatment-i1-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/Gabliterated-Qwen3-0.6B-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/Qwen3-Reranker-0.6B-i1-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "cstr/qwen3-embed-0.6b-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "marksverdhei/Qwen3-Voice-Embedding-12Hz-0.6B",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "Galchonok/Qwen3-0.6B-Gensyn-Swarm-territorial_alert_nightingale",
+      "code": "not_conversation_model"
+    },
+    {
+      "modelId": "OpenVoiceOS/qwen3-asr-0.6b-q8-0",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "DevQuasar/huihui-ai.Qwen3-0.6B-abliterated-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/Qwen3-0.6B-Qrazy-Qoder-i1-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "Jeney/Qwen3-0.6B-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/LaSER-Qwen3-0.6B-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "enacimie/Qwen3-0.6B-Q4_K_M-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "Orion-zhen/Qwen3-0.6B-AWQ",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "ya-yje-krasni/qwen3-0.6b-russian-dialogues",
+      "code": "full_weights_invalid"
+    },
+    {
+      "modelId": "EYEDOL/adtc-agri-sft-qwen3-0.6b",
+      "code": "source_evidence_invalid"
+    },
+    {
+      "modelId": "mwhanna/qwen3-0.6b-transcoders-lowl0",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "NotoriousH2/Qwen3-0.6B-JSON-SFT-GRPO",
+      "code": "license_evidence_not_supported"
+    },
+    {
+      "modelId": "lindadakim1224/Qwen3-0.6B-Gensyn-Swarm-exotic_tricky_camel",
+      "code": "not_conversation_model"
+    },
+    {
+      "modelId": "DevQuasar/Qwen.Qwen3-Reranker-0.6B-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "harithoppil/Qwen3-0.6B-English",
+      "code": "not_conversation_model"
+    },
+    {
+      "modelId": "trentmkelly/qwen3-emb-0.6b-stylometry-v11",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "mradermacher/ITER-Qwen3-Embedding-0.6B-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/Qwen3-0.6B-Distilled-30B-A3B-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "QuantFactory/Qwen3Guard-Gen-0.6B-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "gpugobrrr/Qwen3-0.6B-Farsi-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "Vladimirlv/ru-promptriever-qwen3-0.6b",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "andrewleech/qwen3-asr-0.6b-onnx",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "DavidAU/Qwen3-0.6B-heretic-abliterated-uncensored",
+      "code": "license_evidence_not_supported"
+    },
+    {
+      "modelId": "taobao-mnn/Qwen3-0.6B-MNN",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "Qdrant/Qwen3-Embedding-0.6B-onnx",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "sach0312/qwen3-0.6b-nhl-polymarket-sft-v2-merged",
+      "code": "license_evidence_not_supported"
+    },
+    {
+      "modelId": "jukofyork/Qwen3-0.6B-YaRN-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "SirSahOl/Qwen3-0.6B-chat-mlx-16bit",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "lastmass/Qwen3-Embedding-Medical-0.6B",
+      "code": "not_conversation_model"
+    },
+    {
+      "modelId": "mradermacher/SmaliLLM-Qwen3-0.6B-Finetuned-i1-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "Casual-Autopsy/Qwen3-Embedding-0.6B-GGUFs",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "yatokim/Qwen3-0.6B-JSON-SFT",
+      "code": "license_evidence_not_supported"
+    },
+    {
+      "modelId": "mradermacher/Qwen3-0.6B-gabliterated-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "Lev384501/qwen3-0.6b-russian-dialogues",
+      "code": "full_weights_invalid"
+    },
+    {
+      "modelId": "mradermacher/Huihui-Qwen3-0.6B-abliterated-v2-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/Karaoke-Timed-Lyrics-Qwen3-0.6B-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/Josiefied-Qwen3-0.6B-abliterated-v1-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/qwen3-0.6b-weather-geo-specialist-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "prithivMLmods/Qwen3-0.6B-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/Qwen3-ASR-0.6B-i1-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "yeeun2/Qwen3-0.6B-JSON-SFT",
+      "code": "license_evidence_not_supported"
+    },
+    {
+      "modelId": "mradermacher/Qwen3-0.6B-Code-Expert-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/Josiefied-Qwen3-0.6B-abliterated-v2-i1-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/rStar-Coder-Qwen3-0.6B-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/Qwen3-0.6B-heretic-decensored-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/Josiefied-Qwen3-0.6B-gabliterated-v1-i1-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/Heretic-Qwen3-0.6B-Diagnose-i1-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mlx-community/Qwen3-ASR-0.6B-bf16",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mlx-community/Qwen3-Reranker-0.6B-mxfp8",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/Qwen3-0.6B-Math-Expert-abliterated-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "OpenVINO/Qwen3-Embedding-0.6B-fp16-ov",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "DevQuasar/Qwen.Qwen3-0.6B-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "codelion/Qwen3-0.6B-accuracy-recovery-lora",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "mradermacher/Qwen3-ASR-0.6B-JA-Anime-Galgame-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "Goekdeniz-Guelmez/Qwen3-0.6B-Base-RL",
+      "code": "not_conversation_model"
+    },
+    {
+      "modelId": "mradermacher/Qwen3-0.6B-Dakota-Grammar-RL-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/Qwen3-0.6B-Longevity-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mlabonne/Qwen3-0.6B-abliterated-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "Null-Guard/Qwen3-0.6B-Uncensored",
+      "code": "not_conversation_model"
+    },
+    {
+      "modelId": "YixuanEvenXu/Qwen3-0.6B-Base-HIP-adapter",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "mradermacher/Qwen3-ASR-0.6B-Khmer-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "openwalrus/Qwen3-0.6B",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "0xAbhi/qwen3-0.6b-rc-car",
+      "code": "not_conversation_model"
+    },
+    {
+      "modelId": "mradermacher/ide-code-retrieval-qwen3-0.6b-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/qwen3-0.6b-pii-detector-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "jiangzhuo9357/Qwen3-ASR-0.6B-ONNX",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/qwen3-0.6b-writing-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "Alcoft/Qwen_Qwen3-0.6B-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/Huihui-Qwen3-0.6B-abliterated-v2-i1-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mlx-community/Qwen3-Embedding-0.6B-mxfp8",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "Majipa/Qwen3-0.6B-GGUF-Quantized",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/qwen3-webdev-0.6b-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "theoracleguy/Qwen3-TTS-12Hz-0.6B-Base-bf16",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "mradermacher/Qwen3-0.6b_SkyTrain_b-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/dyslexic-writer-qwen3-0.6b-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/FlexGuard-Qwen3-0.6B-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mobilint/Qwen3-0.6B",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "inference-optimization/Qwen3-0.6B-W4A16-G128",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "Zidane29/Qwen3-0.6B",
+      "code": "prior_weight_quality_rejected"
+    },
+    {
+      "modelId": "pvelab/Qwen3Guard-Gen-0.6B-openvino",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/Telescopium-Acyclic-Qwen3-0.6B-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/Qwen3-0.6B-Full-Finetuning-No-Thinking-i1-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "yuiseki/qwen3-0.6b-jp-gov-v0.1",
+      "code": "not_conversation_model"
+    },
+    {
+      "modelId": "tensorblock/Qwen_Qwen3-0.6B-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "giladgd/Qwen3-Reranker-0.6B-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "FrankZLC/Qwen3-0.6B-Gensyn-Swarm-tiny_sneaky_shrimp",
+      "code": "not_conversation_model"
+    },
+    {
+      "modelId": "liodon-ai/Qwen3-0.6B-ONNX",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "OpenVINO/Qwen3-Embedding-0.6B-int4-cw-ov",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "thomasavare/Qwen3-Embedding-0.6B-22",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "mobilint/Qwen3-0.6B-Batch16",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "huggit0000/Qwen3-0.6B-GGUF-FP32",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/Deneb-Qwen3-Radiation-0.6B-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "Jinstudio/Qwen3-ForcedAligner-0.6B-hf",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "mradermacher/Jinx-Qwen3-0.6B-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "sigmanih/Qwen-Qwen3-0.6B-GGUF-Q4_K_S",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/Qwen3-0.6B-Claude-Coder-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mlabonne/Qwen3-0.6B-abliterated",
+      "code": "full_weights_invalid"
+    },
+    {
+      "modelId": "mradermacher/Qwen3-0.6B-SFT-No-Thinking-i1-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "Open4bits/Qwen3-0.6b-gguf",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "binedge/Qwen3-Embedding-0.6B-FP8",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "Content-AI/Qwen3-Embedding-0.6B",
+      "code": "not_conversation_model"
+    },
+    {
+      "modelId": "DhruvalLabs/Qwen3-0.6B-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/Newstar-Qwen3-0.6B-KTO-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "dolfsai/Qwen3-Embedding-0.6B-vllm-W8A8",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/Prompt-Injection-classifier-complex-Qwen3-0.6b-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "Qwen/Qwen3-0.6B-MLX-8bit",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/VyvoTTS-v0-Qwen3-0.6B-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/Heretic-Qwen3-0.6B-Diagnose-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "loom-ai-org/qwen3-asr-0.6b-loom",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "mradermacher/Qwen3-0.6B-Medical-Expert-i1-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "Vyvo/VyvoTTS-v0-Qwen3-0.6B",
+      "code": "not_conversation_model"
+    },
+    {
+      "modelId": "mradermacher/Karaoke-Lyrics-Qwen3-0.6B-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "DevQuasar/Qwen.Qwen3-0.6B-Base-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "prithivMLmods/Deneb-Qwen3-Radiation-0.6B-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/Qwen3-0.6B-Arabic-Finetune-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "gvij/qwen3-0.6b-gguf",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "junuke/Qwen3-0.6B-MYPTQ-w4g128",
+      "code": "not_conversation_model"
+    },
+    {
+      "modelId": "prithivMLmods/Telescopium-Acyclic-Qwen3-0.6B-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "Forturne/Qwen3-Embedding-0.6B-NVFP4",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/Qwen3-0.9B-A0.6B-Tool-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/Qwen3-0.6B-heretic-Base-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/Qwen3-Embedding-Medical-0.6B-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/SpermAI-S1-Qwen3-0.6B-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/SmaliLLM-Qwen3-0.6B-Finetuned-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "enes1987/Qwen3-0.6B-Gensyn-Swarm-bristly_soaring_tiger",
+      "code": "not_conversation_model"
+    },
+    {
+      "modelId": "mradermacher/Heretic-Qwen3-0.6B-Treatment-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/Newstar-Qwen3-0.6B-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "alkhrzmy/qwen3-tts-0.6b-indonesian",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "unsloth/Qwen3-0.6B-FP8",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/pricelab-qwen3-0.6b-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mlx-community/Qwen3-ForcedAligner-0.6B-bf16",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/JOSIE-IT1-Qwen3-0.6B-i1-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "ldenoue/sora-qwen3-0.6b-run02-onnx",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "XformAI-india/Qwen3-0.6B-coders-gguf",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/Qwen3-TTS-12Hz-0.6B-ar-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "Fbjfhvgv/Qwen3-0.6B",
+      "code": "prior_weight_quality_rejected"
+    },
+    {
+      "modelId": "mradermacher/Qwen3-0.6B-Alpaca-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "Jahaz/Qwen3-tts-0.6b-gguf-for-koboldcpp",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/Qwen3-0.6B-Thinking-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "w10110/qwen3-0.6b-zh-blog-style-onnx",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "doodod/Turn-Detector-Qwen3-0.6B",
+      "code": "not_conversation_model"
+    },
+    {
+      "modelId": "batiai/Qwen3-Embedding-0.6B-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "Folx/qwen3-0.6b-pl-text-normalization",
+      "code": "source_not_public"
+    },
+    {
+      "modelId": "mradermacher/Heretic-Qwen3-0.6B-Psychological-Support-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "prithivMLmods/VyvoTTS-v0-Qwen3-0.6B-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mobilint/Qwen3-0.6B-regulus-rb-usb",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "mradermacher/Melody-Lyrics-Qwen3-0.6B-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "ielabgroup/ITER-Qwen3-Embedding-0.6B",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "rohitag13/openwispr-cleanup-qwen3-0.6b-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/Qwen3-0.6B-Diagnose-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/Lore-Qwen3-embedding-0.6B-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "rayss868123/Qwen3-0.6B-heretic-abliterated-uncensored",
+      "code": "license_evidence_not_supported"
+    },
+    {
+      "modelId": "AIconjured/Qwen3-Embedding-0.6B-Q8-NVFP4",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/Smoothie-Qwen3-0.6B-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/Qwen3-0.6B-Heretic-Heresy-Edition-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "justinchuby/qwen3-0.6b-onnx-genai",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "HIT-TMG/JevEmbed-Qwen3-Embedding-0.6B",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "iromu/Qwen3-0.6B-tools-NVFP4",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "AutomatosX/AX-Qwen3-Embedding-0.6B-MLX-8bit",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/Qwen3-0.6B-Heretic-GGUF",
+      "code": "unsupported_packaging"
+    }
+  ]
+}
