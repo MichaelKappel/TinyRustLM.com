@@ -1,5 +1,5 @@
 profile: tinyrustlm.operations.current.v1
-updated_utc: 2026-09-27T17:45:58Z
+updated_utc: 2026-09-27T17:52:37Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
@@ -25,7 +25,8 @@ ftp_credential_discovery:
   local_file: E:\Source\Rust\ftp.txt
   observation: C102 certificate-verified explicit FTPS authenticates exact TinyRustLM.com and MiniModel.org accounts using full FTP Username; Username is its local part. Root index.html bytes match each public HTTPS homepage. MiniModel catalog/feed also match the recorded predecessor, with zero entries/announcements. No credentials logged or copied.
   evidence: artifacts/ecosystem-cleanup-20260912/ftps-target-discovery-review.json
-  next_gate: Both exact target-sentinel reads return550, which does not distinguish absence from denied access. Reconcile the publisher FileZilla adapter with the actual credential source, establish target authority and complete source/release gates before remote writes. Read cleanup C102; observed file equality is not complete root admission.
+  publisher_reader: C103 replaces the FileZilla reader with the existing bounded FTP export. External memory now uses deployment_ftp_credentials_file; existing independent target fields still apply. All17 deployment checks pass; actual reader selects the expected site/host/port without logging values or making a network request. Read ftp-credential-reader-review.json.
+  next_gate: Both exact target-sentinel reads return550, which does not distinguish absence from denied access. Establish target authority and complete source/release gates before remote writes. Read cleanup C102/C103; observed file equality and credential parsing are not complete root admission.
 
 blocked_helper_retirement_2026_09_23:
   path: E:\Source\Rust\TinyRustLM.com\tinyrustlm\tools\remove-retired-slm1-models.ps1

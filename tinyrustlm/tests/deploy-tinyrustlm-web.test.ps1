@@ -389,15 +389,15 @@ try {
     [IO.Directory]::CreateDirectory($profileRoot) | Out-Null
     $utf8 = [Text.UTF8Encoding]::new($false)
 
-    $validProfile = Join-Path $profileRoot "sitemanager.xml"
-    $validXml = @'
-<?xml version="1.0" encoding="UTF-8"?>
-<FileZilla3><Servers><Server>
-<Host>example.com</Host><Port>21</Port><User>deployment-test</User>
-<Pass encoding="base64">dGVzdC1wYXNzd29yZA==</Pass><Name>TinyRustLM.com</Name>
-</Server></Servers></FileZilla3>
+    $validProfile = Join-Path $profileRoot "ftp.txt"
+    $validText = @'
+FTP Username: deployment-test@TinyRustLM.com
+FTP server: example.com
+FTP & explicit FTPS port: 21
+Username: deployment-test
+Password: test:password=value
 '@
-    [IO.File]::WriteAllText($validProfile, $validXml, $utf8)
+    [IO.File]::WriteAllText($validProfile, $validText, $utf8)
     $sentinelText = '{"public_origin":"https://tinyrustlm.com",' +
         '"schema":"tinyrustlm.deployment_root_identity.v1",' +
         '"site_identity":"tinyrustlm.com"}' + "`n"
@@ -566,10 +566,10 @@ try {
     $workspaceMemory = Join-Path $root "deployment-memory-fixture.txt"
     [IO.File]::WriteAllText(
         $workspaceMemory,
-        "filezilla_profile: $validProfile`n" +
+        "deployment_ftp_credentials_file: $validProfile`n" +
             "deployment_ftps_host: example.com`n" +
             "deployment_ftps_port: 21`n" +
-            "deployment_ftps_user: deployment-test`n" +
+            "deployment_ftps_user: deployment-test@TinyRustLM.com`n" +
             "deployment_ftps_profile: TinyRustLM.com`n" +
             "deployment_site_identity: tinyrustlm.com`n" +
             "deployment_root_sentinel_path: " +
@@ -590,9 +590,9 @@ try {
         -TargetBinding $targetBinding
     Assert-True ($credentialProfile.host -eq "example.com") "Credential host changed."
     Assert-True ($credentialProfile.port -eq 21) "Credential port changed."
-    Assert-True ($credentialProfile.user -eq "deployment-test") "Credential user changed."
+    Assert-True ($credentialProfile.user -ceq "deployment-test@TinyRustLM.com") "Full credential user changed."
     Assert-True ($credentialProfile.profile -eq "TinyRustLM.com") "Credential profile changed."
-    Assert-True ($credentialProfile.password.Length -gt 0) "Credential password was not decoded."
+    Assert-True ($credentialProfile.password -ceq "test:password=value") "Credential password separators changed."
     $credentialProfile.password = $null
 
     $canonicalFixture = $canonicalRepositoryRoot
@@ -1421,14 +1421,10 @@ namespace System.Net {
         $pipe.Dispose()
     }
 
-    $duplicateProfile = Join-Path $profileRoot "duplicate.xml"
+    $duplicateProfile = Join-Path $profileRoot "duplicate.txt"
     [IO.File]::WriteAllText(
         $duplicateProfile,
-        $validXml.Replace(
-            "</Servers>",
-            "<Server><Host>example.org</Host><Port>21</Port><User>second</User>" +
-                "<Pass>second</Pass><Name>TinyRustLM.com</Name></Server></Servers>"
-        ),
+        ($validText + "`n" + $validText),
         $utf8
     )
     Assert-Throws {
@@ -1438,29 +1434,66 @@ namespace System.Net {
             -ExpectedProfileName "TinyRustLM.com" | Out-Null
     } "exactly one configured deployment site"
 
-    $dtdProfile = Join-Path $profileRoot "dtd.xml"
-    [IO.File]::WriteAllText(
-        $dtdProfile,
-        "<!DOCTYPE FileZilla3 [<!ENTITY blocked 'value'>]>" +
-            $validXml.Substring($validXml.IndexOf("<FileZilla3>")),
-        $utf8
-    )
+    $malformedProfile = Join-Path $profileRoot "malformed.txt"
+    foreach ($badText in @(
+        '<FileZilla3><Servers /></FileZilla3>',
+        ($validText + "`nPassword: duplicate"),
+        $validText.Replace('FTP server: example.com', 'Unexpected: example.com'),
+        $validText.Replace('FTP server: example.com', ''),
+        ($validText -replace '(?m)^Username: deployment-test\r?$', 'Username: other'),
+        $validText.Replace('port: 21', 'port: 65536'),
+        $validText.Replace('port: 21', 'port: -1'),
+        $validText.Replace('example.com', 'https://example.com'),
+        $validText.Replace('TinyRustLM.com', 'TinyRustLM.com.evil.invalid'),
+        $validText.Replace('test:password=value', ''),
+        $validText.Replace('test:password=value', ('x' * 4097)),
+        $validText.Replace('test:password=value', ("secret" + [char]0)),
+        ('x' * 65537)
+    )) {
+        [IO.File]::WriteAllText($malformedProfile, $badText, $utf8)
+        Assert-Throws {
+            Get-DeploymentCredentialProfile -ProfilePath $malformedProfile `
+                -SourceRoot $sourceRoot -ExpectedProfileName 'TinyRustLM.com' | Out-Null
+        } 'FTP'
+    }
+    [IO.File]::WriteAllBytes($malformedProfile, [byte[]]@(0xff, 0xfe, 0xff))
     Assert-Throws {
-        Get-DeploymentCredentialProfile `
-            -ProfilePath $dtdProfile `
-            -SourceRoot $sourceRoot `
-            -ExpectedProfileName "TinyRustLM.com" | Out-Null
-    } "DTD|prohibited|security"
+        Get-DeploymentCredentialProfile -ProfilePath $malformedProfile `
+            -SourceRoot $sourceRoot -ExpectedProfileName 'TinyRustLM.com' | Out-Null
+    } 'UTF-8'
+    [IO.File]::WriteAllText($malformedProfile, '', $utf8)
+    Assert-Throws {
+        Get-DeploymentCredentialProfile -ProfilePath $malformedProfile `
+            -SourceRoot $sourceRoot -ExpectedProfileName 'TinyRustLM.com' | Out-Null
+    } 'bounded regular file'
+    foreach ($newline in @("`n", "`r`n")) {
+        $multiSite = $validText.Replace('TinyRustLM.com', 'MiniModel.org') + "`n`n" + $validText
+        $multiSite = ($multiSite -replace "`r?`n", $newline)
+        [IO.File]::WriteAllText($malformedProfile, $multiSite, [Text.UTF8Encoding]::new($true))
+        $selected = Get-DeploymentCredentialProfile -ProfilePath $malformedProfile `
+            -SourceRoot $sourceRoot -ExpectedProfileName 'tinyrustlm.com'
+        Assert-True ($selected.user -ceq 'deployment-test@TinyRustLM.com') 'Selected wrong account.'
+        Assert-True ($selected.password -ceq 'test:password=value') 'Password changed.'
+        $selected.password = $null
+    }
+    Assert-Throws {
+        Get-DeploymentCredentialProfile -ProfilePath $validProfile `
+            -SourceRoot $sourceRoot -ExpectedProfileName 'absent.example' | Out-Null
+    } 'exactly one'
+    Assert-Throws {
+        Get-DeploymentCredentialProfile -ProfilePath $validProfile `
+            -SourceRoot $sourceRoot -ExpectedProfileName 'https://tinyrustlm.com' | Out-Null
+    } 'DNS name'
 
     Assert-Throws {
         Get-DeploymentCredentialProfile `
-            -ProfilePath "relative-profile.xml" `
+            -ProfilePath "relative-profile.txt" `
             -SourceRoot $sourceRoot `
             -ExpectedProfileName "TinyRustLM.com" | Out-Null
     } "must be absolute"
 
-    $insideSourceProfile = Join-Path $sourceRoot "sitemanager.xml"
-    [IO.File]::WriteAllText($insideSourceProfile, $validXml, $utf8)
+    $insideSourceProfile = Join-Path $sourceRoot "ftp.txt"
+    [IO.File]::WriteAllText($insideSourceProfile, $validText, $utf8)
     Assert-Throws {
         Get-DeploymentCredentialProfile `
             -ProfilePath $insideSourceProfile `
@@ -1477,7 +1510,7 @@ namespace System.Net {
             -ErrorAction Stop | Out-Null
         Assert-Throws {
             Get-DeploymentCredentialProfile `
-                -ProfilePath (Join-Path $profileJunction "sitemanager.xml") `
+                -ProfilePath (Join-Path $profileJunction "ftp.txt") `
                 -SourceRoot $sourceRoot `
                 -ExpectedProfileName "TinyRustLM.com" | Out-Null
         } "ancestry is unsafe"

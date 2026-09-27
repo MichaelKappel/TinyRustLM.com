@@ -5,6 +5,36 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C103: publisher reads the existing FTP credentials, September 27
+
+The TinyRustLM publisher now reads the owner's existing five-field FTP account
+export instead of requiring a FileZilla XML profile. The obsolete XML reader is
+removed, with no fallback or extra credential copy. External deployment memory
+must use `deployment_ftp_credentials_file: E:\Source\Rust\ftp.txt` in place of
+`filezilla_profile`. The existing host, port, full username, site, profile and
+sentinel fields remain independently required. The full `FTP Username` is the
+login identity; `Username` must equal its local part. Account selection requires
+one exact site domain, not a suffix containing a lookalike domain.
+
+The reader bounds the file to64KiB and128 records, decodes strict UTF-8, retains
+password colons/equal signs, rejects ambiguous/malformed selected records and
+retains ordinary-file ancestry and source-worktree exclusion. Actual-file
+validation confirms the expected site, host and port with a nonempty password;
+no values were logged and no network request was made by that validation.
+
+All17 affected deployment tests pass, including actual PowerShell success and
+failure paths. An initial16/17 result caught culture-sensitive BOM stripping;
+the reader now uses ordinal comparison. Fixtures cover BOM/no-BOM and LF/CRLF,
+multiple accounts, duplicates, malformed fields, bounds, invalid encoding,
+lookalike domains, source containment and junctions. Test-owned output is gone.
+Numeric PowerShell coverage was not measured; no75-percent claim follows.
+
+The full deployment entry point remains gated by37 unreadable source paths,
+unavailable remote sentinels and incomplete exact target configuration. This
+change resolves the credential-format integration, not those release gates.
+No public assets or design changed; no website or package was published.
+Receipt: `artifacts/ecosystem-cleanup-20260912/ftp-credential-reader-review.json`.
+
 ## C102: actual FTPS accounts and public bytes verified, September 27
 
 Read-only certificate-verified explicit FTPS authentication succeeds for the

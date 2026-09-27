@@ -187,7 +187,7 @@ function Resolve-CanonicalDeploymentRepositoryRoot {
     return (Assert-CanonicalDeploymentSourceRoot -RepositoryRoot $canonicalRoot)
 }
 
-# Loads one bounded FileZilla site without enabling DTDs or exposing credential fields.
+# Reads one exact site from the owner's bounded external FTP account export; never logs fields.
 function Get-DeploymentCredentialProfile {
     param(
         [string]$ProfilePath,
@@ -198,9 +198,8 @@ function Get-DeploymentCredentialProfile {
     if ([string]::IsNullOrWhiteSpace($ProfilePath) -or
         -not [IO.Path]::IsPathRooted($ProfilePath) -or
         [string]::IsNullOrWhiteSpace($ExpectedProfileName) -or
-        $ExpectedProfileName.Length -gt 128 -or
-        $ExpectedProfileName -match "[\x00-\x1f\x7f]") {
-        throw "The FileZilla profile path must be absolute."
+        [Uri]::CheckHostName($ExpectedProfileName) -ne [UriHostNameType]::Dns) {
+        throw "The FTP credential path must be absolute and the site must be a DNS name."
     }
     try {
         $fullPath = [IO.Path]::GetFullPath($ProfilePath)
@@ -208,105 +207,96 @@ function Get-DeploymentCredentialProfile {
             [IO.Path]::DirectorySeparatorChar
     }
     catch {
-        throw "The FileZilla profile path cannot be resolved."
+        throw "The FTP credential path cannot be resolved."
     }
     if ($fullPath.StartsWith($sourcePrefix, [StringComparison]::OrdinalIgnoreCase)) {
-        throw "The FileZilla profile must remain outside the source worktree."
+        throw "The FTP credentials must remain outside the source worktree."
     }
     try {
         $profileAvailable = Test-Path -LiteralPath $fullPath -PathType Leaf
     }
     catch {
-        throw "The FileZilla profile cannot be inspected."
+        throw "The FTP credentials cannot be inspected."
     }
     if (-not $profileAvailable) {
-        throw "The FileZilla profile is unavailable."
+        throw "The FTP credentials are unavailable."
     }
     try {
         $item = Get-Item -LiteralPath $fullPath
     }
     catch {
-        throw "The FileZilla profile cannot be inspected."
+        throw "The FTP credentials cannot be inspected."
     }
     if (($item.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0 -or
         $item.Length -le 0 -or
-        $item.Length -gt (4 * 1024 * 1024) -or
-        -not [string]::Equals($item.Extension, ".xml", [StringComparison]::OrdinalIgnoreCase)) {
-        throw "The FileZilla profile is not a bounded regular XML file."
+        $item.Length -gt 65536) {
+        throw "The FTP credentials are not a bounded regular file."
     }
     Assert-NoReparsePointAncestry `
         -Path $item.FullName `
-        -FailureMessage "The FileZilla profile ancestry is unsafe."
+        -FailureMessage "The FTP credential ancestry is unsafe."
 
-    $settings = [Xml.XmlReaderSettings]::new()
-    $settings.DtdProcessing = [Xml.DtdProcessing]::Prohibit
-    $settings.XmlResolver = $null
-    $settings.MaxCharactersInDocument = 4 * 1024 * 1024
-    $reader = $null
-    $document = [Xml.XmlDocument]::new()
-    $document.XmlResolver = $null
+    $stream = $null
+    $bytes = [byte[]]::new(65537)
     try {
-        $reader = [Xml.XmlReader]::Create($fullPath, $settings)
-        $document.Load($reader)
+        $stream = [IO.File]::Open($fullPath, [IO.FileMode]::Open, [IO.FileAccess]::Read, [IO.FileShare]::Read)
+        $count = 0
+        while ($count -lt $bytes.Length) {
+            $read = $stream.Read($bytes, $count, $bytes.Length - $count)
+            if ($read -eq 0) { break }
+            $count += $read
+        }
+        if ($count -eq 0 -or $count -gt 65536) { throw "Invalid credential size." }
+        $text = [Text.UTF8Encoding]::new($false, $true).GetString($bytes, 0, $count)
+        if ($text.StartsWith([string][char]0xfeff, [StringComparison]::Ordinal)) {
+            $text = $text.Substring(1)
+        }
     }
     catch {
-        throw "The FileZilla profile XML failed security validation."
+        throw "The bounded FTP credentials cannot be read as UTF-8."
     }
     finally {
-        if ($reader) {
-            $reader.Dispose()
-        }
+        if ($stream) { $stream.Dispose() }
+        [Array]::Clear($bytes, 0, $bytes.Length)
     }
-
-    $matchingSites = @($document.SelectNodes("/FileZilla3/Servers/Server") | Where-Object {
-        $nameNode = $_.SelectSingleNode("Name")
-        $nameNode -and [string]::Equals(
-            ([string]$nameNode.InnerText).Trim(),
-            $ExpectedProfileName,
-            [StringComparison]::Ordinal
-        )
+    $accounts = [Collections.Generic.List[object]]::new()
+    $account = $null
+    $keys = @("FTP Username", "FTP server", "FTP & explicit FTPS port", "Username", "Password")
+    foreach ($line in ($text -split "\r?\n")) {
+        if ([string]::IsNullOrWhiteSpace($line)) { continue }
+        $separator = $line.IndexOf(':')
+        if ($separator -lt 1) { throw "The FTP credential record is malformed." }
+        $key = $line.Substring(0, $separator).Trim()
+        $value = $line.Substring($separator + 1).Trim()
+        if ($keys -cnotcontains $key -or [string]::IsNullOrEmpty($value)) {
+            throw "The FTP credential record contains an unknown or empty field."
+        }
+        if ($key -ceq "FTP Username") {
+            if ($accounts.Count -ge 128) { throw "Too many FTP credential records." }
+            $account = @{}
+            $accounts.Add($account)
+        }
+        if ($null -eq $account -or $account.ContainsKey($key)) {
+            throw "The FTP credential record has missing or duplicate fields."
+        }
+        $account[$key] = $value
+    }
+    $text = $null
+    $matchingSites = @($accounts | Where-Object {
+        $identity = [string]$_['FTP Username']
+        $at = $identity.IndexOf('@')
+        $at -gt 0 -and $at -eq $identity.LastIndexOf('@') -and
+            [string]::Equals($identity.Substring($at + 1), $ExpectedProfileName, [StringComparison]::OrdinalIgnoreCase)
     })
     if ($matchingSites.Count -ne 1) {
-        throw "The FileZilla profile must contain exactly one configured deployment site."
+        throw "The FTP credentials must contain exactly one configured deployment site."
     }
     $site = $matchingSites[0]
-    $requiredNode = {
-        param([string]$Name)
-        $node = $site.SelectSingleNode($Name)
-        if (-not $node -or [string]::IsNullOrWhiteSpace([string]$node.InnerText)) {
-            throw "The FileZilla TinyRustLM site is missing a required field."
-        }
-        return [string]$node.InnerText
-    }
-    $hostName = (& $requiredNode "Host").Trim()
-    $portText = (& $requiredNode "Port").Trim()
-    $userName = (& $requiredNode "User").Trim()
-    $passwordNode = $site.SelectSingleNode("Pass")
-    if (-not $passwordNode) {
-        throw "The FileZilla TinyRustLM site is missing a required field."
-    }
-    $encodingAttribute = $passwordNode.Attributes["encoding"]
-    $passwordEncoding = if ($encodingAttribute) {
-        ([string]$encodingAttribute.Value).Trim()
-    }
-    else {
-        ""
-    }
-    if ($passwordEncoding -and
-        -not [string]::Equals($passwordEncoding, "base64", [StringComparison]::OrdinalIgnoreCase)) {
-        throw "The FileZilla password encoding is unsupported."
-    }
-    try {
-        $password = if ($passwordEncoding) {
-            [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String([string]$passwordNode.InnerText))
-        }
-        else {
-            [string]$passwordNode.InnerText
-        }
-    }
-    catch {
-        throw "The FileZilla password encoding is invalid."
-    }
+    if ($site.Count -ne $keys.Count) { throw "The FTP site is missing a required field." }
+    $hostName = [string]$site['FTP server']
+    $portText = [string]$site['FTP & explicit FTPS port']
+    $userName = [string]$site['FTP Username']
+    $password = [string]$site['Password']
 
     $port = 0
     $hostNameType = [Uri]::CheckHostName($hostName)
@@ -318,11 +308,12 @@ function Get-DeploymentCredentialProfile {
         $port -lt 1 -or $port -gt 65535 -or
         $userName.Length -gt 256 -or
         $userName -match "[\x00-\x1f\x7f]" -or
+        -not [string]::Equals([string]$site['Username'], $userName.Split('@')[0], [StringComparison]::Ordinal) -or
         [string]::IsNullOrEmpty($password) -or
         $password.Length -gt 4096 -or
-        $password.Contains([char]0)) {
+        $password -match "[\x00-\x1f\x7f]") {
         $password = $null
-        throw "The FileZilla TinyRustLM site contains an invalid bounded field."
+        throw "The FTP site contains an invalid bounded field."
     }
     return [pscustomobject]@{
         profile = $ExpectedProfileName
@@ -446,7 +437,7 @@ function Get-WorkspaceDeploymentCredentialProfile {
     $lines = Get-BoundedWorkspaceMemoryLines `
         -MemoryPath $MemoryPath `
         -SourceRoot $SourceRoot
-    $profilePath = Get-YamlScalar -Lines $lines -Key "filezilla_profile"
+    $profilePath = Get-YamlScalar -Lines $lines -Key "deployment_ftp_credentials_file"
     return Get-DeploymentCredentialProfile `
         -ProfilePath $profilePath `
         -SourceRoot $SourceRoot `

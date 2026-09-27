@@ -291,7 +291,8 @@ test("deployment orchestrator requires fresh readback and immutable attempt evid
     source,
     /Get-DeploymentCredentialProfile[\s\S]*?-ExpectedProfileName \$TargetBinding\.profile/
   );
-  assert.match(source, /DtdProcessing = \[Xml\.DtdProcessing\]::Prohibit/);
+  assert.doesNotMatch(source, /FileZilla|filezilla_profile|XmlReader/);
+  assert.match(source, /deployment_ftp_credentials_file/);
   assert.match(source, /"validate",\s+\$releaseLedgerPath/);
   assert.match(source, /materialize-finalized/);
   assert.match(source, /pendingReleaseId/);
