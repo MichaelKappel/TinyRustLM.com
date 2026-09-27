@@ -1,5 +1,5 @@
 profile: tinyrustlm.operations.current.v1
-updated_utc: 2026-09-27T17:58:21Z
+updated_utc: 2026-09-27T18:11:11Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
@@ -12,6 +12,14 @@ owner_delivery_policy:
   websites: Publish approved website bytes using the established FTP/FTPS host and credentials, with local validation, exact target verification and public HTTPS readback. Git push is source control, not website publication.
   packages: Publish NuGet directly to nuget.org over its HTTPS API after local package gates. The key location below remains authoritative; FTP is for websites, not the NuGet registry.
   source: Review and check in pending code coherently, preserve useful work, and distinguish source checkpoints from release passes. Do not commit secrets, model payloads, transient output or unreviewed obsolete executables merely to make status clean.
+  regular_push_requirement: September27 owner reiterates that work must not remain only on this computer. Commit and push each coherent source/script/documentation change and reviewed non-sensitive durable result before handoff; verify direct remote equality. A clean Git status is not proof that ignored work is recoverable. Review ignored outputs explicitly; never conceal unique source or durable results behind broad artifact ignore rules. Credentials, private payloads, model binaries and disposable dependency/build output are not automatically authorized for Git publication.
+
+current_experiment_cleanup:
+  authority: September27 owner explicitly selected Delete the ignored experiment outputs too after being told Git cannot restore them.
+  completed: Owner receipt941ae6204f71ecb53ed888d3b379ef25b4112a9f907062745f27d2bce4078483 verifies431 installer files and2 links removed; exact root independently absent and reference interpreter present. Logical296933889 bytes, physical recovery unmeasured. Completed installer helper/test retired to Git history.
+  remaining: Fresh source scan reports26 unreadable experiment directories. All26 are ignored and have zero tracked files; all seven repository heads match their fetched/direct remotes.
+  execution: Agent native PowerShell deletion was rejected before execution by automatic approval review with blocked by policy. Do not retry via another tool or ACL change.
+  operator_command: Run tinyrustlm/tools/remove-authorized-experiment-outputs.ps1 in Administrator PowerShell. It validates exact listed scope, current Git tracking/ignore status, containment, ordinary ancestry and contents before deletion, and writes ignored-experiment-cleanup-receipt.json afterward. Validation tests pass on owned fixtures; real deletion remains pending.
 
 owner_manual_cleanup:
   requested: September23 owner explicitly requested a PowerShell script to execute locally when agent cleanup is blocked.

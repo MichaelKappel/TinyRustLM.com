@@ -5,6 +5,57 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C105: installer removal verified; remaining ignored cleanup explicitly authorized
+
+The owner's September27T18:04:34.2374304Z receipt reports431 regular files and
+two dangling links removed, totaling296,933,889 logical bytes. Physical recovery
+was not measured. Receipt SHA-256:
+`941ae6204f71ecb53ed888d3b379ef25b4112a9f907062745f27d2bce4078483`.
+The exact installer root is independently absent; the canonical reference
+interpreter remains present. The completed one-time helper and test are retired;
+their last current source is in Git8292ddf. Their hashes were respectively
+`7d3612eb37b48184fc138ad27f6b93790f84e10a084d639fc470ea278e1e336d`
+and `0dd983b7feb5b68651f6ab2b619acd7ab1e722dfda2992a32699b1a7284d353c`.
+
+The fresh source scan drops from37 to26 unreadable entries. These are ignored
+experiment directories, not missing tracked source. After this distinction was
+explained, the owner explicitly selected **Delete the ignored experiment
+outputs too**. All26 exact targets have zero tracked files and are ignored under
+current Git policy. A contained native PowerShell deletion attempt was rejected
+by automatic approval review before execution with `blocked by policy`; no
+alternative deletion API or permission change was attempted.
+
+The single operator handoff is
+`tinyrustlm/tools/remove-authorized-experiment-outputs.ps1`. It names all26
+targets, requires Administrator PowerShell, checks tracked/ignored status twice,
+validates containment and ordinary ancestry, rejects links and nested Git
+repositories, inventories metadata before any deletion and rechecks before each
+removal. It writes a create-only receipt after observed absence. Model storage,
+credentials, source and ACLs are outside its scope. `-WhatIf` performs its reads
+without deleting or writing a receipt. No real execution of this script is
+claimed yet.
+
+Validation imports only its path/inventory functions. Real owned fixtures test
+valid paths, traversal/absolute/stream escapes, wrong scopes, changing metadata,
+junction ancestry and nested repositories; no real experiment cleanup is run.
+Tests pass and owned scratch is removed. Numeric PowerShell coverage is unmeasured.
+
+Fresh fetch plus direct remote comparison verifies all seven source heads:
+LMComposer6cbb67c, MiniModel.MiRust b437611, MiniModel.org67f3e06,
+MiRust b9420a1, Runtime960b077, TinyRustLM8292ddf and portal77d9014.
+At that point only the new owner receipt was untracked. No source reset or fresh
+clone is needed to recover those commits. The owner reiterates frequent pushes;
+operations.uai now explicitly requires reviewed durable non-sensitive work to
+be pushed before handoff, including review of ignored work rather than relying
+on a clean status alone.
+
+A bounded TinyRustLM ignored-file check found213 source-like paths, including
+generated build files, dependency sources, upstream model cards and retained
+test/research records. Enumeration emitted access warnings; it does not prove
+all ignored work is recoverable or permit publishing private material. The
+authorized26-directory cleanup remains pending. No website/model/NuGet
+publication or complete source-admission result follows.
+
 ## C104: exact local deployment configuration prepared, September 27
 
 Prepared the external target configuration at

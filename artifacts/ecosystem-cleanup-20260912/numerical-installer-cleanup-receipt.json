@@ -1,0 +1,12 @@
+{
+    "schema":  "tinyrustlm.reviewed_numerical_installer_cleanup_result.v1",
+    "status":  "removed",
+    "removedAtUtc":  "2026-09-27T18:04:34.2374304Z",
+    "root":  "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\verification\\qwen3-environment-install\\tinyrustlm-operation-C3ZUt9",
+    "inventorySha256":  "df225a1d0b64260e6d7cb5cbbd9068c46a8f674bbe8b4de6244738d53be97be0",
+    "regularFiles":  431,
+    "symbolicLinks":  2,
+    "logicalByteLength":  296933889,
+    "measuredStorageRecoveryBytes":  null,
+    "canonicalReferenceRuntimeRemoved":  false
+}

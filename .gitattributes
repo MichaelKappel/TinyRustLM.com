@@ -153,3 +153,6 @@ tinyrustlm/tools/task-specialist-*.js text eol=lf
 # Preserve all hash-bound intake evidence exactly as submitted. Source reports
 # intentionally retain their original line endings and trailing whitespace.
 docs/report-intake/** -text whitespace=-blank-at-eol,-blank-at-eof
+
+# Preserve the owner's hash-bound cleanup receipt exactly, including its CRLF bytes.
+artifacts/ecosystem-cleanup-20260912/numerical-installer-cleanup-receipt.json -text

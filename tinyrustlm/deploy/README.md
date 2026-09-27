@@ -25,11 +25,12 @@ from denied access before any separately reviewed marker installation. Do not
 overwrite an existing differing marker or treat the prepared local file as proof
 of remote authority.
 
-The source scan currently fails on 37 unreadable paths. The owner-run numerical
-installer cleanup remains pending; its exact script is
-`tinyrustlm/tools/remove-reviewed-numerical-installer-output.ps1`. The earlier
-241-file cleanup is complete and its retired helper must not be rerun. Other
-source-read failures still require resolution even after installer retirement.
+The source scan now fails on 26 unreadable experiment directories. The owner-run
+numerical installer cleanup is verified complete, as is the earlier 241-file
+cleanup; both completed helpers are retired. The owner explicitly authorized
+deleting the remaining ignored experiment outputs. Run
+`tinyrustlm/tools/remove-authorized-experiment-outputs.ps1` in Administrator
+PowerShell, then recheck source admission. It refuses tracked files and links.
 Do not change ACLs or use another deletion API to evade an automatic refusal.
 
 After the source and release prerequisites are satisfied, use the prepared
