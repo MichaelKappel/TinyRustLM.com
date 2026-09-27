@@ -1,0 +1,15 @@
+{
+  "schema": "tinyrustlm.ftps_target_marker_installation.v1",
+  "startedUtc": "2026-09-27T21:25:02.281442+00:00",
+  "site": "tinyrustlm.com",
+  "remotePath": ".well-known/tinyrustlm-deployment-target.v1.json",
+  "sha256": "78afeb99c33a966d784c578eef84b87437e74c1cefa96bcf3f370dc5299d9c67",
+  "bytes": 126,
+  "uploadCompleted": true,
+  "ftpReadback": true,
+  "httpsReadback": true,
+  "applicationPublished": false,
+  "httpsStatus": 200,
+  "status": "verified",
+  "finishedUtc": "2026-09-27T21:25:07.630678+00:00"
+}

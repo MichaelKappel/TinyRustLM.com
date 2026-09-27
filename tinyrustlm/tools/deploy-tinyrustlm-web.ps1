@@ -4386,25 +4386,29 @@ if ([string]::IsNullOrWhiteSpace($ReportPath)) {
 }
 $ReportPath = Resolve-NewDeploymentReportPath -Path $ReportPath -SourceRoot $RepositoryRoot
 $reportDirectory = Split-Path -Parent $ReportPath
-$script:generatedReleaseRoot = Join-Path $reportDirectory (
+# Operational output must not dirty the sealed source while the publisher runs.
+# Final attempt/terminal receipts stay visible in reportDirectory for review and Git.
+$deploymentScratchDirectory = Assert-CanonicalDeploymentArtifactPath `
+    -Path (Join-Path $RepositoryRoot "artifacts\verification\web-deployments") -SourceRoot $RepositoryRoot
+[IO.Directory]::CreateDirectory($deploymentScratchDirectory) | Out-Null
+$script:generatedReleaseRoot = Join-Path $deploymentScratchDirectory (
     "tinyrustlm-web-release-assets-{0}" -f $attemptId
 )
 $predecessorOperationId = (Get-Utf8Sha256 -Value (
     "tinyrustlm-web-predecessor|{0}" -f $attemptId
 )).Substring(0, 32)
-$publicPredecessorRoot = Join-Path $reportDirectory (
+$publicPredecessorRoot = Join-Path $deploymentScratchDirectory (
     "tinyrustlm-web-predecessor-{0}" -f $predecessorOperationId
 )
-$secretScanReportPath = Join-Path $reportDirectory ("tinyrustlm-web-secret-scan-{0}.json" -f $attemptId)
-$secretScanEvidenceRoot = Join-Path $reportDirectory ("tinyrustlm-web-secret-scan-evidence-{0}" -f $attemptId)
-$finalizedLedgerCandidatePath = Join-Path $reportDirectory (
+$secretScanReportPath = Join-Path $deploymentScratchDirectory ("tinyrustlm-web-secret-scan-{0}.json" -f $attemptId)
+$secretScanEvidenceRoot = Join-Path $deploymentScratchDirectory ("tinyrustlm-web-secret-scan-evidence-{0}" -f $attemptId)
+$finalizedLedgerCandidatePath = Join-Path $deploymentScratchDirectory (
     "tinyrustlm-site-release-ledger-finalized-{0}.json" -f $attemptId
 )
 $terminalDecisionPath = Join-Path $reportDirectory (
     "tinyrustlm-web-deployment-terminal-decision-{0}.json" -f $attemptId
 )
-$deploymentLeaseDirectory = Assert-CanonicalDeploymentArtifactPath `
-    -Path (Join-Path $RepositoryRoot "artifacts\web-deployments") -SourceRoot $RepositoryRoot
+$deploymentLeaseDirectory = $deploymentScratchDirectory
 [IO.Directory]::CreateDirectory($deploymentLeaseDirectory) | Out-Null
 $deploymentLeasePath = Join-Path $deploymentLeaseDirectory "tinyrustlm.com.deployment-lease.v1.json"
 $script:regularArtifactsVerifiedForCommit = $false

@@ -19,11 +19,13 @@ the site release manifest; the publisher verifies it but does not install it.
 
 September 27 observations establish certificate-verified FTPS authentication
 and exact root `index.html` equality with public HTTPS. The marker read returned
-550: it was unavailable, which does not prove absence. No remote marker has been
-installed by this work. Confirm exact target ownership and distinguish absence
-from denied access before any separately reviewed marker installation. Do not
-overwrite an existing differing marker or treat the prepared local file as proof
-of remote authority.
+550: it was unavailable, which alone did not prove absence. A later successful
+listing of the exact `.well-known` directory confirmed absence. On September27
+at21:25 UTC the exact prepared marker was installed after another account/root,
+homepage-equality and absence check; both FTPS and HTTPS returned the exact126
+bytes and bound hash. Read `ftps-target-marker-installation.json` in the private
+cleanup records. Do not overwrite a differing marker. Installing this target
+identity did not publish the application or prove the remaining release gates.
 
 The owner-run 26-directory experiment cleanup is independently verified complete,
 along with the numerical installer and earlier 241-file cleanup. Their completed
@@ -42,9 +44,12 @@ $deploymentMemory = 'E:\Source\Rust\.local-secrets\tinyrustlm-deployment.uai'
 & '.\tinyrustlm\tools\deploy-tinyrustlm-web.ps1' -WorkspaceMemory $deploymentMemory -ValidateOnly
 ```
 
-Both modes retain source admission. The preparation check performed separately
-on named functions validates configuration and local marker bytes only; it is
-not a successful execution of either command above. Publication then uses the
+Both modes retain source admission. C108 executed both complete commands:
+credential validation passed and ValidateOnly passed for32 publication files.
+Temporary validation and publication working files now use the existing ignored
+`artifacts/verification/web-deployments` area; final attempt and terminal receipts
+remain visible in `artifacts/web-deployments` for review and source control.
+Publication then uses the
 same script and memory argument without a validation switch, after all gates
 pass. Require exact remote marker identity, predecessor checks, the publication
 lease, committed source custody and final HTTPS byte readback. Preserve actual

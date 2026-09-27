@@ -5,6 +5,27 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C109: remote target identity established; publication working files isolated
+
+The authenticated FTPS root homepage still matches public HTTPS byte-for-byte.
+A successful `.well-known` listing contains six entries and no deployment
+marker, distinguishing absence from the earlier ambiguous550 read. After a fresh
+account/configuration/root, homepage and absence check, the exact prepared126-byte
+marker was uploaded. FTPS and HTTPS200 both return the bound SHA-256
+`78afeb99c33a966d784c578eef84b87437e74c1cefa96bcf3f370dc5299d9c67`.
+Receipts are `ftps-publication-preflight-review.json` and
+`ftps-target-marker-installation.json` under the existing private cleanup records.
+Only this identity marker was installed; application publication is not claimed.
+
+The full publisher shared the validation path's self-dirtying output placement.
+Generated release metadata, predecessor snapshots, secret-scan working evidence,
+finalized-ledger candidate and local lease now use the existing ignored canonical
+verification area. Final attempt and terminal receipts remain visible to Git.
+No source-custody or secret-scan condition was removed. All18 deployment tests
+pass, including actual Git-ignore separation and PowerShell primitives. The
+subsequent complete publication attempt must retain its own result; these tests
+and marker installation do not establish successful application deployment.
+
 ## C108: publisher validation uses ignored owned scratch
 
 After C107 was pushed, the real publisher's credential-validation mode passed

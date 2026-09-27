@@ -1,0 +1,24 @@
+{
+  "schema": "tinyrustlm.ftps_publication_preflight_review.v1",
+  "observedUtc": "2026-09-27T21:23:49.671619+00:00",
+  "site": "tinyrustlm.com",
+  "remoteWrites": 0,
+  "pwdIsRoot": true,
+  "wellKnownListing": {
+    "succeeded": true,
+    "entryCount": 6,
+    "targetPresent": false,
+    "targetFacts": []
+  },
+  "httpsStatus": 200,
+  "homepage": {
+    "bytes": 58927,
+    "ftpSha256": "5d2bdfd5664aca4361baa5f17bc74bb57bf1d30ac63bcc9d8ab780d87910e465",
+    "httpsSha256": "5d2bdfd5664aca4361baa5f17bc74bb57bf1d30ac63bcc9d8ab780d87910e465",
+    "sameBytes": true
+  },
+  "targetMarker": {
+    "retrieved": false,
+    "ftpStatus": "550"
+  }
+}

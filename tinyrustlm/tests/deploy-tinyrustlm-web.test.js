@@ -26,6 +26,15 @@ test("validation scratch does not dirty source while durable reports remain visi
   });
   assert.equal(result.status, 0, result.stderr);
   assert.deepEqual(result.stdout.trim().split(/\r?\n/u), [scratch]);
+  const publicationParent = /\$deploymentScratchDirectory = Assert-CanonicalDeploymentArtifactPath\s*`\s*-Path \(Join-Path \$RepositoryRoot "([^"]+)"\)/u.exec(source);
+  assert.ok(publicationParent);
+  assert.equal(publicationParent[1], parent[1]);
+  for (const variable of ["script:generatedReleaseRoot", "publicPredecessorRoot",
+    "secretScanReportPath", "secretScanEvidenceRoot", "finalizedLedgerCandidatePath"]) {
+    assert.ok(source.includes(`$${variable} = Join-Path $deploymentScratchDirectory`), variable);
+  }
+  assert.ok(source.includes("$deploymentLeaseDirectory = $deploymentScratchDirectory"));
+  assert.ok(source.includes("$terminalDecisionPath = Join-Path $reportDirectory"));
 });
 
 test("deployment orchestrator requires fresh readback and immutable attempt evidence", () => {
