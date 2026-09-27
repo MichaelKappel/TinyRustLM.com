@@ -1,0 +1,254 @@
+{
+    "schema":  "tinyrustlm.deployment_terminal_decision.v1",
+    "attempt_id":  "20260927T2128349309317Z-9ff696926cb3",
+    "terminal_scope":  "deployment-attempt-before-local-cleanup",
+    "deployment_attempt_terminal":  true,
+    "deployment_status":  "fail",
+    "local_cleanup_pending":  true,
+    "release_commit_marker_published":  false,
+    "release_commit_marker_readback_observed":  false,
+    "release_commit_marker_publication_completed":  false,
+    "failure_identity":  "System.Management.Automation.RuntimeException",
+    "failure_step":  "public-predecessor-gate",
+    "source_commit":  "7d250f83cad5a8a67c37bb9411fda975ecfbc133",
+    "release_id":  "tinyrustlm.com@0.5.0",
+    "release_publication_id":  "0ebb8c6ebecd95f3d61c4b173487702d5bed31d3510e9495b0b77fbbe4d98278",
+    "deployment_manifest_sha256":  "dd056b9fa7177d9cf2a1832d6e32323be4740b061a25023c7a3e4ba69bbaca10",
+    "deployment_input":  {
+                             "schema":  "tinyrustlm.web_deployment_input.v1",
+                             "input_id":  "72857df0e66f004d71b6363239727622325e40c9f0823f13d6d64d5572cb200c",
+                             "file_count":  32,
+                             "total_byte_count":  2042566,
+                             "files":  [
+                                           {
+                                               "source":  "source",
+                                               "remote_relative_path":  ".htaccess",
+                                               "byte_count":  977,
+                                               "sha256":  "7172deb05492c7e8cc6b5d6fb210ad9b693775ba337bd738030a050b4a234536"
+                                           },
+                                           {
+                                               "source":  "source",
+                                               "remote_relative_path":  "browser-runtime/tinyrustlm-browser-runtime.wasm",
+                                               "byte_count":  576938,
+                                               "sha256":  "6bd1b7b9180c1c083e24dc40b5198cdeb3be52c98fc14cd9949badb9265236da"
+                                           },
+                                           {
+                                               "source":  "source",
+                                               "remote_relative_path":  "browser-runtime/tinyrustlm-browser-runtime.wasm.manifest.json",
+                                               "byte_count":  1209,
+                                               "sha256":  "3d68c9bc6b216568c9d05b4cc515137e3d5b4caf3aa3e6124560341f41567de2"
+                                           },
+                                           {
+                                               "source":  "source",
+                                               "remote_relative_path":  "app/active-conversation.js",
+                                               "byte_count":  17010,
+                                               "sha256":  "376e7c9ac4964d36868607ecb4d4ebd77958fc968453c842bd37baa2e6e60e50"
+                                           },
+                                           {
+                                               "source":  "source",
+                                               "remote_relative_path":  "app/calculator-tool.js",
+                                               "byte_count":  2228,
+                                               "sha256":  "96e1fd491f059eb0d132472f76a6d0c6b26c575822875a36993ca5a8a6b35498"
+                                           },
+                                           {
+                                               "source":  "source",
+                                               "remote_relative_path":  "app/companion-capability.js",
+                                               "byte_count":  105348,
+                                               "sha256":  "ef16f044cac16ad8ce441b4c10e82bd3673b484715619f01379b4bd7203bfa25"
+                                           },
+                                           {
+                                               "source":  "source",
+                                               "remote_relative_path":  "app/minimodel-catalog-v1.js",
+                                               "byte_count":  74811,
+                                               "sha256":  "5c690e1b3cb96843f87f3951fcdc1a46ccc2418a7d2b0fbf16b97ba689ccd98b"
+                                           },
+                                           {
+                                               "source":  "source",
+                                               "remote_relative_path":  "app/incremental-sha256.js",
+                                               "byte_count":  9404,
+                                               "sha256":  "e28faf3a02617d3d6747a0061f10f20b756500ae727f5c02e18da9912c767095"
+                                           },
+                                           {
+                                               "source":  "source",
+                                               "remote_relative_path":  "app/memory-endpoints-enrollment.js",
+                                               "byte_count":  22096,
+                                               "sha256":  "92ee09d71918379d882d5bf6333add268c98e9b60b0a2b8fdf2711cc65384138"
+                                           },
+                                           {
+                                               "source":  "source",
+                                               "remote_relative_path":  "app/memory-endpoints-http.js",
+                                               "byte_count":  7954,
+                                               "sha256":  "0328842b85ec11eb0e34dc005c3d4f20a6b74e54136b3cfad7ebf91cc30723c2"
+                                           },
+                                           {
+                                               "source":  "source",
+                                               "remote_relative_path":  "app/memory-endpoints-distributed-sync-v1.js",
+                                               "byte_count":  52711,
+                                               "sha256":  "b115f61694d9eb937b027d9c7da6d52722dbc0c936b313cf8a08f978f0b8545c"
+                                           },
+                                           {
+                                               "source":  "source",
+                                               "remote_relative_path":  "app/memory-endpoints-sync.js",
+                                               "byte_count":  128088,
+                                               "sha256":  "19f1f1f71334af4ae87debf060fd5f716b48f1ac8af57826151c0d7fea399c0d"
+                                           },
+                                           {
+                                               "source":  "source",
+                                               "remote_relative_path":  "app/browser-model-admission.js",
+                                               "byte_count":  14858,
+                                               "sha256":  "87cdc059e71435f1572b3ad03fcce17701d5b73e83c3a6172e078a3349e5b683"
+                                           },
+                                           {
+                                               "source":  "source",
+                                               "remote_relative_path":  "app/operation-lifetime.js",
+                                               "byte_count":  2292,
+                                               "sha256":  "4a9d907a3c62b679f896d859e843124bf4252e6d2be0f8aacc7e754113a9f570"
+                                           },
+                                           {
+                                               "source":  "source",
+                                               "remote_relative_path":  "app/catalog-admission-loader.js",
+                                               "byte_count":  38187,
+                                               "sha256":  "623bb655aacdb075ea575193a64ef91469c6eda545e54b1dd4718fcf22493951"
+                                           },
+                                           {
+                                               "source":  "source",
+                                               "remote_relative_path":  "app/model-composition-store.js",
+                                               "byte_count":  89171,
+                                               "sha256":  "dd57705dadf0d46674cb8f61e0a94b347c0a1f1f4adfc88c9a0312f446546534"
+                                           },
+                                           {
+                                               "source":  "source",
+                                               "remote_relative_path":  "app/companion-composition-install.js",
+                                               "byte_count":  34992,
+                                               "sha256":  "711cf9b2d69f57be2b84802fd43992b58e546f7704aeeec933b04e742fdd6330"
+                                           },
+                                           {
+                                               "source":  "source",
+                                               "remote_relative_path":  "app/p2p-composition-install.js",
+                                               "byte_count":  50631,
+                                               "sha256":  "3dc954f00dc9345ffc365a10c0c47efa5ba55ceb83caa8ff6009d31b73ccbe41"
+                                           },
+                                           {
+                                               "source":  "source",
+                                               "remote_relative_path":  "app/browser-runtime-loader.js",
+                                               "byte_count":  13096,
+                                               "sha256":  "1836fb805c7be0a43508a54359fe3f128f9b4c1cbf888d2392908f8b4c6717b8"
+                                           },
+                                           {
+                                               "source":  "source",
+                                               "remote_relative_path":  "app/prompt2-request.js",
+                                               "byte_count":  9045,
+                                               "sha256":  "781b025f9b92664c5b4ee41698555b3a95efa0022754aba37632ffbe8d209405"
+                                           },
+                                           {
+                                               "source":  "source",
+                                               "remote_relative_path":  "app/model-runtime-client.js",
+                                               "byte_count":  41095,
+                                               "sha256":  "10da2c66df5693c7611279e85f86dc7ff357107deb6955ef25d6c47306393527"
+                                           },
+                                           {
+                                               "source":  "source",
+                                               "remote_relative_path":  "app/model-runtime-worker.js",
+                                               "byte_count":  54452,
+                                               "sha256":  "5309a68a5c9e22bb581970aa0ffb1d209475f84edff47f839a4c7d5902e77fb2"
+                                           },
+                                           {
+                                               "source":  "source",
+                                               "remote_relative_path":  "app/site-release.js",
+                                               "byte_count":  7691,
+                                               "sha256":  "6f8715fa77ad1a4bcc0c42a9050c0467825acdb402afe96e1a963cc535aea6a9"
+                                           },
+                                           {
+                                               "source":  "source",
+                                               "remote_relative_path":  "app/app.css",
+                                               "byte_count":  80372,
+                                               "sha256":  "c7eba56563a327d4db924b9c4dc4b6d49e0c95a6a27df1d169289d6df975cb4e"
+                                           },
+                                           {
+                                               "source":  "source",
+                                               "remote_relative_path":  "app/app.js",
+                                               "byte_count":  471736,
+                                               "sha256":  "ba36e6abf16de29de0c9794ab0645c7077ef18dfefcb42bd45028f473027607b"
+                                           },
+                                           {
+                                               "source":  "source",
+                                               "remote_relative_path":  "updates/updates.css",
+                                               "byte_count":  4316,
+                                               "sha256":  "7ac24ad6754dcb7010cfb401c96ec077ab42ffb2559121808e63988e7ae8af19"
+                                           },
+                                           {
+                                               "source":  "source",
+                                               "remote_relative_path":  "companion/index.html",
+                                               "byte_count":  3616,
+                                               "sha256":  "24dffee3514039fc34d2588475eed2f92533b2001165b3cac9365f185fa1928c"
+                                           },
+                                           {
+                                               "source":  "source",
+                                               "remote_relative_path":  "updates/index.html",
+                                               "byte_count":  13360,
+                                               "sha256":  "a385ff23fdd8b57be1449a358f57b2a21ce9aab89d2e9096e81a378e09691fa7"
+                                           },
+                                           {
+                                               "source":  "source",
+                                               "remote_relative_path":  "app/index.html",
+                                               "byte_count":  48731,
+                                               "sha256":  "0f64c431f9573f7ed3dabc2fd8d49cef6071764e473d9b53d21ecf5bcef6d972"
+                                           },
+                                           {
+                                               "source":  "source",
+                                               "remote_relative_path":  "index.html",
+                                               "byte_count":  48815,
+                                               "sha256":  "d2e0da42960de4847c42f62b5027970fd33cc0b16a8873f8509057607cf02ccf"
+                                           },
+                                           {
+                                               "source":  "generated-release",
+                                               "remote_relative_path":  ".well-known/site-release-history.json",
+                                               "byte_count":  15500,
+                                               "sha256":  "220aba9767875ba0e729608991ab6f38d38a9c6a4487e97681b66c4c87211cf0"
+                                           },
+                                           {
+                                               "source":  "generated-release",
+                                               "remote_relative_path":  ".well-known/site-release.json",
+                                               "byte_count":  1836,
+                                               "sha256":  "f26c568ed04aa20eed1b160b9b00648ee9eb15e51223035c0d7fdd03ac3356e9"
+                                           }
+                                       ],
+                             "verified_before_credentials":  true,
+                             "verified_before_transport_admission":  true,
+                             "source_copy_created":  false,
+                             "local_input_cleanup_required":  false
+                         },
+    "public_predecessor_gate":  {
+                                    "status":  "pass",
+                                    "predecessor_release_id":  "tinyrustlm.com@0.4.1",
+                                    "predecessor_version":  "0.4.1",
+                                    "predecessor_publication_id":  "57d6cac123bad531275aae19388f66059ff6fa7931a4b1012285580c1a9197ae",
+                                    "predecessor_ledger_sha256":  "2bce298c7c845d22d5c21e5fd26f25ac57328ada311518dce4f7eadbaa554588",
+                                    "pending_release_id":  "tinyrustlm.com@0.5.0",
+                                    "pending_version":  "0.5.0",
+                                    "current_byte_count":  1129,
+                                    "current_sha256":  "a5d79be07759dd2f46b9a36a230b9ddc9d13c937785488b6bbfaaea390da16ca",
+                                    "history_byte_count":  13527,
+                                    "history_sha256":  "8df6369853bed8ccc8ab0e4b6ca46adf339649f8c584aea3b46ed7ffd9d76114",
+                                    "cache_bypassed":  true,
+                                    "read_only":  true
+                                },
+    "publication_summary":  {
+                                "transaction_scope":  "bounded-sequential-per-artifact",
+                                "public_artifact_mutation_attempted":  false,
+                                "partial_publication_possible":  false,
+                                "active_artifact":  null,
+                                "completed_file_count":  0,
+                                "readback_verified_file_count":  0,
+                                "temporary_cleanup_verified_file_count":  0
+                            },
+    "retirement_summary":  {
+                               "completed_artifact_count":  0,
+                               "verified_absent_artifact_count":  0
+                           },
+    "finalized_release_ledger_candidate_sha256":  "be85e05c111f259a5884f82f29567477d2d631ca419b67ab4794e5d33cf8fc32",
+    "finalized_release_ledger_candidate_byte_count":  13291,
+    "raw_source_bytes_included":  false,
+    "local_paths_included":  false,
+    "credentials_included":  false
+}

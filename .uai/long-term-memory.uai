@@ -54,12 +54,12 @@ pointers:
   - id: cleanup-progress
     path: docs/ecosystem-cleanup-2026-09-12.md
     label: Ecosystem cleanup progress
-    summary: Open for completed cleanup, passing local publication validation and C109 verified remote target marker and publication working-output correction.
+    summary: Open for completed cleanup, C109 verified target marker, and C110 real publication failure with canonical predecessor cleanup repair.
     authority: owner_authorized_progress_record
     review_state: reviewed_for_routing_and_identity
     status: current
     last_reviewed_utc: 2026-09-27T18:27:14Z
-    sha256: 1b9c6c59dee12b2a9b99845c551d1fcd8e319c72328965362eafc6157ac2f132
+    sha256: 4aac769f5dfe947eb1ae17ddb2a19015e081ea17eb336fc9632b8a3295f69494
   - id: source-lock
     path: contracts/vnext/qwen3-0.6b-base-source-lock.v2.json
     label: Current diagnostic source identity

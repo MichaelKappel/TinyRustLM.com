@@ -151,6 +151,7 @@ Import-DeploymentFunctions -ScriptPath $deploymentScript -Names @(
     "Remove-ExclusiveDeploymentLease"
     "New-OwnedValidationMaterialization"
     "Remove-OwnedValidationMaterialization"
+    "Remove-PublicPredecessorOracle"
     "Get-DeploymentPublicationPlan"
     "Resolve-DeploymentCustodyFilePath"
     "Get-DeploymentNodeToolClosure"
@@ -202,6 +203,33 @@ if (-not (Test-Path -LiteralPath ($root + ".owner.v2") -PathType Leaf)) {
 }
 try {
     $script:powershellHost = Resolve-PinnedDeploymentHost
+    # The PowerShell boundary must admit owned canonical artifacts and delegate
+    # to the Node remover that independently checks exact bytes and ownership.
+    $oracleBoundaryRoot = Join-Path $root ("tinyrustlm-web-predecessor-" + ("a" * 32))
+    [IO.Directory]::CreateDirectory($oracleBoundaryRoot) | Out-Null
+    $originalCustodiedTool = (Get-Item Function:\Invoke-CustodiedNodeTool).ScriptBlock
+    try {
+        Set-Item Function:\global:Invoke-CustodiedNodeTool -Value {
+            throw "reached predecessor inventory verifier"
+        }
+        $oracleBoundaryExpected = [pscustomobject]@{
+            current = [pscustomobject]@{ byte_count = 1; sha256 = ("a" * 64) }
+            history = [pscustomobject]@{ byte_count = 2; sha256 = ("b" * 64) }
+        }
+        Assert-Throws -Pattern "reached predecessor inventory verifier" -Action {
+            Remove-PublicPredecessorOracle -Expected $oracleBoundaryExpected `
+                -OracleRoot $oracleBoundaryRoot -RepositoryRoot $canonicalRepositoryRoot `
+                -ToolPath "bound-tool" -SourceCustody ([pscustomobject]@{ bound = $true })
+        }
+        Assert-Throws -Pattern "absolute child of canonical project artifacts" -Action {
+            Remove-PublicPredecessorOracle -Expected $oracleBoundaryExpected `
+                -OracleRoot $canonicalRepositoryRoot -RepositoryRoot $canonicalRepositoryRoot `
+                -ToolPath "bound-tool" -SourceCustody ([pscustomobject]@{ bound = $true })
+        }
+    }
+    finally {
+        Set-Item Function:\global:Invoke-CustodiedNodeTool -Value $originalCustodiedTool
+    }
     $script:nodeExecutable = Resolve-PinnedDeploymentExecutable `
         -CommandName "node.exe" `
         -ExpectedLeafName "node.exe"

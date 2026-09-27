@@ -14,6 +14,11 @@ owner_delivery_policy:
   source: Review and check in pending code coherently, preserve useful work, and distinguish source checkpoints from release passes. Do not commit secrets, model payloads, transient output or unreviewed obsolete executables merely to make status clean.
   regular_push_requirement: September27 owner reiterates that work must not remain only on this computer. Commit and push each coherent source/script/documentation change and reviewed non-sensitive durable result before handoff; verify direct remote equality. A clean Git status is not proof that ignored work is recoverable. Review ignored outputs explicitly; never conceal unique source or durable results behind broad artifact ignore rules. Credentials, private payloads, model binaries and disposable dependency/build output are not automatically authorized for Git publication.
 
+publication_c110:
+  result: Actual attempt20260927T2128349309317Z-9ff696926cb3 failed after public predecessor gate passed because local cleanup rejected canonical artifact paths. Immutable receipts in artifacts/web-deployments; no application mutation or lease acquired.
+  correction: Canonical artifact containment now uses existing validator; exact owner and byte verifier preserved. All18 deployment tests pass. Prior predecessor removed through production exact-byte remover with cleanupVerified=true. Read cleanup C110 before fresh publication.
+  boundary: Failed candidate ledger is not publication truth. Application/model/default/seed/package acceptance remains incomplete.
+
 publication_c109:
   target: Exact TinyRustLM marker installed after successful absence listing and fresh authenticated/public homepage equality. FTPS and HTTPS200 readback match126 bytes and bound SHA25678afeb99c33a966d784c578eef84b87437e74c1cefa96bcf3f370dc5299d9c67. Read ftps-target-marker-installation.json and cleanup C109.
   working_output: Full publisher now places operational files and lease under ignored canonical verification storage; final attempt/terminal receipts remain visible for review and Git. All18 affected tests pass.
@@ -31,12 +36,8 @@ publisher_validation_c108:
   correction: Disposable validation output now belongs to existing ignored artifacts/verification/web-deployments. Durable deployment reports remain visible to Git. All18 affected tests pass. Complete ValidateOnly CLI from pushed38c05f6 passes for32 files; owned output absent and worktree clean afterward. Remote marker/transport, actual publication and real-model release gates remain. No public writes.
 
 owner_manual_cleanup:
-  requested: September23 owner explicitly requested a PowerShell script to execute locally when agent cleanup is blocked.
-  historical_source: Git b1736b7 contains the completed Invoke-ReviewedCleanup script, test, manifest and instructions; retired from current source after verified completion.
-  scope: 241 reviewed hash-bound files across TinyRustLM, Runtime and LMComposer; eleven directories pruned only when empty. No model-root, recursive or permission changes.
-  validation: Owner apply receipt20260923T162923041Z reports241 removals,2470446 logical bytes and zero cleanup failures. September27 independently verifies every manifest file absent. Tiny source deletions are in7ff9ee0 and Runtime retirement in960b077; this is not publication.
-  handoff: Read artifacts/ecosystem-cleanup-20260912/source-metadata-cleanup-review.json and cleanup C101. The35 directories remain unreadable to this agent; the owner's elevated diagnostic could read them. Two installer links remain. Do not rerun the completed241-file cleanup.
-  execution_boundary: Renewed exact-file deletion was again rejected before PowerShell ran with blocked by policy. The agent must not run the real cleanup through another tool or change permissions to evade that rejection.
+  disposition: Completed241-file owner cleanup and retired one-time helper are recorded in cleanup C101 and artifacts/ecosystem-cleanup-20260912/source-metadata-cleanup-review.json. Do not rerun the retired helper. Installer and26-path blockers subsequently resolved by the owner; read current_experiment_cleanup above.
+  boundary: Historical policy-rejected agent deletion was resolved by owner execution, not by an alternate agent deletion tool or permission change.
 
 ftp_credential_discovery:
   prepared_configuration: E:\Source\Rust\.local-secrets\tinyrustlm-deployment.uai

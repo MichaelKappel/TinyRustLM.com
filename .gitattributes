@@ -157,3 +157,6 @@ docs/report-intake/** -text whitespace=-blank-at-eol,-blank-at-eof
 # Preserve the owner's hash-bound cleanup receipt exactly, including its CRLF bytes.
 artifacts/ecosystem-cleanup-20260912/numerical-installer-cleanup-receipt.json -text
 artifacts/ecosystem-cleanup-20260912/ignored-experiment-cleanup-receipt.json -text
+
+# Deployment receipts bind exact terminal bytes across Windows checkouts.
+artifacts/web-deployments/*.json -text

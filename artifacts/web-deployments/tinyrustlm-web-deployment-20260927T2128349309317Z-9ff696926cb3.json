@@ -1,0 +1,171 @@
+{
+    "schema":  "tinyrustlm.ftps_deployment.v11",
+    "attempt_id":  "20260927T2128349309317Z-9ff696926cb3",
+    "terminal":  true,
+    "deployment_scope":  "browser-runtime-no-model-bytes",
+    "public_origin":  "https://tinyrustlm.com",
+    "started_utc":  "2026-09-27T21:28:34.9621777Z",
+    "completed_utc":  "2026-09-27T21:28:43.4453724Z",
+    "status":  "fail",
+    "release_commit_marker_published":  false,
+    "release_commit_marker_readback_observed":  false,
+    "release_commit_marker_publication_completed":  false,
+    "failure_identity":  "System.Management.Automation.RuntimeException",
+    "failure_step":  "public-predecessor-gate",
+    "failure_code":  "deployment_public_predecessor_gate_failed",
+    "last_operation":  "public-predecessor-gate",
+    "active_artifact":  null,
+    "source_commit":  "7d250f83cad5a8a67c37bb9411fda975ecfbc133",
+    "source_tree_clean":  true,
+    "deployment_tool_custody":  {
+                                    "powershell":  {
+                                                       "version":  "5.1.20348.5386",
+                                                       "edition":  "Desktop",
+                                                       "language_mode":  "FullLanguage",
+                                                       "byte_count":  450560,
+                                                       "sha256":  "38f4384643b3fa0de714d2367b712c2e0fa1c89e2cfd131ae6b831ad962b1033"
+                                                   },
+                                    "node":  {
+                                                 "version":  "v24.14.0",
+                                                 "byte_count":  91380224,
+                                                 "sha256":  "63c259c81e5d472b5f11c8d506070130cb04a1ecf84b80377a34ed6ec9048088"
+                                             },
+                                    "curl":  {
+                                                 "version":  "8.13.0",
+                                                 "byte_count":  711736,
+                                                 "sha256":  "3345339164cf384eff527b6c3160fea8d849a4231ec6ca80513e3a739e505168"
+                                             },
+                                    "git":  {
+                                                "version":  "2.55.0",
+                                                "byte_count":  43352,
+                                                "sha256":  "78211c7ed73988da93a6d8a33d47ec6187f464d7ea2a9a00c182bbd7a1ecf30f"
+                                            },
+                                    "child_environment_allowlisted":  true,
+                                    "inherited_environment_names":  [
+                                                                        "ComSpec",
+                                                                        "PATH",
+                                                                        "SystemRoot",
+                                                                        "TEMP",
+                                                                        "TMP",
+                                                                        "WINDIR"
+                                                                    ],
+                                    "local_paths_included":  false
+                                },
+    "source_custody":  {
+                           "schema":  "tinyrustlm.deployment_source_custody.v1",
+                           "source_commit":  "7d250f83cad5a8a67c37bb9411fda975ecfbc133",
+                           "source_tree_clean":  true,
+                           "tool_file_count":  17,
+                           "tool_closure_sha256":  "e5dd0be6eb735d8d23053dadc6b9887f63b2609a2a937cd31a16cc2f71b072b9",
+                           "initial_recheck_passed":  true,
+                           "terminal_recheck_passed":  true
+                       },
+    "deployment_lease":  null,
+    "release_id":  "tinyrustlm.com@0.5.0",
+    "release_version":  "0.5.0",
+    "release_date":  "2026-08-31",
+    "release_published_at":  "2026-09-27T21:28:34.962Z",
+    "release_publication_id":  "0ebb8c6ebecd95f3d61c4b173487702d5bed31d3510e9495b0b77fbbe4d98278",
+    "release_ledger_sha256":  "9b02fa419d7f5b23c672713389cd71da2570bab96544292dda9edafdec4a19b4",
+    "finalized_release_ledger_candidate_file":  "tinyrustlm-site-release-ledger-finalized-20260927T2128349309317Z-9ff696926cb3.json",
+    "finalized_release_ledger_candidate_sha256":  "be85e05c111f259a5884f82f29567477d2d631ca419b67ab4794e5d33cf8fc32",
+    "finalized_release_ledger_candidate_byte_count":  13291,
+    "finalized_release_ledger_candidate_requires_source_review_and_commit":  false,
+    "release_metadata_confined_to_canonical_artifacts":  true,
+    "release_metadata_https_readback_verified":  false,
+    "deployment_manifest_sha256":  "dd056b9fa7177d9cf2a1832d6e32323be4740b061a25023c7a3e4ba69bbaca10",
+    "terminal_decision_receipt":  {
+                                      "schema":  "tinyrustlm.deployment_terminal_decision.v1",
+                                      "file":  "tinyrustlm-web-deployment-terminal-decision-20260927T2128349309317Z-9ff696926cb3.json",
+                                      "sha256":  "77470ae09c23907859f204a530a6befb89218f5ed77f00951cb65d034d278f39",
+                                      "byte_count":  18678,
+                                      "deployment_attempt_terminal":  true,
+                                      "recorded_before_local_cleanup":  true
+                                  },
+    "deployment_input":  {
+                             "schema":  "tinyrustlm.web_deployment_input.v1",
+                             "input_id":  "72857df0e66f004d71b6363239727622325e40c9f0823f13d6d64d5572cb200c",
+                             "file_count":  32,
+                             "total_byte_count":  2042566,
+                             "fully_verified_before_credentials":  true,
+                             "source_paths_included":  false,
+                             "git_metadata_included":  false,
+                             "authority_markers_included":  false,
+                             "source_copy_created":  false,
+                             "local_input_cleanup_required":  false
+                         },
+    "public_predecessor_gate":  {
+                                    "status":  "pass",
+                                    "predecessor_release_id":  "tinyrustlm.com@0.4.1",
+                                    "predecessor_version":  "0.4.1",
+                                    "predecessor_publication_id":  "57d6cac123bad531275aae19388f66059ff6fa7931a4b1012285580c1a9197ae",
+                                    "predecessor_ledger_sha256":  "2bce298c7c845d22d5c21e5fd26f25ac57328ada311518dce4f7eadbaa554588",
+                                    "pending_release_id":  "tinyrustlm.com@0.5.0",
+                                    "pending_version":  "0.5.0",
+                                    "current_byte_count":  1129,
+                                    "current_sha256":  "a5d79be07759dd2f46b9a36a230b9ddc9d13c937785488b6bbfaaea390da16ca",
+                                    "history_byte_count":  13527,
+                                    "history_sha256":  "8df6369853bed8ccc8ab0e4b6ca46adf339649f8c584aea3b46ed7ffd9d76114",
+                                    "cache_bypassed":  true,
+                                    "read_only":  true
+                                },
+    "secret_scan_report_sha256":  "08ba8b3958bf6e1831a7df5ac13beec8281a789c4a5aae9b06555ba5a7ce6446",
+    "secret_scan_scope_manifest_sha256":  "84cc3e5af91f16d367edc23fa412e4482eddc20a35385d55cf592668f6c41c28",
+    "secret_scan_receipt_id":  "sha256:f91955c29dc16a54ba5da358d91261635c1d807e5e7a79893a509c622673d2d9",
+    "secret_finding_count":  0,
+    "secret_material_included":  false,
+    "published_release_model_bytes_present":  false,
+    "transport_capability":  {
+                                 "schema":  "tinyrustlm.deployment_transport_capability.v2",
+                                 "transport":  "ftps-sequential",
+                                 "status":  "bounded-sequential",
+                                 "coordination_scope":  "single-host-canonical-artifacts",
+                                 "per_artifact_recovery":  "verified-predecessor-best-effort",
+                                 "marker_ordering":  "last-final-path-promotion-before-owned-cleanup",
+                                 "mixed_publication_possible":  true,
+                                 "remote_global_compare_and_swap_lease":  false,
+                                 "release_wide_atomic_rollback":  false,
+                                 "final_marker_can_be_last_remote_mutation":  false
+                             },
+    "publication_transaction_scope":  "no-publication-admission",
+    "per_artifact_atomic_promotion":  false,
+    "whole_site_atomic_promotion":  false,
+    "release_wide_rollback_available":  false,
+    "remote_global_lease_available":  false,
+    "artifact_publication_admitted":  false,
+    "remote_mutation_attempted":  false,
+    "public_artifact_mutation_attempted":  false,
+    "partial_publication_possible":  false,
+    "earlier_artifacts_rolled_back":  false,
+    "dependency_ordered_publication":  true,
+    "final_remote_commit_marker":  ".well-known/site-release.json",
+    "marker_final_path_verified_after_regular_readback":  false,
+    "marker_was_last_remote_mutation":  false,
+    "marker_cleanup_follows_promotion":  true,
+    "post_commit_maintenance":  {
+                                    "status":  "pass",
+                                    "affects_committed_public_release_status":  false,
+                                    "failures":  [
+
+                                                 ]
+                                },
+    "immutable_attempt_report":  true,
+    "fresh_artifact_readback_required":  true,
+    "predeployment_temporary_route_policy":  null,
+    "public_host_policy":  null,
+    "expected_file_count":  32,
+    "published_artifact_readback_verified":  false,
+    "publication_temporary_cleanup_verified":  false,
+    "file_count":  0,
+    "files":  [
+
+              ],
+    "expected_retired_artifact_count":  7,
+    "retired_artifact_absence_verified":  false,
+    "removed_public_artifacts":  [
+
+                                 ],
+    "legacy_model_directory_preflight":  null,
+    "retired_model_directory_absence_verified":  false,
+    "retired_model_directory":  null
+}

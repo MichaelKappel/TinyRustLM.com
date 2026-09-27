@@ -3892,11 +3892,8 @@ function Remove-PublicPredecessorOracle {
         }
         return [pscustomobject]@{ cleanup_verified = $true; status = "already-absent" }
     }
-    $root = [IO.Path]::GetFullPath($OracleRoot)
-    $repository = [IO.Path]::GetFullPath($RepositoryRoot).TrimEnd("\", "/")
-    $repositoryPrefix = $repository + [IO.Path]::DirectorySeparatorChar
-    if ($root.StartsWith($repositoryPrefix, [StringComparison]::OrdinalIgnoreCase) -or
-        [IO.Path]::GetFileName($root) -notmatch
+    $root = Assert-CanonicalDeploymentArtifactPath -Path $OracleRoot -SourceRoot $RepositoryRoot
+    if ([IO.Path]::GetFileName($root) -notmatch
             "^tinyrustlm-web-predecessor-[0-9a-f]{32}$" -or
         -not $Expected -or
         -not $Expected.current -or

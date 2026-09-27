@@ -5,6 +5,26 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C110: canonical predecessor cleanup repaired after real publication attempt
+
+Attempt 20260927T2128349309317Z-9ff696926cb3 passed source custody and
+public predecessor validation, then failed in the local predecessor remover.
+The PowerShell guard incorrectly rejected paths inside the canonical repository,
+although current policy requires owned artifacts there. No application remote
+mutation or lease acquisition occurred. The immutable attempt and terminal
+receipts remain byte-exact under artifacts/web-deployments; this failed attempt
+is not retried in place and its candidate ledger must not become source truth.
+
+The guard now delegates containment to the existing canonical-artifact validator.
+Exact owner/inventory/hash validation still runs in the production Node remover.
+The new actual PowerShell boundary regression accepts canonical owned output and
+rejects the repository root; all18 deployment tests pass (zero skips). Numeric
+PowerShell coverage remains unmeasured. The retained predecessor from this
+attempt was removed through the production exact-byte remover, which verified
+both metadata identities and reported cleanupVerified=true for two files.
+Other attempt evidence remains for review. A fresh publication attempt is next;
+application publication and model acceptance are not established by this fix.
+
 ## C109: remote target identity established; publication working files isolated
 
 The authenticated FTPS root homepage still matches public HTTPS byte-for-byte.
