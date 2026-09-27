@@ -161,6 +161,7 @@ Import-DeploymentFunctions -ScriptPath $deploymentScript -Names @(
     "Get-SafeExceptionIdentity"
     "Test-FtpFileUnavailable"
     "Test-RemoteFileAbsent"
+    "Test-RemoteDirectory"
     "Get-RemoteSize"
     "Test-RetryableFtpsReadFailure"
     "Test-RetryableFtpsCleanupFailure"
@@ -409,6 +410,51 @@ try {
     finally {
         Remove-Item Function:\global:New-FtpRequest
         Remove-Variable -Scope Global -Name SyntheticIdentityResponse, IdentityResponseDisposed
+    }
+
+    # Real absence readers must distinguish absent ancestors from inaccessible ones.
+    $originalUnavailable = (Get-Item Function:\Test-FtpFileUnavailable).ScriptBlock
+    function global:Test-FtpFileUnavailable {
+        param([Exception]$Exception)
+        return $Exception.GetBaseException() -is [IO.FileNotFoundException]
+    }
+    function global:New-FtpRequest {
+        param([string]$RemotePath, [string]$Method)
+        Assert-True ($Method -eq "NLST") "Directory proof performed a non-listing request."
+        $request = [pscustomobject]@{ Path = $RemotePath }
+        $request | Add-Member ScriptMethod GetResponse {
+            if (-not $global:SyntheticDirectoryListings.ContainsKey($this.Path)) {
+                throw [IO.FileNotFoundException]::new("synthetic unavailable directory")
+            }
+            $response = [pscustomobject]@{
+                Listing = $global:SyntheticDirectoryListings[$this.Path]
+            }
+            $response | Add-Member ScriptMethod GetResponseStream {
+                return [IO.MemoryStream]::new([Text.Encoding]::UTF8.GetBytes($this.Listing))
+            }
+            $response | Add-Member ScriptMethod Dispose {}
+            return $response
+        }
+        return $request
+    }
+    try {
+        $global:SyntheticDirectoryListings = @{ "" = "app`n"; app = "app.js`n" }
+        Assert-True (-not (Test-RemoteDirectory -RemotePath "app/models")) "Absent child was not proven from parent."
+        Assert-True (Test-RemoteFileAbsent -RemotePath "app/models/old.slm") "Missing ancestor did not prove nested absence."
+        $global:SyntheticDirectoryListings.app = "models`n"
+        Assert-Throws { Test-RemoteDirectory -RemotePath "app/models" } "ambiguous or inaccessible"
+        $global:SyntheticDirectoryListings['app/models'] = "old.slm`n"
+        Assert-True (Test-RemoteDirectory -RemotePath "app/models") "Reachable directory was rejected."
+        Assert-True (-not (Test-RemoteFileAbsent -RemotePath "app/models/old.slm")) "Existing file was reported absent."
+        $global:SyntheticDirectoryListings = @{ "" = "runtime`n" }
+        Assert-True (Test-RemoteFileAbsent -RemotePath "app/models/old.slm") "Absent upper ancestor was not proven."
+        $global:SyntheticDirectoryListings = @{}
+        Assert-Throws { Test-RemoteDirectory -RemotePath "app/models" } "ambiguous or inaccessible"
+    }
+    finally {
+        Remove-Item Function:\global:New-FtpRequest
+        Set-Item Function:\global:Test-FtpFileUnavailable -Value $originalUnavailable
+        Remove-Variable SyntheticDirectoryListings -Scope Global
     }
 
     $sourceRoot = Join-Path $root "source"

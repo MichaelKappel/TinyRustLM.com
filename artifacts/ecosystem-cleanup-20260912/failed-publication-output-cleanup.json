@@ -1,0 +1,166 @@
+{
+  "schema": "tinyrustlm.failed_publication_output_cleanup.v1",
+  "observedUtc": "2026-09-27T21:50:32.152Z",
+  "status": "files-cleaned-empty-directory-removal-policy-blocked",
+  "removedDisposableFiles": 12,
+  "preservedEvidenceFiles": 8,
+  "remainingEmptyDirectories": [
+    "artifacts/verification/web-deployments/tinyrustlm-web-release-assets-20260927T2128349309317Z-9ff696926cb3",
+    "artifacts/verification/web-deployments/tinyrustlm-web-release-assets-20260927T2128349309317Z-9ff696926cb3/.well-known",
+    "artifacts/verification/web-deployments/tinyrustlm-web-secret-scan-evidence-20260927T2128349309317Z-9ff696926cb3",
+    "artifacts/verification/web-deployments/tinyrustlm-web-secret-scan-evidence-20260927T2128349309317Z-9ff696926cb3/quarantine",
+    "artifacts/verification/web-deployments/tinyrustlm-web-secret-scan-evidence-20260927T2128349309317Z-9ff696926cb3/receipts",
+    "artifacts/verification/web-deployments/tinyrustlm-web-secret-scan-evidence-20260927T2128349309317Z-9ff696926cb3/receipts/sha256",
+    "artifacts/verification/web-deployments/tinyrustlm-web-release-assets-20260927T2136244324978Z-fcdad6fbc16e",
+    "artifacts/verification/web-deployments/tinyrustlm-web-release-assets-20260927T2136244324978Z-fcdad6fbc16e/.well-known",
+    "artifacts/verification/web-deployments/tinyrustlm-web-secret-scan-evidence-20260927T2136244324978Z-fcdad6fbc16e",
+    "artifacts/verification/web-deployments/tinyrustlm-web-secret-scan-evidence-20260927T2136244324978Z-fcdad6fbc16e/quarantine",
+    "artifacts/verification/web-deployments/tinyrustlm-web-secret-scan-evidence-20260927T2136244324978Z-fcdad6fbc16e/receipts",
+    "artifacts/verification/web-deployments/tinyrustlm-web-secret-scan-evidence-20260927T2136244324978Z-fcdad6fbc16e/receipts/sha256",
+    "artifacts/verification/web-deployments/tinyrustlm-web-secret-scan-evidence-20260927T2136244324978Z-fcdad6fbc16e/receipts/sha256/9a",
+    "artifacts/verification/web-deployments/tinyrustlm-web-release-assets-20260927T2139149302975Z-516d949e956a",
+    "artifacts/verification/web-deployments/tinyrustlm-web-release-assets-20260927T2139149302975Z-516d949e956a/.well-known",
+    "artifacts/verification/web-deployments/tinyrustlm-web-secret-scan-evidence-20260927T2139149302975Z-516d949e956a",
+    "artifacts/verification/web-deployments/tinyrustlm-web-secret-scan-evidence-20260927T2139149302975Z-516d949e956a/quarantine",
+    "artifacts/verification/web-deployments/tinyrustlm-web-secret-scan-evidence-20260927T2139149302975Z-516d949e956a/receipts",
+    "artifacts/verification/web-deployments/tinyrustlm-web-secret-scan-evidence-20260927T2139149302975Z-516d949e956a/receipts/sha256",
+    "artifacts/verification/web-deployments/tinyrustlm-web-secret-scan-evidence-20260927T2139149302975Z-516d949e956a/receipts/sha256/14",
+    "artifacts/verification/web-deployments/tinyrustlm-web-release-assets-20260927T2143131808736Z-6bdedba227c5",
+    "artifacts/verification/web-deployments/tinyrustlm-web-release-assets-20260927T2143131808736Z-6bdedba227c5/.well-known",
+    "artifacts/verification/web-deployments/tinyrustlm-web-secret-scan-evidence-20260927T2143131808736Z-6bdedba227c5",
+    "artifacts/verification/web-deployments/tinyrustlm-web-secret-scan-evidence-20260927T2143131808736Z-6bdedba227c5/quarantine",
+    "artifacts/verification/web-deployments/tinyrustlm-web-secret-scan-evidence-20260927T2143131808736Z-6bdedba227c5/receipts",
+    "artifacts/verification/web-deployments/tinyrustlm-web-secret-scan-evidence-20260927T2143131808736Z-6bdedba227c5/receipts/sha256",
+    "artifacts/verification/web-deployments/tinyrustlm-web-secret-scan-evidence-20260927T2143131808736Z-6bdedba227c5/receipts/sha256/43"
+  ],
+  "attempts": [
+    {
+      "id": "20260927T2128349309317Z-9ff696926cb3",
+      "removed": [
+        {
+          "path": "artifacts/verification/web-deployments/tinyrustlm-web-release-assets-20260927T2128349309317Z-9ff696926cb3/.well-known/site-release-history.json",
+          "sha256": "220aba9767875ba0e729608991ab6f38d38a9c6a4487e97681b66c4c87211cf0",
+          "bytes": 15500
+        },
+        {
+          "path": "artifacts/verification/web-deployments/tinyrustlm-web-release-assets-20260927T2128349309317Z-9ff696926cb3/.well-known/site-release.json",
+          "sha256": "f26c568ed04aa20eed1b160b9b00648ee9eb15e51223035c0d7fdd03ac3356e9",
+          "bytes": 1836
+        },
+        {
+          "path": "artifacts/verification/web-deployments/tinyrustlm-site-release-ledger-finalized-20260927T2128349309317Z-9ff696926cb3.json",
+          "sha256": "be85e05c111f259a5884f82f29567477d2d631ca419b67ab4794e5d33cf8fc32",
+          "bytes": 13291
+        }
+      ],
+      "preserved": [
+        {
+          "path": "artifacts/web-deployments/tinyrustlm-web-secret-scan-20260927T2128349309317Z-9ff696926cb3.json",
+          "sha256": "08ba8b3958bf6e1831a7df5ac13beec8281a789c4a5aae9b06555ba5a7ce6446",
+          "bytes": 15753
+        },
+        {
+          "path": "artifacts/web-deployments/tinyrustlm-web-secret-scan-receipt-20260927T2128349309317Z-9ff696926cb3.json",
+          "sha256": "752a58079db8f9d8645fb16fed782df7efaa8f1dbddf0783fbda15565d65ad43",
+          "bytes": 2371
+        }
+      ]
+    },
+    {
+      "id": "20260927T2136244324978Z-fcdad6fbc16e",
+      "removed": [
+        {
+          "path": "artifacts/verification/web-deployments/tinyrustlm-web-release-assets-20260927T2136244324978Z-fcdad6fbc16e/.well-known/site-release-history.json",
+          "sha256": "fd617ab7d78b931d2e0859066e72df2835ef034cd45b3db220f647874abc8030",
+          "bytes": 15500
+        },
+        {
+          "path": "artifacts/verification/web-deployments/tinyrustlm-web-release-assets-20260927T2136244324978Z-fcdad6fbc16e/.well-known/site-release.json",
+          "sha256": "6401f56a9200783dbf591621e20ade7dd99a3683b71e5be6bbea95cb223e740c",
+          "bytes": 1836
+        },
+        {
+          "path": "artifacts/verification/web-deployments/tinyrustlm-site-release-ledger-finalized-20260927T2136244324978Z-fcdad6fbc16e.json",
+          "sha256": "c6cfcdefbe18f4a1d19461d0d7ebf1f4a45fd7ea32f48db29892d0f5e726974b",
+          "bytes": 13291
+        }
+      ],
+      "preserved": [
+        {
+          "path": "artifacts/web-deployments/tinyrustlm-web-secret-scan-20260927T2136244324978Z-fcdad6fbc16e.json",
+          "sha256": "f3c19df4f7243ea35929d93d509f7c2156085b6e19071217d01d7bab10035d0c",
+          "bytes": 15753
+        },
+        {
+          "path": "artifacts/web-deployments/tinyrustlm-web-secret-scan-receipt-20260927T2136244324978Z-fcdad6fbc16e.json",
+          "sha256": "968b9d4829e23b2b481fb0c3efaa88118ab4519e5642f1e7db32528c14384186",
+          "bytes": 2371
+        }
+      ]
+    },
+    {
+      "id": "20260927T2139149302975Z-516d949e956a",
+      "removed": [
+        {
+          "path": "artifacts/verification/web-deployments/tinyrustlm-web-release-assets-20260927T2139149302975Z-516d949e956a/.well-known/site-release-history.json",
+          "sha256": "5c07e3b742a5b14f5586127bb0f8f1a52c5de4e8600f340c95345166359e36b2",
+          "bytes": 15500
+        },
+        {
+          "path": "artifacts/verification/web-deployments/tinyrustlm-web-release-assets-20260927T2139149302975Z-516d949e956a/.well-known/site-release.json",
+          "sha256": "9e34a263dc9de433250777cde2e7450337d6e2ef36925e363728e4ceebc49b4a",
+          "bytes": 1836
+        },
+        {
+          "path": "artifacts/verification/web-deployments/tinyrustlm-site-release-ledger-finalized-20260927T2139149302975Z-516d949e956a.json",
+          "sha256": "e9dbd227036dfbf575ef001283f6a5a515bea0bf6defadcd4761b32e1ff551ee",
+          "bytes": 13291
+        }
+      ],
+      "preserved": [
+        {
+          "path": "artifacts/web-deployments/tinyrustlm-web-secret-scan-20260927T2139149302975Z-516d949e956a.json",
+          "sha256": "70f98c789cd6c1b3ee916f28d67111dd3eac86f0471f51323dc4802a31c7988a",
+          "bytes": 15753
+        },
+        {
+          "path": "artifacts/web-deployments/tinyrustlm-web-secret-scan-receipt-20260927T2139149302975Z-516d949e956a.json",
+          "sha256": "cce956d794b4aa3674b44408e359bdfebc3dc5658a536d2f97a5f8ae3de255e9",
+          "bytes": 2371
+        }
+      ]
+    },
+    {
+      "id": "20260927T2143131808736Z-6bdedba227c5",
+      "removed": [
+        {
+          "path": "artifacts/verification/web-deployments/tinyrustlm-web-release-assets-20260927T2143131808736Z-6bdedba227c5/.well-known/site-release-history.json",
+          "sha256": "3c054a9827a970432f0d5d3266779098a3da53ca33a11b9f0935b583399eb8f0",
+          "bytes": 15500
+        },
+        {
+          "path": "artifacts/verification/web-deployments/tinyrustlm-web-release-assets-20260927T2143131808736Z-6bdedba227c5/.well-known/site-release.json",
+          "sha256": "f02dc74ce6a7240efd437bd3589fe3ae8bd30227adbc976fca91126b6bc580b6",
+          "bytes": 1836
+        },
+        {
+          "path": "artifacts/verification/web-deployments/tinyrustlm-site-release-ledger-finalized-20260927T2143131808736Z-6bdedba227c5.json",
+          "sha256": "b976da8e7ccbbaf079149957fbd2ce631cca13d95fd50f725e4a65ed52a1871b",
+          "bytes": 13291
+        }
+      ],
+      "preserved": [
+        {
+          "path": "artifacts/web-deployments/tinyrustlm-web-secret-scan-20260927T2143131808736Z-6bdedba227c5.json",
+          "sha256": "e90a4c992f7711a7582ba0088559473157a0cc61a99c514d97998f2740073123",
+          "bytes": 15753
+        },
+        {
+          "path": "artifacts/web-deployments/tinyrustlm-web-secret-scan-receipt-20260927T2143131808736Z-6bdedba227c5.json",
+          "sha256": "408c29752d1bf698d7f86c97d4b2ecc00950ada1bbb4f09b82c57a74438e751f",
+          "bytes": 2371
+        }
+      ]
+    }
+  ]
+}

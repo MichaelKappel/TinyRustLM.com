@@ -14,6 +14,9 @@ owner_delivery_policy:
   source: Review and check in pending code coherently, preserve useful work, and distinguish source checkpoints from release passes. Do not commit secrets, model payloads, transient output or unreviewed obsolete executables merely to make status clean.
   regular_push_requirement: September27 owner reiterates that work must not remain only on this computer. Commit and push each coherent source/script/documentation change and reviewed non-sensitive durable result before handoff; verify direct remote equality. A clean Git status is not proof that ignored work is recoverable. Review ignored outputs explicitly; never conceal unique source or durable results behind broad artifact ignore rules. Credentials, private payloads, model binaries and disposable dependency/build output are not automatically authorized for Git publication.
 
+publication_c113:
+  result: Attempt2143131808736Z-6bdedba227c5 passed target/lease then stopped at absent legacy directory. Lock cleanup verified; no writes. Parent inventory now proves absence without treating generic550 as absence. Actual closure passes with zero entries; all18 tests pass. Read cleanup C113 and immutable receipts.
+
 publication_c112:
   result: Three real attempts stopped before remote application changes. C110 fixes canonical predecessor cleanup; C111 preserves the real sentinel byte-array return; C112 removes illegal post-request Timeout mutation and wires the existing same-host lease into the entrypoint.
   validation: All18 deployment tests pass. Actual entrypoint lease acquisition and probe failure cleanup decisions exercised. Immutable attempt/terminal receipts remain byte-exact in artifacts/web-deployments. Read cleanup C110-C112.

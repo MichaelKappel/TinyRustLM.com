@@ -2005,6 +2005,10 @@ function Test-RemoteFileAbsent {
     }
     catch {
         if (Test-FtpFileUnavailable -Exception $_.Exception) {
+            # A missing ancestor is evidence only when its own parent listing proves absence.
+            if ($directory -and -not (Test-RemoteDirectory -RemotePath $directory)) {
+                return $true
+            }
             throw "FTP 550 cannot prove remote-file absence; the parent inventory is ambiguous or inaccessible."
         }
         throw
@@ -2072,7 +2076,7 @@ function Get-RemoteSize {
     throw "Authoritative FTPS read exhausted without a result."
 }
 
-# Tests whether a remote directory is reachable through the authenticated site root.
+# Tests reachability, accepting absence only from a successful authenticated parent inventory.
 function Test-RemoteDirectory {
     param([string]$RemotePath)
 
@@ -2084,6 +2088,9 @@ function Test-RemoteDirectory {
     }
     catch {
         if (Test-FtpFileUnavailable -Exception $_.Exception) {
+            if ($RemotePath -and (Test-RemoteFileAbsent -RemotePath $RemotePath)) {
+                return $false
+            }
             throw "FTP 550 cannot prove remote-directory absence; remote state is ambiguous or inaccessible."
         }
         throw

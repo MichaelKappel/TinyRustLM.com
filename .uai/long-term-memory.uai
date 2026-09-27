@@ -54,12 +54,12 @@ pointers:
   - id: cleanup-progress
     path: docs/ecosystem-cleanup-2026-09-12.md
     label: Ecosystem cleanup progress
-    summary: Open for completed cleanup, installed target identity, and C110-C112 tested publication-path corrections with actual failed-attempt evidence.
+    summary: Open for completed cleanup and C110-C113 publisher corrections, including verified target identity, lock lifecycle and live legacy-directory absence.
     authority: owner_authorized_progress_record
     review_state: reviewed_for_routing_and_identity
     status: current
     last_reviewed_utc: 2026-09-27T18:27:14Z
-    sha256: 5a318e5865edeab72acc82f78a476c34db320272e666d5a3fb970709f4b25561
+    sha256: 1b5009400100479a2e7ff31056acb739a89d9cba591a2e692a7e0a60512ec6d6
   - id: source-lock
     path: contracts/vnext/qwen3-0.6b-base-source-lock.v2.json
     label: Current diagnostic source identity

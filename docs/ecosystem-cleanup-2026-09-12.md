@@ -5,6 +5,28 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C113: distinguish missing legacy directories from inaccessible ones
+
+Attempt20260927T2143131808736Z-6bdedba227c5 passed target identity and acquired
+its real same-host lease, then stopped at legacy-model directory admission.
+The lease was verified removed, and no remote writes occurred. Authenticated
+parent listing proves app/models is absent; the old directory reader always
+threw on550, making its absent-directory branch unreachable. Directory and file
+absence checks now walk only their named parent chain until a successful listing
+proves absence. An inaccessible listed directory or unavailable root still fails.
+Tests exercise real readers with transport fixtures for present, missing nested,
+missing ancestor and denied cases. All18 tests pass, zero skips. A live read-only
+call of the corrected production closure function passes with zero observed
+entries and zero undeclared entries for the five expected retired model leaves.
+Application publication remains unproven; immutable attempt receipts preserved.
+
+Four failed attempts' twelve disposable generated files were removed after exact
+identity checks. Eight scan evidence files were moved byte-exact to durable
+artifacts/web-deployments for check-in. Remaining directories contain no files;
+follow-up removal was rejected before execution by automatic policy review.
+No alternate deletion or permission change was attempted. The exact remaining
+paths and preserved hashes are in failed-publication-output-cleanup.json.
+
 ## C112: HTTP client lifecycle and real lease acquisition
 
 Attempt20260927T2139149302975Z-516d949e956a passed the target marker reader,
