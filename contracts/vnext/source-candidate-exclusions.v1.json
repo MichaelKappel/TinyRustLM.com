@@ -5,6 +5,16 @@
   "weightLimit": "SHA-256 matches exact known weight files, including renamed files. It cannot establish tensor identity after resharding or reserialization.",
   "entries": [
     {
+      "modelId": "suayptalha/Qwen3-0.6B-Code-Expert",
+      "revision": "02c021dfc15bb3c2d4bd6d26671aba778fc4e840",
+      "kind": "quality",
+      "weightSha256": "42d978d981c7e8a83a1364346b35b70fd83bc18fd55af313560d86e9a8bd2163",
+      "evidence": {
+        "path": "tinyrustlm/training/qwen3-code-expert-source-development-screen-v1/assessment-control-v1.json",
+        "sha256": "12640f96c25958e598ba7d0f5c19508117522bda040d5eb675f54bee25297bee"
+      }
+    },
+    {
       "modelId": "HuggingFaceTB/SmolLM2-360M-Instruct",
       "revision": "a10cc1512eabd3dde888204e902eca88bddb4951",
       "kind": "quality",

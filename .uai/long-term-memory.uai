@@ -59,7 +59,7 @@ pointers:
     review_state: reviewed_for_routing_and_identity
     status: current
     last_reviewed_utc: 2026-09-27T18:27:14Z
-    sha256: ff1334a52f8cb5db9e4712aace6048e829fdb9fc2aa81a48df93604f622f35b9
+    sha256: 903517d8d01036135d0be28873151cb8da546df726f95209d5493f6d4fffbaa7
   - id: source-lock
     path: contracts/vnext/qwen3-0.6b-base-source-lock.v2.json
     label: Current diagnostic source identity

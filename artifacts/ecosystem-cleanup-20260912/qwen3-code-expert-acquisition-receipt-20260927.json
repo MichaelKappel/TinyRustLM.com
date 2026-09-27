@@ -1,0 +1,41 @@
+{
+  "schema": "tinyrustlm.huggingface_source_acquisition.v3",
+  "status": "verified",
+  "verifiedUtc": "2026-09-27T23:36:45.444Z",
+  "sourceTemplate": "qwen3-0.6b-bpe",
+  "modelId": "suayptalha/Qwen3-0.6B-Code-Expert",
+  "revision": "02c021dfc15bb3c2d4bd6d26671aba778fc4e840",
+  "weightIdentity": "a20e328eb34bf19cd139be67da8d27d0acbdfc0e6ed25e9c52b5d1b40274dc14",
+  "sourceWeightByteCount": 1192135096,
+  "chatTemplateKind": "revision-chatml-template-v1",
+  "chatTemplateSha256": "8428c815ac94d82064e35ff1e841dcbe260e7e53a8d0bd3b94afa2eefa9bccab",
+  "licenseId": "apache-2.0",
+  "licenseEvidenceKind": "revision-metadata-plus-apache-authority-text",
+  "files": [
+    {
+      "filename": "config.json",
+      "byteCount": 785,
+      "sha256": "e1c2016bde5968dd5517608d2b87a0471083aef54c4200111dd882c569605d0f"
+    },
+    {
+      "filename": "tokenizer.json",
+      "byteCount": 11422654,
+      "sha256": "aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4"
+    },
+    {
+      "filename": "tokenizer_config.json",
+      "byteCount": 10391,
+      "sha256": "5bdef473f216fc535cbd538c4c32f7a07ae1b796053e6ead058a43c9ae42383b"
+    },
+    {
+      "filename": "LICENSE",
+      "byteCount": 11358,
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    },
+    {
+      "filename": "model.safetensors",
+      "byteCount": 1192135096,
+      "sha256": "42d978d981c7e8a83a1364346b35b70fd83bc18fd55af313560d86e9a8bd2163"
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "schema": "tinyrustlm.source_model_screen_assessment.v1",
+  "sourceModelId": "suayptalha/Qwen3-0.6B-Code-Expert",
+  "sourceRevision": "02c021dfc15bb3c2d4bd6d26671aba778fc4e840",
+  "sourceModelArtifactSha256": "42d978d981c7e8a83a1364346b35b70fd83bc18fd55af313560d86e9a8bd2163",
+  "sourceScreenSha256": "62eb4ff9e24d3d021e9c807cf124d6d9aa8c00765349fa0e1071bf3c2e0f3020",
+  "decision": "rejected",
+  "decisionAuthority": "engineering-source-screen-v1",
+  "architectureFamily": "qwen3-dense-gqa",
+  "runtimeAdmission": "not-admitted-current-slm2",
+  "licenseDisposition": "apache-2.0-upstream-metadata-verified",
+  "blockerCode": "model_quality_rejected",
+  "criticalFailureCodes": ["incoherent-resource-instruction", "required-fact-omitted"],
+  "caseDispositions": [
+    { "index": 0, "status": "pass", "failureCodes": [] },
+    { "index": 1, "status": "fail", "failureCodes": ["answer-format-violated"] },
+    { "index": 2, "status": "pass", "failureCodes": [] },
+    { "index": 3, "status": "fail", "failureCodes": ["incoherent-resource-instruction"] },
+    { "index": 4, "status": "pass", "failureCodes": [] },
+    { "index": 5, "status": "fail", "failureCodes": ["required-fact-omitted"] }
+  ],
+  "officialReferences": [
+    "https://huggingface.co/suayptalha/Qwen3-0.6B-Code-Expert/tree/02c021dfc15bb3c2d4bd6d26671aba778fc4e840",
+    "https://huggingface.co/suayptalha/Qwen3-0.6B-Code-Expert/blob/02c021dfc15bb3c2d4bd6d26671aba778fc4e840/tokenizer_config.json",
+    "https://www.apache.org/licenses/LICENSE-2.0.txt"
+  ]
+}

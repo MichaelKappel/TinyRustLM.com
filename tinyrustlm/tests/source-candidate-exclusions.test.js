@@ -13,7 +13,7 @@ const policy = require("../../contracts/vnext/source-candidate-exclusions.v1.jso
 const rejected = policy.entries.find((entry) => entry.modelId === "Qwen/Qwen2.5-1.5B-Instruct");
 
 test("current exclusions preserve all exact prior decisions and their evidence identities", () => {
-  assert.equal(policy.entries.length, 39);
+  assert.equal(policy.entries.length, 40);
   assert.equal(policy.entries.filter((entry) => entry.kind === "preflight").length, 9);
   for (const entry of policy.entries) {
     assert.match(entry.evidence.path, /^(tinyrustlm\/training\/[^/]+\/assessment-control-v\d+|contracts\/vnext\/qwen3-0\.6b-base-source-lock\.v2)\.json$/);
@@ -49,10 +49,12 @@ test("exclusions are exact negative evidence, not a family ban or positive admis
   }
 });
 
-test("new SmolLM source rejection blocks the pre-screen inventory without fetching or writing", async () => {
+for (const inventoryName of ["smollm2-current-candidate-inventory-20260927.json",
+  "qwen3-expanded-candidate-inventory-20260927.json"]) {
+test(`source rejection blocks ${inventoryName} without fetching or writing`, async () => {
   const inventory = JSON.parse(fs.readFileSync(path.join(root,
-    "artifacts/ecosystem-cleanup-20260912/smollm2-current-candidate-inventory-20260927.json")));
-  const output = path.join(root, "artifacts", "tests", `smol-exclusion-${crypto.randomUUID()}`);
+    "artifacts/ecosystem-cleanup-20260912", inventoryName)));
+  const output = path.join(root, "artifacts", "tests", `source-exclusion-${crypto.randomUUID()}`);
   let fetched = false;
   await assert.rejects(acquire.acquireInventory(inventory, output, {
     count: 1,
@@ -61,6 +63,7 @@ test("new SmolLM source rejection blocks the pre-screen inventory without fetchi
   assert.equal(fetched, false);
   assert.equal(fs.existsSync(output), false);
 });
+}
 
 /** Return a source-shaped response; unexpected follow-up requests fail the regression. */
 function metadataFetch(modelId, revision, weightSha256, calls) {

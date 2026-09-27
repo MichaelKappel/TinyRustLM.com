@@ -1,0 +1,45 @@
+{
+  "schema": "tinyrustlm.rejected_source_cleanup_review.v1",
+  "reviewedAtUtc": "2026-09-27T23:40:37.033Z",
+  "root": "D:\\LLMs\\TinyRustLM\\sources\\source-7a4326b580591db0f6bf2127509b3c4a46f08969d78c4a9952a43264180bca4a",
+  "modelId": "suayptalha/Qwen3-0.6B-Code-Expert",
+  "revision": "02c021dfc15bb3c2d4bd6d26671aba778fc4e840",
+  "files": [
+    {
+      "name": "config.json",
+      "bytes": 785,
+      "sha256": "e1c2016bde5968dd5517608d2b87a0471083aef54c4200111dd882c569605d0f"
+    },
+    {
+      "name": "tokenizer.json",
+      "bytes": 11422654,
+      "sha256": "aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4"
+    },
+    {
+      "name": "tokenizer_config.json",
+      "bytes": 10391,
+      "sha256": "5bdef473f216fc535cbd538c4c32f7a07ae1b796053e6ead058a43c9ae42383b"
+    },
+    {
+      "name": "LICENSE",
+      "bytes": 11358,
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    },
+    {
+      "name": "model.safetensors",
+      "bytes": 1192135096,
+      "sha256": "42d978d981c7e8a83a1364346b35b70fd83bc18fd55af313560d86e9a8bd2163"
+    },
+    {
+      "name": "source-acquisition.json",
+      "bytes": 1465,
+      "sha256": "832719ce3c082f594b29ded9e592674966719226f8733b3395b41db75bf2419f"
+    }
+  ],
+  "logicalBytes": 1203581749,
+  "status": "blocked-by-automatic-approval-review",
+  "reason": "blocked by policy",
+  "removedFiles": 0,
+  "measuredStorageRecoveryBytes": null,
+  "restriction": "Do not retry agent deletion via another API, permissions change, rename or parent. Owner-only cleanup script may be previewed without mutation."
+}

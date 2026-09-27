@@ -5,6 +5,53 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C116: distinct source acquisition, real screen, and cleanup boundary
+
+The previous checkpoint adc6cb2 is pushed and remote-exact. Registered-root
+source admission passes before this execution. Intake remains placeholder-only.
+The suspected missing search-architecture metadata issue was not a demonstrated
+cause among Apache-licensed conversation candidates in a 500-row search; no
+discovery filter was weakened. The existing pinned-revision checks instead found
+three distinct weight sets, recorded in qwen3-expanded-candidate-inventory-20260927.json.
+The other two JSON-specialist sources remain metadata-only, unacquired and untested.
+
+The first source, suayptalha/Qwen3-0.6B-Code-Expert at
+02c021dfc15bb3c2d4bd6d26671aba778fc4e840, has a publisher card describing code-only
+fine-tuning. That claim is not independent quality evidence. Its review and the
+six-case public development plan were pushed as eeca395 before execution.
+The existing downloader acquired and verified five files under the canonical
+D:\LLMs\TinyRustLM source store, including 1192135096 weight bytes with SHA-256
+42d978d981c7e8a83a1364346b35b70fd83bc18fd55af313560d86e9a8bd2163.
+The acquisition receipt and exact source identities are retained as small artifacts.
+
+The existing source-framework capture ran once, offline, CPU float32, no remote
+code, greedy output and the pinned template's enable_thinking=false option.
+Six reused public development cases had a 352-token combined ceiling; these are
+not an untouched holdout. The process exited 0 and owned scratch cleanup passed.
+The raw transcript SHA-256 is
+62eb4ff9e24d3d021e9c807cf124d6d9aa8c00765349fa0e1071bf3c2e0f3020.
+READY, Friday and Red passed. JSON included code fences; the checklist instructed
+printing with paper and pen; the summary omitted Sunday closure. The committed
+criteria therefore yield 3 passes and 3 failures. Existing source and assessment
+validators pass against real source hashes; no retry, output repair, adapter,
+independent review, conversion, qualification or campaign credit is claimed.
+
+The exact revision and weight hash now join the 40-entry exclusion policy.
+All 28 discovery, acquisition and exclusion checks pass, including refusal of
+the now-stale discovery inventory before fetch or output. No product UI or
+public web file changed; the C114 deployment remains the public checkpoint.
+
+Automatic approval review rejected retirement of the downloaded rejected source
+before execution with "blocked by policy". Six files totaling 1203581749 logical
+bytes remain in sources/source-7a4326b580591db0f6bf2127509b3c4a46f08969d78c4a9952a43264180bca4a.
+No files were removed and physical recovery is unmeasured. Do not retry through
+another API, permission change, rename or parent deletion. The owner-only
+eng/Remove-ReviewedCodeExpertSource.ps1 pins the exact review hash, checks all
+six file identities and uses nonrecursive deletion. Its read-only preview and
+PowerShell parse pass; Apply was not executed and remains unverified here.
+Owner command: `& 'E:\Source\Rust\TinyRustLM.com\eng\Remove-ReviewedCodeExpertSource.ps1' -Apply`.
+This cleanup limitation does not prevent investigation of other distinct sources.
+
 ## C115: real source-model development screen and enforced rejection
 
 Fresh registered-root source-authority checks pass, including clean direct-remote

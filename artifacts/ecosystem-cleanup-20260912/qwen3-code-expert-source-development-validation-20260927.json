@@ -1,0 +1,121 @@
+{
+  "schema": "tinyrustlm.source_development_validation.v1",
+  "checkedAtUtc": "2026-09-27T23:39:23.812Z",
+  "sourceRoot": "D:\\LLMs\\TinyRustLM\\sources\\source-7a4326b580591db0f6bf2127509b3c4a46f08969d78c4a9952a43264180bca4a",
+  "sourceArtifacts": {
+    "sourceRoot": "D:\\LLMs\\TinyRustLM\\sources\\source-7a4326b580591db0f6bf2127509b3c4a46f08969d78c4a9952a43264180bca4a",
+    "config": {
+      "name": "config.json",
+      "bytes": 785,
+      "sha256": "e1c2016bde5968dd5517608d2b87a0471083aef54c4200111dd882c569605d0f"
+    },
+    "tokenizer": {
+      "name": "tokenizer.json",
+      "bytes": 11422654,
+      "sha256": "aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4"
+    },
+    "tokenizerConfig": {
+      "name": "tokenizer_config.json",
+      "bytes": 10391,
+      "sha256": "5bdef473f216fc535cbd538c4c32f7a07ae1b796053e6ead058a43c9ae42383b"
+    },
+    "chatTemplateMode": "embedded-tokenizer-config",
+    "executionFiles": [],
+    "executionInputs": [
+      {
+        "name": "config.json",
+        "bytes": 785,
+        "sha256": "e1c2016bde5968dd5517608d2b87a0471083aef54c4200111dd882c569605d0f"
+      },
+      {
+        "name": "tokenizer.json",
+        "bytes": 11422654,
+        "sha256": "aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4"
+      },
+      {
+        "name": "tokenizer_config.json",
+        "bytes": 10391,
+        "sha256": "5bdef473f216fc535cbd538c4c32f7a07ae1b796053e6ead058a43c9ae42383b"
+      }
+    ],
+    "executionInputSha256": "1cad29ed6ffab46cacedb9a3775b0fd96fa6ab8138ae03ca1070e6826bdca9eb",
+    "sourceGenerationConfig": {},
+    "model": {
+      "bytes": 1192135096,
+      "sha256": "42d978d981c7e8a83a1364346b35b70fd83bc18fd55af313560d86e9a8bd2163"
+    },
+    "modelFiles": [
+      {
+        "name": "model.safetensors",
+        "bytes": 1192135096,
+        "sha256": "42d978d981c7e8a83a1364346b35b70fd83bc18fd55af313560d86e9a8bd2163"
+      }
+    ],
+    "identityKind": "direct-safetensors-sha256"
+  },
+  "raw": {
+    "bytes": 24165,
+    "sha256": "62eb4ff9e24d3d021e9c807cf124d6d9aa8c00765349fa0e1071bf3c2e0f3020"
+  },
+  "assessment": {
+    "bytes": 1528,
+    "sha256": "12640f96c25958e598ba7d0f5c19508117522bda040d5eb675f54bee25297bee"
+  },
+  "inspection": {
+    "decision": "rejected",
+    "architectureFamily": "qwen3-dense-gqa",
+    "runtimeAdmission": "not-admitted-current-slm2",
+    "licenseDisposition": "apache-2.0-upstream-metadata-verified",
+    "blockerCode": "model_quality_rejected",
+    "criticalFailureCodes": [
+      "incoherent-resource-instruction",
+      "required-fact-omitted"
+    ],
+    "caseDispositions": [
+      {
+        "index": 0,
+        "status": "pass",
+        "failureCodes": []
+      },
+      {
+        "index": 1,
+        "status": "fail",
+        "failureCodes": [
+          "answer-format-violated"
+        ]
+      },
+      {
+        "index": 2,
+        "status": "pass",
+        "failureCodes": []
+      },
+      {
+        "index": 3,
+        "status": "fail",
+        "failureCodes": [
+          "incoherent-resource-instruction"
+        ]
+      },
+      {
+        "index": 4,
+        "status": "pass",
+        "failureCodes": []
+      },
+      {
+        "index": 5,
+        "status": "fail",
+        "failureCodes": [
+          "required-fact-omitted"
+        ]
+      }
+    ],
+    "casesPassed": 3,
+    "casesFailed": 3,
+    "officialReferences": [
+      "https://huggingface.co/suayptalha/Qwen3-0.6B-Code-Expert/tree/02c021dfc15bb3c2d4bd6d26671aba778fc4e840",
+      "https://huggingface.co/suayptalha/Qwen3-0.6B-Code-Expert/blob/02c021dfc15bb3c2d4bd6d26671aba778fc4e840/tokenizer_config.json",
+      "https://www.apache.org/licenses/LICENSE-2.0.txt"
+    ]
+  },
+  "campaignCreditClaimed": false
+}

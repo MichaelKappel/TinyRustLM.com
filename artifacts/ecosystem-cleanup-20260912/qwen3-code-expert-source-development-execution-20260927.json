@@ -1,0 +1,14 @@
+{
+  "schema": "tinyrustlm.source_development_execution.v1",
+  "startedAtUtc": "2026-09-27T23:37:38.354Z",
+  "completedAtUtc": "2026-09-27T23:38:12.559Z",
+  "sourceCommit": "eeca3957b9fa4e157cb1d1d16a527fa9adb539aa",
+  "exitCode": 0,
+  "signal": null,
+  "errorCode": null,
+  "standardOutput": "",
+  "standardError": "",
+  "ownedScratchCleanupVerified": true,
+  "rawReportPresent": true,
+  "modelQualified": false
+}
