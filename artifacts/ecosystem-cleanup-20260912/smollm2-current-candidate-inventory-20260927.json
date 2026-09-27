@@ -1,0 +1,147 @@
+{
+  "schema": "tinyrustlm.huggingface_supported_candidate_inventory.v3",
+  "generatedUtc": "2026-09-27T23:17:55.684Z",
+  "authority": "huggingface-primary-api-revision-files-and-apache-license-authority",
+  "profileId": "smollm2-360m-instruct-bpe",
+  "search": "SmolLM2-360M-Instruct",
+  "searchLimit": 25,
+  "requestedCandidateLimit": 3,
+  "candidateCount": 1,
+  "candidates": [
+    {
+      "sourceTemplate": "smollm2-360m-instruct-bpe",
+      "modelId": "HuggingFaceTB/SmolLM2-360M-Instruct",
+      "revision": "a10cc1512eabd3dde888204e902eca88bddb4951",
+      "downloads": 288278,
+      "likes": 224,
+      "pipelineTag": "text-generation",
+      "licenseId": "apache-2.0",
+      "licenseEvidenceKind": "revision-metadata-plus-apache-authority-text",
+      "licenseSourceUrl": "https://www.apache.org/licenses/LICENSE-2.0.txt",
+      "licenseSha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+      "configSha256": "224f72354f10d617a359cc82ad15a3c96e866b9b2ffadb81997eeea9e88e22ee",
+      "tokenizer": {
+        "filename": "tokenizer.json",
+        "byteCount": 2104556,
+        "sha256": null,
+        "gitBlobId": "f922b1797f0c88e71addc8393787831f2477a4bd"
+      },
+      "tokenizerConfig": {
+        "filename": "tokenizer_config.json",
+        "byteCount": 3764,
+        "sha256": null,
+        "gitBlobId": "8c7b22013909450429303ed10be4398bd63f5457"
+      },
+      "chatTemplateKind": "revision-chatml-template-v1",
+      "chatTemplateSha256": "872be49dbb638044ad01b60388f48d469ff2980e5f0dccdc22ec907db54d0788",
+      "sourceWeightByteCount": 723674912,
+      "weightIdentity": "734e2adc91b025e5f1b01a45c90454178068bdc50b56d8bd44e453dc6b423c17",
+      "weightIndex": null,
+      "weightFiles": [
+        {
+          "filename": "model.safetensors",
+          "byteCount": 723674912,
+          "sha256": "e6bffe7435d7ddc10fd3b9a9efd429dafbacb1cb17015fb5562664e7532bf86e"
+        }
+      ]
+    }
+  ],
+  "rejections": [
+    {
+      "modelId": "HuggingFaceTB/SmolLM2-360M-Instruct-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "bartowski/SmolLM2-360M-Instruct-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mlc-ai/SmolLM2-360M-Instruct-q4f16_1-MLC",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "litert-community/SmolLM2-360M-Instruct",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "unsloth/SmolLM2-360M-Instruct-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "onnx-community/SmolLM2-360M-Instruct-ONNX",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "unsloth/SmolLM2-360M-Instruct",
+      "code": "shape_mismatch"
+    },
+    {
+      "modelId": "amai-gsu/SmolLM2-360M-Instruct-Q4_K_M-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "QuantFactory/SmolLM2-360M-Instruct-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mlc-ai/SmolLM2-360M-Instruct-q4f32_1-MLC",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "lmstudio-community/SmolLM2-360M-Instruct-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/SmolLM2-360M-Instruct-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/SmolLM2-360M-Instruct-i1-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mlx-community/SmolLM2-360M-Instruct",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/SmolLM2-360M-Instruct-FT-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "RichardErkhov/thatupiso_-_SmolLM2-360M-Instruct-K12-5000-gguf",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/SmolLM2-360M-Instruct-Heretic-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/SmolLM2-360M-Instruct-rt-2708-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "RichardErkhov/yuh0512_-_SmolLM2-360M-Instruct-tuningv8-gguf",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "RichardErkhov/TheBlueObserver_-_SmolLM2-360M-Instruct-MLX-gguf",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/Kurtis-SmolLM2-360M-Instruct-DPO-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "RichardErkhov/belyakoff_-_SmolLM2-360M-Instruct-FT-gguf",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "RichardErkhov/yuh0512_-_SmolLM2-360M-Instruct-tuningv9-gguf",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/SmolLM2-360M-Instruct-TIFA-GGUF",
+      "code": "unsupported_packaging"
+    }
+  ]
+}

@@ -1,0 +1,76 @@
+{
+  "schema": "tinyrustlm.source_development_screen_plan.v1",
+  "purpose": "Reconcile missing source-framework evidence for the existing SmolLM2-360M checkpoint before spending on conversion. This is development evidence, not a fresh candidate, independent review, qualification, holdout, or campaign credit.",
+  "source": {
+    "modelId": "HuggingFaceTB/SmolLM2-360M-Instruct",
+    "revision": "a10cc1512eabd3dde888204e902eca88bddb4951",
+    "weightSha256": "e6bffe7435d7ddc10fd3b9a9efd429dafbacb1cb17015fb5562664e7532bf86e",
+    "identityReview": "smollm2-cached-source-identity-20260927.json",
+    "historicalConvertedRejectionPreserved": true
+  },
+  "tool": {
+    "path": "tinyrustlm/tools/reference-raw-quality.py",
+    "sha256": "30dd01e388433dfe926f5990ab778817167fd50a6c81a55a19e10870ebb289fb",
+    "sourceRevision": "a97f5e91c87bcd3e5fff0757a80c5759f169bdb7"
+  },
+  "cases": {
+    "path": "artifacts/ecosystem-cleanup-20260912/smollm2-source-development-screen-20260927.eval",
+    "sha256": "fbd04add28b5e1eb76e711d86c38e09e89b3ff11d1823de932b4674609c5d8c6",
+    "count": 6,
+    "maximumTotalGeneratedTokens": 352,
+    "kind": "newly-authored-public-development"
+  },
+  "execution": {
+    "python": "artifacts/external/qwen3-numerical-oracle/environment/Scripts/python.exe",
+    "pythonFlags": [
+      "-I",
+      "-B"
+    ],
+    "torch": "2.7.0",
+    "transformers": "4.51.0",
+    "device": "cpu",
+    "dtype": "float32",
+    "generation": "greedy",
+    "systemPrompt": "You are TinyRustLM, a browser-local AI assistant. You do not have personal experiences. Answer directly and helpfully.",
+    "callsPerCase": 1,
+    "adapter": null,
+    "policyExamples": null,
+    "promptSuffix": null,
+    "remoteCode": false,
+    "localFilesOnly": true,
+    "retries": 0,
+    "timeoutSeconds": 600,
+    "threadLimit": 4,
+    "rawOutputTransform": "none"
+  },
+  "criteria": [
+    {
+      "index": 0,
+      "expected": "Exact READY, allowing surrounding whitespace only."
+    },
+    {
+      "index": 1,
+      "expected": "A single JSON object exactly {name: Mira, day: Tuesday}; no extra text."
+    },
+    {
+      "index": 2,
+      "expected": "Friday only, allowing surrounding whitespace and final punctuation."
+    },
+    {
+      "index": 3,
+      "expected": "Two actionable pen-and-paper steps within the stated resources, no printer/internet dependency or claimed action."
+    },
+    {
+      "index": 4,
+      "expected": "Red only, allowing surrounding whitespace and final punctuation."
+    },
+    {
+      "index": 5,
+      "expected": "One sentence preserving weekday hours and Sunday closure with no invented facts."
+    }
+  ],
+  "decisionRule": "Record all raw outputs and each criterion separately. Any failure is a development failure and cannot be repaired, sampled again, or hidden. Even six passes only justify further source investigation and do not qualify the model.",
+  "output": "artifacts/ecosystem-cleanup-20260912/smollm2-source-development-raw-20260927.json",
+  "externalSource": "https://huggingface.co/HuggingFaceTB/SmolLM2-360M-Instruct",
+  "executionStarted": false
+}
