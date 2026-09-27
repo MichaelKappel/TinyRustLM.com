@@ -1,0 +1,80 @@
+{
+  "schema": "tinyrustlm.source_development_screen_plan.v1",
+  "purpose": "Screen a distinct pinned fine-tune for basic assistant behavior before conversion. Reuses six public development cases, not an untouched holdout, independent review or qualification.",
+  "source": {
+    "modelId": "Biggiraffe/Qwen3-0.6B-JSON-SFT-GRPO",
+    "revision": "0063adcd7b5169b4e7816b8326de6e18281d2256",
+    "weightSha256": "2a98da2269b343113ea2663e66a90defdf6c9dafa322ca1643af7f1d991fac19",
+    "inventory": "qwen3-expanded-candidate-inventory-20260927.json",
+    "inventorySelectionStart": 1,
+    "review": "qwen3-json-biggiraffe-source-review-20260927.json"
+  },
+  "tool": {
+    "path": "tinyrustlm/tools/reference-raw-quality.py",
+    "sha256": "30dd01e388433dfe926f5990ab778817167fd50a6c81a55a19e10870ebb289fb",
+    "sourceRevision": "042eab2ea96a24a141145d0b47c43a6ee8987ebb"
+  },
+  "cases": {
+    "path": "artifacts/ecosystem-cleanup-20260912/smollm2-source-development-screen-20260927.eval",
+    "sha256": "fbd04add28b5e1eb76e711d86c38e09e89b3ff11d1823de932b4674609c5d8c6",
+    "count": 6,
+    "maximumTotalGeneratedTokens": 352,
+    "kind": "reused-public-development-not-holdout"
+  },
+  "execution": {
+    "python": "artifacts/external/qwen3-numerical-oracle/environment/Scripts/python.exe",
+    "pythonFlags": [
+      "-I",
+      "-B"
+    ],
+    "torch": "2.7.0",
+    "transformers": "4.51.0",
+    "device": "cpu",
+    "dtype": "float32",
+    "generation": "greedy",
+    "systemPrompt": "You are TinyRustLM, a browser-local AI assistant. You do not have personal experiences. Answer directly and helpfully.",
+    "callsPerCase": 1,
+    "adapter": null,
+    "policyExamples": null,
+    "promptSuffix": null,
+    "remoteCode": false,
+    "localFilesOnly": true,
+    "retries": 0,
+    "timeoutSeconds": 600,
+    "threadLimit": 4,
+    "rawOutputTransform": "none",
+    "thinkingTemplateOptions": {
+      "enable_thinking": false
+    }
+  },
+  "criteria": [
+    {
+      "index": 0,
+      "expected": "Exact READY, allowing surrounding whitespace only."
+    },
+    {
+      "index": 1,
+      "expected": "A single JSON object exactly {name: Mira, day: Tuesday}; no extra text."
+    },
+    {
+      "index": 2,
+      "expected": "Friday only, allowing surrounding whitespace and final punctuation."
+    },
+    {
+      "index": 3,
+      "expected": "Two actionable pen-and-paper steps within the stated resources, no printer/internet dependency or claimed action."
+    },
+    {
+      "index": 4,
+      "expected": "Red only, allowing surrounding whitespace and final punctuation."
+    },
+    {
+      "index": 5,
+      "expected": "One sentence preserving weekday hours and Sunday closure with no invented facts."
+    }
+  ],
+  "decisionRule": "Record all raw outputs and each criterion separately. Any failure is a development failure and cannot be repaired, sampled again, or hidden. Even six passes only justify further source investigation and do not qualify the model.",
+  "output": "artifacts/ecosystem-cleanup-20260912/qwen3-json-biggiraffe-source-development-raw-20260927.json",
+  "externalSource": "https://huggingface.co/Biggiraffe/Qwen3-0.6B-JSON-SFT-GRPO/raw/0063adcd7b5169b4e7816b8326de6e18281d2256/README.md",
+  "executionStarted": false
+}

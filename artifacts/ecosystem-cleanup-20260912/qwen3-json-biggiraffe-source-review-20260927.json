@@ -1,0 +1,14 @@
+{
+  "schema": "tinyrustlm.source_candidate_review.v1",
+  "reviewedAtUtc": "2026-09-27T23:44:44.668Z",
+  "modelId": "Biggiraffe/Qwen3-0.6B-JSON-SFT-GRPO",
+  "revision": "0063adcd7b5169b4e7816b8326de6e18281d2256",
+  "sourceCardUrl": "https://huggingface.co/Biggiraffe/Qwen3-0.6B-JSON-SFT-GRPO/raw/0063adcd7b5169b4e7816b8326de6e18281d2256/README.md",
+  "sourceCardSha256": "0fe1e2d2c4e982cf33add7f284688a161ce596b19c650a94430384b10e9e5df0",
+  "sourceCard": "---\nbase_model: NotoriousH2/Qwen3-0.6B-JSON-SFT\ntags:\n- text-generation-inference\n- transformers\n- unsloth\n- qwen3\nlicense: apache-2.0\nlanguage:\n- en\n---\n\n# Uploaded finetuned  model\n\n- **Developed by:** Biggiraffe\n- **License:** apache-2.0\n- **Finetuned from model :** NotoriousH2/Qwen3-0.6B-JSON-SFT\n\nThis qwen3 model was trained 2x faster with [Unsloth](https://github.com/unslothai/unsloth) and Huggingface's TRL library.\n\n[<img src=\"https://raw.githubusercontent.com/unslothai/unsloth/main/images/unsloth%20made%20with%20love.png\" width=\"200\"/>](https://github.com/unslothai/unsloth)\n",
+  "selectedFor": "Basic assistant development screen of distinct JSON-specialist weights before any conversion or default selection.",
+  "publisherClaimsVerified": false,
+  "metadataAdmissionOnly": true,
+  "qualified": false,
+  "templateSupportsExplicitNonThinking": true
+}
