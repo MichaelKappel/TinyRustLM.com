@@ -5,6 +5,33 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C104: exact local deployment configuration prepared, September 27
+
+Prepared the external target configuration at
+`E:\Source\Rust\.local-secrets\tinyrustlm-deployment.uai` with create-only writes,
+verified ordinary ancestry and exact readback. It references the existing FTP
+credential file and contains no password. The configured account corresponds
+to C102's observed FTP/HTTPS mapping; it is not independently inferred from a
+successful login alone. No existing configuration was overwritten.
+
+The canonical prepared marker is
+`tinyrustlm/deploy/deployment-root-sentinel.v1.json`:126 bytes, SHA-256
+`78afeb99c33a966d784c578eef84b87437e74c1cefa96bcf3f370dc5299d9c67`.
+External configuration binds the same hash. Production configuration and
+credential functions accept the actual file and exact target. Production marker
+validation accepts the prepared local bytes through an explicitly local test
+reader; no network request or remote-authority claim follows. Existing
+PowerShell regression cases now consume this exact marker instead of repeating
+its JSON construction. All17 deployment tests pass and owned scratch is absent.
+
+`tinyrustlm/deploy/README.md` documents the exact configuration, marker custody,
+validation commands and remaining operator prerequisites. No remote marker was
+installed, lease acquired or payload uploaded. The fresh source scan still
+fails with37 unreadable entries; the numerical-installer cleanup receipt remains
+absent. The CLI has not passed its complete source/release gates. This completes
+local target preparation, not deployment, source consolidation or a working
+default model. No public file or visual behavior changed.
+
 ## C103: publisher reads the existing FTP credentials, September 27
 
 The TinyRustLM publisher now reads the owner's existing five-field FTP account

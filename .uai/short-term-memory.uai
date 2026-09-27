@@ -1,9 +1,10 @@
 profile: tinyrustlm.short-term-memory.current.v1
-updated_utc: 2026-09-27T17:52:37Z
+updated_utc: 2026-09-27T17:58:21Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
 now:
+  prepared_deployment_target: C104 external target memory is at E:\Source\Rust\.local-secrets\tinyrustlm-deployment.uai, referring to the existing password file without copying it. Canonical marker and production-function validation pass locally; all17 deployment checks pass. Read tinyrustlm/deploy/README.md. No remote setup/publication;37 source paths and pending operator cleanup remain.
   ftp_credential_reader: C103 replaces the obsolete FileZilla adapter with the verified FTP export format, using deployment_ftp_credentials_file and exact domain/account selection. All17 affected checks pass; actual file selection succeeds without credential disclosure or network access. Read cleanup C103/ftp-credential-reader-review.json. Source37-path, sentinel and target configuration gates remain open.
   ftps_target_discovery: C102 verifies actual TinyRustLM/MiniModel FTPS accounts and public homepage equality; MiniModel catalog/feed remain empty and match predecessor hashes. Sentinel reads return550; FileZilla-only publisher credential integration remains open. Fresh source scan still reports37 unreadable entries; owner numerical cleanup receipt is absent. Read cleanup C102 and its compact receipt; no remote writes or publication.
   source_metadata_cleanup: C101 admits ordinary root .vs metadata but keeps recursive source/link/access checks; focused3/3, full46/48 with two real-access failures. Owner241-file retirement is independently verified; completed cleanup tool/test/manifest/instructions retired. Read source-metadata-cleanup-review.json and cleanup C101. Current full scan still has37 unreadable entries; no deployment or model result.

@@ -398,9 +398,10 @@ Username: deployment-test
 Password: test:password=value
 '@
     [IO.File]::WriteAllText($validProfile, $validText, $utf8)
-    $sentinelText = '{"public_origin":"https://tinyrustlm.com",' +
-        '"schema":"tinyrustlm.deployment_root_identity.v1",' +
-        '"site_identity":"tinyrustlm.com"}' + "`n"
+    $sentinelText = [IO.File]::ReadAllText(
+        (Join-Path $canonicalRepositoryRoot 'tinyrustlm\deploy\deployment-root-sentinel.v1.json'),
+        [Text.UTF8Encoding]::new($false, $true)
+    )
     $sentinelBytes = $utf8.GetBytes($sentinelText)
     $sentinelSha256 = Get-Utf8Sha256 -Value $sentinelText
 

@@ -1,5 +1,5 @@
 profile: tinyrustlm.startup-packet.current.v1
-updated_utc: 2026-09-27T17:52:37Z
+updated_utc: 2026-09-27T17:58:21Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
@@ -10,6 +10,7 @@ startup_steps:
   - Preserve immutable failed operations and all campaign counters.
 
 current_truth:
+  prepared_deployment_target: C104 prepares external configuration and exact canonical marker bytes; production functions validate both locally and all17 deployment checks pass. Read tinyrustlm/deploy/README.md and cleanup C104. No remote marker/upload; source37-path and full release gates remain. Operator numerical-cleanup receipt is still absent.
   ftp_credential_reader: C103 removes FileZilla dependency from the Tiny publisher, reads the existing bounded FTP account export through deployment_ftp_credentials_file and preserves independent target matching. All17 affected checks pass plus secret-free actual-file selection. Read cleanup C103 and ftp-credential-reader-review.json. Source37-path, sentinel and full target gates remain; no deployment.
   ftps_target_discovery: C102 verifies certificate-checked FTPS login and exact homepage FTP/HTTPS equality for TinyRustLM and MiniModel. Empty MiniModel catalog/feed match their recorded predecessor. Sentinel reads return550; no remote mutation or deployment. Source gate remains37 unreadable entries; numerical-installer owner cleanup is pending. Read cleanup C102 and ftps-target-discovery-review.json. C101 supersedes historical claims that the241 removed files still exist.
   source_metadata_cleanup: C101 supersedes the September27 intake's .vs first failure by admitting ordinary metadata without source exemptions. Actual full scan still reports37 unreadable entries. All241 owner-cleanup files are verified absent; completed helper/test/manifest/instructions retired. Read cleanup C101 and source-metadata-cleanup-review.json. No build/release/model qualification follows.

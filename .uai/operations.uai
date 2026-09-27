@@ -1,5 +1,5 @@
 profile: tinyrustlm.operations.current.v1
-updated_utc: 2026-09-27T17:52:37Z
+updated_utc: 2026-09-27T17:58:21Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
@@ -22,6 +22,8 @@ owner_manual_cleanup:
   execution_boundary: Renewed exact-file deletion was again rejected before PowerShell ran with blocked by policy. The agent must not run the real cleanup through another tool or change permissions to evade that rejection.
 
 ftp_credential_discovery:
+  prepared_configuration: E:\Source\Rust\.local-secrets\tinyrustlm-deployment.uai
+  preparation_status: C104 external configuration and canonical marker bytes pass production-function validation locally; no password copied and no remote marker installed. Read tinyrustlm/deploy/README.md and cleanup C104. Actual source scan remains37 unreadable entries; complete CLI admission remains unproven.
   local_file: E:\Source\Rust\ftp.txt
   observation: C102 certificate-verified explicit FTPS authenticates exact TinyRustLM.com and MiniModel.org accounts using full FTP Username; Username is its local part. Root index.html bytes match each public HTTPS homepage. MiniModel catalog/feed also match the recorded predecessor, with zero entries/announcements. No credentials logged or copied.
   evidence: artifacts/ecosystem-cleanup-20260912/ftps-target-discovery-review.json
