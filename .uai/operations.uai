@@ -1,5 +1,5 @@
 profile: tinyrustlm.operations.current.v1
-updated_utc: 2026-09-27T17:30:57Z
+updated_utc: 2026-09-27T17:45:58Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
@@ -23,8 +23,9 @@ owner_manual_cleanup:
 
 ftp_credential_discovery:
   local_file: E:\Source\Rust\ftp.txt
-  observation: September27 read-only structural review found entries mentioning TinyRustLM and MiniModel; values were not logged or copied. This is an existing credential source, not a verified publisher-target binding.
-  next_gate: Resolve the exact approved site/profile, TLS host, remote root and target sentinel privately; credentials or a successful login alone do not establish correct publication authority.
+  observation: C102 certificate-verified explicit FTPS authenticates exact TinyRustLM.com and MiniModel.org accounts using full FTP Username; Username is its local part. Root index.html bytes match each public HTTPS homepage. MiniModel catalog/feed also match the recorded predecessor, with zero entries/announcements. No credentials logged or copied.
+  evidence: artifacts/ecosystem-cleanup-20260912/ftps-target-discovery-review.json
+  next_gate: Both exact target-sentinel reads return550, which does not distinguish absence from denied access. Reconcile the publisher FileZilla adapter with the actual credential source, establish target authority and complete source/release gates before remote writes. Read cleanup C102; observed file equality is not complete root admission.
 
 blocked_helper_retirement_2026_09_23:
   path: E:\Source\Rust\TinyRustLM.com\tinyrustlm\tools\remove-retired-slm1-models.ps1
@@ -41,6 +42,7 @@ historical_checkpoint:
   boundary: These August 28 source/test counts are historical. They do not describe current implementation or establish real-model qualification or deployment.
 
 current_state:
+  current_release_boundary: C102 verifies actual read-only FTPS account/public-file mapping for TinyRustLM and MiniModel; sentinel reads are unavailable and publisher credential binding remains unfinished. Fresh source scan still reports37 unreadable entries. C101 verified the241-file cleanup, including old20 fixtures and174 Runtime docs; do not repeat their historical presence as current. No publication or qualified default.
   critical_path_blocked: C100 supersedes hosted billing recovery with the owner delivery policy. Source admission still reports37 unreadable entries and strict storage still finds20 policy-blocked retired fixture files. Actual FTP target memory is unbound; no website or NuGet was published. See owner-delivery-checkpoint-review.json for local checks, pending boundaries and source checkpoints.
   ftps_publication: C100 replaces the unconditional transport refusal with sequential FTPS capability v2 and report v11. All17 affected checks pass, including exact scoped Git trust for isolated children. Recovery preserves verified bytes and reports observed marker versus completed publication. Actual CLI stops at clean-source custody; 37-entry scan, blocked cleanup and target binding remain unresolved. No global lock, atomic site transaction or deployment is claimed.
   runtime_redirect_verification: C100 commits all reviewed Runtime WIP and delivery policy as f242f14397acf3aa225c1921b99983a5b5ae7eec plus evidence5986e6f3e6214fb899efd47f0c6283e2e6b32c86; remote master is clean. Suite26pass2fail2Apache skips remains limited; subsequent generator identity passes, retained174docs block admission. Portal7e5cec53e71ae17b6e988edaa3b312bda8ff86e7 is clean/pushed with7/7 pin tests and13pass1knownsourcefail. Neither site is deployed.

@@ -1,9 +1,10 @@
 profile: tinyrustlm.short-term-memory.current.v1
-updated_utc: 2026-09-27T17:30:57Z
+updated_utc: 2026-09-27T17:45:58Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
 now:
+  ftps_target_discovery: C102 verifies actual TinyRustLM/MiniModel FTPS accounts and public homepage equality; MiniModel catalog/feed remain empty and match predecessor hashes. Sentinel reads return550; FileZilla-only publisher credential integration remains open. Fresh source scan still reports37 unreadable entries; owner numerical cleanup receipt is absent. Read cleanup C102 and its compact receipt; no remote writes or publication.
   source_metadata_cleanup: C101 admits ordinary root .vs metadata but keeps recursive source/link/access checks; focused3/3, full46/48 with two real-access failures. Owner241-file retirement is independently verified; completed cleanup tool/test/manifest/instructions retired. Read source-metadata-cleanup-review.json and cleanup C101. Current full scan still has37 unreadable entries; no deployment or model result.
   rust_quality_intake: September27 Rust report fully reviewed; corrected ownership, allocation/cancellation, privacy and local QA guidance applied in coding-standards.uai/test-plan.uai. See wiki/runtime-mirust/reports/rust-engineering-quality-review-2026-09-27.md. Source checkpoint7ff9ee0 is remote-exact; fresh source scan first stops on E:\Source\Rust\.vs. Earlier cleanup/release observations below are dated and not reconfirmed by intake.
   operator_cleanup: Owner applied the241-file cleanup successfully; September27 verified all241 absent and retired its completed one-time tool. Retained JSONL receipt and Git b1736b7 preserve identities. Do not execute the old command. Remaining35 agent access failures and two installer links are separate from completed file retirement.

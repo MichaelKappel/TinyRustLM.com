@@ -1,5 +1,5 @@
 profile: tinyrustlm.startup-packet.current.v1
-updated_utc: 2026-09-27T17:30:57Z
+updated_utc: 2026-09-27T17:45:58Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
@@ -10,6 +10,7 @@ startup_steps:
   - Preserve immutable failed operations and all campaign counters.
 
 current_truth:
+  ftps_target_discovery: C102 verifies certificate-checked FTPS login and exact homepage FTP/HTTPS equality for TinyRustLM and MiniModel. Empty MiniModel catalog/feed match their recorded predecessor. Sentinel reads return550; no remote mutation or deployment. Source gate remains37 unreadable entries; numerical-installer owner cleanup is pending. Read cleanup C102 and ftps-target-discovery-review.json. C101 supersedes historical claims that the241 removed files still exist.
   source_metadata_cleanup: C101 supersedes the September27 intake's .vs first failure by admitting ordinary metadata without source exemptions. Actual full scan still reports37 unreadable entries. All241 owner-cleanup files are verified absent; completed helper/test/manifest/instructions retired. Read cleanup C101 and source-metadata-cleanup-review.json. No build/release/model qualification follows.
   rust_quality_intake: September27 general Rust report reviewed and applied to coding-standards.uai/test-plan.uai. Read wiki/runtime-mirust/reports/rust-engineering-quality-review-2026-09-27.md. Fresh source check first fails on E:\Source\Rust\.vs; earlier C100 blockers below are historical, not a current complete scan. Intake claims no build or publication.
   owner_delivery_policy: September23 owner forbids charged GitHub features. All seven repositories now have Actions disabled and verified; use Git for source control, local tests and FTP/FTPS website publication. Do not resolve prior billing locks by paying or enabling hosted runs. Read operations.uai owner_delivery_policy and github-cost-policy-review.json. Website and NuGet release gates still require actual local evidence.

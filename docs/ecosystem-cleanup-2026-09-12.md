@@ -5,6 +5,35 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C102: actual FTPS accounts and public bytes verified, September 27
+
+Read-only certificate-verified explicit FTPS authentication succeeds for the
+existing TinyRustLM.com and MiniModel.org accounts on the configured host.
+The file's `Username` is the local part of its full `FTP Username`; the initial
+equality guard stopped before login, and the bounded probes then used the full
+FTP identity. No username or password was logged, copied or committed.
+
+Both accounts report `/` as their FTP root. Each root `index.html` matches the
+corresponding public HTTPS homepage byte for byte. MiniModel's composition
+catalog and peer feed also match HTTPS and the recorded predecessor hashes;
+they contain zero entries and zero announcements. This verifies observed
+account-to-site mapping, not the entire remote root or model availability.
+
+Both configured deployment sentinel reads return FTP550. That response proves
+unavailability, not specifically absence. No marker, lease, payload or other
+remote file was created. The current Tiny publisher still selects FileZilla
+profiles, whereas the verified credentials reside in the existing workspace
+FTP file; that integration and target authority remain to be completed.
+
+The fresh canonical source scan still reports37 unreadable entries. The separate
+numerical-installer cleanup receipt remains absent. All241 earlier owner-cleanup
+files were verified absent in C101; the old20-fixture and174-document blockers
+must not be repeated as current. The remaining source-access failures still
+prevent release. No website or NuGet publication is claimed.
+
+Exact byte identities and probe limits:
+`artifacts/ecosystem-cleanup-20260912/ftps-target-discovery-review.json`.
+
 ## C101: owner cleanup verified and Visual Studio metadata governed, September 27
 
 Fresh direct-root inventory still finds seven Git repositories, all initially

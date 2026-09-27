@@ -1,0 +1,96 @@
+{
+  "schema": "tinyrustlm.ftps_target_discovery_review.v1",
+  "observed_utc": "2026-09-27T17:43:24.695000Z",
+  "source_commit": "383e5e51658a5979903c265db0812bfa810d43ac",
+  "scope": "Read-only observations; no publication or target-authority installation",
+  "credential_source": "E:\\Source\\Rust\\ftp.txt",
+  "credential_handling": "Selected exact FTP Username domain; Username is its local part. Values were neither logged nor copied. Initial equality guard stopped before login; subsequent probes used the full FTP Username.",
+  "transport": {
+    "host": "server41.shared.spaceship.host",
+    "port": 21,
+    "protocol": "explicit-ftps",
+    "certificate_verification": "Python default SSL context; verification retained",
+    "data_channel": "PROT P",
+    "timeout_seconds": 15,
+    "sentinel_byte_limit": 16384,
+    "public_file_byte_limit": 2097152,
+    "remote_writes": 0
+  },
+  "sites": [
+    {
+      "site": "tinyrustlm.com",
+      "authenticated": true,
+      "pwd_is_slash": true,
+      "observed_utc": "2026-09-27T17:41:52.541707Z",
+      "files": [
+        {
+          "ftp_path": "index.html",
+          "https_url": "https://tinyrustlm.com/",
+          "https_status": 200,
+          "bytes": 58927,
+          "ftp_and_https_sha256": "5d2bdfd5664aca4361baa5f17bc74bb57bf1d30ac63bcc9d8ab780d87910e465"
+        }
+      ],
+      "sentinel": {
+        "path": ".well-known/tinyrustlm-deployment-target.v1.json",
+        "ftp_status": 550,
+        "result": "unavailable; response alone does not distinguish absence from denied access"
+      }
+    },
+    {
+      "site": "minimodel.org",
+      "authenticated": true,
+      "pwd_is_slash": true,
+      "files": [
+        {
+          "ftp_path": "index.html",
+          "https_url": "https://minimodel.org/",
+          "https_status": 200,
+          "bytes": 8284,
+          "ftp_and_https_sha256": "cfeb89175271f321e981fcc3c441c1d6cdfe18e9f78076aca7f10946fc0cb89f"
+        },
+        {
+          "ftp_path": "catalog/compositions.v1.json",
+          "https_url": "https://minimodel.org/catalog/compositions.v1.json",
+          "https_status": 200,
+          "bytes": 422,
+          "ftp_and_https_sha256": "700b510d068934627bb0a308da36d7672c1a4e296c7d984ea33199b903692a42",
+          "entries_count": 0,
+          "matches_recorded_predecessor": true
+        },
+        {
+          "ftp_path": "catalog/peer-announcements.v1.json",
+          "https_url": "https://minimodel.org/catalog/peer-announcements.v1.json",
+          "https_status": 200,
+          "bytes": 263,
+          "ftp_and_https_sha256": "10bea93b9613f9bbc7ffff0d03d22dbdeeb28abd276dcf6609dd929fdd2643a4",
+          "announcements_count": 0,
+          "matches_recorded_predecessor": true
+        }
+      ],
+      "sentinel": {
+        "path": ".minimodel-publication-root.v1.json",
+        "ftp_status": 550,
+        "result": "unavailable; response alone does not distinguish absence from denied access"
+      }
+    }
+  ],
+  "source_gate": {
+    "result": "source_authority_scan_incomplete",
+    "unreadable_entries": 37,
+    "invocation": "Canonical Node verifier with seven exact safe.directory entries plus an empty reset supplied in the child environment",
+    "numerical_installer_cleanup_receipt_present": false
+  },
+  "next_actions": [
+    "Complete pending operator cleanup and resolve remaining source-read access without bypassing deletion refusals.",
+    "Reconcile the publisher's FileZilla-only adapter with the actual approved credential source without storing secrets in Git.",
+    "Establish exact target-sentinel authority and admit the current clean release before remote mutation.",
+    "Qualify an actual SLM2 model and verify seed serving before advertising availability."
+  ],
+  "limitations": [
+    "Matching public files supports the observed account-to-site mapping; it does not prove the full root closure or exclude other files.",
+    "No FTP listings, private file reads, writes, lease acquisition, marker installation, form submissions or model execution occurred.",
+    "No public seed behavior, writable capability, server configuration, visual parity or release readiness was established."
+  ],
+  "published": false
+}
