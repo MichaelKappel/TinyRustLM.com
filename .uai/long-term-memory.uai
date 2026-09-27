@@ -23,7 +23,7 @@ pointers:
     review_state: reviewed_for_routing_and_identity
     status: current
     last_reviewed_utc: 2026-09-23T15:47:58.729Z
-    sha256: 08087d67fb8941c6150f57ba447732b8c28869a34ae31144872db2172a793297
+    sha256: 3da440c60a5389ca206dec8f8f98791d9d7f20b92198a7e7fb7919ecd26fe532
   - id: report-decisions
     path: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
     label: September report decisions
@@ -54,12 +54,12 @@ pointers:
   - id: cleanup-progress
     path: docs/ecosystem-cleanup-2026-09-12.md
     label: Ecosystem cleanup progress
-    summary: Open for C114 verified TinyRustLM publication, live browser evidence, completed owner cleanup and precise remaining model and cleanup limits.
+    summary: Open for C115 real source-model failure and enforced exclusion, C114 publication, completed owner cleanup and remaining model/seed limits.
     authority: owner_authorized_progress_record
     review_state: reviewed_for_routing_and_identity
     status: current
     last_reviewed_utc: 2026-09-27T18:27:14Z
-    sha256: 71156e17e55835f2e34809dae8ae87390f240e3d3e095fe9cd3c0e7f0a0c8ce4
+    sha256: ff1334a52f8cb5db9e4712aace6048e829fdb9fc2aa81a48df93604f622f35b9
   - id: source-lock
     path: contracts/vnext/qwen3-0.6b-base-source-lock.v2.json
     label: Current diagnostic source identity

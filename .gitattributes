@@ -160,3 +160,6 @@ artifacts/ecosystem-cleanup-20260912/ignored-experiment-cleanup-receipt.json -te
 
 # Deployment receipts bind exact terminal bytes across Windows checkouts.
 artifacts/web-deployments/*.json -text whitespace=cr-at-eol
+
+# Preserve the hash-bound source execution transcript exactly as emitted.
+artifacts/ecosystem-cleanup-20260912/smollm2-source-development-raw-20260927.json -text whitespace=cr-at-eol

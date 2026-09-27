@@ -5,6 +5,16 @@
   "weightLimit": "SHA-256 matches exact known weight files, including renamed files. It cannot establish tensor identity after resharding or reserialization.",
   "entries": [
     {
+      "modelId": "HuggingFaceTB/SmolLM2-360M-Instruct",
+      "revision": "a10cc1512eabd3dde888204e902eca88bddb4951",
+      "kind": "quality",
+      "weightSha256": "e6bffe7435d7ddc10fd3b9a9efd429dafbacb1cb17015fb5562664e7532bf86e",
+      "evidence": {
+        "path": "tinyrustlm/training/smollm2-360m-source-development-screen-v1/assessment-control-v1.json",
+        "sha256": "60ea7bce2b40b7674481d223ab4b6a28fd8d85f0e7860d65b78d40083494f72a"
+      }
+    },
+    {
       "modelId": "allenai/OLMo-2-0425-1B-Instruct",
       "revision": "48d788eca847d4d7548f375ad03d3c9312f6139e",
       "kind": "quality",

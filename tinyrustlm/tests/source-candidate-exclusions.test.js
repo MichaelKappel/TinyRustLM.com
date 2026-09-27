@@ -13,7 +13,7 @@ const policy = require("../../contracts/vnext/source-candidate-exclusions.v1.jso
 const rejected = policy.entries.find((entry) => entry.modelId === "Qwen/Qwen2.5-1.5B-Instruct");
 
 test("current exclusions preserve all exact prior decisions and their evidence identities", () => {
-  assert.equal(policy.entries.length, 38);
+  assert.equal(policy.entries.length, 39);
   assert.equal(policy.entries.filter((entry) => entry.kind === "preflight").length, 9);
   for (const entry of policy.entries) {
     assert.match(entry.evidence.path, /^(tinyrustlm\/training\/[^/]+\/assessment-control-v\d+|contracts\/vnext\/qwen3-0\.6b-base-source-lock\.v2)\.json$/);
@@ -47,6 +47,19 @@ test("exclusions are exact negative evidence, not a family ban or positive admis
   for (const args of [[null, "a", []], ["Example/Model", null, []], ["Example/Model", "a", null]]) {
     assert.throws(() => sourceCandidateRejection(...args), /exclusion input is invalid/);
   }
+});
+
+test("new SmolLM source rejection blocks the pre-screen inventory without fetching or writing", async () => {
+  const inventory = JSON.parse(fs.readFileSync(path.join(root,
+    "artifacts/ecosystem-cleanup-20260912/smollm2-current-candidate-inventory-20260927.json")));
+  const output = path.join(root, "artifacts", "tests", `smol-exclusion-${crypto.randomUUID()}`);
+  let fetched = false;
+  await assert.rejects(acquire.acquireInventory(inventory, output, {
+    count: 1,
+    fetchImpl: async () => { fetched = true; throw new Error("Unexpected fetch"); }
+  }), /prior_source_quality_rejected/);
+  assert.equal(fetched, false);
+  assert.equal(fs.existsSync(output), false);
 });
 
 /** Return a source-shaped response; unexpected follow-up requests fail the regression. */

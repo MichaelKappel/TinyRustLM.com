@@ -1,0 +1,213 @@
+{
+  "schema": "tinyrustlm.huggingface_supported_candidate_inventory.v3",
+  "generatedUtc": "2026-09-27T23:26:05.235Z",
+  "authority": "huggingface-primary-api-revision-files-and-apache-license-authority",
+  "profileId": "qwen3-0.6b-bpe",
+  "search": "Qwen3-0.6B",
+  "searchLimit": 50,
+  "requestedCandidateLimit": 3,
+  "candidateCount": 0,
+  "candidates": [],
+  "rejections": [
+    {
+      "modelId": "Qwen/Qwen3-0.6B",
+      "code": "prior_source_quality_rejected"
+    },
+    {
+      "modelId": "Qwen/Qwen3-Embedding-0.6B",
+      "code": "not_conversation_model"
+    },
+    {
+      "modelId": "Qwen/Qwen3-Reranker-0.6B",
+      "code": "not_conversation_model"
+    },
+    {
+      "modelId": "Qwen/Qwen3-TTS-12Hz-0.6B-CustomVoice",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "Qwen/Qwen3-0.6B-Base",
+      "code": "not_conversation_model"
+    },
+    {
+      "modelId": "Qwen/Qwen3-TTS-12Hz-0.6B-Base",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "Qwen/Qwen3-ASR-0.6B",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "Qwen/Qwen3-ForcedAligner-0.6B",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "Qwen/Qwen3-0.6B-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "Qwen/Qwen3-0.6B-FP8",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "MaziyarPanahi/Qwen3-0.6B-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mlx-community/Qwen3-ASR-0.6B-8bit",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "PrimeIntellect/Qwen3-0.6B",
+      "code": "prior_weight_quality_rejected"
+    },
+    {
+      "modelId": "unsloth/Qwen3-0.6B",
+      "code": "not_conversation_model"
+    },
+    {
+      "modelId": "tomaarsen/Qwen3-Reranker-0.6B-seq-cls",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "Qwen/Qwen3Guard-Gen-0.6B",
+      "code": "not_conversation_model"
+    },
+    {
+      "modelId": "Qwen/Qwen3-Embedding-0.6B-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "Qwen/Qwen3-ASR-0.6B-hf",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "handy-computer/Qwen3-ASR-0.6B-gguf",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "unsloth/Qwen3-0.6B-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "Skywork/Skywork-Reward-V2-Qwen3-0.6B",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "mlx-community/Qwen3-0.6B-8bit",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "Qwen/Qwen3-ForcedAligner-0.6B-hf",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "bartowski/Qwen_Qwen3-0.6B-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "ggml-org/Qwen3-Reranker-0.6B-Q8_0-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mradermacher/Qwen3-Reranker-0.6B-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "ggml-org/Qwen3-0.6B-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "unsloth/Qwen3-0.6B-unsloth-bnb-4bit",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "litert-community/Qwen3-0.6B",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "mlx-community/Qwen3-0.6B-4bit",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "unslothai/Qwen3-ASR-0.6B-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "PrimeIntellect/Qwen3-0.6B-Reverse-Text-SFT",
+      "code": "not_conversation_model"
+    },
+    {
+      "modelId": "OpenASR/qwen3-asr-0.6b",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "onnx-community/Qwen3-Embedding-0.6B-ONNX",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "mlx-community/Qwen3-Embedding-0.6B-4bit-DWQ",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "ggml-org/Qwen3-ASR-0.6B-GGUF",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "RedHatAI/Qwen3-0.6B-quantized.w4a16",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "seanghay/Qwen3-ASR-0.6B-Khmer",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "onnx-community/Qwen3-0.6B-ONNX",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "lmstudio-community/Qwen3-0.6B-MLX-4bit",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "VoidWalkercero/Qwen3-0.6B-Particle-SousVide-R128-Perfect",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "lmstudio-community/Qwen3-0.6B-MLX-bf16",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "Voodisss/Qwen3-Reranker-0.6B-GGUF-llama_cpp",
+      "code": "unsupported_packaging"
+    },
+    {
+      "modelId": "dllm-hub/Qwen3-0.6B-diffusion-mdlm-v0.1",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "icml2026-7516/ThinkSafe-Qwen3-0.6B",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "mlc-ai/Qwen3-0.6B-q4f16_1-MLC",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "OpenASR/qwen3-forced-aligner-0.6b",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "bd2lcco/Qwen3-0.6B-finetuned",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "geoffmunn/Qwen3-0.6B-f16",
+      "code": "unsupported_architecture"
+    },
+    {
+      "modelId": "RedHatAI/Qwen3-0.6B-FP8-BLOCK",
+      "code": "unsupported_packaging"
+    }
+  ]
+}

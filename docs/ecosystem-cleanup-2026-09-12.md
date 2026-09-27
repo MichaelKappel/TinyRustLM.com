@@ -5,6 +5,50 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C115: real source-model development screen and enforced rejection
+
+Fresh registered-root source-authority checks pass, including clean direct-remote
+identity before execution. The active intake buckets remain placeholder-only.
+A bounded current Hugging Face search found one SmolLM2-360M profile match,
+the already cached official a10cc1512eabd3dde888204e902eca88bddb4951 revision.
+All seven cached files matched pinned upstream bytes; the723674912-byte weight
+hash is e6bffe7435d7ddc10fd3b9a9efd429dafbacb1cb17015fb5562664e7532bf86e.
+No model payload was downloaded or copied. Metadata, identity review, six public
+development cases and one-call plan were committed/pushed as7031c20 before use.
+
+The existing reference-raw-quality.py ran once in the existing isolated Python
+environment, CPU float32, torch2.7.0+cpu and Transformers4.51.0, local-files-only
+and no remote code. Six cases had a combined352-token ceiling and a600-second
+process deadline. Actual capture exited0, wrote its full transcript and removed
+owned scratch. No adapters, few-shot examples, suffixes, retries or output repair.
+Raw report SHA-256 is
+5becc3a757838cf91b3d7b7701e5a0ba6db0cefb9d6fcd17022075ecebf8a72f.
+
+Only JSON extraction passed the declared criteria. Exact READY failed; corrected
+Friday and red-pen facts were retained but violated day-only/color-only output;
+the resource-constrained checklist invented supplies and reached its token cap;
+the summary invented Sunday opening hours despite explicit Sunday closure.
+Engineering assessment is1 pass/5 failures, not independent human review or a
+statistical estimate. Existing screen/assessment validators pass against actual
+source and transcript hashes. The older2/14 converted-runtime rejection remains
+unchanged; this new source-framework observation does not recover the missing
+historical raw screen or isolate every possible model/runtime issue.
+
+The exact revision and weight hash now join the negative-only candidate exclusion
+policy:39 revision entries, including9 preflight rejections. A regression proves
+the previously valid discovery inventory is now refused before fetch or output.
+All27 discovery/acquisition/exclusion checks pass. No SLM2 qualification, new
+default, seed, model publication or campaign credit follows. Do not repackage or
+resample this unchanged checkpoint to bypass its product-candidate rejection.
+
+A separate bounded Qwen3 query examined50 search rows and returned0 candidates
+under current filters. This is not proof that no eligible source exists: outputs
+include non-conversation, unsupported-package, missing/unsupported architecture
+metadata and known rejected bytes. The next source investigation should examine
+exact distinct checkpoints and resolve metadata completeness before spending on
+conversion. Source-model payloads and prior closed experiment evidence remain
+untouched. TinyRustLM public files are unchanged from C114.
+
 ## C114: actual TinyRustLM publication and current handoff
 
 TinyRustLM0.5.0 was published through the authorized FTPS host from commit

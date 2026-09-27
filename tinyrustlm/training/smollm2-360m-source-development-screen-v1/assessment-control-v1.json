@@ -1,0 +1,66 @@
+{
+  "schema": "tinyrustlm.source_model_screen_assessment.v1",
+  "sourceModelId": "HuggingFaceTB/SmolLM2-360M-Instruct",
+  "sourceRevision": "a10cc1512eabd3dde888204e902eca88bddb4951",
+  "sourceModelArtifactSha256": "e6bffe7435d7ddc10fd3b9a9efd429dafbacb1cb17015fb5562664e7532bf86e",
+  "sourceScreenSha256": "5becc3a757838cf91b3d7b7701e5a0ba6db0cefb9d6fcd17022075ecebf8a72f",
+  "decision": "rejected",
+  "decisionAuthority": "engineering-source-screen-v1",
+  "architectureFamily": "smollm2-llama-dense-gqa",
+  "runtimeAdmission": "not-admitted-current-slm2",
+  "licenseDisposition": "apache-2.0-upstream-metadata-verified",
+  "blockerCode": "model_quality_rejected",
+  "criticalFailureCodes": [
+    "exact-token-output-violated",
+    "unavailable-resource-ignored",
+    "source-facts-contradicted"
+  ],
+  "caseDispositions": [
+    {
+      "index": 0,
+      "status": "fail",
+      "failureCodes": [
+        "exact-token-output-violated"
+      ]
+    },
+    {
+      "index": 1,
+      "status": "pass",
+      "failureCodes": []
+    },
+    {
+      "index": 2,
+      "status": "fail",
+      "failureCodes": [
+        "answer-format-violated"
+      ]
+    },
+    {
+      "index": 3,
+      "status": "fail",
+      "failureCodes": [
+        "unavailable-resource-ignored",
+        "answer-truncated"
+      ]
+    },
+    {
+      "index": 4,
+      "status": "fail",
+      "failureCodes": [
+        "answer-format-violated"
+      ]
+    },
+    {
+      "index": 5,
+      "status": "fail",
+      "failureCodes": [
+        "source-facts-contradicted"
+      ]
+    }
+  ],
+  "officialReferences": [
+    "https://huggingface.co/HuggingFaceTB/SmolLM2-360M-Instruct/tree/a10cc1512eabd3dde888204e902eca88bddb4951",
+    "https://huggingface.co/HuggingFaceTB/SmolLM2-360M-Instruct/blob/a10cc1512eabd3dde888204e902eca88bddb4951/tokenizer_config.json",
+    "https://www.apache.org/licenses/LICENSE-2.0.txt"
+  ]
+}
