@@ -1,5 +1,5 @@
 profile: tinyrustlm.operations.current.v1
-updated_utc: 2026-09-23T16:08:37.181Z
+updated_utc: 2026-09-27T17:30:57Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
@@ -15,20 +15,23 @@ owner_delivery_policy:
 
 owner_manual_cleanup:
   requested: September23 owner explicitly requested a PowerShell script to execute locally when agent cleanup is blocked.
-  script: eng/Invoke-ReviewedCleanup.ps1
-  manifest: eng/reviewed-cleanup-manifest.json
-  instructions: eng/reviewed-cleanup.md
+  historical_source: Git b1736b7 contains the completed Invoke-ReviewedCleanup script, test, manifest and instructions; retired from current source after verified completion.
   scope: 241 reviewed hash-bound files across TinyRustLM, Runtime and LMComposer; eleven directories pruned only when empty. No model-root, recursive or permission changes.
-  validation: Twelve fixture checks pass. Actual preview verified all241 files and removed zero;35 directories deny enumeration and two links remain diagnostic-only. Operator apply has not run.
-  handoff: Owner runs the exact script with -Apply in local PowerShell. Inspect its operator-cleanup-*.jsonl report, verify actual retirement, run affected checks and commit deletions before continuing FTP publication. Do not present script preparation as cleanup completion.
+  validation: Owner apply receipt20260923T162923041Z reports241 removals,2470446 logical bytes and zero cleanup failures. September27 independently verifies every manifest file absent. Tiny source deletions are in7ff9ee0 and Runtime retirement in960b077; this is not publication.
+  handoff: Read artifacts/ecosystem-cleanup-20260912/source-metadata-cleanup-review.json and cleanup C101. The35 directories remain unreadable to this agent; the owner's elevated diagnostic could read them. Two installer links remain. Do not rerun the completed241-file cleanup.
   execution_boundary: Renewed exact-file deletion was again rejected before PowerShell ran with blocked by policy. The agent must not run the real cleanup through another tool or change permissions to evade that rejection.
+
+ftp_credential_discovery:
+  local_file: E:\Source\Rust\ftp.txt
+  observation: September27 read-only structural review found entries mentioning TinyRustLM and MiniModel; values were not logged or copied. This is an existing credential source, not a verified publisher-target binding.
+  next_gate: Resolve the exact approved site/profile, TLS host, remote root and target sentinel privately; credentials or a successful login alone do not establish correct publication authority.
 
 blocked_helper_retirement_2026_09_23:
   path: E:\Source\Rust\TinyRustLM.com\tinyrustlm\tools\remove-retired-slm1-models.ps1
   bytes: 5667
   sha256: 73ca230f25281e5b52b33e301b5b8962c8af98f40c37e434c9c8b9940f6337dd
   disposition: Reviewed untracked one-time helper for the44 already-retired SLM1 models; not a current command and must not be executed or newly admitted as current support.
-  result: Exact-path removal was rejected before execution by automatic approval review with reason blocked by policy. File remains. No model or blocked-cohort bytes were touched.
+  result: Historical agent removal was rejected before execution with blocked by policy. The owner subsequently removed this file in the241-file apply; absence independently verified September27. The earlier rejection is resolved by the owner's action, not an agent bypass.
   prohibition: Do not retry removal through another API, rename, parent deletion, permission change, or index trick. Preserve the exact blocked state and report it separately from checked-in current code.
 
 historical_checkpoint:

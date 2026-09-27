@@ -1,5 +1,5 @@
 profile: tinyrustlm.long-term-memory.current.v1
-updated_utc: 2026-09-27T17:15:02Z
+updated_utc: 2026-09-27T17:30:57Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
@@ -54,12 +54,12 @@ pointers:
   - id: cleanup-progress
     path: docs/ecosystem-cleanup-2026-09-12.md
     label: Ecosystem cleanup progress
-    summary: Open for C100 local validation, FTP policy, source checkpoints, blocked retirement and publication limits; earlier checkpoints remain historical.
+    summary: Open for C101 owner-retirement verification, governed IDE metadata, access failures and publication limits; earlier checkpoints remain historical.
     authority: owner_authorized_progress_record
     review_state: reviewed_for_routing_and_identity
     status: current
-    last_reviewed_utc: 2026-09-23T15:47:58.729Z
-    sha256: f4d45d83fbf1a8fa50fd8daf1d9d0d04e54c083cf18e4c79d08a542eaecab1e1
+    last_reviewed_utc: 2026-09-27T17:30:57Z
+    sha256: 8f57ec85ac7fcdc6f42757d0a12a4d7d9f8f49bd23a8e56b48f606eb1243785b
   - id: source-lock
     path: contracts/vnext/qwen3-0.6b-base-source-lock.v2.json
     label: Current diagnostic source identity

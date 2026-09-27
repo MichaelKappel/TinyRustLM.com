@@ -100,6 +100,7 @@ const canonicalEcosystemPlainFileNames = Object.freeze([
 ]);
 const canonicalEcosystemPlainDirectoryNames = Object.freeze([
   ".local-secrets",
+  ".vs",
   ".vscode",
   "_screenshots"
 ]);
@@ -340,8 +341,9 @@ const registeredNonSourceStorageReparseProfiles = Object.freeze([
   })
 ]);
 const looseSourceExemptRoots = Object.freeze([
-  ...canonicalEcosystemPlainDirectoryNames.map((name) =>
-    path.join(canonicalEcosystemRoot, name)),
+  // Visual Studio metadata is admitted at the root but retains loose-source checks.
+  ...canonicalEcosystemPlainDirectoryNames.filter((name) => name !== ".vs")
+    .map((name) => path.join(canonicalEcosystemRoot, name)),
   path.join(registeredEvidenceArtifactsRoot, "external"),
   path.join(registeredEvidenceArtifactsRoot, "releases"),
   path.join(registeredEvidenceArtifactsRoot, "seed-host-native")

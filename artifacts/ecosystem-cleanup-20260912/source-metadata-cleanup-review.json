@@ -1,0 +1,147 @@
+{
+  "schema": "tinyrustlm.source-metadata-cleanup-review.v1",
+  "reviewedDate": "2026-09-27",
+  "sourceBefore": "046f774ee10109b46d6fbed9c2c640fffa0633e6",
+  "rootInventory": {
+    "root": "E:\\Source\\Rust",
+    "repositories": [
+      {
+        "name": "LMComposer.com",
+        "head": "6cbb67c",
+        "initialWorktreeClean": true
+      },
+      {
+        "name": "MiniModel.MiRust.com",
+        "head": "b437611",
+        "initialWorktreeClean": true
+      },
+      {
+        "name": "MiniModel.org",
+        "head": "67f3e06",
+        "initialWorktreeClean": true
+      },
+      {
+        "name": "MiRust.com",
+        "head": "b9420a1",
+        "initialWorktreeClean": true
+      },
+      {
+        "name": "Runtime.MiRust.com",
+        "head": "960b077",
+        "initialWorktreeClean": true
+      },
+      {
+        "name": "TinyRustLM.com",
+        "head": "046f774",
+        "initialWorktreeClean": true
+      },
+      {
+        "name": "TinyRustLM.MiRust.com",
+        "head": "7e5cec5",
+        "initialWorktreeClean": true
+      }
+    ],
+    "newRepositoriesFound": 0,
+    "scope": "Fresh direct-root enumeration; incomplete governed scan is not whole-volume proof."
+  },
+  "ownerCleanup": {
+    "receipt": "artifacts/ecosystem-cleanup-20260912/operator-cleanup-20260923T162923041Z-a95dd2cdf1ca46dc8f9a3e73de7d3b56.jsonl",
+    "receiptBytes": 56682,
+    "receiptSha256": "dc9c4d8cc1672809daf4ec7c67cae4bf7f8e88cab9658488de9f7ea6811bfca0",
+    "manifestSha256": "9e2ba9f5dbb93a4b2af9a648ff98e3222d034ef5b80bfb7236c6e227e0e1ab88",
+    "independentlyVerifiedAbsent": 241,
+    "remainingFiles": 0,
+    "operatorReportedFailures": 0,
+    "logicalBytesRemoved": 2470446,
+    "physicalBytesRecovered": null,
+    "operatorReadableDirectories": 35,
+    "operatorUnresolvedLinks": 2
+  },
+  "completedHandoffRetirement": {
+    "historyCommit": "b1736b739dc54b9a5da4ece5001eb3c411558c8b",
+    "files": [
+      {
+        "path": "eng/Invoke-ReviewedCleanup.ps1",
+        "bytes": 9132,
+        "sha256": "1ae6be18af04ea85f2fd2d8b7fcafc09581facca9531634a39196fc7096a0e81"
+      },
+      {
+        "path": "eng/Invoke-ReviewedCleanup.test.ps1",
+        "bytes": 3144,
+        "sha256": "1548d12563195c430f12be062fc93ab521b90d4ee7555cbfcc67bce4979e05aa"
+      },
+      {
+        "path": "eng/reviewed-cleanup-manifest.json",
+        "bytes": 108403,
+        "sha256": "9e2ba9f5dbb93a4b2af9a648ff98e3222d034ef5b80bfb7236c6e227e0e1ab88"
+      },
+      {
+        "path": "eng/reviewed-cleanup.md",
+        "bytes": 2613,
+        "sha256": "26b11860f56fae76ccc3680ce0dc1031e6dfa492a2f77f807c8a01df4fbc00b6"
+      }
+    ],
+    "matchedCommittedBytesBeforeRemoval": true,
+    "logicalBytesRemoved": 123292,
+    "physicalBytesRecovered": null
+  },
+  "sourceGateFix": {
+    "path": "tinyrustlm/tools/verify-single-source-authority.js",
+    "bytes": 141558,
+    "sha256": "e7cf243bdd94fdfd31d3455b415d5d4eecc769aaf350ab82334906a66cf34f95",
+    "behavior": "Admit direct .vs metadata; do not exempt its contents from loose-source or recursive scans.",
+    "metadataRemoved": false
+  },
+  "tests": {
+    "newRegressionBefore": {
+      "pass": 0,
+      "fail": 1,
+      "error": "source_authority_ecosystem_direct_child_unexpected"
+    },
+    "focused": {
+      "pass": 3,
+      "fail": 0
+    },
+    "full": {
+      "pass": 46,
+      "fail": 2,
+      "skipped": 0
+    },
+    "fullFailures": [
+      "rejects every second local source-marked TinyRustLM.com directory",
+      "rejects injected discoveries outside the canonical root"
+    ],
+    "fullFailureReason": "Actual governed scan remains source_authority_scan_incomplete for existing unreadable paths.",
+    "coveragePercentage": null,
+    "deploymentAndTrackedModelPolicy": { "pass": 19, "fail": 0 }
+  },
+  "actualSourceGate": {
+    "exitCode": 1,
+    "code": "source_authority_scan_incomplete",
+    "unreadablePaths": 37,
+    "ordinaryDirectories": 35,
+    "installerLinks": 2,
+    "gitTrust": "Process-local empty reset plus seven exact safe.directory paths; no global configuration change.",
+    "setupObservation": "PowerShell empty environment assignment removed GIT_CONFIG_VALUE_0; the first invocation failed Git identity. Reinvocation with an explicit Node child environment retained the empty reset and reached the governed filesystem scan."
+  },
+  "runtimeRetirementValidation": {
+    "repositoryHead": "960b077",
+    "command": "node --test tools/runtime-release.test.js",
+    "initial": { "pass": 13, "fail": 1, "skipped": 2, "reason": "Python 3 not discoverable by shell HEAD self-test" },
+    "final": { "pass": 14, "fail": 0, "skipped": 2, "python": "Existing Python 3.14 selected with RUNTIME_PYTHON" },
+    "skipReason": "No Apache executable available to the Windows runner. Existing OSM-Ubuntu WSL has Apache/Python but neither Node nor PHP was found on its PATH.",
+    "published": false
+  },
+  "release": {
+    "published": false,
+    "modelQualification": false,
+    "publicAssetsChanged": false,
+    "githubActionsUsed": false,
+    "dependencyChanges": false
+  },
+  "nextWork": [
+    "Review exact access/retirement of the 35 unreadable directories and two installer links without bypassing prior refusals.",
+    "Verify FTP/FTPS target authority from the known workspace credential source without publishing until source/target/release gates pass.",
+    "Continue eligible real-model, current composition, native/browser, MiniModel initial-seed and package qualification work."
+  ]
+}

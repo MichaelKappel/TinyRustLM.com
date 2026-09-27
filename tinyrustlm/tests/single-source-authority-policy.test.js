@@ -924,8 +924,62 @@ test("Rust-root direct-child discovery accepts only the exact inventory", () => 
   assert.equal(readDirectories.includes(screenshotsNestedRoot), true);
 });
 
+test("Visual Studio metadata remains governed without hiding loose source", () => {
+  const root = canonicalEcosystemRoot;
+  const metadataRoot = path.join(root, ".vs");
+  const nestedRoot = path.join(metadataRoot, "Rust.slnx", "v18");
+  const entries = [
+    ...canonicalEcosystemRepositoryNames.map((name) => ({ kind: "directory", name })),
+    { kind: "directory", name: ".vs" }
+  ];
+  const tree = [
+    [root, entries],
+    ...canonicalEcosystemRepositoryNames.map((name) => [path.join(root, name), []]),
+    [metadataRoot, [
+      { kind: "file", name: "ProjectSettings.json" },
+      { kind: "file", name: "slnx.sqlite" },
+      { kind: "directory", name: "Rust.slnx" }
+    ]],
+    [path.dirname(nestedRoot), [{ kind: "directory", name: "v18" }]],
+    [nestedRoot, [{ kind: "file", name: "DocumentLayout.json" }]]
+  ];
+  const { fileSystem, readDirectories } = fakeAuthorityFileSystem(root, tree);
+  const direct = discoverCanonicalEcosystemRootEntries({ fileSystem, root });
+  assert.doesNotThrow(() => verifyCanonicalEcosystemRootEntryDiscovery(direct, { root }));
+  assert.equal(direct.exemptNonSourceStorageRoots.includes(metadataRoot), false);
+  const clean = discoverEcosystemAuthorityFiles({ maximumDepth: 8, root }, { fileSystem });
+  assert.equal(readDirectories.includes(nestedRoot), true);
+  assert.deepEqual(clean.looseSourceFiles, []);
+  assert.deepEqual(clean.unreadable, []);
+  assert.deepEqual(clean.reparses, []);
+
+  for (const name of ["lib.rs", "build.ps1", "Cargo.toml", "package.json"]) {
+    const child = path.join(nestedRoot, name);
+    assert.equal(isLooseSourceAuthorityEntry(child, root), true, name);
+    const hostileTree = tree.map(([directory, children]) => [directory,
+      directory === nestedRoot ? [...children, { kind: "file", name }] : children]);
+    const hostileFs = fakeAuthorityFileSystem(root, hostileTree).fileSystem;
+    const found = discoverEcosystemAuthorityFiles({ maximumDepth: 8, root }, { fileSystem: hostileFs });
+    assert.equal(found.looseSourceFiles.includes(child), true, name);
+    assert.throws(() => verifyEcosystemAuthorityFileDiscovery(found),
+      (error) => error.code === "source_authority_loose_source_present", name);
+  }
+
+  const deniedFs = fakeAuthorityFileSystem(root, tree,
+    { unreadableDirectories: [nestedRoot] }).fileSystem;
+  const denied = discoverEcosystemAuthorityFiles({ maximumDepth: 8, root }, { fileSystem: deniedFs });
+  assert.equal(denied.unreadable.includes(nestedRoot), true);
+  assert.throws(() => verifyEcosystemAuthorityFileDiscovery(denied),
+    (error) => error.code === "source_authority_scan_incomplete");
+});
+
 test("Rust-root direct-child discovery rejects every ungoverned shape", () => {
   const cases = [
+    {
+      errorCode: "source_authority_ecosystem_direct_child_invalid",
+      label: "linked Visual Studio metadata",
+      replace: { kind: "reparse", name: ".vs" }
+    },
     {
       entry: { kind: "directory", name: "ordinary-source-copy" },
       errorCode: "source_authority_ecosystem_direct_child_unexpected",

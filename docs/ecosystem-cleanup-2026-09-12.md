@@ -5,6 +5,47 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C101: owner cleanup verified and Visual Studio metadata governed, September 27
+
+Fresh direct-root inventory still finds seven Git repositories, all initially
+clean. TinyRustLM is at046f774 after the quality-report intake; Runtime has the
+owner's960b077 cleanup commit. The September23 operator JSONL reports241 file
+removals with no failures. Every exact manifest file is independently absent;
+2,470,446 logical bytes is not measured physical recovery. The owner's elevated
+diagnostic read35 ordinary directories and refused two links; agent access to
+those35 directories is still denied. Earlier claims that the241 files remain
+present are historical and superseded.
+
+The completed one-time cleanup script, its fixture test, manifest and handoff
+instructions are now removed (123,292 logical bytes). They matched committed
+bytes before retirement; Git b1736b7 and the retained operator receipt preserve
+their evidence. The separately reviewed numerical-installer cleanup remains
+pending and is not folded into a claim of completed cleanup.
+
+The source gate wrongly rejected ordinary root Visual Studio metadata before
+scanning it. It now admits a direct `.vs` directory while explicitly retaining
+loose-source checks; it is not an exempt storage root. Nested source files,
+linked roots and access failures still reject. Existing IDE settings and cache
+bytes are preserved. The new test fails before the fix and passes afterward.
+Focused checks pass3/3; the full suite passes46/48, with two tests interrupted
+by real source-access failures. No numeric coverage percentage is claimed.
+The actual full gate again reports37 unreadable entries; it is not a pass.
+
+All19 deployment-custody and tracked-model policy checks pass. Runtime's retired
+docs/manifests now pass their check; its suite finishes14 passes, no failures
+and two Apache skips after selecting installed Python3.14 for the shell probe.
+The initial missing-Python failure is retained in the receipt. Windows has no
+Apache executable for those tests; existing WSL Apache alone does not establish
+the missing Node/PHP execution path. No cross-platform result is inferred.
+
+The developer portal's source-verifier identity must follow this exact source
+change, preserving substitution rejection. Receipt:
+`artifacts/ecosystem-cleanup-20260912/source-metadata-cleanup-review.json`.
+No public assets, website presentation, model bytes, dependencies, paid services
+or hosted workflows changed. No website/NuGet publication occurred. The known
+workspace FTP credential file has relevant site entries, but those are not yet
+verified target authority; source access and target binding remain separate.
+
 ## C100: local delivery policy and coherent source checkpoints, September 23
 
 The owner now requires GitHub for ordinary source control only, local validation,
