@@ -1,9 +1,24 @@
 profile: tinyrustlm.intake-outcome-ledger.v72
-updated_utc: 2026-09-19T15:37:57Z
+updated_utc: 2026-09-27T17:15:02Z
 
 current_canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 current_report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 current_memory_policy: MemoryEndpoints.com has two separate authorized uses: direct ecosystem agent long-term memory/meetings/coordination, and the TinyRustLM.com Connect user plugin. Synchronized secret-safe prelaunch memory copies elsewhere are permitted; authorization is not live-operation evidence.
+
+report_2026_09_27_rust_engineering_quality:
+  source: agent-file-handoff/Improvement/Enterprise Rust Best Practices for High-Quality, Efficient, Reusable Code.md
+  source_bytes: 61152
+  source_sha256: a556a15b1f75b041cd5a20d9d0e6261d05e50a13e1e4c203b931787119fa7b56
+  durable_path: docs/report-intake/2026-09-27/rust-engineering-quality/Enterprise Rust Best Practices for High-Quality, Efficient, Reusable Code.md
+  durable_bytes: 61152
+  durable_sha256: a556a15b1f75b041cd5a20d9d0e6261d05e50a13e1e4c203b931787119fa7b56
+  manifest: docs/report-intake/2026-09-27/rust-engineering-quality/MANIFEST.md
+  review_state: reviewed_all_sections_with_local_observations_and_primary_reference_checks
+  disposition: apply_now_to_coding_standards_and_test_plan; defer_unmeasured_tool_architecture_and_performance_proposals
+  correction_or_deferral: No automatic dependency upgrades, legacy migration, paid CI or project performance claims. Correct blocking-task cancellation, argument logging, allocation and round-trip-only test assumptions.
+  proof_of_use: .uai/coding-standards.uai; .uai/test-plan.uai; wiki/runtime-mirust/reports/rust-engineering-quality-review-2026-09-27.md; wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
+  source_site_copy: removed_after_byte_exact_durable_custody_and_applied_guidance
+  evidence_boundary: Source checkpoint7ff9ee0; source-authority command stops on unexpected E:\Source\Rust\.vs. Intake validation only; no runtime/coverage/model/deployment result.
 
 checkpoint_2026_09_19_working_product_research:
   status: guidance_applied_and_byte_exact_custody_verified

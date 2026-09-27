@@ -1,11 +1,20 @@
 profile: tinyrustlm.long-term-memory.current.v1
-updated_utc: 2026-09-23T15:47:58.729Z
+updated_utc: 2026-09-27T17:15:02Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
 purpose: Pointer-only durable routing; summaries explain what to open, not the underlying memory body. Current owner direction outranks historical records.
 
 pointers:
+  - id: rust-engineering-quality
+    path: wiki/runtime-mirust/reports/rust-engineering-quality-review-2026-09-27.md
+    label: Reviewed Rust engineering guidance
+    summary: Open for September27 report decisions, representative source observations, primary-reference corrections and local verification routes.
+    authority: reviewed_advisory_guidance
+    review_state: reviewed_with_primary_sources_and_bounded_local_observations
+    status: applied_guidance_not_product_qualification
+    last_reviewed_utc: 2026-09-27T17:15:02Z
+    sha256: a34ea6966637c5799a2864fd032f5a8a2c39bd0ac64bbe9598fef5dd3a8ac66d
   - id: working-product
     path: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
     label: Current working-product guidance
@@ -22,8 +31,8 @@ pointers:
     authority: reviewed_advisory_decisions
     review_state: reviewed_for_routing_and_identity
     status: current
-    last_reviewed_utc: 2026-09-19T15:37:57Z
-    sha256: ed180a82bf71784948ef3a785174660f23783e672aede42ae8b2522bc2527f89
+    last_reviewed_utc: 2026-09-27T17:15:02Z
+    sha256: 0e814b2c8c8aa8ceecb4a616ce840b0a5ae06d90f8f16b12aaa2e9357cdf6a46
   - id: report-manifest
     path: docs/report-intake/2026-09-19/working-product-research/MANIFEST.md
     label: September raw report identities
@@ -85,8 +94,8 @@ pointers:
     authority: durable_intake_ledger
     review_state: reviewed_for_routing_and_identity
     status: current_header_historical_entries
-    last_reviewed_utc: 2026-09-19T15:37:57Z
-    sha256: 4665fa1d6beedb52fbc3af78eacddaac96ed6fb7986acc00dbccfdf7141d3afa
+    last_reviewed_utc: 2026-09-27T17:15:02Z
+    sha256: 3355bfb8e5eb2ad45ef48a1dfe93d1680ea2e0442650810180d161eaceaecf18
   - id: old-resume
     path: wiki/runtime-mirust/reports/tinyrustlm-enterprise-intake-and-production-runtime-clean-cut-memory-2026-08-28.md
     label: Historical August resume

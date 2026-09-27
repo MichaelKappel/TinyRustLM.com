@@ -1,5 +1,5 @@
 profile: tinyrustlm.startup-packet.current.v1
-updated_utc: 2026-09-23T15:47:58.729Z
+updated_utc: 2026-09-27T17:15:02Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
@@ -10,6 +10,7 @@ startup_steps:
   - Preserve immutable failed operations and all campaign counters.
 
 current_truth:
+  rust_quality_intake: September27 general Rust report reviewed and applied to coding-standards.uai/test-plan.uai. Read wiki/runtime-mirust/reports/rust-engineering-quality-review-2026-09-27.md. Fresh source check first fails on E:\Source\Rust\.vs; earlier C100 blockers below are historical, not a current complete scan. Intake claims no build or publication.
   owner_delivery_policy: September23 owner forbids charged GitHub features. All seven repositories now have Actions disabled and verified; use Git for source control, local tests and FTP/FTPS website publication. Do not resolve prior billing locks by paying or enabling hosted runs. Read operations.uai owner_delivery_policy and github-cost-policy-review.json. Website and NuGet release gates still require actual local evidence.
   critical_path_blocked: C100 keeps release gates honest while replacing hosted billing recovery with local checks and FTP/FTPS. Source scan37 unreadable entries, blocked retired bytes and unbound target credentials still prevent release. Runtime and portal reviewed work is committed/pushed; no website or NuGet publication. Read owner-delivery-checkpoint-review.json and cleanup C100.
   ftps_publication: C100 replaces the unconditional transport refusal with sequential FTPS capability v2 and report v11. All17 affected checks pass, including exact scoped Git trust for isolated children. Recovery preserves verified bytes and reports observed marker versus completed publication. Actual CLI stops at clean-source custody; 37-entry scan, blocked cleanup and target binding remain unresolved. No global lock, atomic site transaction or deployment is claimed.

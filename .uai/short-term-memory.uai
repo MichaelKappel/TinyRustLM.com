@@ -1,9 +1,10 @@
 profile: tinyrustlm.short-term-memory.current.v1
-updated_utc: 2026-09-23T16:08:37.182Z
+updated_utc: 2026-09-27T17:15:02Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
 now:
+  rust_quality_intake: September27 Rust report fully reviewed; corrected ownership, allocation/cancellation, privacy and local QA guidance applied in coding-standards.uai/test-plan.uai. See wiki/runtime-mirust/reports/rust-engineering-quality-review-2026-09-27.md. Source checkpoint7ff9ee0 is remote-exact; fresh source scan first stops on E:\Source\Rust\.vs. Earlier cleanup/release observations below are dated and not reconfirmed by intake.
   operator_cleanup: Owner requested a locally executed PowerShell handoff. eng/Invoke-ReviewedCleanup.ps1 defaults to preview; -Apply targets241 verified obsolete files and prunes only eleven listed empty directories. Twelve fixture tests pass; real preview verified241 and retained37 diagnostic access/link failures. Read eng/reviewed-cleanup.md, then inspect the owner's JSON-lines result and complete retirement/check-in/publication. No actual target deletion or publication is claimed by preparing this script.
   owner_delivery_policy: Apply September23 source-control-only GitHub/local-validation/FTP-FTPS instruction over the C99 billing-unblock recommendation. Actions are disabled and verified on all seven repositories. Review and check in pending source; publish only through an admitted exact FTP/FTPS target. See operations.uai and github-cost-policy-review.json. No publication is implied by this policy update.
   critical_path_blocked: C100 resumes authorized source check-in and FTP publication work without paid GitHub services. Source scan remains37 unreadable entries, strict storage fails on20 blocked retired fixtures and the FTP target-memory path is still needed. Do not pay or enable Actions. No publication; no model qualification. Read owner-delivery-checkpoint-review.json and cleanup C100.

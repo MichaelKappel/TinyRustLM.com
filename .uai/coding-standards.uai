@@ -1,5 +1,5 @@
 profile: tinyrustlm.coding-standards.current.v1
-updated_utc: 2026-09-19T15:37:57Z
+updated_utc: 2026-09-27T17:15:02Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
@@ -15,6 +15,17 @@ standards:
   - Run focused tests, formatting, static checks, complete affected suites, real-browser/hardware gates where claimed, and diff/secret hygiene.
   - Update architecture, user, operator, security, privacy, accessibility, troubleshooting, limitation, marketing, and release docs with behavior.
   - Commit and push each coherent green major change; deploy only after complete affected gates and public readback.
+
+reviewed_rust_engineering:
+  review: wiki/runtime-mirust/reports/rust-engineering-quality-review-2026-09-27.md
+  authority: September27 owner-supplied general guidance, checked against representative source and primary references; not a project quality audit.
+  ownership: Borrow observed data, own retained data, validate invariants in constructors/types, keep traits narrow and error codes actionable. Preserve adequate handwritten errors; do not add frameworks for style.
+  allocation: Hostile lengths require checked arithmetic, policy ceilings and fallible reservation; saturating arithmetic plus infallible allocation is not admission. Measure native/browser phase costs before optimizing.
+  concurrency: Bound task admission and queues, propagate cancellation and verify settlement; spawn_blocking does not make running work abortable. Keep runtime choices at adapters.
+  dependencies: Reuse workspace dependencies and verify member lint inheritance. Review features, license, maintenance, target and toolchain impact before additions; keep lockfile/compiler identities with evidence. No automatic edition, resolver or dependency upgrade.
+  safety: Keep safe Rust as default and explicit approval for new unsafe code. Existing FFI needs actual pointer, lifetime, thread and unwind contracts; report examples are not safety proofs.
+  observability: Explicitly allow non-sensitive fields; instrumentation may record arguments by default. Exclude prompts, generated text, credentials and memory payloads.
+  scope: Current-only product and local-validation/FTP policy override generic migration, legacy support and hosted-CI advice. No new telemetry, framework, paid service or GitHub Actions follows.
 
 memory_contract:
   agent_lane: MemoryEndpoints.com direct agent coordination, meetings, handoffs, and long-term memory.

@@ -1,6 +1,10 @@
 # Working-product research decisions — September 19, 2026
 
-Reports are advisory inputs, not execution evidence. These sixteen reports are the current intake batch. Useful corrected guidance is applied to the named UAI files now; experiments and architecture replacements remain proposals. Exact raw evidence is bound in `docs/report-intake/2026-09-19/working-product-research/MANIFEST.md`. The [current synthesis](tinyrustlm-working-product-memory-2026-09-19.md) explains rationale, primary-source corrections and next experiments.
+Reports are advisory inputs, not execution evidence. The original September19 batch contains sixteen reports; supplements retain their own identities and dispositions below. Useful corrected guidance is applied to the named UAI files; experiments and architecture replacements remain proposals. Original raw evidence is bound in `docs/report-intake/2026-09-19/working-product-research/MANIFEST.md`. The [current synthesis](tinyrustlm-working-product-memory-2026-09-19.md) explains rationale, primary-source corrections and next experiments.
+
+## September 27 Rust quality supplement
+
+`docs/report-intake/2026-09-27/rust-engineering-quality/Enterprise Rust Best Practices for High-Quality, Efficient, Reusable Code.md` is reviewed in [Rust engineering quality decisions](rust-engineering-quality-review-2026-09-27.md). Ownership, typed boundaries, measured performance, bounded cancellation/allocation and layered local checks are applied in `.uai/coding-standards.uai` and `.uai/test-plan.uai`. Correct argument-logging and blocking-task cancellation omissions. Preserve current-only contracts and FTP/local-validation policy; no generic migration, hosted CI or dependency/toolchain upgrades. This is general guidance, not a TinyRustLM audit or model-quality result.
 
 ## Report decisions and proof of use
 

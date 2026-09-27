@@ -1,11 +1,19 @@
 profile: tinyrustlm.test-plan.current.v1
-updated_utc: 2026-09-19T15:37:57Z
+updated_utc: 2026-09-27T17:15:02Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
 gate_0_memory_and_intake:
   - Verify every manifest-owned report length/SHA-256, ledger entry, synthesis/TDD route, placeholder-only active intake, decision-index coverage, UAI size ceiling, no stale current policy, and no secrets.
   - Verify all ecosystem totem/taboo files state the two distinct MemoryEndpoints uses and synchronized prelaunch redundancy.
+
+rust_engineering_review:
+  review: wiki/runtime-mirust/reports/rust-engineering-quality-review-2026-09-27.md
+  local_baseline: After source admission, run local rustfmt, Clippy and affected unit/integration/doctests with locked dependencies and recorded compiler, target and supported feature combinations. Never enable hosted Actions.
+  behavioral_tests: Pair round trips with independent known-answer and hostile rejection cases; cover arithmetic, allocation ceilings, malformed text, cancellation and transitions. Producer/consumer agreement can hide a shared bug.
+  specialized_checks: Select bounded fuzzing for parsers, Miri for exercised unsafe invariants and Loom for custom synchronization when warranted and supported. Listed tools are not completed evidence; no dependency addition is implied.
+  performance: Measure release workloads and native/browser phase memory, cold/warm latency and cancellation before optimization. Microbenchmarks cannot establish actual model or browser viability.
+  limits: September27 intake validates custody/guidance only; source authority stops at unexpected E:\Source\Rust\.vs. No Rust execution, coverage, clean release or qualification is claimed.
 
 gate_1_contracts:
   - Sole closed schemas, deterministic cross-language vectors, duplicate/unknown/trailing/overflow negatives, operation graph, exact member closure, and independent recomputation.

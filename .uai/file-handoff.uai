@@ -1,5 +1,5 @@
 profile: tinyrustlm.file-handoff.current.v1
-updated_utc: 2026-09-19T15:37:57Z
+updated_utc: 2026-09-27T17:15:02Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 outcome_ledger: .uai/intake-outcome-ledger.uai
@@ -24,10 +24,10 @@ intake_protocol:
   - Commit and push the coherent verified memory change. Memory checks do not establish product readiness.
 
 current_intake:
-  date: 2026-09-19
-  reports: 16
-  raw_authority: docs/report-intake/2026-09-19/working-product-research
-  manifest: docs/report-intake/2026-09-19/working-product-research/MANIFEST.md
-  disposition: Useful corrected guidance applied throughout current UAI; unmeasured experiments deferred with explicit routes; unsupported claims rejected.
-  prior_batch: The 47 reports of August 26/27 remain preserved historical evidence in their existing manifests and August 28 decision index.
+  date: 2026-09-27
+  reports: 1
+  raw_authority: docs/report-intake/2026-09-27/rust-engineering-quality
+  manifest: docs/report-intake/2026-09-27/rust-engineering-quality/MANIFEST.md
+  disposition: Rust guidance applied to coding standards and test plan with cancellation, allocation, privacy and current-only/local-delivery corrections. Read wiki/runtime-mirust/reports/rust-engineering-quality-review-2026-09-27.md.
+  prior_batch: Sixteen September19 and 47 August26/27 reports retain their original manifests and dated decisions.
   boundary: No model execution, numerical parity, quality, live seed, deployment, external memory operation or campaign progress is claimed.
