@@ -1,0 +1,75 @@
+{
+  "schema": "tinyrustlm.cleanup_and_standard_gate_review.v1",
+  "sourceCommit": "325f31384c67f4ae0a576e49167cde453b3db8dc",
+  "sourceTree": "d773d2bcfce9e27583efa1c026a0be12fbb61638",
+  "ownerReceipt": {
+    "schema": "tinyrustlm.reviewed_empty_test_folder_cleanup.v1",
+    "mode": "apply",
+    "verifiedEmptyDirectories": 2,
+    "alreadyAbsent": 0,
+    "removedDirectories": 2,
+    "paths": [
+      "E:\\Temp\\TinyRustLM-Test-Custody",
+      "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\verification\\playwright-install-20260928"
+    ],
+    "published": false,
+    "custody": "Transcribed from the owner's current conversation receipt; not an original byte-exact file."
+  },
+  "independentVerification": {
+    "bothPathsAbsentBeforeAndAfterSuite": true,
+    "helperPreview": { "verifiedEmptyDirectories": 0, "alreadyAbsent": 2, "removedDirectories": 0 },
+    "agentExecutedApply": false,
+    "completedHelperRetired": "eng/Remove-ReviewedEmptyTestFolders.ps1; retained in the sourceCommit Git history",
+    "physicalStorageRecoveryBytes": null
+  },
+  "sourceAuthority": {
+    "command": "node tinyrustlm/tools/verify-single-source-authority.js --require-clean --require-remote-exact",
+    "exitCode": 0,
+    "verdict": "pass",
+    "canonicalLayoutAvailable": true,
+    "coverageClass": "registered-governed-roots-only",
+    "localScanPerformed": true,
+    "wholeVolumeInventoryPerformed": false
+  },
+  "standardGate": {
+    "command": "node tinyrustlm/tools/run-vnext-unit-test-gate.js standard",
+    "exitCode": 0,
+    "signal": null,
+    "tests": 2758,
+    "passed": 2758,
+    "failed": 0,
+    "skipped": 0,
+    "cancelled": 0,
+    "todo": 0,
+    "durationMs": 737676.807,
+    "log": "artifacts/ecosystem-cleanup-20260912/standard-gate-all-prerequisites-20260928.log",
+    "logBytes": 214497,
+    "logSha256": "fc41dff49684a9bf8fd53b21f91c2f2a628404278a8411aa0505d099dae2b774",
+    "prerequisites": {
+      "cargoHome": "C:\\Users\\AI\\.cargo",
+      "rustupHome": "C:\\Users\\AI\\.rustup",
+      "rustupToolchain": "stable-x86_64-pc-windows-msvc",
+      "cargoTargetDir": "artifacts/verification/numerical-build-20260928",
+      "pythonOnPath": "E:\\Source\\Python\\.runtimes\\Python312",
+      "playwrightBrowsersPath": "artifacts/browser-packages/playwright",
+      "wslDistribution": "OSM-Ubuntu",
+      "realMsvcEnvironmentObservation": true,
+      "syntheticConversationDependencies": "D:\\LLMs\\TinyRustLM\\experiments\\TinyRustLM-vnext-private\\qwen3-composition-c1899de-908e73f-20260826-v12",
+      "numericalOraclePython": "artifacts/external/qwen3-numerical-oracle/environment/Scripts/python.exe",
+      "gitTrust": "Process-local safe.directory reset followed by the exact seven canonical ecosystem roots"
+    },
+    "ownedTemporaryRoot": "artifacts/verification/full-standard-recheck/tinyrustlm-operation-uNimN5",
+    "ownedTemporaryRootAndMarkerAbsent": true,
+    "sourceUnchangedDuringRun": true
+  },
+  "limits": {
+    "earlierFailedGateRetained": true,
+    "releaseSurfaceGate": "Separate C120 run at 73074fe; not included in standard partition",
+    "qualifiedDefaultModel": false,
+    "liveMiniModelSeed": false,
+    "realModelNumericalParity": false,
+    "publicOutputChanged": false,
+    "productionPublished": false,
+    "remainingPolicyBlockedRemovalsRetried": false
+  }
+}

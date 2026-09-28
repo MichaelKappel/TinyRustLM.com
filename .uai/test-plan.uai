@@ -1,5 +1,5 @@
 profile: tinyrustlm.test-plan.current.v1
-updated_utc: 2026-09-28T00:53:33Z
+updated_utc: 2026-09-28T01:25:36Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
@@ -56,7 +56,7 @@ gate_9_release:
   - Clean committed pushed remote-exact source; synchronized docs/marketing/version/release date/log; authorized deployment; HTTPS readback; rollback.
 
 current_required_checks:
-  - C121 verifies optional prerequisites using TINYRUSTLM_FEED_TEST_WSL_DISTRIBUTION=OSM-Ubuntu, TINYRUSTLM_REAL_MSVC_ENVIRONMENT_OBSERVATION=1 and TINYRUSTLM_BROWSER_RUNTIME_PRIVATE_COMPOSITION_ROOT pointing to the retained diagnostic composition's tokenizer/template dependencies. Managed fixture tools must be current. All111 prerequisite checks pass without skips; fixture use is not real-model qualification. Full standard admission still requires owner cleanup and a fresh source-authority pass.
+  - C121 verifies optional prerequisites using TINYRUSTLM_FEED_TEST_WSL_DISTRIBUTION=OSM-Ubuntu, TINYRUSTLM_REAL_MSVC_ENVIRONMENT_OBSERVATION=1 and TINYRUSTLM_BROWSER_RUNTIME_PRIVATE_COMPOSITION_ROOT pointing to the retained diagnostic composition's tokenizer/template dependencies. Managed fixture tools must be current. C123 independently verifies owner cleanup and clean remote-exact source admission, then passes the full standard gate2758/2758 with zero skips at325f313. Preserve exact log/environment bindings in the C123 receipt; fixture use is not real-model qualification.
   - C120 full Windows tests need explicit CARGO, CARGO_HOME and PATH for the existing stable Rust1.96 toolchain with its WASM target, plus CARGO_TARGET_DIR under canonical artifacts. Bind PLAYWRIGHT_BROWSERS_PATH to artifacts/browser-packages/playwright and all temp variables to an owned canonical artifact directory. Set the pinned numerical interpreter explicitly. Optional WSL, MSVC-observation, composition-fixture and managed-wire prerequisites must execute rather than silently become a green skipped gate.
   - UaixMemoryConsolidationTests and rewritten report-intake verification.
   - MemoryEndpoints portable policy and sync tests.

@@ -5,6 +5,32 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C123: owner cleanup verified and complete standard gate passes
+
+The owner removed both reviewed empty test folders. Independent checks before
+and after the full suite confirm both absent; helper preview reports zero
+present and two already absent. The completed one-time helper is retired to
+Git history at325f313. Do not rerun that obsolete command. No other previously
+policy-blocked removal was attempted, and physical storage recovery is unmeasured.
+
+The unchanged clean/remote-exact source-authority gate passes its registered
+governed scopes. This is not a whole-volume inventory. At clean pushed
+325f31384c67f4ae0a576e49167cde453b3db8dc, the full standard partition passes
+all2,758 tests with zero failures, skips, cancellations or TODOs. Runtime was
+737,676.807ms. Explicit existing Rust, Python, WSL, MSVC, browser and synthetic
+composition prerequisites were supplied; no dependencies or product source
+changed. Owned temporary root and marker are independently absent afterward.
+
+The compact owner-receipt transcription, exact source/tree, log identity,
+environment and results are in
+`artifacts/ecosystem-cleanup-20260912/empty-test-folder-and-standard-gate-review-20260928.json`.
+Earlier failed runs remain historical evidence. The separate C120 release
+surface run is not counted as part of this standard partition. Current source
+admission is unblocked; fresh numerical registration, useful-model evidence,
+real MiniModel seed and the remaining ecosystem work are still required.
+C114 remains the latest website publication; this checkpoint changes no public
+artifact and does not establish real-model quality or numerical parity.
+
 ## C122: discovery destination preflight and the next untested candidates
 
 The discovery CLI performed public metadata requests before rejecting an

@@ -1,5 +1,5 @@
 profile: tinyrustlm.startup-packet.current.v1
-updated_utc: 2026-09-28T01:00:56Z
+updated_utc: 2026-09-28T01:25:36Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
@@ -10,12 +10,12 @@ startup_steps:
   - Preserve immutable failed operations and all campaign counters.
 
 current_truth:
-  progress_route: Read docs/ecosystem-cleanup-2026-09-12.md for current evidence and dated C1-C122 history. Historical failed gates do not describe current access.
+  progress_route: Read docs/ecosystem-cleanup-2026-09-12.md for current evidence and dated C1-C123 history. Historical failed gates do not describe current access.
   canonical_source: E:\Source\Rust\TinyRustLM.com only; model bytes under D:\LLMs\TinyRustLM, outside Git. Leave X:\LLMS alone. No extra checkout, source copy or backup tree.
   source_control: Commit and push coherent reviewed work regularly, then verify direct remote equality. Git publication is separate from website publication.
   delivery: Owner authorizes existing FTP/FTPS website delivery and ordinary Git only; all seven repositories have Actions disabled. Do not enable paid GitHub features. Read operations.uai owner_delivery_policy.
   cleanup: Owner cleanup receipts for241 files,431 installer files plus2 links, and26 experiment directories are independently verified. Previous37 unreadable-path and two-installer-link blockers are resolved. Physical storage recovery is unmeasured.
-  source_admission: C120 full tests recreated the retired empty E:/Temp/TinyRustLM-Test-Custody parent; source recheck now fails there. Fixture scratch is corrected to canonical artifacts. Removal was policy-rejected; owner-only Remove-ReviewedEmptyTestFolders.ps1 previews both reviewed empty folders, Apply unexecuted. Preserve the exact setuptools dependency fixture.
+  source_admission: C123 independently verifies the owner's removal of both reviewed empty test folders. Clean remote-exact registered-root source admission passes. The completed helper is retired to Git325f313; do not rerun it. Preserve the exact setuptools dependency fixture and other explicitly blocked cleanup boundaries.
   publication: C114 TinyRustLM0.5.0 published through FTPS from78665b15ceda70bf933c11e92241ec1555ebe6c5;32 files verified,7 retired routes absent, final marker/public HTTPS identities exact, lease cleanup verified. Live Edge smoke passes12 observations with empty catalog fixture. Read cleanup C114 and artifacts/web-deployments.
   validation: All18 affected publisher tests pass. Local and live Edge smoke each pass12 observations; an earlier zero-argument local wrapper failure was not reproduced and remains unexplained. No before/after visual-parity or model-execution claim.
   cleanup_limit: Failed-attempt disposable files removed and useful evidence preserved.32 empty folders from failed/successful attempts remain after automatic policy review rejected removal; never retry via another API or parent deletion. Owner-only script is recorded in cleanup C114.
@@ -23,7 +23,7 @@ current_truth:
   source_eligibility: C115-C118 exclusions cover42 entries; the previous three selections failed. C122 finds three further metadata-only candidates: dsadd5018, hungpill and Hutgaecha JSON derivatives, with distinct declared weight digests. Two share an earlier parent; no independent quality evidence. No weights downloaded or run. Freeze new source-screen inputs after source admission; never replay rejected bytes.
   source_runtime: C117 used the existing5.13.1 source environment after a committed compatibility review. No dependencies, checkpoint metadata or numerical-reference locks changed; do not classify loader failures as model-quality failures.
   rejected_source_cleanup: C116-C118 source deletions were rejected before execution; six files each remain. Never retry via another API or parent. Owner-only Remove-ReviewedRejectedSource.ps1 selects CodeExpert, Biggiraffe or Ljh728; previews pass, Apply unexecuted.
-  numerical: C119 reference-runtime verification passes. C120 native build/probe tests and release gate23/23 pass. C121 runtime138/138, remaining269/270 with one skip, and prerequisite111/111 checks pass; the latter executes the skipped Bash case. Runs overlap and do not replace the failed full standard gate. Owner cleanup, full rerun, fresh v3 registration and real traces remain required.
+  numerical: C119 reference-runtime verification passes. C120 native build/probe tests and release gate23/23 pass. C123 full standard gate passes2758/2758 with zero skips at325f313 and owned scratch removed. Earlier failed and overlapping focused runs remain historical. Fresh v3 registration and real traces remain required.
   packages: NuGet0.1.8 remains unpublished; actual ARM64 consumer execution is missing. Do not substitute cross-compilation for execution or read a publishing key before gates pass.
   current_state_details: workspace.uai
   companion_source: dotnet/src/TinyRustLM.Companion/CompanionProductionOperationRuntime.cs

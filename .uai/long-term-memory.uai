@@ -1,5 +1,5 @@
 profile: tinyrustlm.long-term-memory.current.v1
-updated_utc: 2026-09-28T01:00:56Z
+updated_utc: 2026-09-28T01:25:36Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
@@ -54,12 +54,12 @@ pointers:
   - id: cleanup-progress
     path: docs/ecosystem-cleanup-2026-09-12.md
     label: Ecosystem cleanup progress
-    summary: Open for C122 discovery destination preflight, three untested metadata candidates, C121 test prerequisites and pending owner cleanup; C114 remains the latest website publication.
+    summary: Open for C123 verified owner cleanup and full standard gate2758/2758 with zero skips, C122 discovery preflight and three untested candidates; C114 remains the latest website publication.
     authority: owner_authorized_progress_record
     review_state: reviewed_for_routing_and_identity
     status: current
-    last_reviewed_utc: 2026-09-28T01:00:56Z
-    sha256: e64dd94b2f4189ef89afcca3ec9fddfce660e59dc444512ef3a83bf87e958e5f
+    last_reviewed_utc: 2026-09-28T01:25:36Z
+    sha256: b99e26541315eee03df00a74ba502d2d952bbcc0919dac6c585fcded76a11e75
   - id: source-lock
     path: contracts/vnext/qwen3-0.6b-base-source-lock.v2.json
     label: Current diagnostic source identity
