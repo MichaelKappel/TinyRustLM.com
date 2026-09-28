@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param(
     [Parameter(Mandatory=$true)]
-    [ValidateSet('CodeExpert','Biggiraffe','Ljh728')]
+    [ValidateSet('CodeExpert','Biggiraffe','Ljh728','Dsadd5018')]
     [string]$Candidate,
     [switch]$Apply
 )
@@ -11,6 +11,11 @@ $ErrorActionPreference = 'Stop'
 $repo = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 if ($repo -ne 'E:\Source\Rust\TinyRustLM.com') { throw 'Unexpected source root' }
 $targets = @{
+    Dsadd5018 = @{
+        Review = 'qwen3-json-dsadd5018-source-cleanup-review-20260928.json'
+        Sha256 = '6e9f556e7d3502f90e7cad971ed97c6aa0e5780058112a2f063d2ebe7a12d261'
+        Directory = 'source-88abce1ebbcd28729d69ab2b5d2b3dfb43889513d12dede28961caebc7a54929'
+    }
     CodeExpert = @{
         Review = 'qwen3-code-expert-source-cleanup-review-20260927.json'
         Sha256 = '788dedf03a6ca85671771767bc5b6ed59eb7c5776d2342c7f0e9ef6a9ba8cedf'

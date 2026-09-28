@@ -1,0 +1,44 @@
+{
+  "schema": "tinyrustlm.rejected_source_cleanup_review.v1",
+  "reviewedAtUtc": "2026-09-28T01:39:55.025Z",
+  "root": "D:\\LLMs\\TinyRustLM\\sources\\source-88abce1ebbcd28729d69ab2b5d2b3dfb43889513d12dede28961caebc7a54929",
+  "modelId": "dsadd5018/Qwen3-0.6B-JSON-SFT-GRPO",
+  "revision": "6df64dbff230734af8487d745ff165d30d04f11f",
+  "reason": "Failed frozen color-only instruction; raw six-case evidence and exact source acquisition receipt retained in canonical artifacts. No usable model or unique source work in this acquired payload.",
+  "files": [
+    {
+      "name": "LICENSE",
+      "bytes": 11358,
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    },
+    {
+      "name": "config.json",
+      "bytes": 1569,
+      "sha256": "a6aac2955e282444e8cf4eafad16300f82efc190f45cbc7ffd13e97881177901"
+    },
+    {
+      "name": "model.safetensors",
+      "bytes": 1192135096,
+      "sha256": "2929e48104fe13329f2f71c072657ad136b94d41142ff8df4edfb6bc48065929"
+    },
+    {
+      "name": "source-acquisition.json",
+      "bytes": 1466,
+      "sha256": "ca0f7f7d0b180af69977ec2dbd133e6ff17fc7ab607d25497c819134ff03bd3a"
+    },
+    {
+      "name": "tokenizer.json",
+      "bytes": 11422924,
+      "sha256": "476870a1f2fb6f6a2759a6ede2383bf9d5d738f17844563b65c91965b722ae09"
+    },
+    {
+      "name": "tokenizer_config.json",
+      "bytes": 9799,
+      "sha256": "3a98b59aabf4bdddb9986ce30059400a1a347a2277eab5f2514c4e9c0a2f53fb"
+    }
+  ],
+  "logicalBytes": 1203582212,
+  "physicalStorageRecoveryBytes": null,
+  "rawEvidence": "artifacts/ecosystem-cleanup-20260912/qwen3-json-dsadd5018-source-development-raw-20260928.json",
+  "rawEvidenceSha256": "cf14a66e8580ac82631c235dbbaacfc342e590e2145f9b63cbf62a84403e833a"
+}

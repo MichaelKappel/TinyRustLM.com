@@ -5,6 +5,47 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C125: the next distinct source completes its frozen screen and fails format control
+
+After C124, the actual clean/direct-remote branch check passes while FETCH_HEAD
+still names the previous commit. A complete registered-root check also passes
+at pushed178991a. That commit freezes the dsadd5018 exact checkpoint, runtime,
+six public development cases, criteria and no-retry boundary. Acquisition
+receipt0520905 verifies the pinned source files before any inference; weights
+match2929e48104fe13329f2f71c072657ad136b94d41142ff8df4edfb6bc48065929.
+
+One CPU/float32 greedy invocation completes six cases using the unchanged
+existing source runtime. It passes5/6: READY, exact JSON, latest correction,
+the narrow pen-and-paper resource criterion, and grounded one-sentence summary.
+Case4 returns "The pens in Box B are red." instead of the requested color only.
+The answer's fact is correct but its format violates the frozen criterion;
+these exact weights are rejected without retry, output repair or conversion.
+Case3 assumes an academic-paper context and establishes no broad checklist
+usefulness. Related fine-tunes do not supply independent lineage evidence.
+
+Raw output, plan, acquired file identities, execution and independent validation
+are the `qwen3-json-dsadd5018-*20260928.json` artifacts. Raw transcript is24,135
+bytes, SHA256cf14a66e8580ac82631c235dbbaacfc342e590e2145f9b63cbf62a84403e833a.
+The exact assessment is
+`tinyrustlm/training/qwen3-json-dsadd5018-source-development-screen-v1/assessment-control-v1.json`.
+All33 discovery/acquisition/exclusion checks pass without skips, including
+refusal of this inventory selection before fetch or output. The negative policy
+now covers43 exact decisions and rejects renamed copies of the same weights.
+Execution scratch was independently removed. No campaign credit is claimed.
+
+Automatic approval review rejected the bounded removal of this newly acquired
+rejected source with "blocked by policy", before execution. All6 files remain
+(1,203,582,212 logical bytes; physical recovery unmeasured). No alternative API
+or ancestor removal was attempted. The existing owner helper now accepts
+`-Candidate Dsadd5018`; its default read-only preview verifies the exact6-file
+manifest. Prior three blocked sources and32 publication folders are separate,
+unchanged pending removals. This does not block unrelated safe source work.
+
+Hungpill and Hutgaecha remain unexecuted metadata leads; each needs its own
+committed screen plan. Fresh numerical v3, a usable small default, real seed,
+native/WASM qualification and the full ecosystem objective remain open.
+No public asset changed and C114 remains the latest website publication.
+
 ## C124: bind remote identity to the declared branch
 
 After pushing C123, the verifier falsely refused equal local/tracking/direct

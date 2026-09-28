@@ -1,5 +1,5 @@
 profile: tinyrustlm.startup-packet.current.v1
-updated_utc: 2026-09-28T01:32:00Z
+updated_utc: 2026-09-28T01:41:56Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
@@ -10,7 +10,7 @@ startup_steps:
   - Preserve immutable failed operations and all campaign counters.
 
 current_truth:
-  progress_route: Read docs/ecosystem-cleanup-2026-09-12.md for current evidence and dated C1-C124 history. C124 removes incidental FETCH_HEAD from branch equality;51 source-policy and58 consumer tests pass without skips. Historical failed gates do not describe current access.
+  progress_route: Read docs/ecosystem-cleanup-2026-09-12.md for current evidence and dated C1-C125 history. C125 records one frozen real-source development failure. C124 branch identity and C123 full standard checks pass. Historical failed gates do not describe current access.
   canonical_source: E:\Source\Rust\TinyRustLM.com only; model bytes under D:\LLMs\TinyRustLM, outside Git. Leave X:\LLMS alone. No extra checkout, source copy or backup tree.
   source_control: Commit and push coherent reviewed work regularly, then verify direct remote equality. Git publication is separate from website publication.
   delivery: Owner authorizes existing FTP/FTPS website delivery and ordinary Git only; all seven repositories have Actions disabled. Do not enable paid GitHub features. Read operations.uai owner_delivery_policy.
@@ -20,9 +20,9 @@ current_truth:
   validation: All18 affected publisher tests pass. Local and live Edge smoke each pass12 observations; an earlier zero-argument local wrapper failure was not reproduced and remains unexplained. No before/after visual-parity or model-execution claim.
   cleanup_limit: Failed-attempt disposable files removed and useful evidence preserved.32 empty folders from failed/successful attempts remain after automatic policy review rejected removal; never retry via another API or parent deletion. Owner-only script is recorded in cleanup C114.
   product_limit: No qualified small working default, real MiniModel seed, native/WASM model qualification, outside-network P2P or live memory proof follows from code publication.
-  source_eligibility: C115-C118 exclusions cover42 entries; the previous three selections failed. C122 finds three further metadata-only candidates: dsadd5018, hungpill and Hutgaecha JSON derivatives, with distinct declared weight digests. Two share an earlier parent; no independent quality evidence. No weights downloaded or run. Freeze new source-screen inputs after source admission; never replay rejected bytes.
+  source_eligibility: C125 dsadd5018 runs once under its pushed frozen plan and passes5/6 public development cases; color-only format failure rejects the exact weights. Exclusions now cover43 entries. Raw output and provenance are preserved without repair/retry/conversion. Hungpill and Hutgaecha remain metadata-only leads needing separate frozen plans; no independent-lineage or qualification claim.
   source_runtime: C117 used the existing5.13.1 source environment after a committed compatibility review. No dependencies, checkpoint metadata or numerical-reference locks changed; do not classify loader failures as model-quality failures.
-  rejected_source_cleanup: C116-C118 source deletions were rejected before execution; six files each remain. Never retry via another API or parent. Owner-only Remove-ReviewedRejectedSource.ps1 selects CodeExpert, Biggiraffe or Ljh728; previews pass, Apply unexecuted.
+  rejected_source_cleanup: C116-C118 and C125 source deletions were rejected before execution; six files each remain. Never retry via another API or parent. Owner-only Remove-ReviewedRejectedSource.ps1 selects CodeExpert, Biggiraffe, Ljh728 or Dsadd5018; previews pass, Apply unexecuted. These exact cleanup boundaries do not stop other safe work.
   numerical: C119 reference-runtime verification passes. C120 native build/probe tests and release gate23/23 pass. C123 full standard gate passes2758/2758 with zero skips at325f313 and owned scratch removed. Earlier failed and overlapping focused runs remain historical. Fresh v3 registration and real traces remain required.
   packages: NuGet0.1.8 remains unpublished; actual ARM64 consumer execution is missing. Do not substitute cross-compilation for execution or read a publishing key before gates pass.
   current_state_details: workspace.uai
