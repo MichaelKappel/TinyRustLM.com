@@ -5,6 +5,16 @@
   "weightLimit": "SHA-256 matches exact known weight files, including renamed files. It cannot establish tensor identity after resharding or reserialization.",
   "entries": [
     {
+      "modelId": "ljh728/Qwen3-0.6B-JSON-SFT-GRPO",
+      "revision": "619d4065a649556ccc232dd81a9b2c42d19afb46",
+      "kind": "quality",
+      "weightSha256": "9036e56fa9a3c5b57c895f41e6d58cf6581bcfd82cc805123c7fa2b7be598c4b",
+      "evidence": {
+        "path": "tinyrustlm/training/qwen3-json-ljh728-source-development-screen-v1/assessment-control-v1.json",
+        "sha256": "e63d431f258f7505afd2ec4f87b223ebce26d1e1d33693296e3bbefd1572bcbe"
+      }
+    },
+    {
       "modelId": "Biggiraffe/Qwen3-0.6B-JSON-SFT-GRPO",
       "revision": "0063adcd7b5169b4e7816b8326de6e18281d2256",
       "kind": "quality",

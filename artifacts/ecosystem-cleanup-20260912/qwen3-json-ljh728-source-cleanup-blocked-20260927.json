@@ -1,0 +1,13 @@
+{
+  "schema": "tinyrustlm.rejected_source_cleanup_blocked.v1",
+  "recordedAtUtc": "2026-09-28T00:04:52.245Z",
+  "root": "D:\\LLMs\\TinyRustLM\\sources\\source-5d936e360f915555a1ff9be89f3293fef46def2dc6afb70dcf0360d36eda28f6",
+  "status": "blocked-before-execution",
+  "reason": "Automatic approval review: blocked by policy",
+  "removedFiles": 0,
+  "remainingFiles": 6,
+  "logicalBytesRetained": 1203582209,
+  "measuredStorageRecoveryBytes": null,
+  "restriction": "Do not retry agent deletion through another API, permission change, rename or parent deletion.",
+  "ownerScript": "eng/Remove-ReviewedRejectedSource.ps1 -Candidate Ljh728 -Apply"
+}

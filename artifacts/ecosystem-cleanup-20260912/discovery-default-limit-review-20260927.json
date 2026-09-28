@@ -1,0 +1,36 @@
+{
+  "schema": "tinyrustlm.discovery_default_limit_review.v1",
+  "checkedAtUtc": "2026-09-28T00:05:31.472Z",
+  "defect": "CLI compared candidateCount with undefined omitted limit instead of report.requestedCandidateLimit, printing0/undefined and exiting0 on a default-limit shortfall.",
+  "redTestObserved": {
+    "expectedExitCode": 2,
+    "actualExitCode": 0
+  },
+  "sourceSha256": "977bbe8f3fe716814e64abea3927a7bdc9d5ac84ca48f9bc6e531194c456a74f",
+  "tests": [
+    {
+      "requestedCount": 40,
+      "exitCode": 2,
+      "reportedCount": 40
+    },
+    {
+      "requestedCount": 3,
+      "exitCode": 2,
+      "reportedCount": 3
+    }
+  ],
+  "changedLines": [
+    {
+      "line": 465,
+      "hits": 2
+    },
+    {
+      "line": 466,
+      "hits": 2
+    }
+  ],
+  "changedLinesCovered": 2,
+  "changedLinesTotal": 2,
+  "coverageScope": "Only the two modified production CLI lines; not whole-file or cleanup-script coverage.",
+  "modelNetworkRequests": 0
+}

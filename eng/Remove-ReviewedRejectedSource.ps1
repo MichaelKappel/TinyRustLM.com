@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param(
     [Parameter(Mandatory=$true)]
-    [ValidateSet('CodeExpert','Biggiraffe')]
+    [ValidateSet('CodeExpert','Biggiraffe','Ljh728')]
     [string]$Candidate,
     [switch]$Apply
 )
@@ -20,6 +20,11 @@ $targets = @{
         Review = 'qwen3-json-biggiraffe-source-cleanup-review-20260927.json'
         Sha256 = 'a40a66315139d5737b83445c63b298d52a85c2f4566a65f778f28044d9c8b4e2'
         Directory = 'source-c90e9dd369b4e3fa75139583aad7eda46eb564897277a02458b2434f84c4db14'
+    }
+    Ljh728 = @{
+        Review = 'qwen3-json-ljh728-source-cleanup-review-20260927.json'
+        Sha256 = 'caacce651158b75783e653bf0602f19d35f41dae6a9ab1ecf80b2449d1b11053'
+        Directory = 'source-5d936e360f915555a1ff9be89f3293fef46def2dc6afb70dcf0360d36eda28f6'
     }
 }
 $selected = $targets[$Candidate]

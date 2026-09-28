@@ -155,6 +155,25 @@ test("discovery CLI rejects invalid explicit limits before producing a report", 
   } finally { removeOwnedTemporaryDirectory(owned); }
 });
 
+test("discovery CLI reports the effective requested count and signals a shortfall", () => {
+  const { createOwnedTemporaryDirectory, removeOwnedTemporaryDirectory } = require("../tools/canonical-operation-scratch.js");
+  const owned = createOwnedTemporaryDirectory({ temporaryParent: path.resolve(__dirname, "../../artifacts/tests/candidate-selection-cli") });
+  const preload = path.join(owned.rootPath, "empty-search.cjs");
+  fs.writeFileSync(preload, "globalThis.fetch = async () => new Response('[]');\n");
+  try {
+    for (const [args, expected] of [[[], 40], [["3", "20"], 3]]) {
+      const output = path.join(owned.rootPath, `inventory-${expected}.json`);
+      const result = spawnSync(process.execPath, ["--require", preload,
+        path.resolve(__dirname, "../tools/huggingface-supported-candidates.js"),
+        output, "qwen3-0.6b-bpe", ...args], { encoding: "utf8", windowsHide: true, timeout: 10000,
+        env: { ...process.env, NODE_V8_COVERAGE: "" } });
+      assert.equal(result.status, 2, result.stderr);
+      assert.match(result.stdout, new RegExp(`0/${expected} ->`));
+      assert.equal(JSON.parse(fs.readFileSync(output)).requestedCandidateLimit, expected);
+    }
+  } finally { removeOwnedTemporaryDirectory(owned); }
+});
+
 test("discovers distinct immutable Qwen3 full-weight conversation candidates", async () => {
   const base = "https://huggingface.co";
   const licenseUrl = "https://www.apache.org/licenses/LICENSE-2.0.txt";

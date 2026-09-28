@@ -462,8 +462,8 @@ async function main(argv) {
   const search = searchParts.length ? searchParts.join(" ") : undefined;
   const report = await discoverCandidates({ candidateLimit, profileId, search, searchLimit });
   const target = writeReport(outputPath, report);
-  process.stdout.write(`Candidate inventory ${profileId}: ${report.candidateCount}/${candidateLimit} -> ${target}\n`);
-  if (report.candidateCount < candidateLimit) process.exitCode = 2;
+  process.stdout.write(`Candidate inventory ${profileId}: ${report.candidateCount}/${report.requestedCandidateLimit} -> ${target}\n`);
+  if (report.candidateCount < report.requestedCandidateLimit) process.exitCode = 2;
 }
 
 if (require.main === module) {

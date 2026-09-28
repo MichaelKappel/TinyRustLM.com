@@ -5,6 +5,59 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C118: final inventory screen and truthful discovery shortfalls
+
+Fresh registered-root source admission and clean remote-exact custody passed.
+The last candidate in the existing three-entry inventory was
+ljh728/Qwen3-0.6B-JSON-SFT-GRPO at619d4065a649556ccc232dd81a9b2c42d19afb46.
+Its reviewed primary metadata and runtime-bound plan were pushed as f5cc151.
+The existing downloader verified all source files, including1192135096 weight
+bytes with SHA-2569036e56fa9a3c5b57c895f41e6d58cf6581bcfd82cc805123c7fa2b7be598c4b.
+The unchanged existing5.13.1 environment executed six public development cases
+once, offline, greedy, CPU float32, with the declared non-thinking template.
+No dependencies, checkpoint bytes, prompts, thresholds or outputs were repaired.
+
+The capture exited0 and owned scratch cleanup passed. Five cases passed and the
+color-only answer failed format: "The pens in Box B are red." Its factual content
+was correct. As in C117, the pen-and-paper checklist passes the narrow resource
+criterion while assuming an academic-paper context; this is not broad usefulness
+evidence. Both JSON checkpoints declare the same parent, so their similar results
+are not independent samples. The raw transcript SHA-256 is
+0f0939fc0b49a32dfaf854239c36d71866454066743be1c3dd6b7d54a9a06a92.
+Source and assessment validators pass against exact source hashes. The42-entry
+negative exclusion policy now covers this rejected checkpoint and all three
+selections in the earlier inventory. No qualified model, conversion or seed follows.
+The run crossed midnight UTC into September28; the September27 filenames refer
+to the local work date, and receipts preserve actual UTC times.
+
+Source inspection also confirms a distinct future conversion requirement:
+qwen3_composition.rs requires the frozen original config/tokenizerConfig bytes
+and exact Tokenizer2 identity. This derivative has1569-byte config and9799-byte
+tokenizerConfig files, differing from the frozen726/9732-byte bindings. Supporting
+a future eligible derivative requires deliberate tokenizer/template admission;
+relabeling weights or weakening those identity checks is not conversion support.
+
+A real CLI defect was reproduced separately: omitted candidate limits let an
+empty discovery print0/undefined and exit0 instead of reporting the default40
+candidate shortfall. The CLI now uses report.requestedCandidateLimit for its
+message and exit status. The regression failed before the fix and passes after;
+both omitted40 and explicit3 limits report their actual target and exit2.
+V8 evidence covers both modified production lines,2/2, with no network requests.
+All37 focused discovery/acquisition/exclusion/memory tests pass. See
+discovery-default-limit-review-20260927.json. Owned test scratch was removed.
+
+Automatic approval review rejected source retirement before execution with
+"blocked by policy". Six files totaling1203582209 logical bytes remain under
+D:\LLMs\TinyRustLM\sources\source-5d936e360f915555a1ff9be89f3293fef46def2dc6afb70dcf0360d36eda28f6.
+No removal or physical recovery is claimed; never retry through another API,
+permission change, rename or parent deletion. The existing owner-only cleanup
+tool now also accepts Ljh728; its exact six-file read-only preview passes.
+Apply remains unexecuted. Owner command:
+`& 'E:\Source\Rust\TinyRustLM.com\eng\Remove-ReviewedRejectedSource.ps1' -Candidate Ljh728 -Apply`.
+The prior CodeExpert and Biggiraffe selections remain pending, and no public web
+files changed. The working default, model execution across native/WASM and live
+MiniModel seed remain open requirements of the full ecosystem goal.
+
 ## C117: tokenizer-compatible source screen and precise format rejection
 
 Registered-root source admission and remote-exact custody passed before both

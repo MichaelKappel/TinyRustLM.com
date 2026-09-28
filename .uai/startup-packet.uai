@@ -10,7 +10,7 @@ startup_steps:
   - Preserve immutable failed operations and all campaign counters.
 
 current_truth:
-  progress_route: Read docs/ecosystem-cleanup-2026-09-12.md for current evidence and dated C1-C117 history. Historical failed gates do not describe current access.
+  progress_route: Read docs/ecosystem-cleanup-2026-09-12.md for current evidence and dated C1-C118 history. Historical failed gates do not describe current access.
   canonical_source: E:\Source\Rust\TinyRustLM.com only; model bytes under D:\LLMs\TinyRustLM, outside Git. Leave X:\LLMS alone. No extra checkout, source copy or backup tree.
   source_control: Commit and push coherent reviewed work regularly, then verify direct remote equality. Git publication is separate from website publication.
   delivery: Owner authorizes existing FTP/FTPS website delivery and ordinary Git only; all seven repositories have Actions disabled. Do not enable paid GitHub features. Read operations.uai owner_delivery_policy.
@@ -20,9 +20,9 @@ current_truth:
   validation: All18 affected publisher tests pass. Local and live Edge smoke each pass12 observations; an earlier zero-argument local wrapper failure was not reproduced and remains unexplained. No before/after visual-parity or model-execution claim.
   cleanup_limit: Failed-attempt disposable files removed and useful evidence preserved.32 empty folders from failed/successful attempts remain after automatic policy review rejected removal; never retry via another API or parent deletion. Owner-only script is recorded in cleanup C114.
   product_limit: No qualified small working default, real MiniModel seed, native/WASM model qualification, outside-network P2P or live memory proof follows from code publication.
-  source_eligibility: Read cleanup C115-C117. The41-entry exclusion policy includes Code-Expert3/6 and Biggiraffe JSON5/6; the latter failed color-only format. Its prior4.51 loader failure generated no answers. No aliases, resampling or replay of closed quality failures. The ljh728 JSON checkpoint remains metadata-only.
+  source_eligibility: Read cleanup C115-C118. The42-entry exclusion policy covers all three expanded-inventory selections. Code-Expert scored3/6; both JSON derivatives scored5/6 with color-only format failure. These are related public development results, not independent holdout evidence. No aliases, resampling or replay of closed quality failures.
   source_runtime: C117 used the existing5.13.1 source environment after a committed compatibility review. No dependencies, checkpoint metadata or numerical-reference locks changed; do not classify loader failures as model-quality failures.
-  rejected_source_cleanup: C116-C117 source deletions were rejected before execution; six files each remain. Never retry via another API or parent. Owner-only Remove-ReviewedRejectedSource.ps1 selects CodeExpert or Biggiraffe; both previews pass, Apply unexecuted. It replaces the old CodeExpert-only script.
+  rejected_source_cleanup: C116-C118 source deletions were rejected before execution; six files each remain. Never retry via another API or parent. Owner-only Remove-ReviewedRejectedSource.ps1 selects CodeExpert, Biggiraffe or Ljh728; previews pass, Apply unexecuted.
   numerical: Closed v2 source-trace-environment-drift is not parity. A fresh current v3 registration and real material evidence remain required; preserve the reference interpreter.
   packages: NuGet0.1.8 remains unpublished; actual ARM64 consumer execution is missing. Do not substitute cross-compilation for execution or read a publishing key before gates pass.
   current_state_details: workspace.uai
