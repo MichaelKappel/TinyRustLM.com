@@ -54,12 +54,12 @@ pointers:
   - id: cleanup-progress
     path: docs/ecosystem-cleanup-2026-09-12.md
     label: Ecosystem cleanup progress
-    summary: Open for C118 final inventory rejection and discovery CLI fix, C114 publication, current owner cleanup commands and remaining model/seed limits.
+    summary: Open for C119 numerical environment preflight and dependency binding fix, C114 publication, current owner cleanup commands and remaining model/seed limits.
     authority: owner_authorized_progress_record
     review_state: reviewed_for_routing_and_identity
     status: current
     last_reviewed_utc: 2026-09-27T18:27:14Z
-    sha256: a7af8c6d01b8e112ad4ddfa62142e7d14897cf5e320ca3958b84b5ad4dea8d91
+    sha256: 4e251e36633f24be63ccc5b093f2d4cda4a819b3be1de85c94c466bb518b4352
   - id: source-lock
     path: contracts/vnext/qwen3-0.6b-base-source-lock.v2.json
     label: Current diagnostic source identity
@@ -77,7 +77,7 @@ pointers:
     review_state: reviewed_for_routing_and_identity
     status: pending_material_execution
     last_reviewed_utc: 2026-09-20T15:11:53Z
-    sha256: e65f749b10e2db7b81506977cab865ac53abb57e52cfc0de790f40a1797bc223
+    sha256: eafc024b615a78bb1ee78b23398b781360cf0646cea8be90d88e00f8aa3eeff0
   - id: numerical-environment
     path: contracts/vnext/qwen3-numerical-oracle-environment-lock.v2.json
     label: Current reference environment lock

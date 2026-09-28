@@ -5,6 +5,29 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C119: current numerical preflight and repaired dependency binding
+
+Registered-root source admission and clean remote-exact custody passed. Intake
+remains placeholder-only. The preserved numerical reference interpreter passed
+the existing runtime verification against environment-lock.v2, including exact
+runtime closure SHA-256
+54c357dca7bc249df177058f39566855b9680c113190b9c5e642015bb63a3e22.
+No environment, package, lock or historical execution record was changed.
+
+The existing profile regression exposed a stale dependency identity: the current
+profile still bound the source-authority helper before its reviewed changes.
+Updated only that dependency's byte length and SHA-256. The test failed before
+the correction and passed afterward. All41 focused owner/profile/environment
+checks pass with zero skips, including the actual pinned Python synthetic
+framework/kernel checks. The helper self-test also passes. These checks establish
+environment readiness and fixture behavior, not real-model numerical parity.
+
+Evidence: `artifacts/ecosystem-cleanup-20260912/numerical-preflight-review-20260927.json`.
+The local September27 work crossed into September28 UTC. A fresh v3 registration,
+current release/build gates and real model traces remain necessary; no model or
+website publication occurred in this checkpoint. The working default and live
+MiniModel seed remain unfinished.
+
 ## C118: final inventory screen and truthful discovery shortfalls
 
 Fresh registered-root source admission and clean remote-exact custody passed.

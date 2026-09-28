@@ -1,0 +1,50 @@
+{
+  "schema": "tinyrustlm.numerical_preflight_review.v1",
+  "sourceCommitBeforeChange": "b19f4ae5ac461ae80dedd2302d88f6a7062008c2",
+  "workDateLocal": "2026-09-27",
+  "observedDateUtc": "2026-09-28",
+  "sourceAuthority": {
+    "verdict": "pass",
+    "coverageClass": "registered-governed-roots-only",
+    "wholeVolumeInventoryPerformed": false
+  },
+  "defect": {
+    "path": "contracts/vnext/qwen3-numerical-differential-profile.v2.json",
+    "dependency": "tinyrustlm/tools/verify-single-source-authority.js",
+    "priorByteLength": 141430,
+    "priorSha256": "c3308e10c7cf055767839528ea3605827c6f0c047a2c10d1dabe8907988c03e6",
+    "currentByteLength": 144408,
+    "currentSha256": "96253fb03be0fb60ed9b94ad71859f0134fcf261f4cb2eb94884dfa66c79c6ca",
+    "description": "Current profile dependency binding was stale after the reviewed source-authority changes; the existing exact-identity regression reproduced the mismatch. Updated only that current binding."
+  },
+  "environmentVerification": {
+    "command": "artifacts/external/qwen3-numerical-oracle/environment/Scripts/python.exe -I -B -X utf8 tinyrustlm/tools/qwen3_numerical_environment_lock.py --verify-runtime contracts/vnext/qwen3-numerical-oracle-environment-lock.v2.json",
+    "exitCode": 0,
+    "status": "pass",
+    "lockByteLength": 30918,
+    "lockSha256": "918a5e96605a3aaaf2aaba977c0634783647016d30484f4345eeb98b5df0a283",
+    "runtimeClosureSha256": "54c357dca7bc249df177058f39566855b9680c113190b9c5e642015bb63a3e22",
+    "environmentModified": false
+  },
+  "tests": {
+    "command": "node --test tinyrustlm/tests/qwen3-numerical-execution-owner.test.js tinyrustlm/tests/qwen3-numerical-differential-profile.test.js tinyrustlm/tests/qwen3-model-load-environment-closure.test.js",
+    "interpreterSelectionVariable": "TINYRUSTLM_QWEN3_NUMERICAL_ORACLE_PYTHON",
+    "interpreter": "artifacts/external/qwen3-numerical-oracle/environment/Scripts/python.exe",
+    "passed": 41,
+    "failed": 0,
+    "skipped": 0,
+    "environmentHelperSelfTest": "pass",
+    "initialProfileChecks": { "passed": 16, "failed": 1, "skipped": 1 },
+    "initialSkipReason": "Pinned interpreter selection variable was absent; the final run explicitly selected the preserved reference interpreter.",
+    "changedCodeCoverage": "No executable code changed; existing exact-identity assertion reproduced the stale configuration binding and passed after correction."
+  },
+  "claimBoundary": {
+    "freshV3RegistrationCreated": false,
+    "realModelTraceExecuted": false,
+    "numericalParityEstablished": false,
+    "qualifiedDefaultModel": false,
+    "liveMiniModelSeed": false,
+    "websiteChanged": false,
+    "historicalRecordsModified": false
+  }
+}
