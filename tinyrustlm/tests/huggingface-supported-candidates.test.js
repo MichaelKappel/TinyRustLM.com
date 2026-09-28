@@ -155,6 +155,33 @@ test("discovery CLI rejects invalid explicit limits before producing a report", 
   } finally { removeOwnedTemporaryDirectory(owned); }
 });
 
+test("discovery CLI rejects invalid output paths before any metadata request", () => {
+  const { createOwnedTemporaryDirectory, removeOwnedTemporaryDirectory } = require("../tools/canonical-operation-scratch.js");
+  const owned = createOwnedTemporaryDirectory({ temporaryParent: path.resolve(__dirname, "../../artifacts/tests/candidate-selection-cli") });
+  const preload = path.join(owned.rootPath, "no-network.cjs");
+  const marker = path.join(owned.rootPath, "request-attempted");
+  fs.writeFileSync(preload, `globalThis.fetch = async () => { require('node:fs').writeFileSync(${JSON.stringify(marker)}, 'called'); return new Response('[]'); };\n`);
+  const directory = path.join(owned.rootPath, "directory.json");
+  fs.mkdirSync(directory);
+  const original = path.join(owned.rootPath, "original.json");
+  const linked = path.join(owned.rootPath, "linked.json");
+  fs.writeFileSync(original, "preserved");
+  fs.linkSync(original, linked);
+  try {
+    for (const output of ["relative.json", path.join(owned.rootPath, "inventory.txt"),
+      path.resolve(__dirname, "outside-artifacts.json"), path.join(owned.rootPath, "NUL.json"), directory, linked]) {
+      const result = spawnSync(process.execPath, ["--require", preload,
+        path.resolve(__dirname, "../tools/huggingface-supported-candidates.js"),
+        output, "qwen3-0.6b-bpe", "1", "1"], { encoding: "utf8", windowsHide: true,
+        timeout: 10000, env: { ...process.env, NODE_V8_COVERAGE: "" } });
+      assert.equal(result.status, 1, result.stderr);
+      assert.equal(fs.existsSync(marker), false, `metadata requested before refusing ${output}`);
+      assert.equal(result.stdout, "");
+    }
+    assert.equal(fs.readFileSync(original, "utf8"), "preserved");
+  } finally { removeOwnedTemporaryDirectory(owned); }
+});
+
 test("discovery CLI reports the effective requested count and signals a shortfall", () => {
   const { createOwnedTemporaryDirectory, removeOwnedTemporaryDirectory } = require("../tools/canonical-operation-scratch.js");
   const owned = createOwnedTemporaryDirectory({ temporaryParent: path.resolve(__dirname, "../../artifacts/tests/candidate-selection-cli") });

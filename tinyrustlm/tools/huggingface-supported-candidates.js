@@ -3,7 +3,7 @@
 const crypto = require("node:crypto");
 const { sourceCandidateRejection } = require("./source-candidate-exclusions.js");
 const { createMetadataReader, MetadataReadError } = require("./huggingface-metadata.js");
-const { writeCandidateInventory: writeReport } = require("./huggingface-candidate-storage.js");
+const { requireCandidateInventoryPath, writeCandidateInventory: writeReport } = require("./huggingface-candidate-storage.js");
 const { maximumWeightIndexBytes, validateWeightLayout } = require("./huggingface-weight-layout.js");
 
 const inventorySchema = "tinyrustlm.huggingface_supported_candidate_inventory.v3";
@@ -455,6 +455,7 @@ async function main(argv) {
   const [outputPath, profileId, candidateLimitText, searchLimitText, ...searchParts] = argv;
   invariant(outputPath && profileId,
     "usage: node tools/huggingface-supported-candidates.js <output.json> <profile-id> [candidate-limit] [search-limit] [search]");
+  requireCandidateInventoryPath(outputPath);
   const candidateLimit = candidateLimitText === undefined ? undefined :
     (candidateLimitText.trim() ? Number(candidateLimitText) : NaN);
   const searchLimit = searchLimitText === undefined ? undefined :

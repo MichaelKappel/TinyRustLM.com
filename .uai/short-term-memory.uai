@@ -1,9 +1,10 @@
 profile: tinyrustlm.short-term-memory.current.v1
-updated_utc: 2026-09-28T00:53:33Z
+updated_utc: 2026-09-28T01:00:56Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
 now:
+  discovery_destination: C122 fixes metadata requests occurring before an invalid inventory destination is rejected. All39 affected checks pass; the new validator's V8 ranges are covered and owned scratch is gone. Three further exact Qwen3 JSON metadata leads are recorded without acquisition/execution. Read cleanup C122; source admission still waits on the two owner-cleanup folders and C121's full standard rerun remains required.
   current_checkpoint: C121 passes runtime138/138, remaining269/270 with one skip, and prerequisite111/111 checks; the latter runs the skipped Bash case. Owned scratch absent. Fresh source admission still fails on the policy-blocked empty E:/Temp/TinyRustLM-Test-Custody folder. Owner-only Remove-ReviewedEmptyTestFolders.ps1 -Apply remains necessary, followed by the full standard gate. C114 is the latest actual FTPS publication. Earlier entries below are dated history; read cleanup C121 for current evidence. No qualified default or live seed yet.
   publisher_validation: C108 fixes the publisher's self-dirtying validation scratch. All18 deployment tests pass; actual credential validation and32-file ValidateOnly pass. Owned scratch absent afterward. Remote publication and real-model qualification remain incomplete; no FTP upload. Read cleanup C108.
   dependency_archive_classification: C107 fixes the third-party fixture false positive without changing reference bytes or excluding a subtree. All49 source-policy and7 portal preflight tests pass; registered-root CLI passes. Clean committed custody, model, seed and release gates remain. Read cleanup C107; it supersedes C106's archive blocker below.

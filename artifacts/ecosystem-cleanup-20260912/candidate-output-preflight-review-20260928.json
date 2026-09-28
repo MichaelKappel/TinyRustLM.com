@@ -1,0 +1,73 @@
+{
+  "schema": "tinyrustlm.candidate_output_preflight_review.v1",
+  "baselineCommit": "831d81fac8b9b657a135825a5a11b56d929e150f",
+  "observedDefect": "The discovery CLI fetched public metadata before rejecting a relative inventory destination. A no-network preload regression recorded a fetch before rejection.",
+  "change": "Share the existing canonical inventory path validation between the CLI preflight and final writer. Check ordinary-file identity before discovery, then retain the writer's directory ownership and final file rechecks.",
+  "tests": {
+    "command": "node --test tinyrustlm/tests/huggingface-supported-candidates.test.js tinyrustlm/tests/huggingface-candidate-storage.test.js tinyrustlm/tests/source-candidate-exclusions.test.js",
+    "redRegression": "metadata requested before refusing relative.json",
+    "passed": 39,
+    "failed": 0,
+    "skipped": 0,
+    "invalidDestinations": ["relative", "wrong extension", "outside artifacts", "Windows device alias", "directory", "hardlinked file"],
+    "invalidDestinationRequests": 0,
+    "hardlinkedOriginalPreserved": true,
+    "coverage": {
+      "tool": "Node V8 coverage",
+      "scope": "requireCandidateInventoryPath",
+      "functionRange": [5706, 6129],
+      "functionCalls": 7,
+      "nestedRange": [5833, 5876],
+      "nestedRangeCalls": 6,
+      "uncoveredRangesInNewValidator": 0,
+      "limit": "Selected function ranges only, not whole-file or branch coverage. CLI subprocess coverage is disabled; its invocation is behaviorally verified by six failure cases and existing successful CLI tests."
+    },
+    "ownedTestAndCoverageOutputRemoved": true,
+    "additionalMetadataSuite": { "passed": 10, "failed": 0, "skipped": 0 }
+  },
+  "candidateDiscovery": {
+    "inventory": "artifacts/ecosystem-cleanup-20260912/qwen3-next-candidate-inventory-20260928.json",
+    "inventoryBytes": 49921,
+    "inventorySha256": "44e51fb57c4ee49c33157e364ace9b989db6b3710107e983dc175f395b301c8a",
+    "sourceExclusionEntries": 42,
+    "candidateCount": 3,
+    "rejectionsBeforeSelectionCompleted": 407,
+    "metadataOnly": true,
+    "weightBytesDownloaded": 0,
+    "candidates": [
+      {
+        "modelId": "dsadd5018/Qwen3-0.6B-JSON-SFT-GRPO",
+        "revision": "6df64dbff230734af8487d745ff165d30d04f11f",
+        "declaredParent": "NotoriousH2/Qwen3-0.6B-JSON-SFT",
+        "cardUrl": "https://huggingface.co/dsadd5018/Qwen3-0.6B-JSON-SFT-GRPO/raw/6df64dbff230734af8487d745ff165d30d04f11f/README.md",
+        "cardSha256": "674f882e75bd86cd2c2af86fa0dab613c118a9ffbc523b68da3cc07c687971ab"
+      },
+      {
+        "modelId": "hungpill/Qwen3-0.6B-JSON-SFT-GRPO",
+        "revision": "c4e2ccc285d6b798af1447773aa63bfcac1b01a3",
+        "declaredParent": "NotoriousH2/Qwen3-0.6B-JSON-SFT",
+        "cardUrl": "https://huggingface.co/hungpill/Qwen3-0.6B-JSON-SFT-GRPO/raw/c4e2ccc285d6b798af1447773aa63bfcac1b01a3/README.md",
+        "cardSha256": "e9175c2ace52f9acdf1fdb5695532df14c8e2d3a53bdaba481b5c6a74f1d76da"
+      },
+      {
+        "modelId": "Hutgaecha/Qwen3-0.6B-JSON-SFT-GRPO",
+        "revision": "e34888a4d278c8fccf86bdc17756b6edf410a4d1",
+        "declaredParent": "Hutgaecha/Qwen3-0.6B-JSON-SFT",
+        "cardUrl": "https://huggingface.co/Hutgaecha/Qwen3-0.6B-JSON-SFT-GRPO/raw/e34888a4d278c8fccf86bdc17756b6edf410a4d1/README.md",
+        "cardSha256": "ffbc3417390c656a0c4a8401910089bd51909c5703ff6f77556ec96e59ca1aa9"
+      }
+    ],
+    "review": "Pinned cards, configs and tokenizer configs were read through bounded metadata requests after the web reader could not open the cards. All three declare Apache-2.0, list-valued extra_special_tokens and explicit enable_thinking template support. Their config and tokenizer-config identities match the previously reviewed JSON derivatives. Weight digests are distinct from recorded exclusions, but local byte verification, source behavior, lineage independence and converter admission remain unproven. Two share the declared parent of earlier failures. Do not infer quality from specialized names, download counts or card claims.",
+    "nextAction": "After unchanged source admission passes, freeze a source-screen plan with exact runtime, inputs and existing public development criteria before downloading or executing the first candidate. Preserve raw results; no rerun or output repair."
+  },
+  "limits": {
+    "fullStandardGatePassed": false,
+    "sourceAuthorityBlocker": "E:/Temp/TinyRustLM-Test-Custody remains pending owner removal; preview still finds both reviewed empty directories",
+    "ownerHelperApplyExecuted": false,
+    "qualifiedDefaultModel": false,
+    "liveMiniModelSeed": false,
+    "publicOutputChanged": false,
+    "productionPublished": false,
+    "visualParityMeasured": false
+  }
+}

@@ -122,13 +122,21 @@ async function withCandidateDirectory(directory, operation) {
   }
 }
 
-/** Publish metadata only inside a canonical artifact subdirectory, using a synced temporary file. */
-function writeCandidateInventory(outputPath, report) {
+/** Validate an inventory destination without writing or requesting metadata; publication rechecks it. */
+function requireCandidateInventoryPath(outputPath) {
   invariant(typeof outputPath === "string" && path.isAbsolute(outputPath) &&
     path.extname(outputPath) === ".json", "inventory output must be an absolute canonical artifact JSON path");
   const target = path.resolve(outputPath);
-  const parent = requireCanonicalArtifactPath(path.dirname(target));
+  requireCanonicalArtifactPath(path.dirname(target));
   requireFilename(path.basename(target));
+  ordinaryFile(target);
+  return target;
+}
+
+/** Publish metadata only inside a canonical artifact subdirectory, using a synced temporary file. */
+function writeCandidateInventory(outputPath, report) {
+  const target = requireCandidateInventoryPath(outputPath);
+  const parent = path.dirname(target);
   const bytes = Buffer.from(`${JSON.stringify(report, null, 2)}\n`, "utf8");
   invariant(bytes.length <= 16 * 1024 * 1024, "candidate inventory is oversized");
   fs.mkdirSync(parent, { recursive: true });
@@ -157,4 +165,4 @@ function writeCandidateInventory(outputPath, report) {
 }
 
 module.exports = Object.freeze({ requireFilename, requireModelOutputRoot, readBoundedFile,
-  withCandidateDirectory, writeCandidateInventory });
+  withCandidateDirectory, requireCandidateInventoryPath, writeCandidateInventory });

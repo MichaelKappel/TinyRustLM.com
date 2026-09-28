@@ -5,6 +5,40 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C122: discovery destination preflight and the next untested candidates
+
+The discovery CLI performed public metadata requests before rejecting an
+invalid inventory output path. Reproduced this with a preload that records
+every fetch, then extracted the existing destination validation for use before
+discovery and again at publication. Relative paths, wrong extensions, paths
+outside artifacts, Windows device aliases, directories and hard-linked files
+now fail before requests; existing contents are preserved. Final publication
+still checks directory ownership and file identity. All39 affected tests pass
+with zero skips. V8 reports no uncovered range in the new validator; CLI child
+coverage is excluded, with behavior verified by actual child-process tests.
+Owned test and coverage output was removed. No public output changed.
+
+The unchanged metadata admission rules and42-entry exclusion policy discovered
+three further exact checkpoints in the bounded500-result Qwen3 search. Their
+published weight digests differ from recorded rejected bytes: dsadd5018,
+hungpill and Hutgaecha Qwen3-0.6B-JSON-SFT-GRPO. Pinned model cards, configs and
+tokenizer configs were reviewed. The first two declare the same parent as the
+earlier JSON candidates; no independent-lineage or quality claim follows.
+The existing5.13 source-runtime review is relevant to their matching config
+and tokenizer-config identities, but it does not establish these models' behavior.
+
+The compact review is
+`artifacts/ecosystem-cleanup-20260912/candidate-output-preflight-review-20260928.json`;
+the hash-bound inventory is `qwen3-next-candidate-inventory-20260928.json` in
+the same directory. These are metadata leads, not admitted default models.
+No weights were downloaded or executed. After source admission, freeze exact
+source-screen inputs/runtime/criteria before acquisition; preserve every raw
+result and continue to reject prior failed weights without aliases or retries.
+
+The owner cleanup preview still finds both reviewed empty folders. The unchanged
+source-authority gate, full standard suite, real-model numerical work, usable
+default and live seed remain open. C114 remains the latest website publication.
+
 ## C121: compiler, browser and optional-prerequisite rechecks
 
 At clean pushed cb11a09, the corrected environment passes the 15 runtime test
