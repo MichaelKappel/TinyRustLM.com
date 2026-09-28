@@ -5,6 +5,39 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C121: compiler, browser and optional-prerequisite rechecks
+
+At clean pushed cb11a09, the corrected environment passes the 15 runtime test
+files: 138 passes, zero failures and zero skips. Another 15 files pass 269
+checks with zero failures and one missing-WSL skip. An explicit prerequisite
+run then passes all 111 checks with zero skips, including that full Bash
+readiness test, the Bash UI adapter, six Chromium fault scenarios, the managed
+direct-seed wire fixture, the synthetic conversation composition and actual
+Visual Studio 2022 environment observation. These runs overlap; their totals
+are not a unique-test count or a passing full standard gate.
+
+The already-installed stable Rust toolchain, explicit Cargo/Python paths,
+canonical browser cache and owned temporary directories resolve the observed
+setup failures without product-code or dependency changes. The prerequisite
+run explicitly selects OSM-Ubuntu, enables the real MSVC check and supplies
+existing tokenizer/template dependencies for a synthetic test-only model.
+No real model inference, quality qualification or public seed was exercised.
+All owned recheck scratch is absent; the shared bounded artifact parent is empty.
+
+The owner cleanup preview still finds both previously policy-blocked empty
+directories. A fresh unchanged source-authority check still fails with
+source_authority_superseded_root_present at E:\Temp\TinyRustLM-Test-Custody.
+No removal was retried and the owner helper's Apply branch was not executed.
+Run the exact C120 owner command, then require fresh source admission and the
+complete standard suite with every prerequisite and pinned numerical Python.
+Do not use these focused passes to bypass either gate or launch real traces.
+
+Compact evidence and exact local log hashes are in
+`artifacts/ecosystem-cleanup-20260912/test-environment-recheck-20260928.json`.
+No public artifact changed; C114 remains the latest website publication.
+The useful default model, live MiniModel seed and full ecosystem objective
+remain unfinished.
+
 ## C120: native probe, release gate and full-suite fixture corrections
 
 At clean pushed source73074fe, the native numerical probe built with locked,

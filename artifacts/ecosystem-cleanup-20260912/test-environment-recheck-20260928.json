@@ -1,0 +1,83 @@
+{
+  "schema": "tinyrustlm.test_environment_recheck.v1",
+  "sourceCommit": "cb11a099dc0f157dbcca81d99f58cd6e03c4e6a7",
+  "sourceRemoteEqualityVerified": true,
+  "runs": [
+    {
+      "name": "runtime",
+      "testFiles": 15,
+      "passed": 138,
+      "failed": 0,
+      "skipped": 0,
+      "durationMilliseconds": 87125.2003,
+      "log": "artifacts/ecosystem-cleanup-20260912/runtime-gate-recheck-20260928.log",
+      "logByteLength": 10952,
+      "logSha256": "dfed7835d31c7a01dfdff55d916bd64d4327a7352a532b5e9d88d724add4c7dd"
+    },
+    {
+      "name": "remaining",
+      "testFiles": 15,
+      "passed": 269,
+      "failed": 0,
+      "skipped": 1,
+      "durationMilliseconds": 151512.837,
+      "exitCode": 0,
+      "ownedTemporaryOutputRemoved": true,
+      "log": "artifacts/ecosystem-cleanup-20260912/remaining-gate-recheck-20260928.log",
+      "logByteLength": 17718,
+      "logSha256": "cb680db8ff39d84fa4aa6c6bdb276414a915cfd93de40f59f25901e6b5ffcfa0",
+      "skipResolution": "The full Bash readiness test ran successfully in the prerequisite run with OSM-Ubuntu explicitly selected."
+    },
+    {
+      "name": "prerequisite",
+      "testFiles": 6,
+      "passed": 111,
+      "failed": 0,
+      "skipped": 0,
+      "durationMilliseconds": 123508.9823,
+      "exitCode": 0,
+      "ownedTemporaryOutputRemoved": true,
+      "log": "artifacts/ecosystem-cleanup-20260912/prerequisite-gate-recheck-20260928.log",
+      "logByteLength": 5598,
+      "logSha256": "6d6470b61a1c75471d10745a0ab7c4ba195afe8fe102b07afd1489c7c87daacb"
+    }
+  ],
+  "environment": {
+    "rustToolchain": "C:/Users/AI/.rustup/toolchains/stable-x86_64-pc-windows-msvc/bin",
+    "cargoHome": "C:/Users/AI/.cargo",
+    "rustupHome": "C:/Users/AI/.rustup",
+    "rustupToolchain": "stable-x86_64-pc-windows-msvc",
+    "cargoTargetDirectory": "artifacts/verification/numerical-build-20260928",
+    "playwrightBrowsersPath": "artifacts/browser-packages/playwright",
+    "pythonPathEntry": "E:/Source/Python/.runtimes/Python312",
+    "temporaryDirectories": "Unique marked owned children of artifacts/verification/full-gate-repair; TEMP, TMP and TMPDIR agree",
+    "prerequisiteRun": {
+      "TINYRUSTLM_FEED_TEST_WSL_DISTRIBUTION": "OSM-Ubuntu",
+      "TINYRUSTLM_REAL_MSVC_ENVIRONMENT_OBSERVATION": "1",
+      "TINYRUSTLM_BROWSER_RUNTIME_PRIVATE_COMPOSITION_ROOT": "D:/LLMs/TinyRustLM/experiments/TinyRustLM-vnext-private/qwen3-composition-c1899de-908e73f-20260826-v12",
+      "compositionUse": "Read existing tokenizer/template dependencies for the synthetic test-only model; no real model inference or promotion."
+    },
+    "dependencyOrCompilerUpgrade": false
+  },
+  "cleanup": {
+    "fullGateRepairParentRemainingEntries": 0,
+    "ownerHelperPreviewPresent": 2,
+    "ownerHelperApplyExecuted": false,
+    "sourceAuthorityExitCode": 1,
+    "sourceAuthorityFailure": "source_authority_superseded_root_present",
+    "sourceAuthorityPath": "E:/Temp/TinyRustLM-Test-Custody",
+    "ownerCommand": "& 'E:\\Source\\Rust\\TinyRustLM.com\\eng\\Remove-ReviewedEmptyTestFolders.ps1' -Apply",
+    "physicalStorageRecoveryMeasured": false
+  },
+  "claimBoundary": {
+    "runsOverlap": true,
+    "fullStandardGatePassed": false,
+    "productCodeChanged": false,
+    "websiteChangedOrPublished": false,
+    "visualParityMeasured": false,
+    "realModelNumericalParity": false,
+    "qualifiedDefaultModel": false,
+    "liveMiniModelSeed": false,
+    "nextGate": "Owner removes the two previously policy-blocked empty directories, then rerun unchanged source admission and the full standard gate with all prerequisites and pinned numerical Python enabled."
+  }
+}
