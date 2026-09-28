@@ -1,5 +1,5 @@
 profile: tinyrustlm.test-plan.current.v1
-updated_utc: 2026-09-27T17:15:02Z
+updated_utc: 2026-09-28T00:40:14Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
@@ -56,6 +56,7 @@ gate_9_release:
   - Clean committed pushed remote-exact source; synchronized docs/marketing/version/release date/log; authorized deployment; HTTPS readback; rollback.
 
 current_required_checks:
+  - C120 full Windows tests need explicit CARGO, CARGO_HOME and PATH for the existing stable Rust1.96 toolchain with its WASM target, plus CARGO_TARGET_DIR under canonical artifacts. Bind PLAYWRIGHT_BROWSERS_PATH to artifacts/browser-packages/playwright and all temp variables to an owned canonical artifact directory. Set the pinned numerical interpreter explicitly. Optional WSL, MSVC-observation, composition-fixture and managed-wire prerequisites must execute rather than silently become a green skipped gate.
   - UaixMemoryConsolidationTests and rewritten report-intake verification.
   - MemoryEndpoints portable policy and sync tests.
   - For this memory intake, run the affected memory/intake checks, pointer/hash/coverage-of-reports validation and diff/secret hygiene. Behavioral changes require their complete affected managed/Node/Rust/browser gates separately.

@@ -1,0 +1,85 @@
+{
+  "schema": "tinyrustlm.numerical_build_gates_review.v1",
+  "sourceCommitBeforeTestCorrections": "73074fe78d1cbaa562fc1254575da5234111cba3",
+  "standardGateBeforeCorrections": {
+    "passed": 2468,
+    "failed": 144,
+    "skipped": 6,
+    "total": 2618,
+    "exitCode": 1,
+    "log": "artifacts/ecosystem-cleanup-20260912/numerical-standard-gate-20260928.log",
+    "logSha256": "60b34adcd0048f769664ef7d2b73e77d14b6be0b1ee09b7de93b08da27a3bba8",
+    "classification": "Missing compiler/browser/interpreter setup, optional prerequisites and independently reproduced stale test fixtures. Not a passing gate; full rerun remains required."
+  },
+  "nativeProbe": {
+    "command": "cargo build --locked --offline --release -p tinyrustlm-numerical-probe",
+    "cargoVersion": "cargo 1.96.0 (30a34c682 2026-05-25)",
+    "rustcVersion": "rustc 1.96.0 (ac68faa20 2026-05-25)",
+    "executable": "artifacts/verification/numerical-build-20260928/release/tinyrustlm-numerical-probe.exe",
+    "byteLength": 320000,
+    "sha256": "eae7adc4ef73d7fb155416319424bc948ce5bf4a14ec424c0a39755a10d61ae5",
+    "unitTestsPassed": 5,
+    "unitTestsFailed": 0,
+    "unitTestsIgnored": 0
+  },
+  "releaseSurface": {
+    "evidenceRoot": "artifacts/verification/numerical-release-gate-20260928",
+    "runId": "f28b0e654f194560b4af3d0710415bf6433007a4dac3444e72e6bbe795b605e1",
+    "aggregateByteLength": 3995,
+    "aggregateSha256": "cfcb03a2568644d3e58fe20a1410b58806d5c97edf5b33046a88bfe1750a03f4",
+    "passed": 23,
+    "failed": 0,
+    "skipped": 0,
+    "verifierReproduced": true,
+    "earlierAttempts": [
+      { "runId": "aee3e19a553ae5f39e121a309a47fc742e23a647b8ebc05af7dd9f1730a3dcfa", "failure": "directory flush helper cargo executable ENOENT" },
+      { "runId": "f228e3e08793adf731d722d42fd72ed24eedbf1e43d20ddfe684c33f53c9eaeb", "failure": "wasm32-unknown-unknown target absent in version-named toolchain" }
+    ],
+    "resolution": "Explicit CARGO and PATH select the existing stable Rust1.96 toolchain with the installed WASM target. Its rustc.exe hash equals the version-named compiler. No compiler or project dependency upgrade."
+  },
+  "materialPreflight": {
+    "sourceLock": "contracts/vnext/qwen3-0.6b-base-source-lock.v2.json",
+    "sourceFilesVerified": 9,
+    "sourceLengthAndSha256Match": true,
+    "modelSlm2Sha256": "a0e351cdba8a4567d703e0f77c73c77ed08f783bb5420a19dfeef733c97cb2e7",
+    "realTraceExecuted": false
+  },
+  "testCorrections": {
+    "files": [
+      "tinyrustlm/tests/huggingface-candidate-storage.test.js",
+      "tinyrustlm/tests/model-acquisition-boundary-regression.test.js",
+      "tinyrustlm/tests/qwen3-model-load-diagnostic-result.test.js",
+      "tinyrustlm/tests/build-custody-owner.test.js"
+    ],
+    "passed": 93,
+    "failed": 0,
+    "skipped": 0,
+    "workingDirectory": "tinyrustlm",
+    "scope": "Absolute CLI location, current dependency call assertions, immutable historical Git identities, canonical fixture scratch and configured Cargo target root. Production code and historical result bytes unchanged."
+  },
+  "otherPreparation": {
+    "managedFixtureBuild": "Debug no-restore build passed with zero warnings/errors; compiled prerequisite freshness check passed",
+    "browser": "Installed the existing Playwright dependency's Chromium1228 and matching helpers under artifacts/browser-packages/playwright; package and lock files unchanged",
+    "browserFaultSmoke": { "passed": 5, "failed": 0, "skipped": 0 },
+    "buildCustodyOwnedFixtureRemainingEntries": 0
+  },
+  "cleanup": {
+    "agentRemoval": "Automatic approval review rejected both empty-directory removals before execution: blocked by policy",
+    "ownerScript": "eng/Remove-ReviewedEmptyTestFolders.ps1",
+    "previewVerifiedEmptyDirectories": 2,
+    "removedDirectories": 0,
+    "applyExecuted": false,
+    "parsePassed": true,
+    "sourceAuthorityRecheck": "source_authority_superseded_root_present: E:\\Temp\\TinyRustLM-Test-Custody",
+    "physicalStorageRecoveryMeasured": false
+  },
+  "claimBoundary": {
+    "fullStandardGatePassed": false,
+    "numericalParity": false,
+    "freshV3Registration": false,
+    "qualifiedDefaultModel": false,
+    "liveMiniModelSeed": false,
+    "websiteChanged": false,
+    "productionPublished": false
+  }
+}

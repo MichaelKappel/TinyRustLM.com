@@ -5,10 +5,11 @@ const childProcess = require("node:child_process");
 const crypto = require("node:crypto");
 const { EventEmitter } = require("node:events");
 const fs = require("node:fs");
-const os = require("node:os");
 const path = require("node:path");
 const { PassThrough } = require("node:stream");
 const { after, before, test } = require("node:test");
+const { resolveCargoTargetRoot } = require("./helpers/cargo-target-root.js");
+const { requireCanonicalArtifactPath } = require("../tools/canonical-operation-scratch.js");
 
 const repositoryRoot = path.resolve(__dirname, "..", "..");
 const templateOwnerPath = path.join(repositoryRoot, "tinyrustlm", "tools",
@@ -19,7 +20,8 @@ const templateProfilePath = path.join(repositoryRoot, "contracts", "vnext",
   "build-custody-profile.v4.json");
 const templateScratchInspectionProfilePath = path.join(repositoryRoot, "contracts", "vnext",
   "build-scratch-inspector-profile.v1.json");
-const templateScratchInspectorPath = path.join(repositoryRoot, "target", "debug",
+const templateScratchInspectorPath = path.join(
+  resolveCargoTargetRoot(repositoryRoot, process.env.CARGO_TARGET_DIR), "debug",
   "tinyrustlm-build-scratch-inspect.exe");
 const templateEnvironmentOwnerPath = path.join(repositoryRoot, "tinyrustlm", "tools",
   "windows-x64-msvc-environment.js");
@@ -101,12 +103,10 @@ function sha256(bytes) {
   return crypto.createHash("sha256").update(bytes).digest("hex");
 }
 
+/** Keep bounded test fixtures inside canonical artifacts, never a retired source root. */
 function buildCustodyTemporaryParent() {
-  if (process.platform === "win32") {
-    return path.resolve(path.parse(repositoryRoot).root, "Temp",
-      "TinyRustLM-Test-Custody");
-  }
-  return path.resolve(os.tmpdir(), "TinyRustLM-Test-Custody");
+  return requireCanonicalArtifactPath(path.join(repositoryRoot, "artifacts", "tests",
+    "build-custody"));
 }
 
 function assertDirectDirectory(candidate, label) {
@@ -682,14 +682,7 @@ before(() => {
   if (!isWindowsX64) return;
   temporaryParent = buildCustodyTemporaryParent();
   fs.mkdirSync(temporaryParent, { recursive: true });
-  if (process.platform === "win32") {
-    const sourceWorkspace = path.resolve(path.parse(repositoryRoot).root,
-      "Source");
-    const relativeToSource = path.relative(sourceWorkspace, temporaryParent);
-    assert.ok(relativeToSource === ".." ||
-      relativeToSource.startsWith(`..${path.sep}`),
-      "build custody fixtures must stay outside the governed source tree");
-  }
+  requireCanonicalArtifactPath(temporaryParent);
   preflightNoStaleBuildCustodyRoots(temporaryParent);
   childProcess.execFileSync(locateCargo(), ["build", "--manifest-path",
     path.join(repositoryRoot, "Cargo.toml"), "-p", "tinyrustlm-build-custody", "--bin",
@@ -784,6 +777,7 @@ test("owns and bounds the copied build-custody source fixture", {
   skip: !isWindowsX64
 }, () => {
   assertDirectDirectory(temporaryParent, "build custody temporary parent");
+  assert.equal(temporaryParent, path.join(repositoryRoot, "artifacts", "tests", "build-custody"));
   assertDirectDirectory(temporaryRoot, "build custody temporary root");
   assert.equal(path.dirname(temporaryRoot), temporaryParent);
   assert.deepEqual(fs.readdirSync(temporaryParent, { withFileTypes: true })

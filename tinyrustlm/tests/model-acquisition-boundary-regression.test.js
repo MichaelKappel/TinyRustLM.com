@@ -176,6 +176,11 @@ function createBrowserCompositionLoaderHarness({
       performance: { now: () => (clock += 4) },
       AbortController,
       catalogQualificationError,
+      invalidateMemoryEndpointsRetrieval: clearPreview => {
+        assert.equal(clearPreview, true);
+        events.push("invalidate-memory-retrieval");
+      },
+      renderMemoryEndpointsSearchResults: () => events.push("render-memory-results"),
       throwIfAcquisitionAborted: () => {},
       cancelActiveModelActivation: () => {
         throw new Error("the fixture starts without an active model load");
@@ -594,7 +599,8 @@ test("pending browser-store commit never publishes final Ready state", async () 
   const loaded = await harness.load();
 
   assert.equal(loaded, true);
-  assert.deepEqual(harness.events, ["worker-load", "qualification-recheck"]);
+  assert.deepEqual(harness.events, ["invalidate-memory-retrieval", "render-memory-results",
+    "worker-load", "qualification-recheck"]);
   assert.equal(harness.state.modelLoaded, false);
   assert.equal(
     harness.statuses.some(({ text }) => text === "Ready"),
@@ -622,7 +628,8 @@ test("worker load is rejected when the post-load qualification recheck fails", a
   const loaded = await harness.load();
 
   assert.equal(loaded, false);
-  assert.deepEqual(harness.events, ["worker-load", "qualification-recheck"]);
+  assert.deepEqual(harness.events, ["invalidate-memory-retrieval", "render-memory-results",
+    "worker-load", "qualification-recheck"]);
   assert.deepEqual(harness.latchedErrors, [qualificationError]);
   assert.equal(harness.state.modelLoaded, false);
   assert.equal(harness.state.activeComposition, null);

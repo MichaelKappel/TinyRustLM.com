@@ -312,7 +312,7 @@ test("inventory CLI rejects an oversized sparse input before parsing or model ou
   try {
     const fd = fs.openSync(input, "wx");
     try { fs.ftruncateSync(fd, 16 * 1024 * 1024 + 1); } finally { fs.closeSync(fd); }
-    const child = spawnSync(process.execPath, ["tinyrustlm/tools/huggingface-candidate-acquire.js", input,
+    const child = spawnSync(process.execPath, [path.resolve(__dirname, "../tools/huggingface-candidate-acquire.js"), input,
       "D:\\LLMs\\TinyRustLM"], { encoding: "utf8", windowsHide: true, timeout: 5000,
       env: { ...process.env, NODE_V8_COVERAGE: "" } });
     assert.ifError(child.error);

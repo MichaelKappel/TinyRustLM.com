@@ -5,6 +5,52 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C120: native probe, release gate and full-suite fixture corrections
+
+At clean pushed source73074fe, the native numerical probe built with locked,
+offline Rust1.96.0. Its320000-byte executable hashes to
+eae7adc4ef73d7fb155416319424bc948ce5bf4a14ec424c0a39755a10d61ae5,
+and all five probe unit tests pass. All nine pinned source members match their
+lock, and the converted diagnostic model retains its expected hash. No real
+trace or fresh v3 registration was created.
+
+The clean release-surface gate passes23/23; its maintained verifier reproduced
+aggregate cfcb03a2568644d3e58fe20a1410b58806d5c97edf5b33046a88bfe1750a03f4.
+Two earlier setup failures remain recorded: absent explicit Cargo selection,
+then absent WASM target in the version-named toolchain. The already-installed
+stable toolchain has the same Rust1.96 compiler bytes and the required target.
+No compiler or project dependency was upgraded. The existing Playwright
+dependency's required Chromium1228 was installed under canonical artifacts.
+Managed fixture tools build with zero warnings/errors. Five browser fault smoke
+tests pass using canonical temporary paths; this is not model or visual-parity proof.
+
+The first full standard run completed2468 pass,144 fail and6 skip of2618.
+Many failures reflect missing Cargo/browser/interpreter setup; it also exposed
+real test-maintenance defects. Corrected the acquisition CLI test's cwd-dependent
+path, asserted the current memory-retrieval invalidation calls in model-loading
+fixtures, and bound historical diagnostic inputs to their actual9f7be857 Git
+commit instead of today's helper bytes. Historical evidence remains unchanged.
+Build-custody fixtures now live beneath canonical artifacts and honor
+CARGO_TARGET_DIR. Their existing execution, junction, timeout and detached-owner
+tests pass. All93 focused tests pass with no skips from the package directory,
+and the owned fixture root is gone. Production code and presentation are unchanged.
+
+The original full run recreated the retired empty E:\Temp\TinyRustLM-Test-Custody
+parent before its compiler setup failed. Automatic approval review rejected
+removal of that parent and the empty canonical browser-installer scratch folder
+with "blocked by policy" before execution. Both remain; no deletion or physical
+recovery is claimed. Never retry them through a different API, rename or parent
+removal. The exact two-path, nonrecursive owner helper parses and previews both
+empty directories; its Apply branch remains unexecuted:
+
+`& 'E:\Source\Rust\TinyRustLM.com\eng\Remove-ReviewedEmptyTestFolders.ps1' -Apply`
+
+The source-authority recheck now fails on that recreated retired parent. Owner
+removal and a fresh complete standard run remain necessary before numerical
+registration. See `artifacts/ecosystem-cleanup-20260912/numerical-build-gates-review-20260928.json`
+for exact gate identities and setup limits. Working default, live seed and the
+full ecosystem objective remain unfinished; this checkpoint publishes no website.
+
 ## C119: current numerical preflight and repaired dependency binding
 
 Registered-root source admission and clean remote-exact custody passed. Intake

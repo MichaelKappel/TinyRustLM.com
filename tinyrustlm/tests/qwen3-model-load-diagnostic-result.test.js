@@ -1,6 +1,7 @@
 "use strict";
 
 const assert = require("node:assert/strict");
+const { execFileSync } = require("node:child_process");
 const crypto = require("node:crypto");
 const fs = require("node:fs");
 const path = require("node:path");
@@ -26,8 +27,12 @@ function sorted(value) {
   return value;
 }
 
-function identity(relativePath) {
-  const bytes = fs.readFileSync(path.join(repositoryRoot, relativePath));
+/** Bind historical inputs to their recorded commit; current records still bind disk bytes. */
+function identity(relativePath, commit = null) {
+  const bytes = commit === null ? fs.readFileSync(path.join(repositoryRoot, relativePath))
+    : execFileSync("git", ["show", `${commit}:${relativePath}`], {
+      cwd: repositoryRoot, timeout: 30000, maxBuffer: 1024 * 1024, windowsHide: true
+    });
   return {
     byteLength: bytes.length,
     path: relativePath,
@@ -40,7 +45,7 @@ test("model-load diagnostic result is canonical and content-bound", () => {
   assert.equal(result.schema, "tinyrustlm.qwen3_model_load_diagnostic_result.v1");
   assert.equal(result.status, "pass");
   for (const value of Object.values(result.inputs)) {
-    assert.deepEqual(value, identity(value.path));
+    assert.deepEqual(value, identity(value.path, "9f7be857927819e7946537c2562ef9238c06d8ba"));
   }
   assert.deepEqual(profile.diagnostics.modelLoad, {
     ...identity(resultRelativePath),
