@@ -1,5 +1,5 @@
 profile: tinyrustlm.long-term-memory.current.v1
-updated_utc: 2026-09-28T01:25:36Z
+updated_utc: 2026-09-28T01:32:00Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
@@ -54,12 +54,12 @@ pointers:
   - id: cleanup-progress
     path: docs/ecosystem-cleanup-2026-09-12.md
     label: Ecosystem cleanup progress
-    summary: Open for C123 verified owner cleanup and full standard gate2758/2758 with zero skips, C122 discovery preflight and three untested candidates; C114 remains the latest website publication.
+    summary: Open for C124 exact branch-authority correction, C123 verified cleanup/full standard2758/2758 and C122 untested candidate leads; C114 remains the latest website publication.
     authority: owner_authorized_progress_record
     review_state: reviewed_for_routing_and_identity
     status: current
-    last_reviewed_utc: 2026-09-28T01:25:36Z
-    sha256: b99e26541315eee03df00a74ba502d2d952bbcc0919dac6c585fcded76a11e75
+    last_reviewed_utc: 2026-09-28T01:32:00Z
+    sha256: 29245a706643075266ae7c99c7d98e91a1adbd257112ed0b6e601600f5195ff3
   - id: source-lock
     path: contracts/vnext/qwen3-0.6b-base-source-lock.v2.json
     label: Current diagnostic source identity
@@ -77,7 +77,7 @@ pointers:
     review_state: reviewed_for_routing_and_identity
     status: pending_material_execution
     last_reviewed_utc: 2026-09-20T15:11:53Z
-    sha256: eafc024b615a78bb1ee78b23398b781360cf0646cea8be90d88e00f8aa3eeff0
+    sha256: 6eb79348f691f900cf928791d58b306da4ce3d639cda38da5a0fd06c2842f2a2
   - id: numerical-environment
     path: contracts/vnext/qwen3-numerical-oracle-environment-lock.v2.json
     label: Current reference environment lock

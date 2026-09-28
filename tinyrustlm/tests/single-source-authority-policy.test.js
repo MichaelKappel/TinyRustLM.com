@@ -2691,6 +2691,53 @@ test("remote-exact verification queries and binds the direct remote branch", () 
   assert.equal(calls.some((arguments_) => arguments_[0] === "status"), true);
 });
 
+test("remote-exact verification ignores unrelated or absent FETCH_HEAD", () => {
+  for (const fetchHead of ["b".repeat(40), null]) {
+    const calls = [];
+    const readGit = fakeGitOutput(calls);
+    verifyGitIdentity(canonicalRoot, {
+      gitOutput(root, arguments_) {
+        if (arguments_.join(" ") === "rev-parse FETCH_HEAD") {
+          if (fetchHead === null) throw new Error("FETCH_HEAD is absent");
+          return fetchHead;
+        }
+        return readGit(root, arguments_);
+      },
+      requireClean: true,
+      requireRemoteExact: true
+    });
+    assert.equal(calls.some((args) => args.includes("FETCH_HEAD")), false);
+  }
+});
+
+test("remote-exact verification still rejects every authoritative identity mismatch", () => {
+  const remoteReference = `refs/heads/${requiredBranch}`;
+  const alternate = "b".repeat(40);
+  const overrides = [
+    ["rev-parse HEAD", alternate],
+    ["rev-parse @{upstream}", alternate],
+    [`rev-parse refs/remotes/origin/${requiredBranch}`, alternate],
+    [`ls-remote --exit-code --refs origin ${remoteReference}`, `${alternate}\t${remoteReference}`]
+  ];
+  for (const [command, value] of overrides) {
+    assert.throws(() => verifyGitIdentity(canonicalRoot, {
+      gitOutput: fakeGitOutput([], { [command]: value }),
+      requireRemoteExact: true
+    }), (error) => error.code === "source_authority_remote_equality_invalid", command);
+  }
+  for (const [command, value, code] of [
+    ["rev-parse --symbolic-full-name @{upstream}", "refs/remotes/other/main", "source_authority_upstream_invalid"],
+    [`ls-remote --exit-code --refs origin ${remoteReference}`, `${alternate}\trefs/heads/other`, "source_authority_direct_remote_invalid"],
+    ["status --porcelain=v1 --untracked-files=all", " M changed.txt", "source_authority_worktree_dirty"]
+  ]) {
+    assert.throws(() => verifyGitIdentity(canonicalRoot, {
+      gitOutput: fakeGitOutput([], { [command]: value }),
+      requireClean: true,
+      requireRemoteExact: true
+    }), (error) => error.code === code, command);
+  }
+});
+
 test("forbids duplicate source authority and wholesale stale-tree merges", () => {
   const taboo = directText(".uai/taboo.uai");
 

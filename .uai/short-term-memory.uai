@@ -1,9 +1,10 @@
 profile: tinyrustlm.short-term-memory.current.v1
-updated_utc: 2026-09-28T01:25:36Z
+updated_utc: 2026-09-28T01:32:00Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
 now:
+  branch_authority: C124 fixes false post-push refusal caused by incidental FETCH_HEAD. Exact local/tracking/direct-remote branch and clean-source checks remain;51 policy and58 consumer tests pass without skips. Current numerical profile helper binding and long-term pointer updated; closed evidence/cases/thresholds untouched. Read cleanup C124.
   discovery_destination: C122 fixes metadata requests occurring before an invalid inventory destination is rejected. All39 affected checks pass; the new validator's V8 ranges are covered and owned scratch is gone. Three further exact Qwen3 JSON metadata leads remain unexecuted; freeze the next source screen before acquisition. Read cleanup C122-C123.
   current_checkpoint: C123 verifies both owner-cleanup folders absent and retires the completed helper to Git325f313. Clean remote-exact registered-root source admission passes; full standard gate at325f313 passes2758/2758 with zero skips. Owned scratch and marker absent. Earlier entries below are dated history; C114 remains the latest actual FTPS publication. Fresh numerical registration, qualified default and live seed remain open.
   publisher_validation: C108 fixes the publisher's self-dirtying validation scratch. All18 deployment tests pass; actual credential validation and32-file ValidateOnly pass. Owned scratch absent afterward. Remote publication and real-model qualification remain incomplete; no FTP upload. Read cleanup C108.

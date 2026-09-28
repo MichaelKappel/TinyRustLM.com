@@ -2320,6 +2320,8 @@ function exactRemoteUrls(output, expectedOrigin) {
   return urls.length === 1 && urls[0] === expectedOrigin;
 }
 
+// Bind the canonical checkout and, when requested, its declared branch's live remote.
+// FETCH_HEAD is incidental fetch history, never authority for that branch.
 function verifyGitIdentity(root, options = {}) {
   const readGit = options.gitOutput || gitOutput;
   const expectedBranch = options.requiredBranch || requiredBranch;
@@ -2362,7 +2364,6 @@ function verifyGitIdentity(root, options = {}) {
     const identities = [
       readGit(root, ["rev-parse", "HEAD"]),
       readGit(root, ["rev-parse", "@{upstream}"]),
-      readGit(root, ["rev-parse", "FETCH_HEAD"]),
       readGit(root, ["rev-parse", expectedUpstream]),
       remoteFields[0]
     ];

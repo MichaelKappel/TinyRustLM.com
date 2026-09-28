@@ -120,8 +120,8 @@
         },
         {
           "path": "tinyrustlm/tools/verify-single-source-authority.js",
-          "byteLength": 144408,
-          "sha256": "96253fb03be0fb60ed9b94ad71859f0134fcf261f4cb2eb94884dfa66c79c6ca"
+          "byteLength": 144521,
+          "sha256": "e8867b01d00399f319852449ff80c249edab30a8bcee4c09fd3789300f65aaf7"
         },
         {
           "path": "contracts/storage/retired-storage-roots-2026-09-12.json",

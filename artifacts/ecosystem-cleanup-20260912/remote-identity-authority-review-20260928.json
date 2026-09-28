@@ -1,0 +1,53 @@
+{
+  "schema": "tinyrustlm.remote_identity_authority_review.v1",
+  "baselineCommit": "cc81bf61b21e4110b44d792380f0a5b7c5f31336",
+  "observedDefect": "After a successful push, HEAD, tracking and direct remote matched, but the source verifier rejected the previous FETCH_HEAD. Fetching the declared branch cleared the refusal. FETCH_HEAD is incidental fetch history, not branch authority.",
+  "change": "Remove FETCH_HEAD from mandatory equality. Retain exact root, Git directory, branch, fetch/push origins, declared upstream, HEAD, tracking refs, direct remote ref and clean-worktree checks.",
+  "regression": {
+    "before": "2 pass, 1 fail: source_authority_remote_equality_invalid for an unrelated FETCH_HEAD",
+    "after": "Stale and unavailable FETCH_HEAD pass; seven authoritative mismatch/dirty cases still reject with the expected code",
+    "sourceAuthoritySuite": { "passed": 51, "failed": 0, "skipped": 0, "durationMs": 60141.5249 },
+    "focusedCoverageRun": {
+      "passed": 5,
+      "failed": 0,
+      "skipped": 0,
+      "function": "verifyGitIdentity",
+      "functionCalls": 14,
+      "v8FunctionRange": [102439, 104688],
+      "zeroCountRanges": [[102524, 102536], [102769, 102833], [103203, 103253]],
+      "limit": "Function source-range evidence, not whole-file line/branch coverage. New remote equality and refusal paths execute. Owned coverage output removed."
+    },
+    "consumerInitial": {
+      "passed": 55,
+      "failed": 1,
+      "skipped": 2,
+      "reason": "Current numerical profile still bound the old helper bytes; optional Python/WSL prerequisites were omitted",
+      "log": "remote-identity-consumers-20260928.log",
+      "bytes": 6955,
+      "sha256": "ecab1692edd1398c945da245bd8e44990784f4ffafff72d87b694931a2edc262"
+    },
+    "consumerFinal": {
+      "files": ["deploy-tinyrustlm-web.test.js", "qwen3-numerical-execution-owner.test.js", "qwen3-numerical-differential-profile.test.js", "verify-ui.test.js"],
+      "passed": 58,
+      "failed": 0,
+      "skipped": 0,
+      "durationMs": 27802.035,
+      "exitCode": 0,
+      "log": "remote-identity-consumers-final-20260928.log",
+      "bytes": 5320,
+      "sha256": "7d229844806a6ae29b5a0e17cc43c4092c8af73ea799c345247987779e8fdec4",
+      "ownedScratchRemoved": true
+    }
+  },
+  "bindingUpdate": {
+    "path": "contracts/vnext/qwen3-numerical-differential-profile.v2.json",
+    "sha256": "6eb79348f691f900cf928791d58b306da4ce3d639cda38da5a0fd06c2842f2a2",
+    "scope": "Current prepared source-authority helper binding only; no closed registration, numerical cases or thresholds changed"
+  },
+  "limits": {
+    "fullStandardGate": "C123 passes 2758 at325f313 before this fix; current affected suites pass separately",
+    "realModelExecution": false,
+    "publicOutputChanged": false,
+    "productionPublished": false
+  }
+}

@@ -5,6 +5,27 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C124: bind remote identity to the declared branch
+
+After pushing C123, the verifier falsely refused equal local/tracking/direct
+remote commits because FETCH_HEAD still described the preceding fetch. An
+explicit branch fetch cleared the refusal, confirming the incidental-state
+dependency. Removed FETCH_HEAD from mandatory equality while preserving every
+canonical-root, origin, branch, upstream, direct-remote and clean-tree check.
+The stale-FETCH_HEAD regression fails before the fix. Stale and absent fetch
+history now pass; mismatched authoritative identities and dirty source still fail.
+
+All51 source-authority checks and58 deployment/numerical/UI consumers pass
+with zero skips. The first consumer run exposed the current numerical profile's
+old helper binding and two omitted prerequisites; the binding was synchronized
+and the existing pinned Python and WSL supplied. Closed evidence, numerical
+cases and tolerances are unchanged. Focused V8 evidence covers the changed
+decision paths; owned test/coverage scratch is removed. Exact results and
+retained initial failures are recorded in
+`artifacts/ecosystem-cleanup-20260912/remote-identity-authority-review-20260928.json`.
+The C123 full-standard result remains bound to325f313; these are additional
+affected checks, not a new full-suite claim. No public output changed.
+
 ## C123: owner cleanup verified and complete standard gate passes
 
 The owner removed both reviewed empty test folders. Independent checks before

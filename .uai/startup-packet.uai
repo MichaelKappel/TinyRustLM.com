@@ -1,5 +1,5 @@
 profile: tinyrustlm.startup-packet.current.v1
-updated_utc: 2026-09-28T01:25:36Z
+updated_utc: 2026-09-28T01:32:00Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
@@ -10,7 +10,7 @@ startup_steps:
   - Preserve immutable failed operations and all campaign counters.
 
 current_truth:
-  progress_route: Read docs/ecosystem-cleanup-2026-09-12.md for current evidence and dated C1-C123 history. Historical failed gates do not describe current access.
+  progress_route: Read docs/ecosystem-cleanup-2026-09-12.md for current evidence and dated C1-C124 history. C124 removes incidental FETCH_HEAD from branch equality;51 source-policy and58 consumer tests pass without skips. Historical failed gates do not describe current access.
   canonical_source: E:\Source\Rust\TinyRustLM.com only; model bytes under D:\LLMs\TinyRustLM, outside Git. Leave X:\LLMS alone. No extra checkout, source copy or backup tree.
   source_control: Commit and push coherent reviewed work regularly, then verify direct remote equality. Git publication is separate from website publication.
   delivery: Owner authorizes existing FTP/FTPS website delivery and ordinary Git only; all seven repositories have Actions disabled. Do not enable paid GitHub features. Read operations.uai owner_delivery_policy.
