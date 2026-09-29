@@ -1,0 +1,638 @@
+{
+  "authority": {
+    "automaticRetry": false,
+    "bestOfN": false,
+    "closedStructuralV12BytesMayBeModified": false,
+    "closedStructuralV12BytesMayBeReadForThisDiagnostic": true,
+    "compatibilityReader": false,
+    "fallbackRuntime": false,
+    "legacySupport": false,
+    "memoryEndpointsAuthorized": false,
+    "migrationWriter": false,
+    "productLifecycle": "prelaunch-single-unversioned-product",
+    "publicRegistrationContainsPrivatePaths": false,
+    "responseRepair": false,
+    "sourceFrameworkSemanticAuthority": true,
+    "technicalVersionIsProductGeneration": false,
+    "thresholdSearchAfterOutput": false
+  },
+  "campaignCounters": {
+    "authorizedLiveMemoryRounds": "0/25",
+    "currentOutsideNetworkLaneProofs": "0/40",
+    "deletionBackedBrowserRounds": "0/50",
+    "liveCatalogAnnouncements": "0/20",
+    "qualifiedModels": "0/20"
+  },
+  "candidate": {
+    "compositionClaim": "structural-pass-only",
+    "compositionResult": {
+      "byteLength": 18441,
+      "path": "contracts/vnext/qwen3-real-composition-execution-result.v12.json",
+      "sha256": "0c3e84ad9ce6e22d9a164357c9a900d31825d0639f4f11077dab305f9cf3ef0e"
+    },
+    "licenseSpdx": "Apache-2.0",
+    "modelId": "Qwen/Qwen3-0.6B",
+    "modelSlm2": {
+      "byteLength": 598308416,
+      "sha256": "a0e351cdba8a4567d703e0f77c73c77ed08f783bb5420a19dfeef733c97cb2e7"
+    },
+    "numericalClaim": "unproven",
+    "purpose": "runtime-diagnostic-only",
+    "qualityClaim": "terminally-rejected-for-product-use",
+    "revision": "c1899de289a04d12100db370d81485cdf75e47ca",
+    "sourceClosureRehashedBeforeRegistration": true,
+    "sourceLock": {
+      "byteLength": 1901,
+      "path": "contracts/vnext/qwen3-0.6b-base-source-lock.v2.json",
+      "sha256": "50a8c29e36398a9a088e4d9a224dad186809d34b1e050299d3ce3de7a01b7d0e"
+    }
+  },
+  "claimBoundary": {
+    "browserChatVerified": false,
+    "browserWasmVerified": false,
+    "campaignCreditAuthorized": false,
+    "compositionStructuralPassBound": true,
+    "modelQualityVerified": false,
+    "optimizedNativeVerified": false,
+    "p2pAvailabilityVerified": false,
+    "reconstructedToScalarVerified": false,
+    "registrationCommitMustBeRemoteExactBeforeMaterialization": true,
+    "siteDeploymentVerified": false,
+    "sourceToReconstructedVerified": false
+  },
+  "implementationCheckpoint": {
+    "cleanRelease": {
+      "aggregateByteLength": 3995,
+      "aggregateSha256": "cfcb03a2568644d3e58fe20a1410b58806d5c97edf5b33046a88bfe1750a03f4",
+      "failed": 0,
+      "passed": 23,
+      "runId": "f28b0e654f194560b4af3d0710415bf6433007a4dac3444e72e6bbe795b605e1",
+      "skipped": 0,
+      "total": 23,
+      "verifierReproduced": true
+    },
+    "focusedGate": {
+      "failed": 0,
+      "passed": 58,
+      "skipped": 0,
+      "total": 58
+    },
+    "implementationCommit": "2b98d46daa3560039788e00c3301e05b04ad6b0b",
+    "implementationTree": "2b97b61076752fc2ae7d66263a84516ae165f76e",
+    "memoryCheckpointCommit": "8072749b317217f3712f1cc4776a7a8b4b19da5d",
+    "memoryCheckpointTree": "95d61fcae550521af8fdbaff232ff4fc3753a0a3",
+    "scalarBuild": {
+      "cargoVersion": "cargo 1.96.0 (30a34c682 2026-05-25)",
+      "crate": "tinyrustlm-numerical-probe",
+      "executable": {
+        "basename": "tinyrustlm-numerical-probe.exe",
+        "byteLength": 320000,
+        "sha256": "eae7adc4ef73d7fb155416319424bc948ce5bf4a14ec424c0a39755a10d61ae5"
+      },
+      "host": "x86_64-pc-windows-msvc",
+      "locked": true,
+      "offline": true,
+      "profile": "release",
+      "rustcVersion": "rustc 1.96.0 (ac68faa20 2026-05-25)",
+      "sourceCommit": "73074fe78d1cbaa562fc1254575da5234111cba3",
+      "sourceTree": "bd65a8fb78325592e333da926a5f6ec7c018338e"
+    },
+    "standardGate": {
+      "failed": 0,
+      "passed": 2758,
+      "skipped": 0,
+      "total": 2758
+    },
+    "thresholdBasis": {
+      "chosenBeforeRealTraceOutput": true,
+      "futureOutputUsedToChooseOrLoosen": false,
+      "reconstructedToScalar": "same-converted-byte-runtime-contract-with-exact-embedding-and-tighter-aggregate-margins",
+      "sourceToReconstructed": "quantization-noninferiority-diagnostic-with-bounded-coordinate-and-tighter-directional-margins",
+      "thresholdFailureIsTerminal": true,
+      "thresholdsAreEngineeringAcceptanceMarginsNotObservedResults": true
+    }
+  },
+  "outputBoundary": {
+    "allSixRegisteredFutureNamesObservedAbsent": true,
+    "evidenceParentObservedExistingDirectNonReparse": true,
+    "ownerEvidenceRootCreated": false,
+    "ownerRequestCreated": false,
+    "privatePathPublished": false,
+    "realProcessLaunched": false,
+    "realTraceBytesCreated": false,
+    "reconstructedOutputRootCreated": false,
+    "scalarOutputRootCreated": false,
+    "sourceOutputRootCreated": false,
+    "sourceScratchRootCreated": false
+  },
+  "ownerContract": {
+    "cases": [
+      {
+        "id": "low-vocabulary-boundary",
+        "tokenIds": [
+          0
+        ],
+        "tokenIdsLeU32Sha256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119"
+      },
+      {
+        "id": "repeated-kv-position",
+        "tokenIds": [
+          17,
+          17
+        ],
+        "tokenIdsLeU32Sha256": "4b14e0b40b16df41e99ddd15fadc5ec747b124ca81f1275f592b4b0035a72cbb"
+      },
+      {
+        "id": "high-vocabulary-mixed-cache",
+        "tokenIds": [
+          151935,
+          151645,
+          220,
+          151935
+        ],
+        "tokenIdsLeU32Sha256": "7faadaa663810490a9a4c083ef289a4e8d5b58473f766b85dea75c4285bfaaba"
+      }
+    ],
+    "evidenceFiles": {
+      "binding": "binding.json",
+      "ownerTerminal": "owner-terminal.json",
+      "reconstructedRequest": "reconstructed.request.json",
+      "reconstructedStderr": "reconstructed.stderr.bin",
+      "reconstructedStdout": "reconstructed.stdout.bin",
+      "reconstructedTerminal": "reconstructed.process-terminal.json",
+      "scalarRequest": "scalar.request.json",
+      "scalarStderr": "scalar.stderr.bin",
+      "scalarStdout": "scalar.stdout.bin",
+      "scalarTerminal": "scalar.process-terminal.json",
+      "sourceRequest": "source.request.json",
+      "sourceStderr": "source.stderr.bin",
+      "sourceStdout": "source.stdout.bin",
+      "sourceTerminal": "source.process-terminal.json",
+      "start": "start.json",
+      "verificationRequest": "verification.request.json",
+      "verifierStderr": "verifier.stderr.bin",
+      "verifierStdout": "verifier.stdout.bin",
+      "verifierTerminal": "verifier.process-terminal.json"
+    },
+    "executables": {
+      "git": {
+        "basename": "git.exe",
+        "byteLength": 43352,
+        "sha256": "78211c7ed73988da93a6d8a33d47ec6187f464d7ea2a9a00c182bbd7a1ecf30f"
+      },
+      "node": {
+        "basename": "node.exe",
+        "byteLength": 91380224,
+        "sha256": "63c259c81e5d472b5f11c8d506070130cb04a1ecf84b80377a34ed6ec9048088"
+      },
+      "python": {
+        "basename": "python.exe",
+        "byteLength": 104952,
+        "sha256": "4d6f5f81a4bca11191c4c7c6b43632694d0a4ce74e068619d8fdc161d469859a"
+      },
+      "scalar": {
+        "basename": "tinyrustlm-numerical-probe.exe",
+        "byteLength": 320000,
+        "sha256": "eae7adc4ef73d7fb155416319424bc948ce5bf4a14ec424c0a39755a10d61ae5"
+      },
+      "termination": {
+        "basename": "taskkill.exe",
+        "byteLength": 114688,
+        "sha256": "81e9649b317de9243bf7f34e436e86159ba267d86349fa47efdb71dde2fc7bc5"
+      }
+    },
+    "implementationArtifacts": [
+      {
+        "byteLength": 83054,
+        "relativePath": "tinyrustlm/tools/qwen3-numerical-execution-owner.js",
+        "role": "execution-owner",
+        "sha256": "423594402cb9ebe0ea6432ee7d30e32468dc06a5773a4f761f8a5b858de1beeb"
+      },
+      {
+        "byteLength": 9276,
+        "relativePath": "tinyrustlm/tools/canonical-operation-scratch.js",
+        "role": "canonical-scratch",
+        "sha256": "52b6024d121479d20a634ee639d641cb1ff4896bce99b1110a3e26720bf5a7f9"
+      },
+      {
+        "byteLength": 144521,
+        "relativePath": "tinyrustlm/tools/verify-single-source-authority.js",
+        "role": "source-authority",
+        "sha256": "e8867b01d00399f319852449ff80c249edab30a8bcee4c09fd3789300f65aaf7"
+      },
+      {
+        "byteLength": 2889,
+        "relativePath": "contracts/storage/retired-storage-roots-2026-09-12.json",
+        "role": "retired-storage-policy",
+        "sha256": "901d6df4be67a8c5cb96ea7959d3a2408bfb19ea36ac387e7d55c92231a9f695"
+      },
+      {
+        "byteLength": 18093,
+        "relativePath": "contracts/vnext/qwen3-numerical-differential-profile.v2.json",
+        "role": "differential-profile",
+        "sha256": "6eb79348f691f900cf928791d58b306da4ce3d639cda38da5a0fd06c2842f2a2"
+      },
+      {
+        "byteLength": 25501,
+        "relativePath": "tinyrustlm/tools/qwen3_numerical_environment_lock.py",
+        "role": "environment-authority",
+        "sha256": "9d5b2fe8a56e36410ba7219d37958f04fbebff68a4a56f1c6b0bc9f9f933a5dc"
+      },
+      {
+        "byteLength": 30918,
+        "relativePath": "contracts/vnext/qwen3-numerical-oracle-environment-lock.v2.json",
+        "role": "environment-lock",
+        "sha256": "918a5e96605a3aaaf2aaba977c0634783647016d30484f4345eeb98b5df0a283"
+      },
+      {
+        "byteLength": 51373,
+        "relativePath": "tinyrustlm/tools/qwen3-numerical-source-owner.py",
+        "role": "source-owner",
+        "sha256": "d4aadb65bb58756fc73544bb7a3e153b7942dce1566438e72b4469e73bdf1830"
+      },
+      {
+        "byteLength": 60272,
+        "relativePath": "tinyrustlm/tools/qwen3-slm2-reconstructed-owner.py",
+        "role": "reconstructed-owner",
+        "sha256": "88ae027247e943232fb19da2ce60f16cfaa845f5efe62fba1d2debdfe38cde79"
+      },
+      {
+        "byteLength": 32262,
+        "relativePath": "rust/crates/tinyrustlm-numerical-probe/src/main.rs",
+        "role": "scalar-source",
+        "sha256": "6a0b8ba79f885af82fcf04a9f6657acb30ce384abe53f31ab125ca9b286f3446"
+      },
+      {
+        "byteLength": 9660,
+        "relativePath": "contracts/vnext/scalar-numerical-probe-profile.v1.json",
+        "role": "scalar-profile",
+        "sha256": "76dec02428acb91efbeedcaeabd5af516cad75abc2aae78c7bc283d3ff43147b"
+      },
+      {
+        "byteLength": 47068,
+        "relativePath": "tinyrustlm/tools/qwen3-numerical-trace-verifier.js",
+        "role": "verifier",
+        "sha256": "9460279c7bf5d2b7d3558616723452e43b621dd5059504bffb2ab6cd8bbe1304"
+      },
+      {
+        "byteLength": 1901,
+        "relativePath": "contracts/vnext/qwen3-0.6b-base-source-lock.v2.json",
+        "role": "source-lock",
+        "sha256": "50a8c29e36398a9a088e4d9a224dad186809d34b1e050299d3ce3de7a01b7d0e"
+      },
+      {
+        "byteLength": 18441,
+        "relativePath": "contracts/vnext/qwen3-real-composition-execution-result.v12.json",
+        "role": "composition-result",
+        "sha256": "0c3e84ad9ce6e22d9a164357c9a900d31825d0639f4f11077dab305f9cf3ef0e"
+      }
+    ],
+    "operationId": "qwen3-numerical-c1899de-8072749-20260929-v3",
+    "privateNames": {
+      "ownerEvidenceRootBasename": "qwen3-numerical-c1899de-8072749-20260929-v3-owner-evidence",
+      "ownerRequestFileBasename": "qwen3-numerical-c1899de-8072749-20260929-v3-owner-request.json",
+      "reconstructedOutputRootBasename": "qwen3-numerical-c1899de-8072749-20260929-v3-reconstructed",
+      "scalarOutputRootBasename": "qwen3-numerical-c1899de-8072749-20260929-v3-scalar",
+      "sourceOutputRootBasename": "qwen3-numerical-c1899de-8072749-20260929-v3-source",
+      "sourceScratchRootBasename": "qwen3-numerical-c1899de-8072749-20260929-v3-source-scratch"
+    },
+    "processPolicy": {
+      "continueAfterFailedStage": false,
+      "launchLimitPerStage": 1,
+      "maximumDurationMilliseconds": {
+        "reconstructed": 14400000,
+        "scalar": 14400000,
+        "source": 14400000,
+        "verifier": 3600000
+      },
+      "maximumStderrBytes": 1048576,
+      "maximumStdoutBytes": 1048576,
+      "overwriteAllowed": false,
+      "repairAllowed": false,
+      "retryAllowed": false
+    },
+    "requests": {
+      "reconstructed": {
+        "compositionResultSha256": "0c3e84ad9ce6e22d9a164357c9a900d31825d0639f4f11077dab305f9cf3ef0e",
+        "implementation": {
+          "blasThreads": 1,
+          "environmentAuthority": {
+            "byteLength": 25501,
+            "relativePath": "tinyrustlm/tools/qwen3_numerical_environment_lock.py",
+            "sha256": "9d5b2fe8a56e36410ba7219d37958f04fbebff68a4a56f1c6b0bc9f9f933a5dc"
+          },
+          "environmentLock": {
+            "byteLength": 30918,
+            "relativePath": "contracts/vnext/qwen3-numerical-oracle-environment-lock.v2.json",
+            "sha256": "918a5e96605a3aaaf2aaba977c0634783647016d30484f4345eeb98b5df0a283"
+          },
+          "matrixChunkRows": 256,
+          "networkAllowed": false,
+          "numpyVersion": "2.2.5",
+          "pythonVersion": "3.12.10"
+        },
+        "model": {
+          "byteLength": 598308416,
+          "fileName": "model.slm2",
+          "sha256": "a0e351cdba8a4567d703e0f77c73c77ed08f783bb5420a19dfeef733c97cb2e7"
+        },
+        "modelSpec": {
+          "contextLength": 40960,
+          "embeddingSize": 1024,
+          "feedForwardSize": 3072,
+          "headCount": 16,
+          "headDimension": 128,
+          "kvHeadCount": 8,
+          "kvWidth": 1024,
+          "layerCount": 28,
+          "logicalTensorCount": 310,
+          "normalizationEpsilon": 0.000001,
+          "qkNormalization": true,
+          "qkvBias": false,
+          "queryWidth": 2048,
+          "ropeTheta": 1000000,
+          "tiedEmbeddings": true,
+          "vocabularySize": 151936
+        },
+        "policy": {
+          "maximumCases": 3,
+          "maximumModelBytes": 598308416,
+          "maximumResultBytes": 1048576,
+          "maximumTokensPerCase": 4,
+          "maximumTraceBytes": 14748160
+        },
+        "schema": "tinyrustlm.qwen3_slm2_reconstructed_request.v1"
+      },
+      "scalar": {
+        "compositionResultSha256": "0c3e84ad9ce6e22d9a164357c9a900d31825d0639f4f11077dab305f9cf3ef0e",
+        "model": {
+          "byteLength": 598308416,
+          "fileName": "model.slm2",
+          "sha256": "a0e351cdba8a4567d703e0f77c73c77ed08f783bb5420a19dfeef733c97cb2e7"
+        },
+        "policy": {
+          "maximumCases": 3,
+          "maximumKvBytes": 917504,
+          "maximumModelBytes": 598308416,
+          "maximumScratchBytes": 673296,
+          "maximumSequenceTokens": 4,
+          "maximumTokensPerCase": 4,
+          "maximumTraceBytes": 14748160
+        },
+        "schema": "tinyrustlm.scalar-numerical-probe-request.v1"
+      },
+      "source": {
+        "framework": {
+          "accelerateVersion": "1.14.0",
+          "attentionImplementation": "eager",
+          "deterministicAlgorithms": true,
+          "device": "cpu",
+          "dtype": "float32",
+          "environmentAuthority": {
+            "byteLength": 25501,
+            "relativePath": "tinyrustlm/tools/qwen3_numerical_environment_lock.py",
+            "sha256": "9d5b2fe8a56e36410ba7219d37958f04fbebff68a4a56f1c6b0bc9f9f933a5dc"
+          },
+          "environmentLock": {
+            "byteLength": 30918,
+            "relativePath": "contracts/vnext/qwen3-numerical-oracle-environment-lock.v2.json",
+            "sha256": "918a5e96605a3aaaf2aaba977c0634783647016d30484f4345eeb98b5df0a283"
+          },
+          "interopThreads": 1,
+          "intraopThreads": 1,
+          "localFilesOnly": true,
+          "networkAllowed": false,
+          "numpyVersion": "2.2.5",
+          "psutilVersion": "7.2.2",
+          "pythonVersion": "3.12.10",
+          "safetensorsVersion": "0.5.3",
+          "tokenizersVersion": "0.21.1",
+          "torchVersion": "2.7.0",
+          "transformersVersion": "4.51.0"
+        },
+        "policy": {
+          "maximumCases": 3,
+          "maximumResultBytes": 1048576,
+          "maximumSourceFileBytes": 1600000000,
+          "maximumTokensPerCase": 4,
+          "maximumTraceBytes": 14748160
+        },
+        "schema": "tinyrustlm.qwen3_numerical_source_request.v2",
+        "sourceLock": {
+          "byteLength": 1901,
+          "relativePath": "contracts/vnext/qwen3-0.6b-base-source-lock.v2.json",
+          "sha256": "50a8c29e36398a9a088e4d9a224dad186809d34b1e050299d3ce3de7a01b7d0e"
+        }
+      },
+      "verification": {
+        "comparison": {
+          "arrows": [
+            {
+              "candidate": "reconstructed",
+              "id": "source-to-reconstructed",
+              "minimumTopKOverlap": 0.8,
+              "reference": "source",
+              "requireGreedyTokenIdentity": false,
+              "thresholds": {
+                "default": {
+                  "maximumAbsoluteError": 1,
+                  "maximumNormalizedRmse": 0.08,
+                  "maximumRelativeError": 2,
+                  "maximumSignDisagreementRate": 0.05,
+                  "maximumUlp": 2147483647,
+                  "minimumCosineSimilarity": 0.99
+                },
+                "stages": {
+                  "attention-normalized": {
+                    "maximumAbsoluteError": 0.1,
+                    "maximumNormalizedRmse": 0.05,
+                    "maximumRelativeError": 1,
+                    "maximumSignDisagreementRate": 0.03,
+                    "maximumUlp": 2147483647,
+                    "minimumCosineSimilarity": 0.998
+                  },
+                  "feed-forward-activated": {
+                    "maximumAbsoluteError": 2,
+                    "maximumNormalizedRmse": 0.1,
+                    "maximumRelativeError": 3,
+                    "maximumSignDisagreementRate": 0.08,
+                    "maximumUlp": 2147483647,
+                    "minimumCosineSimilarity": 0.98
+                  },
+                  "feed-forward-normalized": {
+                    "maximumAbsoluteError": 0.1,
+                    "maximumNormalizedRmse": 0.05,
+                    "maximumRelativeError": 1,
+                    "maximumSignDisagreementRate": 0.03,
+                    "maximumUlp": 2147483647,
+                    "minimumCosineSimilarity": 0.998
+                  },
+                  "final-normalized": {
+                    "maximumAbsoluteError": 0.1,
+                    "maximumNormalizedRmse": 0.05,
+                    "maximumRelativeError": 1,
+                    "maximumSignDisagreementRate": 0.03,
+                    "maximumUlp": 2147483647,
+                    "minimumCosineSimilarity": 0.998
+                  },
+                  "logits": {
+                    "maximumAbsoluteError": 1.5,
+                    "maximumNormalizedRmse": 0.08,
+                    "maximumRelativeError": 3,
+                    "maximumSignDisagreementRate": 0.1,
+                    "maximumUlp": 2147483647,
+                    "minimumCosineSimilarity": 0.98
+                  },
+                  "token-embedding": {
+                    "maximumAbsoluteError": 0.02,
+                    "maximumNormalizedRmse": 0.03,
+                    "maximumRelativeError": 1,
+                    "maximumSignDisagreementRate": 0.03,
+                    "maximumUlp": 2147483647,
+                    "minimumCosineSimilarity": 0.999
+                  }
+                }
+              }
+            },
+            {
+              "candidate": "scalar",
+              "id": "reconstructed-to-scalar",
+              "minimumTopKOverlap": 1,
+              "reference": "reconstructed",
+              "requireGreedyTokenIdentity": true,
+              "thresholds": {
+                "default": {
+                  "maximumAbsoluteError": 0.02,
+                  "maximumNormalizedRmse": 0.002,
+                  "maximumRelativeError": 0.05,
+                  "maximumSignDisagreementRate": 0.001,
+                  "maximumUlp": 1048576,
+                  "minimumCosineSimilarity": 0.99999
+                },
+                "stages": {
+                  "feed-forward-activated": {
+                    "maximumAbsoluteError": 0.1,
+                    "maximumNormalizedRmse": 0.005,
+                    "maximumRelativeError": 0.1,
+                    "maximumSignDisagreementRate": 0.005,
+                    "maximumUlp": 4194304,
+                    "minimumCosineSimilarity": 0.999
+                  },
+                  "logits": {
+                    "maximumAbsoluteError": 0.2,
+                    "maximumNormalizedRmse": 0.005,
+                    "maximumRelativeError": 0.1,
+                    "maximumSignDisagreementRate": 0.005,
+                    "maximumUlp": 4194304,
+                    "minimumCosineSimilarity": 0.999
+                  },
+                  "post-attention-residual": {
+                    "maximumAbsoluteError": 0.05,
+                    "maximumNormalizedRmse": 0.003,
+                    "maximumRelativeError": 0.08,
+                    "maximumSignDisagreementRate": 0.002,
+                    "maximumUlp": 2097152,
+                    "minimumCosineSimilarity": 0.9999
+                  },
+                  "post-feed-forward-residual": {
+                    "maximumAbsoluteError": 0.05,
+                    "maximumNormalizedRmse": 0.003,
+                    "maximumRelativeError": 0.08,
+                    "maximumSignDisagreementRate": 0.002,
+                    "maximumUlp": 2097152,
+                    "minimumCosineSimilarity": 0.9999
+                  },
+                  "token-embedding": {
+                    "maximumAbsoluteError": 0,
+                    "maximumNormalizedRmse": 0,
+                    "maximumRelativeError": 0,
+                    "maximumSignDisagreementRate": 0,
+                    "maximumUlp": 0,
+                    "minimumCosineSimilarity": 1
+                  }
+                }
+              }
+            }
+          ],
+          "chunkElements": 65536,
+          "relativeFloor": 0.000001,
+          "signFloor": 0.00001,
+          "topK": 20
+        },
+        "differentialProfile": {
+          "byteLength": 18093,
+          "relativePath": "contracts/vnext/qwen3-numerical-differential-profile.v2.json",
+          "sha256": "6eb79348f691f900cf928791d58b306da4ce3d639cda38da5a0fd06c2842f2a2"
+        },
+        "policy": {
+          "maximumCases": 3,
+          "maximumManifestBytes": 4194304,
+          "maximumReceiptBytes": 4194304,
+          "maximumTokensPerCase": 4,
+          "maximumTraceBytes": 14748160
+        },
+        "schema": "tinyrustlm.qwen3_numerical_trace_verification_request.v1"
+      }
+    },
+    "schema": "tinyrustlm.qwen3_numerical_execution_owner_contract.v3",
+    "terminalPolicy": {
+      "ambiguousStatus": "terminal-ambiguous",
+      "evidenceOverwriteAllowed": false,
+      "failureStatus": "terminal-failure",
+      "partialOutputCleanupAllowed": false,
+      "rejectionStatus": "terminal-rejected",
+      "secondInvocationAllowed": false,
+      "successStatus": "terminal-pass",
+      "thresholdChangeAfterLaunchAllowed": false
+    },
+    "traceProfileId": "tinyrustlm.scalar-full-stage-f32le/1"
+  },
+  "profileId": "tinyrustlm.qwen3-numerical-differential-execution/3",
+  "registeredAtUtc": "2026-09-29T19:58:27Z",
+  "registrationParentCommit": "8072749b317217f3712f1cc4776a7a8b4b19da5d",
+  "registrationParentTree": "95d61fcae550521af8fdbaff232ff4fc3753a0a3",
+  "reportLineage": {
+    "architecture": {
+      "byteLength": 10233,
+      "path": "docs/architecture/2026-08-26-qwen3-numerical-successor-owner-clean-cut.md",
+      "sha256": "c2fd73a593b746ca7af69bd1eeb0ee814dd6f99e70b3ccf42f60ddd7d57daf29"
+    },
+    "correctedSynthesis": {
+      "byteLength": 22182,
+      "path": "docs/report-intake/2026-08-26/post-v10-native-browser-release/tinyrustlm-post-v10-native-browser-release-intake-synthesis-2026-08-26.md",
+      "sha256": "bb538fa12ca2ea623732570d2ec175eb4287223d80c31c05c71b018c41e7b7a0"
+    },
+    "durableModelLoadMemory": {
+      "byteLength": 20442,
+      "path": "wiki/runtime-mirust/reports/tinyrustlm-qwen3-model-load-correction-memory-2026-08-26.md",
+      "sha256": "91764c9d5bde7d96e3d650396a1e882984b0b91baa0814c3b791f0d58321b4df"
+    },
+    "durableNumericalMemory": {
+      "byteLength": 17399,
+      "path": "wiki/runtime-mirust/reports/tinyrustlm-qwen3-numerical-differential-memory-2026-08-26.md",
+      "sha256": "5cf598b71d6983996bcba3cb6112e0b4072930a8852637896be9a9b10952cf05"
+    },
+    "manifest": {
+      "byteLength": 6217,
+      "path": "docs/report-intake/2026-08-26/post-v10-native-browser-release/MANIFEST.md",
+      "sha256": "1ac4c18cf017b14112663d2f05d8b06f5c381d3503aa9415b22866a442b3f6c0"
+    },
+    "tddDelta": {
+      "byteLength": 19012,
+      "path": "docs/report-intake/2026-08-26/post-v10-native-browser-release/tinyrustlm-post-v10-native-browser-release-intake-tdd-delta-2026-08-26.md",
+      "sha256": "298dad938ee508ca57aa0beede3e462a68ef82dafa8fa258181e4402b6c55cb2"
+    }
+  },
+  "schema": "tinyrustlm.qwen3_numerical_differential_execution_preregistration.v3",
+  "sourceAnchor": {
+    "allowedRegistrationCommitPaths": [
+      "contracts/vnext/qwen3-numerical-differential-execution-preregistration.v3.json"
+    ],
+    "branch": "codex/model-acquisition-v2",
+    "cleanAtRegistration": true,
+    "parentCommit": "8072749b317217f3712f1cc4776a7a8b4b19da5d",
+    "parentTree": "95d61fcae550521af8fdbaff232ff4fc3753a0a3",
+    "trackingFetchHeadAndRemoteExactAtRegistration": true
+  },
+  "status": "registered-before-private-request-roots-and-real-traces"
+}
