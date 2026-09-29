@@ -1,0 +1,57 @@
+{
+  "schema": "tinyrustlm.huggingface_supported_candidate_inventory.v4",
+  "generatedUtc": "2026-09-29T21:49:21.616Z",
+  "authority": "huggingface-primary-api-revision-files-and-apache-license-authority",
+  "profileId": "qwen2.5-0.5b-bpe",
+  "search": "Qwen/Qwen2.5-Coder-0.5B-Instruct",
+  "searchLimit": 1,
+  "requestedCandidateLimit": 1,
+  "candidateCount": 1,
+  "candidates": [
+    {
+      "sourceTemplate": "qwen2.5-0.5b-bpe",
+      "modelId": "Qwen/Qwen2.5-Coder-0.5B-Instruct",
+      "revision": "ea3f2471cf1b1f0db85067f1ef93848e38e88c25",
+      "downloads": 173642,
+      "likes": 78,
+      "pipelineTag": "text-generation",
+      "licenseId": "apache-2.0",
+      "licenseEvidenceKind": "revision-metadata-plus-apache-authority-text",
+      "licenseSourceUrl": "https://www.apache.org/licenses/LICENSE-2.0.txt",
+      "licenseSha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+      "configSha256": "b1e58593cd31852f7da5c2fc31ddf6135b9c066c0fd9177a4bbe95717083adff",
+      "tokenizer": {
+        "filename": "tokenizer.json",
+        "byteCount": 7031645,
+        "sha256": null,
+        "gitBlobId": "443909a61d429dff23010e5bddd28ff530edda00"
+      },
+      "tokenizerConfig": {
+        "filename": "tokenizer_config.json",
+        "byteCount": 7305,
+        "sha256": null,
+        "gitBlobId": "acee076f49bf3c0298e15de0909d1da7b392f0c3"
+      },
+      "chatTemplateFile": null,
+      "generationConfig": {
+        "filename": "generation_config.json",
+        "byteCount": 243,
+        "sha256": null,
+        "gitBlobId": "c28f9c697cbc09f047434efec57556505af31111"
+      },
+      "chatTemplateKind": "revision-chatml-template-v1",
+      "chatTemplateSha256": "cd8e9439f0570856fd70470bf8889ebd8b5d1107207f67a5efb46e342330527f",
+      "sourceWeightByteCount": 988097824,
+      "weightIdentity": "e2eeafda5df8dedec2eedbf06e1d09cc6107b35c55e0fc3f9bd58df955858f76",
+      "weightIndex": null,
+      "weightFiles": [
+        {
+          "filename": "model.safetensors",
+          "byteCount": 988097824,
+          "sha256": "f9523886352217ded3aeeef552b381af79d568c6d49a4b9e423288cea56b0a44"
+        }
+      ]
+    }
+  ],
+  "rejections": []
+}

@@ -175,3 +175,6 @@ artifacts/ecosystem-cleanup-20260912/qwen3-reaper-untied-development-raw-2026092
 artifacts/ecosystem-cleanup-20260912/qwen3-reaper-thinking-sft-development-raw-20260929.json -text
 artifacts/ecosystem-cleanup-20260912/qwen3-reaper-thinking-sft-preflight-20260929.json -text
 artifacts/ecosystem-cleanup-20260912/qwen3-reaper-thinking-sft-development-stderr-20260929.txt -text
+artifacts/ecosystem-cleanup-20260912/qwen2.5-coder-0.5b-development-raw-20260929.json -text
+artifacts/ecosystem-cleanup-20260912/qwen2.5-coder-0.5b-preflight-20260929.json -text
+artifacts/ecosystem-cleanup-20260912/qwen2.5-coder-0.5b-development-stderr-20260929.txt -text

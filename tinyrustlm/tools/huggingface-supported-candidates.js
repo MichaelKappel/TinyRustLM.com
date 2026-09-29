@@ -64,6 +64,23 @@ const profiles = Object.freeze({
       tie_word_embeddings: true
     })
   }),
+  // Source/reference screening only; Qwen2.5 composition admission is a separate contract.
+  "qwen2.5-0.5b-bpe": Object.freeze({
+    defaultSearch: "Qwen/Qwen2.5-Coder-0.5B-Instruct",
+    modelType: "qwen2",
+    architecture: "Qwen2ForCausalLM",
+    minimumWeightBytes: 900_000_000,
+    maximumWeightBytes: 1_100_000_000,
+    config: Object.freeze({
+      hidden_size: 896,
+      num_hidden_layers: 24,
+      num_attention_heads: 14,
+      num_key_value_heads: 2,
+      intermediate_size: 4864,
+      vocab_size: 151936,
+      tie_word_embeddings: true
+    })
+  }),
   "qwen2.5-1.5b-bpe": Object.freeze({
     defaultSearch: "Qwen2.5-1.5B-Instruct",
     modelType: "qwen2",

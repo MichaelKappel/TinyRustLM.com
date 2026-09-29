@@ -97,6 +97,94 @@ function qwen25Roster() {
     searchLimit: 20, candidateLimit: 10, profileId: "qwen2.5-1.5b-bpe", fetchImpl: fixtureFetch(routes) } };
 }
 
+// Replays immutable official Coder metadata; model and tokenizer payload routes are absent.
+function qwen25CoderRoster() {
+  const captured = fs.readFileSync(path.resolve(__dirname,
+    "../../artifacts/ecosystem-cleanup-20260912/qwen2.5-coder-0.5b-contingency-metadata-20260929.json"));
+  assert.equal(crypto.createHash("sha256").update(captured).digest("hex"),
+    "f70bac3ae6fab486f6624dacd1075ded3b33c5dd573900caa0ea6b4cc8230bd1");
+  const metadata = JSON.parse(captured);
+  const info = JSON.parse(metadata.responses.find(row => row.url.includes("/api/models/")).utf8);
+  const search = "Qwen/Qwen2.5-Coder-0.5B-Instruct";
+  const searchUrl = discovery.buildSearchUrl("https://huggingface.co", search, 1);
+  const licenseUrl = "https://www.apache.org/licenses/LICENSE-2.0.txt";
+  const routes = Object.fromEntries(metadata.responses.map(row => [row.url, { text: row.utf8 }]));
+  routes[discovery.buildRevisionInfoUrl("https://huggingface.co", info.id, info.sha)] = { json: info };
+  routes[searchUrl] = { json: [info] };
+  // This authority response is synthetic test data, not a publication-license receipt.
+  routes[licenseUrl] = { text: "Apache License\nVersion 2.0, January 2004\n" };
+  const requests = [];
+  const fileUrl = name => discovery.buildResolveUrl("https://huggingface.co", info.id, info.sha, name);
+  return { info, routes, requests, fileUrl, searchUrl, options: {
+    profileId: "qwen2.5-0.5b-bpe", search, searchLimit: 1, candidateLimit: 1,
+    fetchImpl: async url => { requests.push(String(url)); return fixtureFetch(routes)(url); }
+  } };
+}
+
+test("official Qwen2.5 Coder 0.5B metadata admits exact source evidence without payload downloads", async () => {
+  const fixture = qwen25CoderRoster();
+  const report = await discovery.discoverCandidates(fixture.options);
+  assert.equal(report.schema, "tinyrustlm.huggingface_supported_candidate_inventory.v4");
+  assert.equal(report.candidateCount, 1);
+  assert.deepEqual(report.rejections, []);
+  const candidate = report.candidates[0];
+  assert.equal(candidate.sourceTemplate, "qwen2.5-0.5b-bpe");
+  assert.equal(candidate.modelId, "Qwen/Qwen2.5-Coder-0.5B-Instruct");
+  assert.equal(candidate.revision, "ea3f2471cf1b1f0db85067f1ef93848e38e88c25");
+  assert.equal(candidate.configSha256, "b1e58593cd31852f7da5c2fc31ddf6135b9c066c0fd9177a4bbe95717083adff");
+  assert.equal(candidate.sourceWeightByteCount, 988097824);
+  assert.deepEqual(candidate.weightFiles.map(row => [row.filename, row.byteCount, row.sha256]),
+    [["model.safetensors", 988097824, "f9523886352217ded3aeeef552b381af79d568c6d49a4b9e423288cea56b0a44"]]);
+  assert.equal(candidate.weightIndex, null);
+  assert.equal(candidate.chatTemplateFile, null);
+  assert.equal(candidate.tokenizer.byteCount, 7031645);
+  assert.equal(candidate.tokenizer.gitBlobId, "443909a61d429dff23010e5bddd28ff530edda00");
+  assert.equal(candidate.tokenizerConfig.gitBlobId, "acee076f49bf3c0298e15de0909d1da7b392f0c3");
+  assert.equal(candidate.generationConfig.gitBlobId, "c28f9c697cbc09f047434efec57556505af31111");
+  const template = JSON.parse(fixture.routes[fixture.fileUrl("tokenizer_config.json")].text).chat_template;
+  assert.equal(candidate.chatTemplateSha256, crypto.createHash("sha256").update(template).digest("hex"));
+  assert.equal(fixture.requests.length, 6);
+  assert.equal(fixture.requests.some(url => /\/tokenizer\.json$|\.safetensors$/.test(url)), false);
+  assert.equal(Object.hasOwn(JSON.parse(fixture.routes[fixture.fileUrl("config.json")].text), "head_dim"), false);
+  const oldProfile = await discovery.discoverCandidates({ ...fixture.options, profileId: "qwen2.5-1.5b-bpe" });
+  assert.equal(oldProfile.candidateCount, 0);
+  assert.equal(oldProfile.rejections[0].code, "full_weights_invalid");
+});
+
+test("Qwen2.5 0.5B profile refuses different shapes and weight bounds without widening the 1.5B profile", async () => {
+  for (const field of ["hidden_size", "num_hidden_layers", "num_attention_heads", "num_key_value_heads",
+    "intermediate_size", "vocab_size", "tie_word_embeddings"]) {
+    const fixture = qwen25CoderRoster();
+    const config = JSON.parse(fixture.routes[fixture.fileUrl("config.json")].text);
+    config[field] = field === "tie_word_embeddings" ? false : config[field] + 1;
+    fixture.routes[fixture.fileUrl("config.json")].text = JSON.stringify(config);
+    const report = await discovery.discoverCandidates(fixture.options);
+    assert.equal(report.candidateCount, 0, field);
+    assert.equal(report.rejections[0].code, "shape_mismatch", field);
+  }
+  for (const bytes of [899999999, 1100000001]) {
+    const fixture = qwen25CoderRoster();
+    const weight = fixture.info.siblings.find(row => row.rfilename === "model.safetensors");
+    weight.size = weight.lfs.size = bytes;
+    const report = await discovery.discoverCandidates(fixture.options);
+    assert.equal(report.candidateCount, 0);
+    assert.equal(report.rejections[0].code, "full_weights_invalid");
+    assert.equal(fixture.requests.length, 2);
+  }
+  assert.equal(discovery.profiles["qwen2.5-1.5b-bpe"].minimumWeightBytes, 2500000000);
+  assert.equal(discovery.profiles["qwen2.5-1.5b-bpe"].config.hidden_size, 1536);
+});
+
+test("Qwen2.5 0.5B source profile preserves the terminal general-model exclusion before metadata reads", async () => {
+  const fixture = qwen25CoderRoster();
+  fixture.routes[fixture.searchUrl] = { json: [{ ...fixture.info,
+    id: "Qwen/Qwen2.5-0.5B-Instruct", sha: "7ae557604adf67be50417f59c2c2f167def9a775" }] };
+  const report = await discovery.discoverCandidates(fixture.options);
+  assert.equal(report.candidateCount, 0);
+  assert.match(report.rejections[0].code, /excluded|rejected/);
+  assert.deepEqual(fixture.requests, [fixture.searchUrl]);
+});
+
 // Creates revision metadata with complete full weights and tokenizer evidence.
 function revisionInfo(modelId, config, weightBytes) {
   return {

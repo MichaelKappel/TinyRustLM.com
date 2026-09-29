@@ -1,0 +1,99 @@
+{
+  "schema": "tinyrustlm.source_profile_change_review.v1",
+  "status": "implemented-and-tested-reference-metadata-only",
+  "profileId": "qwen2.5-0.5b-bpe",
+  "changedFiles": [
+    {
+      "path": "tinyrustlm/tools/huggingface-supported-candidates.js",
+      "bytes": 25666,
+      "sha256": "e51058951be4899d6f95c3292855e9ba942f95ab2dd34b0b257ffbca60f4b33f"
+    },
+    {
+      "path": "tinyrustlm/tests/huggingface-supported-candidates.test.js",
+      "bytes": 33520,
+      "sha256": "a6e541c99fbf49a6f90a89a95778e953d207f8266b197d617dc482b648e7ef8f"
+    }
+  ],
+  "priorDiscovery": {
+    "bytes": 25099,
+    "sha256": "97105f1a45df1c7ba9682e3d5a4e211b3a57dab1e01ee65ad36f52862b3a8b61"
+  },
+  "rawEvidenceAttributes": {
+    "path": ".gitattributes",
+    "change": "Three exact -text entries preserve future raw evidence bytes; no global attribute change.",
+    "targets": [
+      "artifacts/ecosystem-cleanup-20260912/qwen2.5-coder-0.5b-development-raw-20260929.json",
+      "artifacts/ecosystem-cleanup-20260912/qwen2.5-coder-0.5b-preflight-20260929.json",
+      "artifacts/ecosystem-cleanup-20260912/qwen2.5-coder-0.5b-development-stderr-20260929.txt"
+    ]
+  },
+  "preserved": "No acquisition helper, prior profile, exclusion entry, historical inventory, raw owner, evaluation case, runtime or publisher source-file change.",
+  "baseline": {
+    "tests": 3,
+    "pass": 0,
+    "fail": 3,
+    "cause": "All three new metadata tests failed on unsupported source profile: qwen2.5-0.5b-bpe before implementation.",
+    "stdoutBytes": 3672,
+    "stdoutSha256": "6a511a05764c774e485a88698cf898b0ea5d28a6c530b5c59232caabc01029a2",
+    "stderrBytes": 0
+  },
+  "focused": {
+    "tests": 3,
+    "pass": 3,
+    "fail": 0,
+    "stdoutBytes": 447,
+    "stdoutSha256": "c66cf9c4fbe1fdef97b14bf506ec4735de788eed6440d51dec528de780a02e9d",
+    "stderrBytes": 0
+  },
+  "affected": {
+    "files": [
+      "tinyrustlm/tests/huggingface-supported-candidates.test.js",
+      "tinyrustlm/tests/huggingface-candidate-acquire.test.js",
+      "tinyrustlm/tests/source-candidate-exclusions.test.js"
+    ],
+    "tests": 48,
+    "pass": 48,
+    "fail": 0,
+    "stdoutBytes": 6489,
+    "stdoutSha256": "49645691d465d9162ca989be57a5671c19f748e745668c5b78dc849abd2665ae",
+    "stderrBytes": 0,
+    "coverage": {
+      "source": "tinyrustlm/tools/huggingface-supported-candidates.js",
+      "lines": 94.7,
+      "branches": 78.77,
+      "functions": 94.59,
+      "tool": "Node --experimental-test-coverage and V8 coverage"
+    }
+  },
+  "testEvidenceLimit": "Output summaries and hashes retained; full bounded test output was observed in the tool transcript, not copied into this receipt. These are metadata/fixture tests, not actual source acquisition or generation.",
+  "scratch": {
+    "roots": [
+      "artifacts/tests/qwen25-coder-profile/tinyrustlm-operation-V0BtYx",
+      "artifacts/tests/qwen25-coder-profile/tinyrustlm-operation-VBUq1W",
+      "artifacts/tests/qwen25-coder-profile/tinyrustlm-operation-P7y78D"
+    ],
+    "outcome": "Every original helper-owned root and external owner.v2 marker removed in its creating process after child completion; no blocked cohort touched."
+  },
+  "inventory": {
+    "path": "artifacts/ecosystem-cleanup-20260912/qwen2.5-coder-0.5b-inventory-20260929.json",
+    "bytes": 2172,
+    "sha256": "3686495dfb5808909d14238dd8100b614cab3a925ce16ad0ea305cffe64f390a"
+  },
+  "metadataOrigin": "Replay of retained exact pinned primary metadata, not a fresh Hub discovery. The single selected search row is the captured immutable revision API object. Fixture test Apache text is synthetic; production inventory uses actual authority bytes.",
+  "apacheAuthorityRead": {
+    "url": "https://www.apache.org/licenses/LICENSE-2.0.txt",
+    "retrievedAtUtc": "2026-09-29T21:49:21.614Z",
+    "bytes": 11358,
+    "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+  },
+  "exclusions": {
+    "path": "contracts/vnext/source-candidate-exclusions.v1.json",
+    "bytes": 21578,
+    "sha256": "78219ff15919c88cfe9f0474cc4ecaaa35f3ea6f3fc2c936a4fb882d08e6ee03",
+    "entryCount": 47,
+    "changed": false
+  },
+  "noModelPayloadDownloaded": true,
+  "noModelExecution": true,
+  "noQualification": true
+}
