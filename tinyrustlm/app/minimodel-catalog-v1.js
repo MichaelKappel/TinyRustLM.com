@@ -1441,6 +1441,11 @@
     return buildCatalogViewFromValidated(catalog, announcements);
   }
 
+  // A saved catalog grants no peer transport permission; only current entries are projected.
+  function buildCatalogViewWithoutPeers(catalogValue, options = {}) {
+    return buildCatalogViewFromValidated(validateCatalog(catalogValue, options), []);
+  }
+
   async function buildVerifiedCatalogView(catalogValue, peerFeedValue, options = {}) {
     const catalog = validateCatalog(catalogValue, options);
     const peerFeed = validatePeerFeedDocument(peerFeedValue, options);
@@ -1757,6 +1762,12 @@
     }
   }
 
+  // Reuse the live-source rollback rule for an already validated durable catalog and digest.
+  function assertCatalogAuthorityProgression(catalog, sha256, previousAuthority) {
+    requireMonotonicSource(SOURCE_TYPES.CATALOG, catalog, { sha256 },
+      { catalog: previousAuthority });
+  }
+
   async function loadCurrentCatalog(options = {}) {
     const catalogUrl = options.catalogUrl || CATALOG_URL;
     const peerFeedUrl = options.peerFeedUrl || PEER_FEED_URL;
@@ -1908,10 +1919,12 @@
     validatePeerFeedDocument,
     validatePeerFeed,
     buildCatalogView,
+    buildCatalogViewWithoutPeers,
     buildVerifiedCatalogView,
     peerAnnouncementSigningBytes,
     fetchJson,
     loadCurrentCatalog,
+    assertCatalogAuthorityProgression,
     qualificationDisposition
   });
 }));

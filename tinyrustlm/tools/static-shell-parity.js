@@ -108,12 +108,18 @@ function offlineWorkerRuntime(assets, cacheName) {
     return asset;
   }
 
-  /** A missing cache entry can refetch only its pinned bytes; corruption remains a visible failure. */
+  /** Reject corrupt bytes now and evict only that entry; an explicit later reload may fetch its pinned bytes. */
   async function respond(asset) {
     const cache = await caches.open(cacheName);
     const key = new URL(asset.path, origin);
     const cached = await cache.match(key);
-    if (cached) return verifiedResponse(cached, asset);
+    if (cached) {
+      try { return await verifiedResponse(cached, asset); }
+      catch (error) {
+        await cache.delete(key);
+        throw error;
+      }
+    }
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), 15000);
     try {

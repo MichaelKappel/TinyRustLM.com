@@ -1923,6 +1923,35 @@
     }
   }
 
+  // Bound durable metadata access separately from model bytes and live metadata requests.
+  async function catalogAuthorityStorage(action, signal) {
+    const lifetime = operationLifetimeApi.create({ signal, timeoutMilliseconds: 10000,
+      timeoutError: catalogQualificationError("model-catalog-storage-timeout", "Saving or checking model authority timed out"),
+      abortError: acquisitionAbortError("Model authority check was cancelled"),
+      optionsError: catalogQualificationError("model-catalog-storage-unavailable", "Model authority storage is unavailable") });
+    try { return await lifetime.wait(() => action(ensureModelCompositionStore(), lifetime.signal)); }
+    finally { lifetime.dispose(); }
+  }
+
+  // Restore the newest durable decision even when expired; expiry remains enforced at every use.
+  async function restoreDurableCatalogAuthority(signal) {
+    const record = await catalogAuthorityStorage((store, scopedSignal) =>
+      store.readCatalogAuthority({ signal: scopedSignal }), signal);
+    if (!record) return false;
+    const previous = state.modelCatalogV1Authority && state.modelCatalogV1Authority.catalog;
+    miniModelCatalogV1Api.assertCatalogAuthorityProgression(record.catalogDocument,
+      record.catalogAuthority.sha256, previous);
+    if (previous && previous.sha256 === record.catalogAuthority.sha256) return true;
+    state.modelCatalogV1Document = record.catalogDocument;
+    state.modelCatalogV1Text = record.catalogText;
+    state.modelCatalogV1Authority = Object.freeze({ catalog: record.catalogAuthority, peerFeed: null });
+    state.modelCatalogV1PeerDocument = null;
+    state.modelCatalogV1Entries = [];
+    try { state.modelCatalogV1Entries = [...miniModelCatalogV1Api.buildCatalogViewWithoutPeers(record.catalogDocument)]; }
+    catch (_error) { /* Stale metadata is a rollback barrier, never activation permission. */ }
+    return true;
+  }
+
   function acceptedPeerFeedIsCurrent() {
     const authority = state.modelCatalogV1Authority && state.modelCatalogV1Authority.peerFeed;
     if (!authority || !state.modelCatalogV1PeerDocument || !acceptedCatalogIsCurrent()) {
@@ -1978,10 +2007,10 @@
   function clearExpiredCatalogAuthority() {
     clearSimpleModelPeerExpiryTimer();
     state.modelCatalogV1Entries = [];
-    state.modelCatalogV1Document = null;
-    state.modelCatalogV1Text = "";
     state.modelCatalogV1PeerDocument = null;
-    state.modelCatalogV1Authority = null;
+    if (state.modelCatalogV1Authority) state.modelCatalogV1Authority = Object.freeze({
+      catalog: state.modelCatalogV1Authority.catalog, peerFeed: null
+    });
     state.selectedModelCatalogV1Entry = null;
     clearPendingCompanionAcquisition();
     clearSimpleModelConversionRecovery();
@@ -2950,13 +2979,16 @@
     state.modelCatalogV1PeerLoadState = "loading";
     setSimpleModelPickerStatus("Checking model list...", false);
     renderSimpleModelPicker();
+    let authorityStorageFailed = false;
     try {
+      try { await restoreDurableCatalogAuthority(controller.signal); }
+      catch (error) { authorityStorageFailed = true; throw error; }
       const result = await miniModelCatalogV1Api.loadCurrentCatalog({
         signal: controller.signal,
         previousAuthority: state.modelCatalogV1Authority
       });
       if (state.modelCatalogV1FetchAbort !== controller) {
-        return;
+        return false;
       }
       const validStatus = miniModelCatalogV1Api.SOURCE_STATUSES.VALID;
       const catalogValid = Boolean(result && result.catalog &&
@@ -2971,7 +3003,7 @@
             ? "The model-list refresh is unavailable."
             : "A model-list refresh failed verification."
         )) {
-          return;
+          return true;
         }
         clearExpiredCatalogAuthority();
         state.modelCatalogV1Loaded = true;
@@ -2983,9 +3015,16 @@
             : "The model list could not be verified, so no model was opened.",
           true
         );
-        return;
+        return false;
       }
 
+      // Publish no new authority to runtime state until exact durable readback succeeds.
+      try {
+        await catalogAuthorityStorage((store, signal) => store.acceptCatalogAuthority({
+          catalogText: result.catalog.text, catalogAuthority: result.authority.catalog, signal
+        }), controller.signal);
+      } catch (error) { authorityStorageFailed = true; throw error; }
+      if (state.modelCatalogV1FetchAbort !== controller || controller.signal.aborted) return false;
       state.modelCatalogV1Document = result.catalog.document;
       state.modelCatalogV1Text = result.catalog.text;
       state.modelCatalogV1PeerDocument = result.peerFeed &&
@@ -3061,27 +3100,30 @@
           false
         );
       }
+      return true;
     } catch (error) {
       if (error && error.name === "AbortError") {
-        return;
+        return false;
       }
       if (state.modelCatalogV1FetchAbort !== controller) {
-        return;
+        return false;
       }
-      if (retainAcceptedCatalogAfterRefreshFailure(
+      if (!authorityStorageFailed && retainAcceptedCatalogAfterRefreshFailure(
         `The model-list refresh stopped: ${friendlyError(errorMessage(error))}.`
       )) {
-        return;
+        return true;
       }
       clearExpiredCatalogAuthority();
       state.modelCatalogV1Loaded = true;
       state.modelCatalogV1LoadState = "unavailable";
       state.modelCatalogV1PeerLoadState = "unavailable";
       setSimpleModelPickerStatus(
+        (authorityStorageFailed ? "The saved model authority could not be verified or safely updated. " : "") +
         `The model list is unavailable right now: ${friendlyError(errorMessage(error))}. ` +
           "A saved model will not open until its qualification can be reconciled.",
         true
       );
+      return false;
     } finally {
       if (state.modelCatalogV1FetchAbort === controller) {
         const restoreRefreshFocus = Boolean(
@@ -3104,6 +3146,41 @@
           scheduleSimpleCompanionPairingFocus();
         }
       }
+    }
+  }
+
+  // The existing Refresh action may reopen verified saved bytes; it never starts a download.
+  async function refreshModelsAndRestoreSavedComposition() {
+    if (simpleModelAcquisitionIsActive() || state.generation.inFlight || state.turnAdmissionPending) return false;
+    if (!await loadSimpleModelCatalog()) return false;
+    if (state.modelLoaded) return true;
+    if (simpleModelAcquisitionIsActive() || state.generation.inFlight || state.turnAdmissionPending) return false;
+    const controller = new AbortController();
+    state.activeAcquisitionAbort = controller;
+    state.modelAcquisitionRoute = "restore";
+    const command = (async () => {
+      const saved = await openStartupComposition(controller.signal);
+      throwIfAcquisitionAborted(controller.signal);
+      if (!saved) return false;
+      requireCurrentStoredComposition(saved);
+      await activateStoredComposition(saved, "Your saved model is verified and ready.", controller.signal);
+      state.initialModelRestored = true;
+      return true;
+    })();
+    state.modelAcquisitionCommand = command;
+    renderSimpleModelPicker();
+    try { return await command; }
+    catch (error) {
+      if (controller.signal.aborted) setSimpleModelPickerStatus("Saved model loading cancelled.", false);
+      else setSimpleModelPickerStatus(errorMessage(error), true);
+      return false;
+    } finally {
+      if (state.modelAcquisitionCommand === command) {
+        state.modelAcquisitionCommand = null;
+        state.modelAcquisitionRoute = "";
+      }
+      if (state.activeAcquisitionAbort === controller) state.activeAcquisitionAbort = null;
+      renderSimpleModelPicker();
     }
   }
 
@@ -3249,6 +3326,10 @@
       return false;
     }
     const activeCommand = state.modelAcquisitionCommand;
+    if (state.modelAcquisitionRoute === "restore") {
+      if (state.activeAcquisitionAbort) state.activeAcquisitionAbort.abort();
+      return Boolean(activeCommand && await activeCommand.catch(() => false));
+    }
     const cancelled = await cancelCompanionImport();
     const committed = activeCommand
       ? await Promise.resolve(activeCommand).catch(() => false)
@@ -6473,7 +6554,7 @@
     }
     if (el.simpleModelRefreshButton) {
       el.simpleModelRefreshButton.addEventListener("click", () => {
-        void loadSimpleModelCatalog();
+        void refreshModelsAndRestoreSavedComposition();
       });
     }
     if (el.simpleModelActionButton) {
@@ -11268,8 +11349,9 @@ if (view.matches.length) {
   }
 
   // Bound the read-only cache check, including lock/root acquisition, without deleting timed-out bytes.
-  async function openStartupComposition() {
+  async function openStartupComposition(signal) {
     const lifetime = operationLifetimeApi.create({
+      signal,
       timeoutMilliseconds: 60000,
       timeoutError: catalogQualificationError("model-cache-open-timeout", "Checking the saved model timed out"),
       abortError: catalogQualificationError("model-cache-open-aborted", "Checking the saved model was cancelled"),

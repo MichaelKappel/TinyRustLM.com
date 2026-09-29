@@ -24,6 +24,7 @@ function (root, admissionApi, catalogApi) {
   const INSTALLED_DIRECTORY = "installed";
   const STAGING_DIRECTORY = "staging";
   const ACTIVE_POINTER_FILE = "active.json";
+  const CURRENT_CATALOG_FILE = "current-catalog.json";
   const INSTALLED_MANIFEST_FILE = "manifest.json";
   const INSTALLED_ADMISSION_FILE = "admission.json";
   const INSTALLED_QUALIFICATION_RECEIPT_FILE = "qualification-receipt.json";
@@ -1750,6 +1751,78 @@ function (root, admissionApi, catalogApi) {
   function createModelCompositionStore(value) {
     const options = normalizeStoreOptions(value);
 
+    // Preserve exact source bytes; stale reads provide a rollback floor, never runtime permission.
+    async function catalogRecord(text, requireCurrent, signal) {
+      const code = "model-composition-store-current-catalog";
+      checkCancelled(signal);
+      if (typeof text !== "string" || text.length < 1 || text.length > catalogByteLimit()) reject(code);
+      const bytes = encoder().encode(text);
+      if (bytes.byteLength > catalogByteLimit()) reject(code);
+      const catalogDocument = parseCatalogText(text, code, requireCurrent);
+      const digest = await hashBytes(options.adapter, bytes, signal);
+      return Object.freeze({ catalogText: text, catalogDocument,
+        catalogAuthority: derivedCatalogAuthority(catalogDocument, digest) });
+    }
+
+    // Read the single current record without replacing corrupt or unreadable authority.
+    async function readCatalogInternal(signal) {
+      const code = "model-composition-store-current-catalog";
+      const bytes = await readSmallFile(options.adapter, [CURRENT_CATALOG_FILE],
+        catalogByteLimit(), code, signal);
+      if (bytes === null) return null;
+      try { return await catalogRecord(decoder().decode(bytes), false, signal); }
+      catch (error) { throw typed(error, code); }
+    }
+
+    // Serialize readers with writers so a restart sees one complete authority decision.
+    async function readCatalogAuthority(value) {
+      const call = normalizeCall(value, [], ["signal"], "model-composition-store-catalog-options");
+      const signal = normalizeSignal(call.signal);
+      return withExclusiveLock(options.adapter, () => readCatalogInternal(signal), signal);
+    }
+
+    // Admit current verified metadata atomically; observe ambiguous write acknowledgement before returning.
+    async function acceptCatalogAuthority(value) {
+      const code = "model-composition-store-current-catalog";
+      const call = normalizeCall(value, ["catalogText", "catalogAuthority"],
+        ["catalogText", "catalogAuthority", "signal"],
+        "model-composition-store-catalog-options");
+      const signal = normalizeSignal(call.signal);
+      const candidate = await catalogRecord(call.catalogText, true, signal);
+      requireCatalogAuthority(call.catalogAuthority, candidate.catalogAuthority, code);
+      let committed = null;
+      try {
+        return await withExclusiveLock(options.adapter, async () => {
+          const prior = await readCatalogInternal(signal);
+          if (prior) catalogApi.assertCatalogAuthorityProgression(candidate.catalogDocument,
+            candidate.catalogAuthority.sha256, prior.catalogAuthority);
+          // Recheck expiry after acquiring the lock, immediately before the only mutation.
+          catalogApi.validateCatalog(candidate.catalogDocument);
+          if (prior && prior.catalogText === candidate.catalogText) return prior;
+          await ensureDirectory(options.adapter, []);
+          checkCancelled(signal);
+          let writeError = null;
+          try {
+            await atomicWrite(options.adapter, [CURRENT_CATALOG_FILE], encoder().encode(candidate.catalogText), code);
+          } catch (error) { writeError = error; }
+          // Commit readback cannot be cancelled: cancellation does not undo durable authority.
+          let observed;
+          try { observed = await readCatalogInternal(); }
+          catch (error) { throw new ModelCompositionStoreError(code,
+            { cause: error, commitDisposition: "indeterminate" }); }
+          if (!observed || observed.catalogText !== candidate.catalogText) {
+            throw new ModelCompositionStoreError(code,
+              { cause: writeError, commitDisposition: "not-committed" });
+          }
+          committed = observed;
+          return observed;
+        }, signal);
+      } catch (error) {
+        if (committed !== null) return committed;
+        throw error;
+      }
+    }
+
     async function initialize() {
       await ensureDirectory(options.adapter, []);
       await ensureDirectory(options.adapter, [INSTALLED_DIRECTORY]);
@@ -2205,7 +2278,8 @@ function (root, admissionApi, catalogApi) {
       }, signal);
     }
 
-    return Object.freeze({ install, openActive, cleanup, discardInvalidActive });
+    return Object.freeze({ install, openActive, cleanup, discardInvalidActive,
+      readCatalogAuthority, acceptCatalogAuthority });
   }
 
   function validatePath(path) {

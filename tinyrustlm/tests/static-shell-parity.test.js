@@ -161,7 +161,8 @@ function workerHarness(testContext) {
       const entries = stores.get(name);
       return {
         async put(key, response) { entries.set(String(key), response.clone()); },
-        async match(key) { return entries.get(String(key))?.clone(); }
+        async match(key) { return entries.get(String(key))?.clone(); },
+        async delete(key) { return entries.delete(String(key)); }
       };
     },
     async keys() { return Array.from(stores.keys()); },
@@ -262,9 +263,14 @@ test("offline reads recheck cached bytes and missing entries admit only pinned n
   cache.set(key, new Response("unexpected"));
   await assert.rejects(h.request("/app/app.js"), /offline-static-identity/);
   assert.equal(h.requests.length, h.assets.length);
-  cache.delete(key);
+  assert.equal(cache.has(key), false, "only the corrupt entry is evicted; that request still fails");
+  assert.equal(cache.size, h.assets.length - 1);
+  h.observation.offline = true;
+  await assert.rejects(h.request("/app/app.js"), /test-offline/);
+  assert.equal(cache.has(key), false);
+  h.observation.offline = false;
   assert.match(await (await h.request("/app/app.js")).text(), /appLoaded/);
-  assert.equal(h.requests.length, h.assets.length + 1);
+  assert.equal(h.requests.length, h.assets.length + 2);
   cache.delete(key);
   h.observation.override = () => new Response("wrong bytes");
   await assert.rejects(h.request("/app/app.js"), /offline-static-identity/);

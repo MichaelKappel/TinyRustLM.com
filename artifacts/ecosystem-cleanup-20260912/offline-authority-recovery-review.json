@@ -1,0 +1,27 @@
+{
+  "schema": "tinyrustlm.offline-authority-recovery-review.v1",
+  "status": "implementation-under-validation",
+  "scope": "Persist current verified catalog authority and revocation rollback barriers; reopen existing verified model on explicit Refresh; evict only a corrupt static asset after rejecting its request.",
+  "preservedRuns": [
+    { "stage": "durable catalog regression baseline before implementation", "tests": 7, "passed": 0, "failed": 7, "exitCode": 1, "reason": "New durable authority methods did not exist." },
+    { "stage": "first durable implementation", "tests": 7, "passed": 4, "failed": 3, "exitCode": 1, "reason": "New accept method omitted its required fields from normalizeCall allowedFields; corrected." },
+    { "stage": "corrected durable implementation", "tests": 7, "passed": 7, "failed": 0, "exitCode": 0 },
+    { "stage": "corrupt static entry regression baseline", "tests": 1, "passed": 0, "failed": 1, "exitCode": 1, "reason": "The rejected corrupt entry remained cached." },
+    { "stage": "first combined affected suites", "tests": 283, "passed": 282, "failed": 1, "exitCode": 1, "reason": "Generated shell hashes had not yet been regenerated; the static corruption regression and durable authority tests passed." }
+  ],
+  "generation": "Both shell hashes and offline-worker.js were regenerated after the combined run; parity and git diff --check pass. That regeneration has not yet been followed by the final affected-suite rerun.",
+  "pending": [
+    "Focused application durable-refresh, failure, cancellation and saved-model restoration regressions",
+    "Final affected-suite rerun and changed-source coverage",
+    "Actual browser regression with current generated assets",
+    "Independent review of authority failure and restart semantics"
+  ],
+  "limits": {
+    "catalogMaximumAgeHours": 24,
+    "catalogExpiryWeakened": false,
+    "modelPayloadExecuted": false,
+    "realModelQualification": false,
+    "publicDeployment": false,
+    "visualParityMeasured": false
+  }
+}

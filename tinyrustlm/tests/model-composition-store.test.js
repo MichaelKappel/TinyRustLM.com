@@ -3477,3 +3477,120 @@ test("discardInvalidActive explicitly removes an unresolved indeterminate activa
   );
   assert.equal(await createStore(scenario.adapter).openActive(), null);
 });
+
+// Build exact metadata-only updates; these fixtures do not qualify any real model.
+function catalogUpdate(source, patch = {}) {
+  const catalog = { ...source.catalog, ...patch };
+  const catalogText = `${JSON.stringify(catalog)}\n`;
+  return { catalogText, catalogAuthority: { id: catalog.catalog_id, revision: catalog.revision,
+    generatedAtUtc: catalog.generated_at_utc, validUntilUtc: catalog.valid_until_utc,
+    sha256: `sha256:${sha256(Buffer.from(catalogText))}` } };
+}
+
+test("durable catalog survives restart and retains revocation without rewriting installed bytes", async () => {
+  const adapter = new MemoryAdapter();
+  const source = fixture("durable-catalog");
+  const store = createStore(adapter);
+  await store.install({ manifest: source.manifest, admissionAuthority: source.admissionAuthority,
+    sources: sourceSet(source.members) });
+  const before = new Map([...adapter.files].map(([name]) => [name, adapter.readFile(name.split("/"))]));
+  assert.equal(await store.readCatalogAuthority(), null);
+  const update = catalogUpdate(source, { revision: 8, generated_at_utc: utc(-30000),
+    revoked_qualification_receipt_ids: [source.admission.qualification.receiptId], entries: [] });
+  await store.acceptCatalogAuthority(update);
+  const reopened = await createStore(adapter).readCatalogAuthority();
+  assert.equal(reopened.catalogText, update.catalogText);
+  assert.equal(catalogApi.qualificationDisposition(reopened.catalogDocument, source.admission).reason,
+    "qualification-revoked");
+  for (const [name, bytes] of before) assert.deepEqual(adapter.readFile(name.split("/")), bytes, name);
+  assert.equal(adapter.files.size, before.size + 1);
+});
+
+test("durable catalog refuses rollback, equivocation, changed identity and non-increasing time", async () => {
+  const adapter = new MemoryAdapter();
+  const source = fixture("catalog-floor");
+  const store = createStore(adapter);
+  const current = catalogUpdate(source, { revision: 8, generated_at_utc: utc(-30000) });
+  await store.acceptCatalogAuthority(current);
+  const writes = adapter.operations.filter(op => op.type === "atomic-write").length;
+  await store.acceptCatalogAuthority(current);
+  assert.equal(adapter.operations.filter(op => op.type === "atomic-write").length, writes);
+  for (const patch of [{}, { revision: 8, generated_at_utc: utc(-30000), entries: [] },
+    { revision: 9, generated_at_utc: utc(-30000) },
+    { revision: 9, generated_at_utc: utc(-40000) },
+    { catalog_id: "other.example/prelaunch", revision: 9, generated_at_utc: utc(-20000) }]) {
+    await assert.rejects(createStore(adapter).acceptCatalogAuthority(catalogUpdate(source, patch)));
+    assert.equal((await store.readCatalogAuthority()).catalogText, current.catalogText);
+  }
+});
+
+test("durable catalog validates current time and exact fetched identity before writing", async () => {
+  const adapter = new MemoryAdapter();
+  const source = fixture("catalog-validate");
+  const store = createStore(adapter);
+  for (const input of [catalogUpdate(source, { valid_until_utc: utc(-1000) }),
+    catalogUpdate(source, { generated_at_utc: utc(600000) }),
+    { ...catalogUpdate(source), catalogAuthority: { ...source.catalogAuthority, sha256: `sha256:${"a".repeat(64)}` } },
+    { ...catalogUpdate(source), catalogText: "{}\n" }]) await assert.rejects(store.acceptCatalogAuthority(input));
+  assert.equal(adapter.operations.some(op => op.type === "atomic-write"), false);
+  assert.equal(await store.readCatalogAuthority(), null);
+});
+
+test("durable catalog retains expired authority as a floor without authorizing inference", async () => {
+  const adapter = new MemoryAdapter();
+  const source = fixture("catalog-expiry");
+  const stale = catalogUpdate(source, { revision: 12, generated_at_utc: utc(-48 * 3600000),
+    valid_until_utc: utc(-47 * 3600000), entries: [], peer_verification_keys: [] });
+  adapter.seedFile(["current-catalog.json"], Buffer.from(stale.catalogText));
+  const store = createStore(adapter);
+  const restored = await store.readCatalogAuthority();
+  assert.equal(restored.catalogAuthority.revision, 12);
+  assert.throws(() => catalogApi.validateCatalog(restored.catalogDocument), /freshness|stale/);
+  await assert.rejects(store.acceptCatalogAuthority(catalogUpdate(source, {
+    revision: 11, generated_at_utc: utc(-20000) })));
+});
+
+test("durable catalog handles atomic-write and postcommit lock failures by exact readback", async () => {
+  for (const mode of ["before", "after", "lock-after"]) {
+    const adapter = new MemoryAdapter();
+    const source = fixture(`catalog-write-${mode}`);
+    const store = createStore(adapter);
+    const prior = catalogUpdate(source);
+    await store.acceptCatalogAuthority(prior);
+    const update = catalogUpdate(source, { revision: 8, generated_at_utc: utc(-20000) });
+    const write = adapter.atomicWrite.bind(adapter);
+    adapter.atomicWrite = async (parts, bytes) => {
+      if (mode === "before") throw new Error("injected precommit failure");
+      await write(parts, bytes);
+      if (mode === "after") throw new Error("injected postcommit failure");
+    };
+    if (mode === "lock-after") adapter.onAfterLockCallback = () => { throw new Error("lock acknowledgement"); };
+    if (mode === "before") await assert.rejects(store.acceptCatalogAuthority(update));
+    else assert.equal((await store.acceptCatalogAuthority(update)).catalogText, update.catalogText);
+    adapter.onAfterLockCallback = null;
+    assert.equal((await createStore(adapter).readCatalogAuthority()).catalogText,
+      mode === "before" ? prior.catalogText : update.catalogText);
+  }
+});
+
+test("durable catalog rejects corrupted, oversized or unreadable state rather than dropping its floor", async () => {
+  const source = fixture("catalog-damaged");
+  for (const bytes of [Buffer.from("not-json"), Buffer.alloc(1024 * 1024 + 1, 32)]) {
+    const adapter = new MemoryAdapter();
+    adapter.seedFile(["current-catalog.json"], bytes);
+    await assert.rejects(createStore(adapter).readCatalogAuthority());
+    await assert.rejects(createStore(adapter).acceptCatalogAuthority(catalogUpdate(source)));
+    assert.deepEqual(adapter.readFile(["current-catalog.json"]), bytes);
+  }
+});
+
+test("durable catalog cancellation before the commit point writes nothing", async () => {
+  const adapter = new MemoryAdapter();
+  const controller = new AbortController();
+  controller.abort();
+  const store = createStore(adapter);
+  await assert.rejects(store.acceptCatalogAuthority({ ...catalogUpdate(fixture("catalog-cancel")),
+    signal: controller.signal }));
+  await assert.rejects(store.readCatalogAuthority({ signal: controller.signal }));
+  assert.equal(adapter.operations.some(op => op.type === "atomic-write"), false);
+});

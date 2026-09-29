@@ -92,12 +92,18 @@
     return asset;
   }
 
-  /** A missing cache entry can refetch only its pinned bytes; corruption remains a visible failure. */
+  /** Reject corrupt bytes now and evict only that entry; an explicit later reload may fetch its pinned bytes. */
   async function respond(asset) {
     const cache = await caches.open(cacheName);
     const key = new URL(asset.path, origin);
     const cached = await cache.match(key);
-    if (cached) return verifiedResponse(cached, asset);
+    if (cached) {
+      try { return await verifiedResponse(cached, asset); }
+      catch (error) {
+        await cache.delete(key);
+        throw error;
+      }
+    }
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), 15000);
     try {
@@ -128,8 +134,8 @@
   },
   {
     "path": "/app/app.js",
-    "bytes": 472108,
-    "sha256": "304e6bacff5d2859285e052d170189cfbf1cffb13cb04cb033a49bc5f9f39b67"
+    "bytes": 476837,
+    "sha256": "83b5fb7e3d7df43fe2184b450b9fad3cf8636981e8bdee263c9e3f2e9a68028e"
   },
   {
     "path": "/app/browser-model-admission.js",
@@ -169,7 +175,7 @@
   {
     "path": "/app/index.html",
     "bytes": 48731,
-    "sha256": "79e1cac64bb51df763a827775492088f38694bba6dee616c1cf6c237d547b7dd"
+    "sha256": "61319279a5ebabb9ebb1f7f9dbf6bd39de4e2f85a9191f8e29118bb6eb35e0df"
   },
   {
     "path": "/app/memory-endpoints-distributed-sync-v1.js",
@@ -193,13 +199,13 @@
   },
   {
     "path": "/app/minimodel-catalog-v1.js",
-    "bytes": 74811,
-    "sha256": "5c690e1b3cb96843f87f3951fcdc1a46ccc2418a7d2b0fbf16b97ba689ccd98b"
+    "bytes": 75430,
+    "sha256": "88dba0a92aa8954c4f32cd756c0bd0ffdf77679b6def07135d421e1b1a9a4a5b"
   },
   {
     "path": "/app/model-composition-store.js",
-    "bytes": 89171,
-    "sha256": "dd57705dadf0d46674cb8f61e0a94b347c0a1f1f4adfc88c9a0312f446546534"
+    "bytes": 93158,
+    "sha256": "b361dea5a27d0296d448f8ce2c37c2c0ba9bede24d2e42a86f2638ea517f83ea"
   },
   {
     "path": "/app/model-runtime-client.js",
@@ -244,6 +250,6 @@
   {
     "path": "/index.html",
     "bytes": 48815,
-    "sha256": "52149236ef50d8b3bf93a27f6b3899de634269b193999157ee14cf56b1b0e3e5"
+    "sha256": "87577bd6687e220c8b378a9335c9407c2159377012c6d91d2b24e89f540385e6"
   }
-], "tinyrustlm-static-v1-f456db8e0166308283ccd77e6abafaa758e6aced842a4393862ac0a23c07d033");
+], "tinyrustlm-static-v1-d04e2f3a1995ce296bb57768afc34137928712d34743ab85da6bd3acaa09639a");
