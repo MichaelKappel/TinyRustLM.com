@@ -1,0 +1,168 @@
+{
+  "schema": "tinyrustlm.source_candidate_contingency_plan.v1",
+  "status": "contingency-only-not-acquisition-or-execution-admission",
+  "purpose": "Keep one official distinct small-model contingency if the currently selected Thinking-SFT source fails. Avoid an anonymous-derivative screening campaign.",
+  "source": {
+    "modelId": "Qwen/Qwen2.5-Coder-0.5B-Instruct",
+    "revision": "ea3f2471cf1b1f0db85067f1ef93848e38e88c25",
+    "weightFilename": "model.safetensors",
+    "weightBytes": 988097824,
+    "weightSha256": "f9523886352217ded3aeeef552b381af79d568c6d49a4b9e423288cea56b0a44",
+    "publisher": "Qwen",
+    "sourceType": "official instruction-tuned code-specialized checkpoint",
+    "sourceQuality": "unmeasured for TinyRustLM; publisher benchmarks are not local qualification"
+  },
+  "metadata": {
+    "path": "artifacts/ecosystem-cleanup-20260912/qwen2.5-coder-0.5b-contingency-metadata-20260929.json",
+    "bytes": 36886,
+    "sha256": "f70bac3ae6fab486f6624dacd1075ded3b33c5dd573900caa0ea6b4cc8230bd1",
+    "scope": "Pinned public API, README, LICENSE, config, generation config and tokenizer_config only. Each resolved file matches its pinned Git blob. No tokenizer.json or model payload acquired."
+  },
+  "exclusions": {
+    "path": "contracts/vnext/source-candidate-exclusions.v1.json",
+    "entryCount": 46,
+    "sha256": "a100ff8125cb8a7b02bf0ced02a539894f28b307b92af2ac88d7bbeccf9ca58b",
+    "coderExactRevisionOrWeightMatch": false,
+    "general05": {
+      "modelId": "Qwen/Qwen2.5-0.5B-Instruct",
+      "revision": "7ae557604adf67be50417f59c2c2f167def9a775",
+      "weightSha256": "fdf756fa7fcbe7404d5c60e26bff1a0c8b8aa1f72ced49e7dd0210fe288fb7fe",
+      "kind": "quality",
+      "evidence": "tinyrustlm/training/qwen2.5-0.5b-instruct-source-screen-v1/assessment-control-v1.json",
+      "evidenceSha256": "1118758dd47cab5b9f06c14dd25b3ec5a4892076d7aa6a87430c8cd7f1b73fa0",
+      "evidenceHashVerified": true,
+      "decision": "rejected",
+      "restriction": "Do not repeat, rename or requalify these general-model bytes. The Coder checkpoint has a different publisher identity and weight SHA256; that is eligibility for a new investigation only."
+    }
+  },
+  "configuration": {
+    "architecture": "Qwen2ForCausalLM",
+    "modelType": "qwen2",
+    "hiddenSize": 896,
+    "intermediateSize": 4864,
+    "layerCount": 24,
+    "queryHeads": 14,
+    "kvHeads": 2,
+    "headDimension": 64,
+    "headDimensionDerivation": "896/14; head_dim is absent in the pinned config and must not be required as an explicit field.",
+    "vocabSize": 151936,
+    "tiedEmbeddings": true,
+    "attentionQkvBias": true,
+    "qkNormalization": false,
+    "rmsEpsilon": 0.000001,
+    "ropeTheta": 1000000,
+    "nativeContext": 32768,
+    "slidingWindowEnabled": false,
+    "dtype": "bfloat16",
+    "useCache": true,
+    "tokenizer": "Qwen2Tokenizer; embedded ChatML template in tokenizer_config.json.",
+    "thinkingMode": "No thinking template capability declared; do not inject Qwen3 reasoning delimiters or an unsupported thinking argument."
+  },
+  "license": {
+    "publisherDeclaration": "Apache-2.0",
+    "pinnedLicenseBytes": 11343,
+    "pinnedLicenseSha256": "832dd9e00a68dd83b3c3fb9f5588dad7dcf337a0db50f7d9483f310cd292e92e",
+    "pinnedLicenseGitBlobId": "6634c8cc3133b3848ec74b9f275acaaa1ea618ab",
+    "source": "https://huggingface.co/Qwen/Qwen2.5-Coder-0.5B-Instruct/blob/ea3f2471cf1b1f0db85067f1ef93848e38e88c25/LICENSE",
+    "limits": "Publisher license and exact pinned text verified; no independent legal review of training data is claimed."
+  },
+  "currentProfileProbe": {
+    "owner": "tinyrustlm/tools/huggingface-supported-candidates.js",
+    "ownerSha256": "97105f1a45df1c7ba9682e3d5a4e211b3a57dab1e01ee65ad36f52862b3a8b61",
+    "existingQwen2Profile": "qwen2.5-1.5b-bpe",
+    "method": "Called the unchanged discoverCandidates function using the captured actual metadata as in-memory HTTP responses; no live discovery or model request in this probe.",
+    "candidateCount": 0,
+    "rejection": "full_weights_invalid",
+    "metadataRequestCount": 2,
+    "firstFailure": "988097824 weight bytes are below the existing 2500000000-byte minimum. The model name, Instruct marker, public state, Apache2 metadata and Qwen2 architecture passed the earlier checks.",
+    "furtherShapeMismatches": [
+      {
+        "field": "hidden_size",
+        "required": 1536,
+        "actual": 896
+      },
+      {
+        "field": "num_hidden_layers",
+        "required": 28,
+        "actual": 24
+      },
+      {
+        "field": "num_attention_heads",
+        "required": 12,
+        "actual": 14
+      },
+      {
+        "field": "intermediate_size",
+        "required": 8960,
+        "actual": 4864
+      }
+    ],
+    "conclusion": "The existing profile does not admit this source. The mismatch is exact dimensions and source byte bounds, not a Coder-name restriction. Keep the 1.5B profile intact."
+  },
+  "minimalImplementationProposal": {
+    "status": "not-implemented",
+    "files": [
+      "tinyrustlm/tools/huggingface-supported-candidates.js",
+      "tinyrustlm/tests/huggingface-supported-candidates.test.js"
+    ],
+    "change": "Add one source/reference-only qwen2.5-0.5b-bpe profile with the exact pinned dimensions, Qwen2 architecture and bounded BF16 source size. No new schema or compatibility path; inventory and acquisition remain v4.",
+    "proposedProfile": {
+      "id": "qwen2.5-0.5b-bpe",
+      "defaultSearch": "Qwen/Qwen2.5-Coder-0.5B-Instruct",
+      "modelType": "qwen2",
+      "architecture": "Qwen2ForCausalLM",
+      "minimumWeightBytes": 900000000,
+      "maximumWeightBytes": 1100000000,
+      "config": {
+        "hidden_size": 896,
+        "num_hidden_layers": 24,
+        "num_attention_heads": 14,
+        "num_key_value_heads": 2,
+        "intermediate_size": 4864,
+        "vocab_size": 151936,
+        "tie_word_embeddings": true
+      }
+    },
+    "tests": [
+      "Admit the pinned official Coder metadata and exact embedded template/generation identities under the new profile.",
+      "Reject changed dimensions, untied embeddings and weight byte sizes outside the profile bounds.",
+      "Preserve early exact-revision and weight exclusions, including the already rejected general Qwen2.5-0.5B checkpoint and any repackaged copies.",
+      "Retain current acquisition index/sidecar/hash/ownership tests; its existing generic v4 sourceTemplate handling should require no code change."
+    ]
+  },
+  "resourceEstimate": {
+    "totalParameters": 494032768,
+    "q8MatrixParameters": 493961216,
+    "rowScaleCount": 456064,
+    "f32NormAndBiasParameters": 71552,
+    "q8WeightPayloadBytes": 496071680,
+    "formula": "493961216 + 456064*4 + 71552*4",
+    "estimatedContainerTokenizerOtherBytes": 8200000,
+    "estimatedSixMemberBytes": 504271680,
+    "maximumSixMemberBytes": 805306368,
+    "estimateOnly": true,
+    "uncertainty": "Container layout, tokenizer2 output, exact member sizes, peak memory and actual browser performance remain unmeasured."
+  },
+  "prospectiveScreenRecommendation": {
+    "status": "requires-own-committed-registration-if-selected",
+    "cases": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-untied-development-screen-20260929.eval",
+    "casesSha256": "946e6bdda7512bde3db4dac5a4f66e66eb5353141e7d19b8a0ca3735fd2903c9",
+    "criteria": "Preserve all six existing criteria, including no Markdown around JSON, actual packing task fidelity and color-only output. No new owner-quality gate is invented.",
+    "owner": "tinyrustlm/tools/reference-raw-quality.py",
+    "ownerSha256": "30dd01e388433dfe926f5990ab778817167fd50a6c81a55a19e10870ebb289fb",
+    "execution": "Existing CPUfloat32 source-reference owner, unchanged system prompt and one greedy call per case; use the candidate's native ChatML template and publisher EOS unchanged. No thinking mode flag for this model.",
+    "stoppingRule": "Any failure is preserved as a terminal development decision for these exact bytes. No prompt/sampling adjustment or retry. Six passes still require the existing broader qualification gates."
+  },
+  "conversionBoundary": "Scalar/format support for QKV bias without QK norm does not establish current conversation-profile admission. Root's runtime review identifies additional closed contracts: Prompt2 fixes vocabulary151936, context40960 and dependency hashes; Template2 is bound to the sole canonical Qwen3 artifact; composition runtime also requires its exact context. This candidate has native context32768. Only after a source pass, review the Qwen2 converter/tensor mapping, tokenizer equivalence, Prompt2, Template2 and composition/runtime identities as one coherent change. The work is larger than a converter extension; no profile implementation is authorized here. Thinking-SFT remains the selected next low-cost source falsifier.",
+  "launchConditions": [
+    "Root explicitly selects this contingency only after resolving the current candidate or deliberately reprioritizing.",
+    "Review and test the narrow discovery profile addition, then obtain a real pinned current inventory.",
+    "Commit/fetch clean remote-exact registered-root admission precedes authorized acquisition.",
+    "Verify and commit acquired receipt and all exact source identities before separately authorized one-shot execution.",
+    "No broad search campaign, no anonymous derivative roster and no replay of the rejected general Qwen2.5 source."
+  ],
+  "modelPayloadAcquired": false,
+  "modelExecutionStarted": false,
+  "helperCodeEdited": false,
+  "productionDefaultChanged": false
+}
