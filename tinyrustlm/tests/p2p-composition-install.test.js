@@ -250,6 +250,13 @@ async function fixture(label = "fixture", options = {}) {
       signature: Buffer.alloc(64).toString("base64url")
     }
   ];
+  if (options.operatorSeed) {
+    Object.assign(announcements[1], {
+      peer_base_url: "https://minimodel.org/", outside_proof_status: "not-required-operator-seed",
+      outside_proof_receipt_sha256: null
+    });
+    catalog.project_server_serves_model_bytes = true;
+  }
   for (const announcement of announcements) {
     announcement.signature = crypto.sign(
       null,
@@ -263,7 +270,7 @@ async function fixture(label = "fixture", options = {}) {
     revision: 1,
     generated_at_utc: utc(-60_000),
     valid_until_utc: options.peerFeedValidUntilUtc || utc(60 * 60_000),
-    project_server_serves_model_bytes: false,
+    project_server_serves_model_bytes: Boolean(options.operatorSeed),
     project_server_proxies_model_bytes: false,
     announcements
   };
@@ -569,6 +576,33 @@ test("streams six fixed URLs from exactly the first normalized peer", async () =
     assert.equal(call.url.includes("ignored=yes"), false);
     assert.equal(call.url.includes("9.9.9.9"), false);
   });
+});
+
+test("installs a signed operator seed while rejecting forged origin/proof pairings before transfer", async () => {
+  const value = await fixture("operator-seed", { operatorSeed: true });
+  const calls = [];
+  const activated = await installApi.installP2pComposition({
+    entry: value.entry, admissionRecord: value.admissionRecord, manifest: value.manifest,
+    admissionAuthority: value.admissionAuthority, store: new ConsumingStore(), fetch: successfulFetch(value, calls)
+  });
+  assert.deepEqual(activated, { status: "activated-test-fixture" });
+  assert.equal(calls.length, 6);
+  assert.ok(calls.every((call) => call.url.startsWith("https://minimodel.org/")));
+  for (const change of [
+    { peerBaseUrl: "https://8.8.8.8/" }, { outsideProofReceiptSha256: `sha256:${id("invented-proof")}` },
+    { outsideProofStatus: "current-passed" }, { outsideProofReceiptSha256: undefined },
+    { peerBaseUrl: "https://minimodel.org.evil.example/" }
+  ]) {
+    const entry = Object.freeze({ ...value.entry, peers: Object.freeze([
+      Object.freeze({ ...value.entry.peers[0], ...change }), ...value.entry.peers.slice(1)
+    ]) });
+    const rejectedCalls = [];
+    await assert.rejects(installApi.installP2pComposition({
+      entry, admissionRecord: value.admissionRecord, manifest: value.manifest,
+      admissionAuthority: value.admissionAuthority, store: new ConsumingStore(), fetch: successfulFetch(value, rejectedCalls)
+    }));
+    assert.equal(rejectedCalls.length, 0);
+  }
 });
 
 test("prechecks receipt and catalog UTF-16 lengths before their encoders", () => {

@@ -248,6 +248,18 @@ function isPublicDirectPeerUrl(value) {
   }
 }
 
+/** Uses the runtime's exact origin/proof contract without inventing outside evidence. */
+function hasCurrentPeerProof(peer) {
+  try {
+    catalogApi.directPeerUrlAuthority.requireProof(
+      peer.peerBaseUrl, peer.outsideProofStatus, peer.outsideProofReceiptSha256
+    );
+    return true;
+  } catch (_error) {
+    return false;
+  }
+}
+
 // Count current signed announcements without claiming live reachability.
 function evaluateLiveCatalog(result, now) {
   const unavailable = Object.freeze({
@@ -297,7 +309,7 @@ function evaluateLiveCatalog(result, now) {
         if (peer && peer.signatureVerified === true &&
             peer.compositionId === expectedCompositionId &&
             peer.consentStatus === "explicit" &&
-            peer.outsideProofStatus === "current-passed" &&
+            hasCurrentPeerProof(peer) &&
             Date.parse(peer.issuedAtUtc) <= now.getTime() &&
             Date.parse(peer.expiresUtc) > now.getTime() &&
             peer.feedId === result.peerFeed.document.feed_id &&

@@ -115,7 +115,8 @@ function announcement(options = {}) {
     consent_status: "explicit",
     consent_receipt_sha256: sha("6"),
     outside_proof_status: options.outsideProofStatus || "current-passed",
-    outside_proof_receipt_sha256: sha("7"),
+    outside_proof_receipt_sha256: Object.hasOwn(options, "outsideProofReceiptSha256")
+      ? options.outsideProofReceiptSha256 : sha("7"),
     issued_at_utc: utc(-60_000),
     expires_utc: options.expiresUtc || utc(30 * 60_000),
     verification_key_id: PEER_KEY_ID,
@@ -518,6 +519,25 @@ test("loopback, private, and reserved hosts cannot qualify as external peers", a
   assert.equal(report.live.announcedExternalPeerCount, 0);
   assert.equal(report.live.provenReachableExternalPeerCount, 0);
   assert.ok(report.failureCodes.includes(preflight.FAILURE_CODES.EXTERNAL_PEER));
+});
+
+test("operator seed discovery requires its exact origin and explicit null-proof disposition", async () => {
+  for (const [peerBaseUrl, status, digest, expectedCount] of [
+    ["https://minimodel.org/", "not-required-operator-seed", null, 1],
+    ["https://minimodel.org/", "current-passed", sha("7"), 0],
+    ["https://minimodel.org/", "not-required-operator-seed", sha("7"), 0],
+    ["https://8.8.8.8/", "not-required-operator-seed", null, 0]
+  ]) {
+    const item = announcement({ peerBaseUrl, outsideProofStatus: status, outsideProofReceiptSha256: digest });
+    const report = await preflight.runPreflight({
+      mode: preflight.MODES.LIVE_MODEL, now: TEST_NOW.toISOString(),
+      dependencies: passingDependencies({ loadCurrentCatalog: async () => loaded(
+        catalog([qualifiedEntry({ peerIds: [item.announcement_id] })]), peerFeed([item])
+      ) })
+    });
+    assert.equal(report.live.announcedExternalPeerCount, expectedCount);
+    assert.equal(report.live.provenReachableExternalPeerCount, 0);
+  }
 });
 
 test("expired or non-current outside proof cannot qualify a peer", async (t) => {

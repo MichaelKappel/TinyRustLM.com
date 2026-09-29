@@ -20,7 +20,8 @@ function (root, admissionApi, directPeerUrlAuthority) {
 
   if (!directPeerUrlAuthority ||
       typeof directPeerUrlAuthority.normalizeBaseUrl !== "function" ||
-      typeof directPeerUrlAuthority.buildCompositionMemberUrl !== "function") {
+      typeof directPeerUrlAuthority.buildCompositionMemberUrl !== "function" ||
+      typeof directPeerUrlAuthority.requireProof !== "function") {
     throw new Error("MiniModel direct peer URL authority is unavailable");
   }
 
@@ -525,20 +526,28 @@ function (root, admissionApi, directPeerUrlAuthority) {
     return value;
   }
 
-  /** Validates peer shape, identity, protocol, and expiry; URL policy is deferred. */
+  /** Validates peer shape, origin-bound proof, identity, protocol, and expiry. */
   function normalizePeerShape(value, compositionId, catalogAuthority) {
     exactObject(value, PEER_FIELDS, "p2p-composition-install-peer");
     if (!Object.isFrozen(value) || value.compositionId !== compositionId ||
         value.protocolProfile !== PROTOCOL_PROFILE || value.signatureVerified !== true ||
-        value.consentStatus !== "explicit" ||
-        value.outsideProofStatus !== "current-passed") {
+        value.consentStatus !== "explicit") {
       reject("p2p-composition-install-peer");
     }
     boundedString(value.announcementId, 128, "p2p-composition-install-peer");
     contentId(value.compositionId, "p2p-composition-install-peer");
     contentId(value.pieceSetSha256, "p2p-composition-install-peer");
     contentId(value.consentReceiptSha256, "p2p-composition-install-peer");
-    contentId(value.outsideProofReceiptSha256, "p2p-composition-install-peer");
+    try {
+      directPeerUrlAuthority.requireProof(
+        value.peerBaseUrl, value.outsideProofStatus, value.outsideProofReceiptSha256
+      );
+    } catch (error) {
+      if (error && typeof error.code === "string" && error.code.startsWith("peer-url")) {
+        throw typed(error, "p2p-composition-install-peer-url");
+      }
+      reject("p2p-composition-install-peer");
+    }
     contentId(value.verificationKeyId, "p2p-composition-install-peer");
     boundedString(value.peerBaseUrl, 512, "p2p-composition-install-peer");
     boundedString(value.verificationPublicKey, 64, "p2p-composition-install-peer");

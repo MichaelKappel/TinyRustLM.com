@@ -540,10 +540,26 @@
     return endpoint.toString();
   }
 
+  /** Binds proof disposition to the admitted origin; operator renewal makes no outside-observation claim. */
+  function requireDirectPeerProof(peerBaseUrl, status, receiptSha256) {
+    const normalized = normalizeDirectPeerBaseUrl(peerBaseUrl);
+    if (normalized === "https://minimodel.org/") {
+      if (status !== "not-required-operator-seed" || receiptSha256 !== null) {
+        reject("peer-proof", "operator seed requires its explicit disposition and a null outside-proof receipt");
+      }
+      return null;
+    }
+    if (status !== "current-passed") {
+      reject("peer-proof", "third-party peer requires current outside proof");
+    }
+    return requireSha256(receiptSha256, "peer announcement.outside_proof_receipt_sha256");
+  }
+
   const directPeerUrlAuthority = Object.freeze({
     buildCompositionMemberUrl: buildDirectCompositionMemberUrl,
     compositionRoutePrefix: DIRECT_COMPOSITION_ROUTE_PREFIX,
-    normalizeBaseUrl: normalizeDirectPeerBaseUrl
+    normalizeBaseUrl: normalizeDirectPeerBaseUrl,
+    requireProof: requireDirectPeerProof
   });
 
   function requireId(value, label) {
@@ -1040,21 +1056,19 @@
     if (protocolProfile !== DIRECT_COMPOSITION_PROTOCOL_PROFILE) {
       reject("peer-protocol", "peer announcement protocol is unsupported");
     }
-    if (value.consent_status !== "explicit" ||
-        value.outside_proof_status !== "current-passed") {
-      reject("peer-proof", "peer announcement lacks explicit consent or current outside proof");
+    if (value.consent_status !== "explicit") {
+      reject("peer-proof", "peer announcement lacks explicit consent");
     }
     const consentReceiptSha256 = requireSha256(
       value.consent_receipt_sha256,
       `${label}.consent_receipt_sha256`
     );
-    const outsideProofReceiptSha256 = requireSha256(
-      value.outside_proof_receipt_sha256,
-      `${label}.outside_proof_receipt_sha256`
-    );
     const peerBaseUrl = normalizeDirectPeerBaseUrl(value.peer_base_url, {
       applicationOrigin: options.applicationOrigin
     });
+    const outsideProofReceiptSha256 = requireDirectPeerProof(
+      peerBaseUrl, value.outside_proof_status, value.outside_proof_receipt_sha256
+    );
     const issuedAtUtc = requireUtc(value.issued_at_utc, `${label}.issued_at_utc`);
     const expiresUtc = requireUtc(value.expires_utc, "peer announcement.expires_utc");
     if (Date.parse(issuedAtUtc) > now + MAXIMUM_FUTURE_SKEW_MILLISECONDS ||

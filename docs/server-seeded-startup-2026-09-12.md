@@ -1,5 +1,22 @@
 # Server-seeded startup
 
+## September 29 operator seed proof disposition
+
+The exact normalized `https://minimodel.org/` seed uses signed
+`outside_proof_status: "not-required-operator-seed"` with an explicit null
+`outside_proof_receipt_sha256`. It asserts the operator's hosting responsibility
+without inventing an independent network observation. Other peers still require
+`current-passed` and an exact proof digest. The catalog, installer and interview
+preflight share the same origin/proof admission rule; MiniModel mirrors it.
+
+The existing signature covers both fields. Qualification, explicit consent, TLS,
+six member identities and expiry remain required. A server may renew metadata for
+the same approved seed without changing its immutable qualification evidence.
+Initial live download and browser checks remain necessary. This implementation
+does not establish a qualified model or a published seed. Stored bytes still need
+current catalog authority for activation and generation; metadata expiry limits
+offline use until current authority can be obtained.
+
 ## September 20 companion import cancellation
 
 The Advanced companion import path propagates its caller's optional signal through

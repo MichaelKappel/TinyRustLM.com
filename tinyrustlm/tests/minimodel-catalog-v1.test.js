@@ -195,8 +195,9 @@ function validAnnouncement(options = {}) {
     protocol_profile: catalogApi.DIRECT_COMPOSITION_PROTOCOL_PROFILE,
     consent_status: "explicit",
     consent_receipt_sha256: sha("6"),
-    outside_proof_status: "current-passed",
-    outside_proof_receipt_sha256: sha("7"),
+    outside_proof_status: options.outsideProofStatus || "current-passed",
+    outside_proof_receipt_sha256: Object.hasOwn(options, "outsideProofReceiptSha256")
+      ? options.outsideProofReceiptSha256 : sha("7"),
     issued_at_utc: utc(-60_000),
     expires_utc: options.expiresUtc || utc(30 * 60_000),
     verification_key_id: PEER_KEY_ID,
@@ -317,6 +318,41 @@ test("projects qualified entries without treating signed announcements as reacha
     sha256: peerEntry.browser_admission.sha256
   });
   assert.ok(Object.isFrozen(views[0].browserAdmission));
+});
+
+test("operator seed proof is exact-origin, nullable, signed and distinct from third-party evidence", async () => {
+  const proof = catalogApi.directPeerUrlAuthority.requireProof;
+  for (const origin of ["https://minimodel.org/", "https://MINIMODEL.ORG:443/"]) {
+    assert.equal(proof(origin, "not-required-operator-seed", null), null);
+  }
+  assert.equal(proof("https://8.8.8.8/", "current-passed", sha("7")), sha("7"));
+  for (const origin of [
+    "https://8.8.8.8/", "http://127.0.0.1:43127/", "https://minimodel.org.evil.example/",
+    "https://user@minimodel.org/", "https://minimodel.org./", "http://minimodel.org/",
+    "https://minimodel.org:444/", "https://minimodel.org/path", "https://minimodel.org/?x=1"
+  ]) assert.throws(() => proof(origin, "not-required-operator-seed", null), undefined, origin);
+  for (const [status, digest] of [
+    ["current-passed", sha("7")], ["not-required-operator-seed", sha("7")],
+    ["not-required-operator-seed", undefined], ["not-required-operator-seed", "null"],
+    ["not-required-operator-seed", false], ["unknown", null], [null, null]
+  ]) assert.throws(() => proof("https://minimodel.org/", status, digest));
+  for (const digest of [null, undefined, "bad", 7]) {
+    assert.throws(() => proof("https://8.8.8.8/", "current-passed", digest));
+  }
+  const announcement = validAnnouncement({
+    peerBaseUrl: "https://minimodel.org/", outsideProofStatus: "not-required-operator-seed",
+    outsideProofReceiptSha256: null
+  });
+  const catalog = validCatalog([validEntry({ peerIds: [announcement.announcement_id] })]);
+  const feed = validPeerFeed([announcement]);
+  catalog.project_server_serves_model_bytes = true;
+  feed.project_server_serves_model_bytes = true;
+  const views = await catalogApi.buildVerifiedCatalogView(catalog, feed, { now: TEST_NOW, crypto: nodeCrypto.webcrypto });
+  assert.equal(views[0].peers[0].outsideProofReceiptSha256, null);
+  assert.equal(views[0].peers[0].outsideProofStatus, "not-required-operator-seed");
+  assert.equal(views[0].peers[0].signatureVerified, true);
+  Object.assign(announcement, { peer_base_url: "https://8.8.8.8/", outside_proof_status: "current-passed", outside_proof_receipt_sha256: sha("7") });
+  await assert.rejects(catalogApi.buildVerifiedCatalogView(catalog, feed, { now: TEST_NOW, crypto: nodeCrypto.webcrypto }), /signature/);
 });
 
 test("catalog pass and peer validation failure preserves local conversion choices", async () => {

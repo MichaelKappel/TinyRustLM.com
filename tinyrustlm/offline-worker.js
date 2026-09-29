@@ -175,7 +175,7 @@
   {
     "path": "/app/index.html",
     "bytes": 48731,
-    "sha256": "61319279a5ebabb9ebb1f7f9dbf6bd39de4e2f85a9191f8e29118bb6eb35e0df"
+    "sha256": "4225e90f1d0bab5b5eac535ec79c636d7daba95d40f26e0957844264161acfa2"
   },
   {
     "path": "/app/memory-endpoints-distributed-sync-v1.js",
@@ -199,8 +199,8 @@
   },
   {
     "path": "/app/minimodel-catalog-v1.js",
-    "bytes": 75430,
-    "sha256": "88dba0a92aa8954c4f32cd756c0bd0ffdf77679b6def07135d421e1b1a9a4a5b"
+    "bytes": 76134,
+    "sha256": "1ac264b1e347c61bd2e8bee1b878978cdf3e7077e60748305ef7bb65664b01fa"
   },
   {
     "path": "/app/model-composition-store.js",
@@ -224,8 +224,8 @@
   },
   {
     "path": "/app/p2p-composition-install.js",
-    "bytes": 50631,
-    "sha256": "3dc954f00dc9345ffc365a10c0c47efa5ba55ceb83caa8ff6009d31b73ccbe41"
+    "bytes": 50940,
+    "sha256": "2445e42ff36be0a8bb8b5ab521d2517813a4f5d7124d3ea362bdd6d846c697f5"
   },
   {
     "path": "/app/prompt2-request.js",
@@ -250,6 +250,6 @@
   {
     "path": "/index.html",
     "bytes": 48815,
-    "sha256": "87577bd6687e220c8b378a9335c9407c2159377012c6d91d2b24e89f540385e6"
+    "sha256": "7459804a3c5a7a7673f840471bc34099949f27b1cd8270ea20f15d19b29e51f6"
   }
-], "tinyrustlm-static-v1-d04e2f3a1995ce296bb57768afc34137928712d34743ab85da6bd3acaa09639a");
+], "tinyrustlm-static-v1-2e09d0d2f88209aa7e98873e311be02fc9d1a5eb17b7b02b23e32ccbf5ab0ec5");
