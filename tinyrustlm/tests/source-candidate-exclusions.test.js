@@ -13,7 +13,7 @@ const policy = require("../../contracts/vnext/source-candidate-exclusions.v1.jso
 const rejected = policy.entries.find((entry) => entry.modelId === "Qwen/Qwen2.5-1.5B-Instruct");
 
 test("current exclusions preserve all exact prior decisions and their evidence identities", () => {
-  assert.equal(policy.entries.length, 43);
+  assert.equal(policy.entries.length, 45);
   assert.equal(policy.entries.filter((entry) => entry.kind === "preflight").length, 9);
   for (const entry of policy.entries) {
     assert.match(entry.evidence.path, /^(tinyrustlm\/training\/[^/]+\/assessment-control-v\d+|contracts\/vnext\/qwen3-0\.6b-base-source-lock\.v2)\.json$/);
@@ -53,7 +53,9 @@ for (const [inventoryName, start] of [["smollm2-current-candidate-inventory-2026
   ["qwen3-expanded-candidate-inventory-20260927.json", 0],
   ["qwen3-expanded-candidate-inventory-20260927.json", 1],
   ["qwen3-expanded-candidate-inventory-20260927.json", 2],
-  ["qwen3-next-candidate-inventory-20260928.json", 0]]) {
+  ["qwen3-next-candidate-inventory-20260928.json", 0],
+  ["qwen3-next-candidate-inventory-20260928.json", 1],
+  ["qwen3-next-candidate-inventory-20260928.json", 2]]) {
 test(`source rejection blocks ${inventoryName} selection ${start} without fetching or writing`, async () => {
   const inventory = JSON.parse(fs.readFileSync(path.join(root,
     "artifacts/ecosystem-cleanup-20260912", inventoryName)));

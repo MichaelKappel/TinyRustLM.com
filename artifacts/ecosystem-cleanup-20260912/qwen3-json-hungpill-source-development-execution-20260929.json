@@ -1,0 +1,15 @@
+{
+  "schema": "tinyrustlm.source_development_execution.v1",
+  "startedAtUtc": "2026-09-29T19:25:17.275Z",
+  "completedAtUtc": "2026-09-29T19:26:45.073Z",
+  "sourceCommit": "ff4b708c6a0af9323ca17680e49510406604b67c",
+  "exitCode": 0,
+  "signal": null,
+  "errorCode": null,
+  "standardOutput": "",
+  "standardError": "\rLoading weights:   0%|          | 0/310 [00:00<?, ?it/s]\rLoading weights:   0%|          | 1/310 [00:00<00:55,  5.61it/s]\rLoading weights: 100%|##########| 310/310 [00:00<00:00, 1478.02it/s]\r\n",
+  "ownedScratchCleanupVerified": true,
+  "cleanupError": null,
+  "rawReportPresent": true,
+  "modelQualified": false
+}

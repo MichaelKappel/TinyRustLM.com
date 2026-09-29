@@ -5,6 +5,39 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C126: actual production startup and the remaining JSON candidates
+
+Fresh, unmodified production Edge contexts at 1440 and 390 pixels show version
+0.5.0 with Send disabled and "Models are unavailable right now." The live catalog
+and peer feed return HTTP 200 but contain zero entries and announcements. Unlike
+the C114 fixture smoke, these observations used real public responses. See
+`actual-production-startup-review-20260929.json` and its two screenshots in
+`artifacts/ecosystem-cleanup-20260912`. Production does not provide the requested
+automatic working model. No new deployment is claimed.
+
+Pushed ce61b9f froze separate plans for hungpill and Hutgaecha; ff4b708 preserves
+their verified pinned acquisitions. Both execute once, CPU float32 greedy,
+without retries, adapters, answer repair or prompt suffixes. Each passes five
+of six frozen development criteria. Both answer the color-only case with
+"The pens in Box B are red." Their six output texts are identical despite
+different weight hashes; this is not independent lineage or general-quality
+evidence. The checklist answer assumes an academic paper and establishes only
+the narrow resource criterion. Neither candidate is admitted or converted.
+
+The raw transcripts, execution receipts and independent provenance/assessment
+checks are the `qwen3-json-hungpill-*20260929.json` and
+`qwen3-json-hutgaecha-*20260929.json` artifacts. Their exact weight hashes join
+the 45-entry negative policy. All 35 discovery/acquisition/exclusion tests pass,
+including refusal of both frozen inventory selections before fetch or output.
+Execution scratch is removed. Model payload retirement is tracked separately
+in `json-candidate-cleanup-inventory-20260929.json`; an inventory alone does not
+claim deletion. No campaign counters advance.
+
+MiniModel publication testing also reproduces obsolete shared-verifier pins
+in its publisher and manifest builder. That repository owns the binding fix
+and its validation. Correcting these pins does not supply a qualified model,
+renew catalog authority, bind the hosting target or create a live seed.
+
 ## C125: the next distinct source completes its frozen screen and fails format control
 
 After C124, the actual clean/direct-remote branch check passes while FETCH_HEAD

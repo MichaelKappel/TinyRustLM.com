@@ -433,6 +433,26 @@
         "path": "tinyrustlm/training/zamba2-1.2b-instruct-v2-source-screen-v1/assessment-control-v1.json",
         "sha256": "c64aa1f426ea8fdf116540bdb27b877ccb89f436c0d5895de9f1db52264d4e1d"
       }
+    },
+    {
+      "modelId": "hungpill/Qwen3-0.6B-JSON-SFT-GRPO",
+      "revision": "c4e2ccc285d6b798af1447773aa63bfcac1b01a3",
+      "kind": "quality",
+      "weightSha256": "8d848a0ea1f3a24b52fc9f2b9a703b88795e0862841f322e5ab19e6b9199be2a",
+      "evidence": {
+        "path": "tinyrustlm/training/qwen3-json-hungpill-source-development-screen-v1/assessment-control-v1.json",
+        "sha256": "d6cc3927770d06cd2b267bb65d8939616368097b6f02a83a6cb7b2f2b2980cd5"
+      }
+    },
+    {
+      "modelId": "Hutgaecha/Qwen3-0.6B-JSON-SFT-GRPO",
+      "revision": "e34888a4d278c8fccf86bdc17756b6edf410a4d1",
+      "kind": "quality",
+      "weightSha256": "3750f0d56e1c336a3cfdc0065ddbab312366afee9967536612bc64e3cb4e783d",
+      "evidence": {
+        "path": "tinyrustlm/training/qwen3-json-hutgaecha-source-development-screen-v1/assessment-control-v1.json",
+        "sha256": "631c5b5319b018603187631f95696d681658fc801aa149eb1fdcdbbac888a28a"
+      }
     }
   ]
 }
