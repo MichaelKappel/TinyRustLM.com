@@ -1,0 +1,244 @@
+{
+  "schema": "tinyrustlm.source_candidate_metadata_capture.v1",
+  "createdAtUtc": "2026-09-29T22:21:00Z",
+  "status": "partial-metadata-only-not-admitted",
+  "scope": "One distinct general assistant candidate; public metadata capture and discovery eligibility correction only. No model payload acquisition, model execution, inventory admission, conversion, or default qualification.",
+  "modelId": "Pluto-AI-Labs/Pluto-Genesis-0.6B",
+  "revision": "a52e0229b7611bd96dac8594ab2f6924c89249c2",
+  "responses": [
+    {
+      "url": "https://huggingface.co/api/models/Pluto-AI-Labs/Pluto-Genesis-0.6B?blobs=true",
+      "status": 429,
+      "retrievedAtUtc": "2026-09-29T22:05:02.011Z",
+      "utf8": "{\"error\":\"maximum queue size reached\"}",
+      "bytes": 38,
+      "sha256": "0d88462613e95c378b20206fede5b13443c934a06917b1f472e6a2579458262e",
+      "gitBlobId": "104de2f9f5099106d9df35cf363ffb5b275aec71"
+    },
+    {
+      "url": "https://huggingface.co/api/models/Pluto-AI-Labs/Pluto-Genesis-0.6B?blobs=true",
+      "status": 200,
+      "retrievedAtUtc": "2026-09-29T22:05:40.118Z",
+      "retryAfter": null,
+      "utf8": "{\"_id\":\"6a4f2f9f807943155a999565\",\"id\":\"Pluto-AI-Labs/Pluto-Genesis-0.6B\",\"private\":false,\"pipeline_tag\":\"text-generation\",\"library_name\":\"transformers\",\"tags\":[\"transformers\",\"safetensors\",\"qwen3\",\"text-generation\",\"pluto-genesis\",\"sub-1b\",\"qlora\",\"instruction-tuning\",\"reasoning\",\"mathematics\",\"coding\",\"fine-tuned\",\"conversational\",\"text-generation-inference\",\"en\",\"dataset:teknium/OpenHermes-2.5\",\"dataset:microsoft/orca-math-word-problems-200k\",\"dataset:m-a-p/CodeFeedback-Filtered-Instruction\",\"base_model:Qwen/Qwen3-0.6B\",\"base_model:finetune:Qwen/Qwen3-0.6B\",\"license:apache-2.0\",\"endpoints_compatible\",\"region:us\"],\"downloads\":48,\"likes\":1,\"modelId\":\"Pluto-AI-Labs/Pluto-Genesis-0.6B\",\"author\":\"Pluto-AI-Labs\",\"sha\":\"a52e0229b7611bd96dac8594ab2f6924c89249c2\",\"lastModified\":\"2026-07-15T05:59:33.000Z\",\"gated\":false,\"disabled\":false,\"widgetData\":[{\"text\":\"Hi, what can you help me with?\"},{\"text\":\"What is 84 * 3 / 2?\"},{\"text\":\"Tell me an interesting fact about the universe!\"},{\"text\":\"Explain quantum computing in simple terms.\"}],\"model-index\":[{\"name\":\"Pluto-Genesis-0.6B\",\"results\":[]}],\"config\":{\"architectures\":[\"Qwen3ForCausalLM\"],\"model_type\":\"qwen3\",\"tokenizer_config\":{\"bos_token\":null,\"eos_token\":\"<|im_end|>\",\"pad_token\":\"<|endoftext|>\",\"unk_token\":null},\"chat_template_jinja\":\"{%- if messages[0]['role'] == 'system' -%}\\n    {%- set system_message = messages[0]['content'] -%}\\n    {%- set loop_messages = messages[1:] -%}\\n{%- else -%}\\n    {%- set system_message = 'You are Pluto-Genesis, an advanced AI assistant created by Siddharth N.R. You are a highly capable, thoughtful, and precise assistant that excels at reasoning, mathematics, coding, and general knowledge. You think step-by-step through complex problems and provide clear, accurate, and helpful responses.' -%}\\n    {%- set loop_messages = messages -%}\\n{%- endif -%}\\n<|im_start|>system\\n{{ system_message }}<|im_end|>\\n{% for message in loop_messages %}\\n<|im_start|>{{ message['role'] }}\\n{{ message['content'] }}<|im_end|>\\n{% endfor %}\\n{%- if add_generation_prompt -%}<|im_start|>assistant\\n{%- endif -%}\"},\"cardData\":{\"license\":\"apache-2.0\",\"language\":[\"en\"],\"tags\":[\"pluto-genesis\",\"qwen3\",\"sub-1b\",\"qlora\",\"instruction-tuning\",\"reasoning\",\"mathematics\",\"coding\",\"fine-tuned\",\"conversational\",\"text-generation-inference\"],\"base_model\":\"Qwen/Qwen3-0.6B\",\"pipeline_tag\":\"text-generation\",\"library_name\":\"transformers\",\"datasets\":[\"teknium/OpenHermes-2.5\",\"microsoft/orca-math-word-problems-200k\",\"m-a-p/CodeFeedback-Filtered-Instruction\"],\"model-index\":[{\"name\":\"Pluto-Genesis-0.6B\",\"results\":[]}]},\"transformersInfo\":{\"auto_model\":\"AutoModelForCausalLM\",\"pipeline_tag\":\"text-generation\",\"processor\":\"AutoTokenizer\"},\"siblings\":[{\"rfilename\":\".gitattributes\",\"blobId\":\"329ad92404e0f2853cdbe3047cffce1921ca734b\",\"size\":1846},{\"rfilename\":\"README.md\",\"blobId\":\"ddc3974e5b0252dcc4e468c740504274076d2c8a\",\"size\":7124},{\"rfilename\":\"added_tokens.json\",\"blobId\":\"b54f9135e44c1e81047e8d05cb027af8bc039eed\",\"size\":707},{\"rfilename\":\"banner.png\",\"blobId\":\"ca9ee68121b1b07f4975b4ea2f4687c63beede1b\",\"size\":1243320,\"lfs\":{\"sha256\":\"2aa646c47f519cdd89b3e566e6038584fa1423fbceb5f4f6bb4e4e5c0f7f074c\",\"size\":1243320,\"pointerSize\":132}},{\"rfilename\":\"benchmark-comparison.png\",\"blobId\":\"65def86ffbea9788b5e3fb47b01f77d3101aa253\",\"size\":1171159,\"lfs\":{\"sha256\":\"fc6e7c10bfc5cef6b1e9754c0d35eec5a8446bb708b6b4edbbc56a22e873e868\",\"size\":1171159,\"pointerSize\":132}},{\"rfilename\":\"chat_template.jinja\",\"blobId\":\"15253c5b00bc821eb3e42cbab6f9a414d9319b0a\",\"size\":785},{\"rfilename\":\"config.json\",\"blobId\":\"0cb1a6152d11dd2c4d20a8d4deadb478e9b0f72e\",\"size\":726},{\"rfilename\":\"detailed_benchmark.png\",\"blobId\":\"cbcf3d33beb5d683876f6cd468cbef14ec18fb4d\",\"size\":1104582,\"lfs\":{\"sha256\":\"43cb8f88776a6ee40a2da8a3d06b80b12eee992613c340793671e65cb6fa6140\",\"size\":1104582,\"pointerSize\":132}},{\"rfilename\":\"emergency-interrupt/README.md\",\"blobId\":\"2d12f27bb96354f5bc7d16ccbdc2915b74dc7bc8\",\"size\":5184},{\"rfilename\":\"emergency-interrupt/adapter_config.json\",\"blobId\":\"47dea01b79fd91b94012dc319ccd6e3a2cbfb1fd\",\"size\":928},{\"rfilename\":\"emergency-interrupt/adapter_model.safetensors\",\"blobId\":\"05f1a04429cd8a492d43c55f2ee0b1f8e914a6a9\",\"size\":161533160,\"lfs\":{\"sha256\":\"1ecc093b1acdcbc1ca1ab758dccc10ee20215256237a2e70d9dded50815439e1\",\"size\":161533160,\"pointerSize\":134}},{\"rfilename\":\"emergency-interrupt/added_tokens.json\",\"blobId\":\"b54f9135e44c1e81047e8d05cb027af8bc039eed\",\"size\":707},{\"rfilename\":\"emergency-interrupt/chat_template.jinja\",\"blobId\":\"15253c5b00bc821eb3e42cbab6f9a414d9319b0a\",\"size\":785},{\"rfilename\":\"emergency-interrupt/merges.txt\",\"blobId\":\"31349551d90c7606f325fe0f11bbb8bd5fa0d7c7\",\"size\":1671853},{\"rfilename\":\"emergency-interrupt/special_tokens_map.json\",\"blobId\":\"ac23c0aaa2434523c494330aeb79c58395378103\",\"size\":613},{\"rfilename\":\"emergency-interrupt/tokenizer.json\",\"blobId\":\"cd71f61a15a522601badb3dc960d800d9cb3766c\",\"size\":11422654,\"lfs\":{\"sha256\":\"aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4\",\"size\":11422654,\"pointerSize\":133}},{\"rfilename\":\"emergency-interrupt/tokenizer_config.json\",\"blobId\":\"ddaf69808214a44fdd26d3785b66c1367c78277a\",\"size\":5404},{\"rfilename\":\"emergency-interrupt/training_args.bin\",\"blobId\":\"f5d69a2eb82697c1775beffc13280d217cf31bd4\",\"size\":5841,\"lfs\":{\"sha256\":\"be7da87a2ccfb56e5cb6e7d8b1627839e3227d54938ae6f6ac1304c6992deb09\",\"size\":5841,\"pointerSize\":129}},{\"rfilename\":\"emergency-interrupt/vocab.json\",\"blobId\":\"4783fe10ac3adce15ac8f358ef5462739852c569\",\"size\":2776833},{\"rfilename\":\"generation_config.json\",\"blobId\":\"6b204b47b535ecceeec0cd8ca14b8f8c4d8ebc9e\",\"size\":214},{\"rfilename\":\"last-checkpoint/README.md\",\"blobId\":\"2d12f27bb96354f5bc7d16ccbdc2915b74dc7bc8\",\"size\":5184},{\"rfilename\":\"last-checkpoint/adapter_config.json\",\"blobId\":\"cb8a254487892dfaa8efbd00f89f262a1c4808ee\",\"size\":928},{\"rfilename\":\"last-checkpoint/adapter_model.safetensors\",\"blobId\":\"29009cdb0d55d373c2d1ee9d8d92747f49996f9c\",\"size\":161533160,\"lfs\":{\"sha256\":\"e9c6a53fac0a4541e1665f60f6e2ac292e4f0e70ad20870e2431d631e263fa49\",\"size\":161533160,\"pointerSize\":134}},{\"rfilename\":\"last-checkpoint/added_tokens.json\",\"blobId\":\"b54f9135e44c1e81047e8d05cb027af8bc039eed\",\"size\":707},{\"rfilename\":\"last-checkpoint/chat_template.jinja\",\"blobId\":\"15253c5b00bc821eb3e42cbab6f9a414d9319b0a\",\"size\":785},{\"rfilename\":\"last-checkpoint/merges.txt\",\"blobId\":\"31349551d90c7606f325fe0f11bbb8bd5fa0d7c7\",\"size\":1671853},{\"rfilename\":\"last-checkpoint/optimizer.pt\",\"blobId\":\"e4697f6c2193bc9411c994ec3ca652d0de457275\",\"size\":83483603,\"lfs\":{\"sha256\":\"825c731e52ee6167cb1218af2fcc9667d6e1ab1891628bbf31cdec37f3cd4cef\",\"size\":83483603,\"pointerSize\":133}},{\"rfilename\":\"last-checkpoint/rng_state.pth\",\"blobId\":\"3778b2dc8bca795caa532970859bd16e8376bbd6\",\"size\":14645,\"lfs\":{\"sha256\":\"d5a1940cb869b258ed92c1981ed720879ada48fcaa2113eecbd3719edad4d8e7\",\"size\":14645,\"pointerSize\":130}},{\"rfilename\":\"last-checkpoint/scaler.pt\",\"blobId\":\"6c41e0bb2722b9282b24f3e79355d479fae7b44e\",\"size\":1383,\"lfs\":{\"sha256\":\"b21c5349d5e7d02de630ebc1cb53ade1d9c6079eeb8594d223bb786011a0428b\",\"size\":1383,\"pointerSize\":129}},{\"rfilename\":\"last-checkpoint/scheduler.pt\",\"blobId\":\"700cf19af3cea8810e198af3be3ef62928cdba85\",\"size\":1465,\"lfs\":{\"sha256\":\"e63389ad1e218e76aa4ea803786157157d015d6b8de2d83e9f2380af2f17a92d\",\"size\":1465,\"pointerSize\":129}},{\"rfilename\":\"last-checkpoint/special_tokens_map.json\",\"blobId\":\"ac23c0aaa2434523c494330aeb79c58395378103\",\"size\":613},{\"rfilename\":\"last-checkpoint/tokenizer.json\",\"blobId\":\"cd71f61a15a522601badb3dc960d800d9cb3766c\",\"size\":11422654,\"lfs\":{\"sha256\":\"aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4\",\"size\":11422654,\"pointerSize\":133}},{\"rfilename\":\"last-checkpoint/tokenizer_config.json\",\"blobId\":\"ddaf69808214a44fdd26d3785b66c1367c78277a\",\"size\":5404},{\"rfilename\":\"last-checkpoint/trainer_state.json\",\"blobId\":\"5626fa1afe9facdf4e4ed9b9a70f52cae24ec2f1\",\"size\":39323},{\"rfilename\":\"last-checkpoint/training_args.bin\",\"blobId\":\"d480e0c126d0826cc527706c4f741c894c3a988b\",\"size\":5841,\"lfs\":{\"sha256\":\"52cce5ffcfd6808600a18dc6b5e7e77f1e12f3f9119848f794b6594a5e4299fb\",\"size\":5841,\"pointerSize\":129}},{\"rfilename\":\"last-checkpoint/vocab.json\",\"blobId\":\"4783fe10ac3adce15ac8f358ef5462739852c569\",\"size\":2776833},{\"rfilename\":\"merges.txt\",\"blobId\":\"31349551d90c7606f325fe0f11bbb8bd5fa0d7c7\",\"size\":1671853},{\"rfilename\":\"model.safetensors\",\"blobId\":\"1e3a285e23f4cae3bc52dd7c4fb8c558ff1a3ccf\",\"size\":1192134784,\"lfs\":{\"sha256\":\"3c3fed56cd33189d386b9b690ada71f55daee5a158afda69486efc6fe57a8ad9\",\"size\":1192134784,\"pointerSize\":135}},{\"rfilename\":\"special_tokens_map.json\",\"blobId\":\"ac23c0aaa2434523c494330aeb79c58395378103\",\"size\":613},{\"rfilename\":\"tokenizer.json\",\"blobId\":\"cd71f61a15a522601badb3dc960d800d9cb3766c\",\"size\":11422654,\"lfs\":{\"sha256\":\"aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4\",\"size\":11422654,\"pointerSize\":133}},{\"rfilename\":\"tokenizer_config.json\",\"blobId\":\"ddaf69808214a44fdd26d3785b66c1367c78277a\",\"size\":5404},{\"rfilename\":\"training_args.bin\",\"blobId\":\"9244f17d34bdb3d9104cab2bdba32c87f4d4d2e1\",\"size\":5841,\"lfs\":{\"sha256\":\"c3c496318b98142af91739d993c5f188ccd665f1dca989bd408725943d2fcc14\",\"size\":5841,\"pointerSize\":129}},{\"rfilename\":\"vocab.json\",\"blobId\":\"4783fe10ac3adce15ac8f358ef5462739852c569\",\"size\":2776833}],\"spaces\":[],\"createdAt\":\"2026-07-09T05:20:31.000Z\",\"safetensors\":{\"parameters\":{\"F16\":596049920},\"total\":596049920},\"usedStorage\":3731552562}",
+      "bytes": 9431,
+      "sha256": "cadf795ee179c3a005b3b8cc8e4ef323155220fa1e0262b3151e0e1faaf922e4",
+      "gitBlobId": "c7e924c35f9a6dfaaa96d4a6284ecd6014a2f23b"
+    },
+    {
+      "url": "https://huggingface.co/Pluto-AI-Labs/Pluto-Genesis-0.6B/resolve/a52e0229b7611bd96dac8594ab2f6924c89249c2/config.json",
+      "status": 200,
+      "retrievedAtUtc": "2026-09-29T22:07:10.053Z",
+      "bytes": 726,
+      "sha256": "17b1b9e1263d1a3892a628760a928ccd8eeb980b5f7a59b4e9da62b6c675c709",
+      "gitBlobId": "0cb1a6152d11dd2c4d20a8d4deadb478e9b0f72e",
+      "utf8": "{\n  \"architectures\": [\n    \"Qwen3ForCausalLM\"\n  ],\n  \"attention_bias\": false,\n  \"attention_dropout\": 0.0,\n  \"bos_token_id\": 151643,\n  \"eos_token_id\": 151645,\n  \"head_dim\": 128,\n  \"hidden_act\": \"silu\",\n  \"hidden_size\": 1024,\n  \"initializer_range\": 0.02,\n  \"intermediate_size\": 3072,\n  \"max_position_embeddings\": 40960,\n  \"max_window_layers\": 28,\n  \"model_type\": \"qwen3\",\n  \"num_attention_heads\": 16,\n  \"num_hidden_layers\": 28,\n  \"num_key_value_heads\": 8,\n  \"rms_norm_eps\": 1e-06,\n  \"rope_scaling\": null,\n  \"rope_theta\": 1000000,\n  \"sliding_window\": null,\n  \"tie_word_embeddings\": true,\n  \"torch_dtype\": \"float16\",\n  \"transformers_version\": \"4.52.4\",\n  \"use_cache\": true,\n  \"use_sliding_window\": false,\n  \"vocab_size\": 151936\n}\n"
+    },
+    {
+      "url": "https://huggingface.co/Pluto-AI-Labs/Pluto-Genesis-0.6B/resolve/a52e0229b7611bd96dac8594ab2f6924c89249c2/tokenizer_config.json",
+      "status": 429,
+      "retrievedAtUtc": "2026-09-29T22:07:10.107Z",
+      "bytes": 26,
+      "sha256": "14d0561094b650bcbdfec25703e2a6d4114f393d7966d71afb200b5454c40405",
+      "gitBlobId": "eaeafcd7ecc79e7573bd2973effd465b7e6161bb",
+      "utf8": "maximum queue size reached"
+    },
+    {
+      "url": "https://huggingface.co/Pluto-AI-Labs/Pluto-Genesis-0.6B/resolve/a52e0229b7611bd96dac8594ab2f6924c89249c2/README.md",
+      "status": 200,
+      "retrievedAtUtc": "2026-09-29T22:10:26.134Z",
+      "retryAfter": null,
+      "bytes": 7124,
+      "sha256": "e72640977a669e03d0e5e7f79df62dffec1154b700e9d2ac671b8563294951ba",
+      "gitBlobId": "ddc3974e5b0252dcc4e468c740504274076d2c8a",
+      "utf8": "---\nlicense: apache-2.0\nlanguage:\n  - en\ntags:\n  - pluto-genesis\n  - qwen3\n  - sub-1b\n  - qlora\n  - instruction-tuning\n  - reasoning\n  - mathematics\n  - coding\n  - fine-tuned\n  - conversational\n  - text-generation-inference\nbase_model: Qwen/Qwen3-0.6B\npipeline_tag: text-generation\nlibrary_name: transformers\ndatasets:\n  - teknium/OpenHermes-2.5\n  - microsoft/orca-math-word-problems-200k\n  - m-a-p/CodeFeedback-Filtered-Instruction\nmodel-index:\n  - name: Pluto-Genesis-0.6B\n    results: []\n---\n\n<div align=\"center\">\n\n# 🪐 Pluto-Genesis-0.6B\n\n<p align=\"center\">\n  <img src=\"./banner.png\" width=\"100%\">\n</p>\n\n**An instruction-tuned sub-1B language model fine-tuned on 80K curated samples**\n\n[![HuggingFace](https://img.shields.io/badge/🤗-HuggingFace-yellow)](https://huggingface.co/Siddh07ETH/Pluto-Genesis-0.6B)\n[![License](https://img.shields.io/badge/License-Apache%202.0-blue)](https://opensource.org/licenses/Apache-2.0)\n[![Model Size](https://img.shields.io/badge/Parameters-596M-green)]()\n[![Base Model](https://img.shields.io/badge/Base-Qwen3--0.6B-orange)](https://huggingface.co/Qwen/Qwen3-0.6B)\n[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21368749.svg)](https://doi.org/10.5281/zenodo.21368749)\n\n</div>\n\n---\n\n## Model Description\n\n**Pluto-Genesis-0.6B** is a fine-tuned instruction-following language model built on top of [Qwen3-0.6B](https://huggingface.co/Qwen/Qwen3-0.6B). It was trained using **QLoRA** (Quantized Low-Rank Adaptation) on a curated mixture of 80,000 high-quality instruction-response pairs spanning general reasoning, mathematical problem solving, and code generation.\n\nThis model is part of the **Pluto AI** research project by Siddharth N.R., exploring efficient fine-tuning of sub-1B language models on consumer-grade hardware.\n\n> **Research Goal:** Demonstrate that a sub-1B model fine-tuned on carefully curated data can achieve competitive performance on reasoning, math, and coding benchmarks while remaining deployable on consumer hardware.\n\n---\n\n## Training Details\n\n| Property | Value |\n|----------|-------|\n| **Base Model** | Qwen/Qwen3-0.6B |\n| **Parameters** | 596 Million (596,049,920) |\n| **Method** | QLoRA (4-bit NF4 + LoRA) |\n| **LoRA Rank** | r=64, α=128 |\n| **LoRA Target Modules** | q_proj, k_proj, v_proj, o_proj, gate_proj, up_proj, down_proj |\n| **Training Steps** | 2,475 |\n| **Final Training Loss** | 0.2741 |\n| **Precision** | FP16 |\n| **Optimizer** | Paged AdamW 8-bit |\n| **Learning Rate** | 2e-4 (cosine schedule) |\n| **Effective Batch Size** | 32 (2 × 16 grad accum) |\n| **Sequence Length** | 1024 tokens |\n| **Hardware** | Tesla T4 (16 GB) |\n| **Framework** | Transformers + PEFT + TRL |\n\n---\n\n## Training Data\n\n| Domain | Dataset | Samples | Skills Targeted |\n|--------|---------|---------|----------------|\n| 🧠 General Reasoning | [OpenHermes-2.5](https://huggingface.co/datasets/teknium/OpenHermes-2.5) | 30,000 | Instruction following, reasoning |\n| 🔢 Mathematics | [Orca-Math-200K](https://huggingface.co/datasets/microsoft/orca-math-word-problems-200k) | 30,000 | Word problems, step-by-step math |\n| 💻 Code | [CodeFeedback-Filtered](https://huggingface.co/datasets/m-a-p/CodeFeedback-Filtered-Instruction) | 20,000 | Code generation, debugging |\n| **Total** | | **80,000** | |\n\n---\n\n## Benchmarks\n\n> 📊 Benchmarks will be added shortly. The model is currently being evaluated on ARC-Challenge, HellaSwag, MMLU, GSM8K, and TruthfulQA using lm-evaluation-harness v0.4.4.\n\n<p align=\"center\">\n  <img src=\"./detailed_benchmark.png\" width=\"100%\">\n</p>\n\n<p align=\"center\">\n  <img src=\"./benchmark-comparison.png\" width=\"100%\">\n</p>\n\n---\n\n## Usage\n\n## GGUF Quantizations\n\nGGUF versions for llama.cpp, Ollama and LM Studio are available here:\n\n> https://huggingface.co/Siddh07ETH/Pluto-Genesis-0.6B-GGUF\n\n### Basic Inference\n\n```python\nfrom transformers import AutoModelForCausalLM, AutoTokenizer\nimport torch\n\nmodel = AutoModelForCausalLM.from_pretrained(\n    \"Siddh07ETH/Pluto-Genesis-0.6B\",\n    torch_dtype=torch.float16,\n    device_map=\"auto\",\n)\ntokenizer = AutoTokenizer.from_pretrained(\"Siddh07ETH/Pluto-Genesis-0.6B\")\n\nmessages = [{\"role\": \"user\", \"content\": \"Explain what a neural network is.\"}]\n\ntext = tokenizer.apply_chat_template(\n    messages, tokenize=False, add_generation_prompt=True\n)\ninputs = tokenizer(text, return_tensors=\"pt\").to(model.device)\n\nwith torch.no_grad():\n    output = model.generate(\n        **inputs,\n        max_new_tokens=256,\n        temperature=0.3,\n        do_sample=True,\n        top_p=0.9,\n        repetition_penalty=1.1,\n    )\n\nresponse = tokenizer.decode(\n    output[0][inputs.input_ids.shape[1]:],\n    skip_special_tokens=True\n)\nprint(response)\n```\n\n### Low Memory Inference (4-bit)\n\n```python\nfrom transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig\nimport torch\n\nquant_config = BitsAndBytesConfig(\n    load_in_4bit=True,\n    bnb_4bit_quant_type=\"nf4\",\n    bnb_4bit_compute_dtype=torch.float16,\n)\nmodel = AutoModelForCausalLM.from_pretrained(\n    \"Siddh07ETH/Pluto-Genesis-0.6B\",\n    quantization_config=quant_config,\n    device_map=\"auto\",\n)\ntokenizer = AutoTokenizer.from_pretrained(\"Siddh07ETH/Pluto-Genesis-0.6B\")\n```\n\n---\n\n## Recommended Generation Settings\n\n| Setting | Value | Reason |\n|---------|-------|--------|\n| `temperature` | 0.3 | Conservative — reduces hallucinations |\n| `top_p` | 0.9 | Focused vocabulary |\n| `repetition_penalty` | 1.1 | Prevents rambling |\n| `max_new_tokens` | 200–512 | Keeps answers concise |\n| `do_sample` | True | Required when temperature < 1.0 |\n\n---\n\n## Limitations\n\n- **Model size:** At 596M parameters this model will hallucinate on topics outside its training distribution. Always verify factual claims.\n- **Context length:** Trained on sequences up to 1024 tokens. Performance may degrade on longer contexts.\n- **Knowledge cutoff:** The model does not have access to real-time information.\n- **Research only:** Not intended for production deployment without further evaluation and safety testing.\n\n---\n\n## Author\n\n**Siddharth N.R.**\n[HuggingFace](https://huggingface.co/Siddh07ETH)\n\n---\n\n## 📄 Research Paper\n\nThe complete research paper describing the Pluto-Genesis training pipeline, benchmark evaluation, checkpoint recovery system, and engineering methodology is available on Zenodo.\n\n**Paper**\n> Pluto-Genesis: Reliable QLoRA Fine-Tuning on Ephemeral Compute with Cross-Session Checkpoint Recovery for Sub-1B Language Models\n\n**DOI**\nhttps://doi.org/10.5281/zenodo.21368749\n\nThis paper includes:\n\n- Training methodology\n- QLoRA configuration\n- Cross-session checkpoint recovery\n- Benchmark evaluation\n- Deployment workflow\n- Reproducibility details\n\n## Citation\n\n```bibtex\n@misc{plutogenesis2026,\n  author    = {Siddharth N.R.},\n  title     = {Pluto-Genesis-0.6B: An Instruction-Tuned Sub-1B Language Model},\n  year      = {2026},\n  publisher = {HuggingFace},\n  url       = {https://huggingface.co/Siddh07ETH/Pluto-Genesis-0.6B}\n}\n```\n\n---\n\n## License\n\nApache 2.0 — see [LICENSE](https://opensource.org/licenses/Apache-2.0).\nBase model [Qwen3-0.6B](https://huggingface.co/Qwen/Qwen3-0.6B) is also Apache 2.0."
+    },
+    {
+      "url": "https://huggingface.co/Pluto-AI-Labs/Pluto-Genesis-0.6B/resolve/a52e0229b7611bd96dac8594ab2f6924c89249c2/tokenizer_config.json",
+      "status": 429,
+      "retrievedAtUtc": "2026-09-29T22:10:27.869Z",
+      "retryAfter": null,
+      "bytes": 26,
+      "sha256": "14d0561094b650bcbdfec25703e2a6d4114f393d7966d71afb200b5454c40405",
+      "gitBlobId": "eaeafcd7ecc79e7573bd2973effd465b7e6161bb",
+      "utf8": "maximum queue size reached"
+    },
+    {
+      "url": "https://huggingface.co/Pluto-AI-Labs/Pluto-Genesis-0.6B/resolve/a52e0229b7611bd96dac8594ab2f6924c89249c2/tokenizer_config.json",
+      "status": 429,
+      "retrievedAtUtc": "2026-09-29T22:12:06.413Z",
+      "retryAfter": null,
+      "bytes": 26,
+      "sha256": "14d0561094b650bcbdfec25703e2a6d4114f393d7966d71afb200b5454c40405",
+      "gitBlobId": "eaeafcd7ecc79e7573bd2973effd465b7e6161bb",
+      "utf8": "maximum queue size reached"
+    }
+  ],
+  "requestFailures": [
+    {
+      "url": "https://huggingface.co/api/models/Pluto-AI-Labs/Pluto-Genesis-0.6B/revision/a52e0229b7611bd96dac8594ab2f6924c89249c2?blobs=true",
+      "error": "The operation was aborted due to timeout",
+      "retrievedAtUtc": "2026-09-29T22:09:36.587Z"
+    }
+  ],
+  "captureLimitations": [
+    "The successful API request used the main model endpoint with blobs=true; its response sha pins this exact revision. The revision API endpoint timed out and is not claimed to have succeeded.",
+    "An earlier revision API attempt also timed out before a complete response capture; no successful bytes from that attempt are claimed.",
+    "Repeated tokenizer_config requests returned HTTP 429. Available responses had no Retry-After. Requests stopped after the recorded spaced follow-ups; no alternate endpoint or transport was used to evade the limit.",
+    "Local exact-match checks examined only small tokenizer_config metadata in the immediate source-* roots and the original Qwen3 diagnostic revision. Their lengths differ from the pinned 5404-byte file. None was reused or rewritten.",
+    "The embedded Jinja below comes from the successful API response, not a separately fetched chat_template.jinja file. Exact UTF-8 byte length and Git blob match the pinned sibling.",
+    "A transient PowerShell stdin encoding calculation replaced non-ASCII README characters and was discarded; original retained response text was then passed as ASCII-escaped JavaScript data and its exact 7124-byte/SHA/Git-blob identity was verified before this capture. No source or response bytes were mutated."
+  ],
+  "apiEmbeddedFile": {
+    "filename": "chat_template.jinja",
+    "origin": {
+      "responseUrl": "https://huggingface.co/api/models/Pluto-AI-Labs/Pluto-Genesis-0.6B?blobs=true",
+      "responseSha256": "cadf795ee179c3a005b3b8cc8e4ef323155220fa1e0262b3151e0e1faaf922e4",
+      "jsonPath": "config.chat_template_jinja"
+    },
+    "byteCount": 785,
+    "sha256": "48ee2be15a49d5ebae42b2db3183aa58747605c99af00a5f77a5003e77cdf3fc",
+    "gitBlobId": "15253c5b00bc821eb3e42cbab6f9a414d9319b0a",
+    "exactPinnedSiblingMatch": true,
+    "utf8": "{%- if messages[0]['role'] == 'system' -%}\n    {%- set system_message = messages[0]['content'] -%}\n    {%- set loop_messages = messages[1:] -%}\n{%- else -%}\n    {%- set system_message = 'You are Pluto-Genesis, an advanced AI assistant created by Siddharth N.R. You are a highly capable, thoughtful, and precise assistant that excels at reasoning, mathematics, coding, and general knowledge. You think step-by-step through complex problems and provide clear, accurate, and helpful responses.' -%}\n    {%- set loop_messages = messages -%}\n{%- endif -%}\n<|im_start|>system\n{{ system_message }}<|im_end|>\n{% for message in loop_messages %}\n<|im_start|>{{ message['role'] }}\n{{ message['content'] }}<|im_end|>\n{% endfor %}\n{%- if add_generation_prompt -%}<|im_start|>assistant\n{%- endif -%}"
+  },
+  "verifiedMetadata": {
+    "configuration": {
+      "architectures": [
+        "Qwen3ForCausalLM"
+      ],
+      "attention_bias": false,
+      "attention_dropout": 0,
+      "bos_token_id": 151643,
+      "eos_token_id": 151645,
+      "head_dim": 128,
+      "hidden_act": "silu",
+      "hidden_size": 1024,
+      "initializer_range": 0.02,
+      "intermediate_size": 3072,
+      "max_position_embeddings": 40960,
+      "max_window_layers": 28,
+      "model_type": "qwen3",
+      "num_attention_heads": 16,
+      "num_hidden_layers": 28,
+      "num_key_value_heads": 8,
+      "rms_norm_eps": 0.000001,
+      "rope_scaling": null,
+      "rope_theta": 1000000,
+      "sliding_window": null,
+      "tie_word_embeddings": true,
+      "torch_dtype": "float16",
+      "transformers_version": "4.52.4",
+      "use_cache": true,
+      "use_sliding_window": false,
+      "vocab_size": 151936
+    },
+    "rootWeight": {
+      "rfilename": "model.safetensors",
+      "blobId": "1e3a285e23f4cae3bc52dd7c4fb8c558ff1a3ccf",
+      "size": 1192134784,
+      "lfs": {
+        "sha256": "3c3fed56cd33189d386b9b690ada71f55daee5a158afda69486efc6fe57a8ad9",
+        "size": 1192134784,
+        "pointerSize": 135
+      }
+    },
+    "parameterCount": 596049920,
+    "weightFileBytes": 1192134784,
+    "weightSha256": "3c3fed56cd33189d386b9b690ada71f55daee5a158afda69486efc6fe57a8ad9",
+    "profile": "qwen3-0.6b-bpe",
+    "shapeMismatches": [],
+    "publisherConversationDeclarations": [
+      "conversational",
+      "instruction-tuning"
+    ],
+    "licenseDeclaration": "apache-2.0",
+    "rootLicenseFilePresent": false
+  },
+  "selectionReason": "Publisher describes 80000 examples including 30000 OpenHermes 2.5 general instruction/reasoning examples alongside mathematics and coding. This is a plausible broader training signal for one unchanged six-case falsifier, not measured useful behavior.",
+  "licenseReview": {
+    "status": "publisher-apache-2.0-declaration-observed",
+    "evidence": "Pinned README and API card declare Apache 2.0. No conflicting license was found in these inspected records. No root LICENSE file is advertised. Existing official-Apache-text acquisition convention can be used once complete metadata admission succeeds.",
+    "uncertainty": "Publisher training composition and example counts are not independently verified. No claim of legal verification of every training record or product qualification is made."
+  },
+  "exclusions": {
+    "path": "contracts/vnext/source-candidate-exclusions.v1.json",
+    "byteCount": 22048,
+    "sha256": "ac618797998007053d3012f87fcda806b5c1f7449be8af3d59bbbdee922ddc82",
+    "count": 48,
+    "exactRevisionOrWeightMatch": false,
+    "policyChanged": false
+  },
+  "missingMetadata": [
+    {
+      "rfilename": "generation_config.json",
+      "blobId": "6b204b47b535ecceeec0cd8ca14b8f8c4d8ebc9e",
+      "size": 214,
+      "status": "exact-content-not-yet-captured"
+    },
+    {
+      "rfilename": "tokenizer_config.json",
+      "blobId": "ddaf69808214a44fdd26d3785b66c1367c78277a",
+      "size": 5404,
+      "status": "exact-content-not-yet-captured"
+    }
+  ],
+  "conversionBoundary": "Source FP16 is outside current Rust BF16/F32 converter admission. A narrowly tested F16 conversion extension and coherent Template2 source-identity binding would be needed only if the unchanged source screen succeeds. No conversion/runtime change has been made.",
+  "implementation": {
+    "paths": [
+      "tinyrustlm/tools/huggingface-supported-candidates.js",
+      "tinyrustlm/tests/huggingface-supported-candidates.test.js"
+    ],
+    "change": "Permit generic names only when both exact conversational and instruction-tuning tags are present; repeat conversation admission against revision metadata. Preserve existing named profiles, shape/template/license checks, base/embedding/reward exclusions and all 48 exact source exclusions.",
+    "identities": [
+      {
+        "path": "tinyrustlm/tools/huggingface-supported-candidates.js",
+        "byteCount": 26025,
+        "sha256": "0b8509d1d7a330923520e64efd462a72d8dc2f042f86d422890e3f2420597906"
+      },
+      {
+        "path": "tinyrustlm/tests/huggingface-supported-candidates.test.js",
+        "byteCount": 37489,
+        "sha256": "20fc03bf6ebf4909388e18654d8a446d42dc09ec7f4c5d0cea6e38090fce9933"
+      }
+    ],
+    "baseline": {
+      "tests": 2,
+      "passed": 1,
+      "failed": 1,
+      "expectedFailure": "Generic explicit conversational/instruction-tuning candidate count was zero rather than one.",
+      "stdoutBytes": 1087,
+      "stdoutSha256": "0d22478152fa92ef0482cea300fff92e5a2ed6cd54dec3e61232aa700776ec2b",
+      "stderrBytes": 0
+    },
+    "validation": {
+      "tests": 51,
+      "passed": 51,
+      "failed": 0,
+      "testFiles": [
+        "tinyrustlm/tests/huggingface-supported-candidates.test.js",
+        "tinyrustlm/tests/huggingface-candidate-acquire.test.js",
+        "tinyrustlm/tests/source-candidate-exclusions.test.js"
+      ],
+      "stdoutBytes": 6872,
+      "stdoutSha256": "71d009b1c537e480684d8a359938d64f632b971afbb1f1dafed74d2f6cfe03e9",
+      "stderrBytes": 0,
+      "discoveryCoveragePercent": {
+        "lines": 94.74,
+        "branches": 79.23,
+        "functions": 94.59
+      }
+    },
+    "scratchRetirement": {
+      "roots": [
+        "artifacts/tests/conversation-declaration/tinyrustlm-operation-VaBJ7x",
+        "artifacts/tests/conversation-declaration/tinyrustlm-operation-9M1H3K"
+      ],
+      "result": "Both helper-owned roots and their owner.v2 markers were removed by the creating process after child completion; no blocked historical paths touched."
+    }
+  },
+  "nextAction": "After rate-limit recovery, capture and verify only the exact remaining small metadata. Then run discovery admission on captured primary responses and prepare one frozen combined acquisition/tokenizer-only-preflight/six-case source-screen plan for review. No payload or inference is authorized by this partial capture.",
+  "modelPayloadAcquired": false,
+  "modelExecutionStarted": false,
+  "productionDefaultChanged": false
+}

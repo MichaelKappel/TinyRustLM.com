@@ -1,0 +1,292 @@
+{
+  "schema": "tinyrustlm.source_development_screen_plan.v2",
+  "status": "prospective-bound-combined-operation-awaiting-commit-and-root-go",
+  "purpose": "One source-reference development screen of Pluto-Genesis-0.6B at exact distinct FP16 weights. Preserve all six prior cases, criteria, system text and greedy settings; use this source's native external chat template without thinking arguments.",
+  "source": {
+    "modelId": "Pluto-AI-Labs/Pluto-Genesis-0.6B",
+    "revision": "a52e0229b7611bd96dac8594ab2f6924c89249c2",
+    "weightSha256": "3c3fed56cd33189d386b9b690ada71f55daee5a158afda69486efc6fe57a8ad9",
+    "weightIdentity": "638452e95a0c6f5235dd65a2e2df9bb7f81e16f74caa0912b7eabcbdd41a6634",
+    "sourceWeightBytes": 1192134784,
+    "totalParameters": 596049920,
+    "profile": "qwen3-0.6b-bpe",
+    "checkpointDirectory": "D:\\LLMs\\TinyRustLM\\sources\\source-bd2ce82e254af7040110ad6ff3b4285d2f2a652610bbc78fafeb3327999af36f"
+  },
+  "metadata": {
+    "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-metadata-closure-20260929.json",
+    "bytes": 10935,
+    "sha256": "b91643e9739b43be735d211f8beb17969ceeff105e234eeaf56a9c8ebf10db52",
+    "verification": "Exact successful main API response pins sha and siblings; immutable config/README resolve bytes, tokenizer raw-endpoint bytes and generation resolve bytes match pinned Git blobs. External Jinja is exact API-embedded text matching its785-byte pinned Git blob. All actual response origins and failed requests are retained. No model/tokenizer payload acquired."
+  },
+  "inventory": {
+    "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-inventory-20260929.json",
+    "bytes": 2338,
+    "sha256": "635d875f3e8b946908836007a63f297b8c0199f00893d6108a3648056ff196fc",
+    "selectionStart": 0,
+    "selectionCount": 1,
+    "schema": "tinyrustlm.huggingface_supported_candidate_inventory.v4",
+    "origin": "Current discovery producer replayed retained primary metadata for this selected single candidate with zero network calls. The exact API object supplies the selection and revision response; tokenizer raw response and API-embedded Jinja are mapped only after pinned Git-blob checks. Existing exact official Apache text is reused from a verified receipt. No fresh Hub search, successful revision endpoint, separate Jinja fetch or new license request is claimed."
+  },
+  "exclusionsAtSelection": {
+    "path": "contracts/vnext/source-candidate-exclusions.v1.json",
+    "bytes": 22048,
+    "sha256": "ac618797998007053d3012f87fcda806b5c1f7449be8af3d59bbbdee922ddc82",
+    "entryCount": 48,
+    "exactRevisionOrWeightMatch": false,
+    "allPriorFailuresPreserved": true,
+    "nonmatchIsNotQualification": true
+  },
+  "selectionReason": "A distinct tied-head Qwen3 checkpoint whose publisher declares conversational/instruction tuning and reports30000 OpenHermes2.5 general instruction/reasoning examples among80000 examples, alongside math and code. That broader mix is a plausible reason for one discriminating source test, not proof of useful replies. No rejected source is reopened.",
+  "verifiedMetadata": {
+    "architecture": "Qwen3ForCausalLM/qwen3; hidden1024, FF3072, layers28, queryHeads16, KVHeads8, headDimension128, vocab151936, tied output, FP16 source, RoPE theta1000000, RMS epsilon0.000001, model context40960, Q/K normalization, use_sliding_window=false.",
+    "useCache": true,
+    "template": "Exact external785-byte native ChatML chat_template.jinja; SHA25648ee2be15a49d5ebae42b2db3183aa58747605c99af00a5f77a5003e77cdf3fc. tokenizer_config contains no embedded chat_template. No thinking mode/template argument.",
+    "sourceEosTokenIds": [
+      151645,
+      151643
+    ],
+    "tokenizerEosTokenId": 151645,
+    "publisherLicense": "Apache-2.0 declared in pinned card/API and README. No root LICENSE file advertised and no conflicting license found in the inspected records. Acquisition uses the existing publisher-declaration plus official Apache authority text convention,11358B SHAcfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30.",
+    "uncertainty": "Publisher training composition/counts are not independently verified; no legal verification of every training record, local reference quality, conversion support or browser behavior is claimed.",
+    "tokenizerMaximumLength": 131072,
+    "effectiveModelContextLimit": 40960
+  },
+  "cases": {
+    "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-untied-development-screen-20260929.eval",
+    "bytes": 1308,
+    "sha256": "946e6bdda7512bde3db4dac5a4f66e66eb5353141e7d19b8a0ca3735fd2903c9",
+    "count": 6,
+    "maximumTotalGeneratedTokens": 352,
+    "kind": "public-development-not-holdout",
+    "changedCases": []
+  },
+  "criteria": [
+    {
+      "index": 0,
+      "expected": "Exact READY, allowing surrounding whitespace only."
+    },
+    {
+      "index": 1,
+      "expected": "A single JSON object exactly {name: Mira, day: Tuesday}; no extra text, including Markdown fences."
+    },
+    {
+      "index": 2,
+      "expected": "Friday only, allowing surrounding whitespace and final punctuation."
+    },
+    {
+      "index": 3,
+      "expected": "Exactly two actionable steps yielding a handwritten packing checklist covering coat, bottle and keys, either named explicitly or referred to unambiguously as all three stated items. Using the checklist is optional. No invented tools, added packing items, unavailable resources or falsely claimed real-world actions. Judge exactly two steps semantically, not by arbitrary punctuation."
+    },
+    {
+      "index": 4,
+      "expected": "Red only, allowing surrounding whitespace and final punctuation; preserve the prior review's treatment of lowercase red as the same color-only answer."
+    },
+    {
+      "index": 5,
+      "expected": "One sentence preserving weekday hours and Sunday closure with no invented facts."
+    }
+  ],
+  "criterionAuthority": {
+    "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-untied-development-binding-20260929.json",
+    "bytes": 5733,
+    "sha256": "980ee3d8628cecb46692f44ed3a88ec65755226b8251f62bd4432ec68b411335",
+    "reviewer": "Root agent, separately from the execution agent",
+    "review": "Root independently assessed the preceding distinct sources against these six unchanged criteria. This candidate has no generated or inspected model answers. Independent root review of this prospective plan is required before execution."
+  },
+  "tool": {
+    "path": "tinyrustlm/tools/reference-raw-quality.py",
+    "bytes": 34527,
+    "sha256": "30dd01e388433dfe926f5990ab778817167fd50a6c81a55a19e10870ebb289fb"
+  },
+  "acquisitionHelpers": [
+    {
+      "path": "tinyrustlm/tools/huggingface-supported-candidates.js",
+      "bytes": 26025,
+      "sha256": "0b8509d1d7a330923520e64efd462a72d8dc2f042f86d422890e3f2420597906"
+    },
+    {
+      "path": "tinyrustlm/tools/huggingface-candidate-acquire.js",
+      "bytes": 33531,
+      "sha256": "c179d2d343689ef930ee765b64447589a84a2c6efac4b59ceba83271fadcd1de"
+    },
+    {
+      "path": "tinyrustlm/tools/huggingface-candidate-storage.js",
+      "bytes": 7471,
+      "sha256": "d94c9e90df4b110523d5238d361b348b565b7a2dd9f3840103cb20652b6a9a33"
+    },
+    {
+      "path": "tinyrustlm/tools/huggingface-metadata.js",
+      "bytes": 4158,
+      "sha256": "f6e26c0255a7eec38d35c116d4e1983fab42f33955e04074cb413f45ea97a341"
+    },
+    {
+      "path": "tinyrustlm/tools/huggingface-weight-layout.js",
+      "bytes": 3690,
+      "sha256": "002b9cbe9111a89a01a6c36ff63def0d18e9c5e7060a798636eac440dd6f2911"
+    },
+    {
+      "path": "tinyrustlm/tools/source-candidate-exclusions.js",
+      "bytes": 1885,
+      "sha256": "43a71f9760a2d1038f9b3b017c61a445577a68bcd285098ab915ba5b0df4b836"
+    },
+    {
+      "path": "tinyrustlm/tools/strict-json.js",
+      "bytes": 11529,
+      "sha256": "8935f3918c9a12722404ad120c73dae80965c723301a00c7e60767c45a78790e"
+    },
+    {
+      "path": "tinyrustlm/tools/canonical-operation-scratch.js",
+      "bytes": 9276,
+      "sha256": "52b6024d121479d20a634ee639d641cb1ff4896bce99b1110a3e26720bf5a7f9"
+    },
+    {
+      "path": "tinyrustlm/tools/verify-single-source-authority.js",
+      "bytes": 144521,
+      "sha256": "e8867b01d00399f319852449ff80c249edab30a8bcee4c09fd3789300f65aaf7"
+    }
+  ],
+  "execution": {
+    "python": "D:\\LLMs\\TinyRustLM\\training-env-py312\\Scripts\\python.exe",
+    "pythonFlags": [
+      "-I",
+      "-B"
+    ],
+    "torch": "2.13.0+cpu",
+    "transformers": "5.13.1",
+    "device": "cpu",
+    "dtype": "float32",
+    "generation": "greedy",
+    "systemPrompt": "You are TinyRustLM, a browser-local AI assistant. You do not have personal experiences. Answer directly and helpfully.",
+    "callsPerCase": 1,
+    "adapter": null,
+    "policyExamples": null,
+    "promptSuffix": null,
+    "remoteCode": false,
+    "localFilesOnly": true,
+    "retries": 0,
+    "timeoutSeconds": 600,
+    "threadLimit": 4,
+    "rawOutputTransform": "none",
+    "thinkingTemplateOptions": {},
+    "publisherUseCache": true,
+    "publisherUseCacheHandling": "Preserve original config and generation_config; unchanged raw owner passes no use_cache override. Record effective source-framework configuration during tokenizer-only preflight. Do not rewrite files, disable cache, inject a thinking switch, or change the publisher template.",
+    "runtimeBindings": [
+      {
+        "path": "D:\\LLMs\\TinyRustLM\\training-env-py312\\Scripts\\python.exe",
+        "bytes": 274424,
+        "sha256": "0b471133e110cfb53a061cad528ce8e517d7b9ac41a0a396c39ad795a487fc14"
+      },
+      {
+        "path": "D:\\LLMs\\TinyRustLM\\training-env-py312\\Lib\\site-packages\\transformers\\tokenization_utils_base.py",
+        "bytes": 183764,
+        "sha256": "f86fc8ce6ad86bcbb4bad93b84b3cde9f7b93b516703b5d220889c66bbdd7b5a"
+      }
+    ],
+    "exactGreedyControls": {
+      "do_sample": false,
+      "repetition_penalty": 1,
+      "pad_token_id": 151645,
+      "eos_token_id": [
+        151645,
+        151643
+      ],
+      "temperature": null,
+      "top_k": null,
+      "top_p": null
+    },
+    "commandArguments": [
+      "-I",
+      "-B",
+      "tinyrustlm/tools/reference-raw-quality.py",
+      "D:\\LLMs\\TinyRustLM\\sources\\source-bd2ce82e254af7040110ad6ff3b4285d2f2a652610bbc78fafeb3327999af36f",
+      "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-untied-development-screen-20260929.eval",
+      "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-development-raw-20260929.json",
+      "--source-model-id",
+      "Pluto-AI-Labs/Pluto-Genesis-0.6B",
+      "--source-revision",
+      "a52e0229b7611bd96dac8594ab2f6924c89249c2",
+      "--generation-profile",
+      "greedy",
+      "--system-prompt",
+      "You are TinyRustLM, a browser-local AI assistant. You do not have personal experiences. Answer directly and helpfully."
+    ],
+    "sourceDtypeHandling": "Existing AutoModelForCausalLM source-framework path loads FP16 checkpoint weights into requested CPU float32. This is an admitted PyTorch dtype path, distinct from the current Rust converter's unsupported FP16 input. Actual model loading/generation remains unmeasured until this operation."
+  },
+  "resourceEstimate": {
+    "sourceWeightBytes": 1192134784,
+    "sevenSourceFilesTotalBytes": 1203575925,
+    "fp32ParameterBytes": 2384199680,
+    "estimatedSixMemberQ8Bytes": 614593332,
+    "calculation": "ceil(596049920 parameters *1.01) +12MiB for tokenizer/container/other composition members;1% weight-scale overhead and12MiB allowance are planning estimates, not measurements.",
+    "maximumSixMemberBytes": 805306368,
+    "estimateOnly": true,
+    "uncertainty": "Actual tensor/container/tokenizer bytes, activations, allocator/loading peaks, browser speed and exact converted size remain unmeasured. A passing source screen does not establish browser admission."
+  },
+  "conversionBoundary": "Current Rust Qwen3 conversion admits BF16/F32, not this FP16 checkpoint. A useful source result would justify a narrow FP16 decoding extension with numerical tests and coherent Template2 source-identity/template binding. Existing Qwen3 dimensions and scalar support do not establish conversion, Prompt2 composition, numerical agreement, browser execution or default qualification.",
+  "decisionRule": "Record all six raw outputs and the unchanged criteria separately. Any case failure is a terminal development rejection of these exact source bytes. No output repair, sampler change or replay. Even six passes only justify conversion and further qualification, never default/catalog admission.",
+  "output": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-development-raw-20260929.json",
+  "combinedOperation": {
+    "maximumWallClockSeconds": 1800,
+    "sourceAuthorityArguments": [
+      "--require-remote-exact"
+    ],
+    "requireAllRepositoryWorktreesClean": false,
+    "boundSourceIdentity": "At launch record exact Tiny HEAD/tree and direct remote equality; the reviewed GO commit must remain an ancestor. Verify exact plan, inventory, all three metadata captures, cases, exclusion policy, raw owner, acquisition helper/dependency and runtime hashes before and after. These bound bytes must remain unchanged. Later unrelated root commits may advance HEAD; record separately without claiming all-tree cleanliness.",
+    "parallelWorkAllowed": "Parent-coordinated root numerical owner/profile/registration/tests, scalar.rs runtime correction and rebuilt native/browser WASM artifacts, independent dotnet/tools/TinyRustLM.ConversationProbe and tinyrustlm/tools/real-composition-execution.js with their focused tests, hosting/catalog/installer/preflight source/tests, and corresponding docs/review/test output may change in their owning agents. They are outside this experiment bound input closure. Record actual status and ownership. No bound helper/input, unknown source copy, failed authority scan or model mutation is exempt.",
+    "stageOrder": [
+      "registered-root-source-authority-and-remote-exact",
+      "bound-input-code-and-runtime-identity",
+      "exclusive-start-record",
+      "one-acquisition",
+      "exact-seven-source-files-plus-receipt-verification",
+      "config-tokenizer-only-preflight",
+      "one-six-case-source-screen",
+      "post-operation-bound-identity-and-evidence-closure"
+    ],
+    "acquisitionMaximumSeconds": 600,
+    "acquisitionAttempts": 1,
+    "transportRetries": 0,
+    "acquisitionFailureRule": "Stop on any download, identity, receipt or directory-closure failure. Do not retry the acquisition or continue to generation. A wrapper may reject a second fetch of the same source URL while preserving the existing helper's byte/hash/path checks.",
+    "expectedSourceFiles": [
+      "config.json",
+      "tokenizer.json",
+      "tokenizer_config.json",
+      "chat_template.jinja",
+      "generation_config.json",
+      "LICENSE",
+      "model.safetensors"
+    ],
+    "expectedReceipt": "source-acquisition.json",
+    "sourceReceiptHandling": "Preserve the exact verified v4 receipt and every source-file identity immediately in compact canonical artifacts outside model payloads. There are seven source files plus the receipt. No intermediate receipt commit or second GO is required inside this single combined operation.",
+    "preflightMaximumSeconds": 120,
+    "preflightBoundary": "Use bound local Python/runtime offline with config/tokenizer/GenerationConfig and unchanged raw-owner message/template helpers only. Verify external template hash/no competing embedded template, config use_cache=true, EOS list, exact greedy controls, all six rendered/tokenized prompts and model context40960 budget despite tokenizer131072 metadata. Pass no thinking arguments. Refuse socket networking and model tensor reads; never instantiate AutoModel or call generate here.",
+    "preflightFailureRule": "Stop without generation and preserve the failure. Do not edit the publisher files, prompts or settings and do not rerun the failed preflight.",
+    "screenMaximumSeconds": 600,
+    "screenAttempts": 1,
+    "finalization": "Preserve exact raw answers, stdout/stderr, exit/status/timeout evidence, before/after bound input and source-file identities and cleanup outcome. Any bound identity mismatch stops a valid model decision. All failures remain closed. Retain original in-process ownership for scratch cleanup."
+  },
+  "launchConditions": [
+    "Root commits and pushes the tested eligibility change, all exact metadata captures, inventory and this prospective plan; independently reviews unchanged criteria; then gives one GO for the combined operation.",
+    "Fresh registered-root source-authority and direct remote-exact admission must pass. The reviewed GO commit must remain an ancestor of current HEAD; verify all bound identities. Known unrelated numerical/runtime/hosting work may coexist. This is development evidence, not release/deployment admission.",
+    "Require absence of raw output and exclusive start record. Acquire only inventory index0/count1 with the bound v4 helper once, under the600-second acquisition budget and no transport retries.",
+    "Reverify seven exact source files plus receipt; preflight config/tokenizer only within120seconds. On failure preserve evidence and stop before generation without retry or metadata rewriting.",
+    "Run the unchanged raw owner once for all six cases under600seconds. No adapter, prompt suffix, examples, thinking override, sampler tuning, answer repair or second attempt.",
+    "Before execution confirm exact output/preflight/stderr paths are Git -text, preserving emitted bytes. After execution verify the same bound code, inputs, model and runtime identities. Preserve all48 exclusions and past outcomes.",
+    "Preserve the prior failed resolve requests and wrapper-capture failure. Discovery replay initially refused a relative output path before writing; its corrected absolute canonical output succeeded. These are metadata/preparation observations, not model attempts or reasons to repeat generation."
+  ],
+  "modelPayloadAcquired": false,
+  "modelExecutionStarted": false,
+  "productionDefaultChanged": false,
+  "supportingMetadata": [
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-metadata-review-20260929.json",
+      "bytes": 31028,
+      "sha256": "7572eaf3aa6218b33154c13a7ed168eccb729862dfdfd4e1d6d8ad6f6bb03556"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-metadata-followup-20260929.json",
+      "bytes": 3771,
+      "sha256": "0b04edd7be4d7959481ebde5fcf2c80a1e8d3ebdb59fd7f9cb1be079f86eb914"
+    }
+  ]
+}

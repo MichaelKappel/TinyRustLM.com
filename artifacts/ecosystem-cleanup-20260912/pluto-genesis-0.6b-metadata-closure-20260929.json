@@ -1,0 +1,88 @@
+{
+  "schema": "tinyrustlm.source_candidate_metadata_capture.v1",
+  "createdAtUtc": "2026-09-29T22:25:26.123Z",
+  "status": "metadata-closure-ready-for-discovery-replay",
+  "modelId": "Pluto-AI-Labs/Pluto-Genesis-0.6B",
+  "revision": "a52e0229b7611bd96dac8594ab2f6924c89249c2",
+  "scope": "Complete small metadata closure for one prospective candidate. All failed requests and partial review remain unchanged in prior captures. No payload acquired or model executed.",
+  "priorCaptures": [
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-metadata-review-20260929.json",
+      "bytes": 31028,
+      "sha256": "7572eaf3aa6218b33154c13a7ed168eccb729862dfdfd4e1d6d8ad6f6bb03556"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-metadata-followup-20260929.json",
+      "bytes": 3771,
+      "sha256": "0b04edd7be4d7959481ebde5fcf2c80a1e8d3ebdb59fd7f9cb1be079f86eb914"
+    }
+  ],
+  "responses": [
+    {
+      "url": "https://huggingface.co/Pluto-AI-Labs/Pluto-Genesis-0.6B/raw/a52e0229b7611bd96dac8594ab2f6924c89249c2/tokenizer_config.json",
+      "filename": "tokenizer_config.json",
+      "retrievedAtUtc": "2026-09-29T22:25:26.123Z",
+      "status": 200,
+      "retryAfter": null,
+      "bytes": 5404,
+      "sha256": "443bfa629eb16387a12edbf92a76f6a6f10b2af3b53d87ba1550adfcf45f7fa0",
+      "gitBlobId": "ddaf69808214a44fdd26d3785b66c1367c78277a",
+      "utf8": "{\n  \"add_bos_token\": false,\n  \"add_prefix_space\": false,\n  \"added_tokens_decoder\": {\n    \"151643\": {\n      \"content\": \"<|endoftext|>\",\n      \"lstrip\": false,\n      \"normalized\": false,\n      \"rstrip\": false,\n      \"single_word\": false,\n      \"special\": true\n    },\n    \"151644\": {\n      \"content\": \"<|im_start|>\",\n      \"lstrip\": false,\n      \"normalized\": false,\n      \"rstrip\": false,\n      \"single_word\": false,\n      \"special\": true\n    },\n    \"151645\": {\n      \"content\": \"<|im_end|>\",\n      \"lstrip\": false,\n      \"normalized\": false,\n      \"rstrip\": false,\n      \"single_word\": false,\n      \"special\": true\n    },\n    \"151646\": {\n      \"content\": \"<|object_ref_start|>\",\n      \"lstrip\": false,\n      \"normalized\": false,\n      \"rstrip\": false,\n      \"single_word\": false,\n      \"special\": true\n    },\n    \"151647\": {\n      \"content\": \"<|object_ref_end|>\",\n      \"lstrip\": false,\n      \"normalized\": false,\n      \"rstrip\": false,\n      \"single_word\": false,\n      \"special\": true\n    },\n    \"151648\": {\n      \"content\": \"<|box_start|>\",\n      \"lstrip\": false,\n      \"normalized\": false,\n      \"rstrip\": false,\n      \"single_word\": false,\n      \"special\": true\n    },\n    \"151649\": {\n      \"content\": \"<|box_end|>\",\n      \"lstrip\": false,\n      \"normalized\": false,\n      \"rstrip\": false,\n      \"single_word\": false,\n      \"special\": true\n    },\n    \"151650\": {\n      \"content\": \"<|quad_start|>\",\n      \"lstrip\": false,\n      \"normalized\": false,\n      \"rstrip\": false,\n      \"single_word\": false,\n      \"special\": true\n    },\n    \"151651\": {\n      \"content\": \"<|quad_end|>\",\n      \"lstrip\": false,\n      \"normalized\": false,\n      \"rstrip\": false,\n      \"single_word\": false,\n      \"special\": true\n    },\n    \"151652\": {\n      \"content\": \"<|vision_start|>\",\n      \"lstrip\": false,\n      \"normalized\": false,\n      \"rstrip\": false,\n      \"single_word\": false,\n      \"special\": true\n    },\n    \"151653\": {\n      \"content\": \"<|vision_end|>\",\n      \"lstrip\": false,\n      \"normalized\": false,\n      \"rstrip\": false,\n      \"single_word\": false,\n      \"special\": true\n    },\n    \"151654\": {\n      \"content\": \"<|vision_pad|>\",\n      \"lstrip\": false,\n      \"normalized\": false,\n      \"rstrip\": false,\n      \"single_word\": false,\n      \"special\": true\n    },\n    \"151655\": {\n      \"content\": \"<|image_pad|>\",\n      \"lstrip\": false,\n      \"normalized\": false,\n      \"rstrip\": false,\n      \"single_word\": false,\n      \"special\": true\n    },\n    \"151656\": {\n      \"content\": \"<|video_pad|>\",\n      \"lstrip\": false,\n      \"normalized\": false,\n      \"rstrip\": false,\n      \"single_word\": false,\n      \"special\": true\n    },\n    \"151657\": {\n      \"content\": \"<tool_call>\",\n      \"lstrip\": false,\n      \"normalized\": false,\n      \"rstrip\": false,\n      \"single_word\": false,\n      \"special\": false\n    },\n    \"151658\": {\n      \"content\": \"</tool_call>\",\n      \"lstrip\": false,\n      \"normalized\": false,\n      \"rstrip\": false,\n      \"single_word\": false,\n      \"special\": false\n    },\n    \"151659\": {\n      \"content\": \"<|fim_prefix|>\",\n      \"lstrip\": false,\n      \"normalized\": false,\n      \"rstrip\": false,\n      \"single_word\": false,\n      \"special\": false\n    },\n    \"151660\": {\n      \"content\": \"<|fim_middle|>\",\n      \"lstrip\": false,\n      \"normalized\": false,\n      \"rstrip\": false,\n      \"single_word\": false,\n      \"special\": false\n    },\n    \"151661\": {\n      \"content\": \"<|fim_suffix|>\",\n      \"lstrip\": false,\n      \"normalized\": false,\n      \"rstrip\": false,\n      \"single_word\": false,\n      \"special\": false\n    },\n    \"151662\": {\n      \"content\": \"<|fim_pad|>\",\n      \"lstrip\": false,\n      \"normalized\": false,\n      \"rstrip\": false,\n      \"single_word\": false,\n      \"special\": false\n    },\n    \"151663\": {\n      \"content\": \"<|repo_name|>\",\n      \"lstrip\": false,\n      \"normalized\": false,\n      \"rstrip\": false,\n      \"single_word\": false,\n      \"special\": false\n    },\n    \"151664\": {\n      \"content\": \"<|file_sep|>\",\n      \"lstrip\": false,\n      \"normalized\": false,\n      \"rstrip\": false,\n      \"single_word\": false,\n      \"special\": false\n    },\n    \"151665\": {\n      \"content\": \"<tool_response>\",\n      \"lstrip\": false,\n      \"normalized\": false,\n      \"rstrip\": false,\n      \"single_word\": false,\n      \"special\": false\n    },\n    \"151666\": {\n      \"content\": \"</tool_response>\",\n      \"lstrip\": false,\n      \"normalized\": false,\n      \"rstrip\": false,\n      \"single_word\": false,\n      \"special\": false\n    },\n    \"151667\": {\n      \"content\": \"<think>\",\n      \"lstrip\": false,\n      \"normalized\": false,\n      \"rstrip\": false,\n      \"single_word\": false,\n      \"special\": false\n    },\n    \"151668\": {\n      \"content\": \"</think>\",\n      \"lstrip\": false,\n      \"normalized\": false,\n      \"rstrip\": false,\n      \"single_word\": false,\n      \"special\": false\n    }\n  },\n  \"additional_special_tokens\": [\n    \"<|im_start|>\",\n    \"<|im_end|>\",\n    \"<|object_ref_start|>\",\n    \"<|object_ref_end|>\",\n    \"<|box_start|>\",\n    \"<|box_end|>\",\n    \"<|quad_start|>\",\n    \"<|quad_end|>\",\n    \"<|vision_start|>\",\n    \"<|vision_end|>\",\n    \"<|vision_pad|>\",\n    \"<|image_pad|>\",\n    \"<|video_pad|>\"\n  ],\n  \"bos_token\": null,\n  \"clean_up_tokenization_spaces\": false,\n  \"eos_token\": \"<|im_end|>\",\n  \"errors\": \"replace\",\n  \"extra_special_tokens\": {},\n  \"model_max_length\": 131072,\n  \"pad_token\": \"<|endoftext|>\",\n  \"split_special_tokens\": false,\n  \"tokenizer_class\": \"Qwen2Tokenizer\",\n  \"unk_token\": null\n}\n"
+    },
+    {
+      "url": "https://huggingface.co/Pluto-AI-Labs/Pluto-Genesis-0.6B/resolve/a52e0229b7611bd96dac8594ab2f6924c89249c2/generation_config.json",
+      "filename": "generation_config.json",
+      "retrievedAtUtc": "2026-09-29T22:23:51.027Z",
+      "status": 200,
+      "retryAfter": null,
+      "bytes": 214,
+      "sha256": "787409d8b23543ca6a24affbca01de9251ec48e5b0f268911ca92daabde329bf",
+      "gitBlobId": "6b204b47b535ecceeec0cd8ca14b8f8c4d8ebc9e",
+      "utf8": "{\n  \"bos_token_id\": 151643,\n  \"do_sample\": true,\n  \"eos_token_id\": [\n    151645,\n    151643\n  ],\n  \"pad_token_id\": 151643,\n  \"temperature\": 0.6,\n  \"top_k\": 20,\n  \"top_p\": 0.95,\n  \"transformers_version\": \"4.52.4\"\n}\n"
+    }
+  ],
+  "verification": "Both complete UTF-8 response byte lengths and Git blob SHA-1 identities match the sibling identities in the successful 9431-byte primary API response at exact revision a52e0229b7611bd96dac8594ab2f6924c89249c2. Tokenizer config was obtained from the official raw endpoint, not resolve; no publisher bytes were rewritten.",
+  "tokenizerConfig": {
+    "bytes": 5404,
+    "sha256": "443bfa629eb16387a12edbf92a76f6a6f10b2af3b53d87ba1550adfcf45f7fa0",
+    "gitBlobId": "ddaf69808214a44fdd26d3785b66c1367c78277a",
+    "embeddedChatTemplate": false,
+    "eosToken": "<|im_end|>",
+    "padToken": "<|endoftext|>",
+    "modelMaxLength": 131072
+  },
+  "contextAdmission": "Tokenizer advertises 131072; actual model config permits40960. The prospective source screen must use40960 and never infer an expanded context from tokenizer metadata.",
+  "chatTemplate": {
+    "path": "config.chat_template_jinja in the successful prior API response",
+    "bytes": 785,
+    "sha256": "48ee2be15a49d5ebae42b2db3183aa58747605c99af00a5f77a5003e77cdf3fc",
+    "gitBlobId": "15253c5b00bc821eb3e42cbab6f9a414d9319b0a",
+    "externalFile": "chat_template.jinja",
+    "ambiguity": false
+  },
+  "generationConfig": {
+    "bos_token_id": 151643,
+    "do_sample": true,
+    "eos_token_id": [
+      151645,
+      151643
+    ],
+    "pad_token_id": 151643,
+    "temperature": 0.6,
+    "top_k": 20,
+    "top_p": 0.95,
+    "transformers_version": "4.52.4"
+  },
+  "licenseAuthorityReuse": {
+    "origin": "Previously acquired exact official Apache authority text, read locally from the verified Coder source receipt; no new network license retrieval claimed.",
+    "sourcePath": "D:/LLMs/TinyRustLM/sources/source-8334f8dcfe693b2a916f02ff16265fc55c0e34e332bb20f47eacf3b3217fda4a/LICENSE",
+    "receiptPath": "artifacts/ecosystem-cleanup-20260912/qwen2.5-coder-0.5b-source-acquisition-20260929.json",
+    "bytes": 11358,
+    "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+    "authorityUrl": "https://www.apache.org/licenses/LICENSE-2.0.txt"
+  },
+  "discoveryReplay": "The current producer may replay the exact captured API object as the selected single search row and pinned revision response after checking id and sha, map the raw tokenizer response to the producer's resolve request only after exact Git-blob verification, and use API-embedded Jinja only after its exact pinned Git-blob verification. This is explicit captured-response replay, not a claim of fresh search, successful revision endpoint, or separate Jinja fetch.",
+  "modelPayloadAcquired": false,
+  "modelExecutionStarted": false,
+  "productionDefaultChanged": false
+}

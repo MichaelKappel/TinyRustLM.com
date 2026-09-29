@@ -97,6 +97,62 @@ function qwen25Roster() {
     searchLimit: 20, candidateLimit: 10, profileId: "qwen2.5-1.5b-bpe", fetchImpl: fixtureFetch(routes) } };
 }
 
+// A generic name relies on explicit conversation declarations, never an invented name suffix.
+function declaredConversationRoster(modelId = "Example/Small-General") {
+  const baseUrl = "https://huggingface.co";
+  const tags = ["safetensors", "text-generation", "license:apache-2.0", "conversational", "instruction-tuning"];
+  const config = qwen3Config();
+  const model = { id: modelId, sha: revision, pipeline_tag: "text-generation", tags: [...tags], config };
+  const info = { ...revisionInfo(modelId, config, 1_192_135_096), tags: [...tags] };
+  const searchUrl = discovery.buildSearchUrl(baseUrl, "Small-General", 1);
+  const fileUrl = name => discovery.buildResolveUrl(baseUrl, modelId, revision, name);
+  const routes = {
+    [searchUrl]: { json: [model] },
+    [discovery.buildRevisionInfoUrl(baseUrl, modelId, revision)]: { json: info },
+    [fileUrl("config.json")]: { text: JSON.stringify(config) },
+    [fileUrl("tokenizer_config.json")]: { text: JSON.stringify({ chat_template: chatTemplate }) },
+    "https://www.apache.org/licenses/LICENSE-2.0.txt": { text: "Apache License\nVersion 2.0, January 2004\n" }
+  };
+  return { model, info, config, routes, fileUrl, options: { profileId: "qwen3-0.6b-bpe",
+    search: "Small-General", searchLimit: 1, candidateLimit: 1, fetchImpl: fixtureFetch(routes) } };
+}
+
+test("generic names with explicit conversation and instruction declarations still require pinned shape and template", async () => {
+  const fixture = declaredConversationRoster();
+  const report = await discovery.discoverCandidates(fixture.options);
+  assert.equal(report.candidateCount, 1);
+  assert.equal(report.candidates[0].modelId, "Example/Small-General");
+  assert.equal(report.candidates[0].sourceTemplate, "qwen3-0.6b-bpe");
+  for (const variant of ["shape", "template", "pinned-declaration"]) {
+    const invalid = declaredConversationRoster();
+    if (variant === "shape") invalid.routes[invalid.fileUrl("config.json")].text =
+      JSON.stringify({ ...invalid.config, hidden_size: 1025 });
+    if (variant === "template") invalid.routes[invalid.fileUrl("tokenizer_config.json")].text =
+      JSON.stringify({ chat_template: "This template has no supported role or ChatML delimiters." });
+    if (variant === "pinned-declaration") invalid.info.tags = invalid.info.tags.filter(tag => tag !== "instruction-tuning");
+    const rejected = await discovery.discoverCandidates(invalid.options);
+    assert.equal(rejected.candidateCount, 0, variant);
+    assert.equal(rejected.rejections[0].code, variant === "shape" ? "shape_mismatch" :
+      variant === "template" ? "source_evidence_invalid" : "not_conversation_model", variant);
+  }
+});
+
+test("generic or base checkpoints cannot claim conversation eligibility through absent partial or unrelated tags", async () => {
+  for (const declarations of [[], ["conversational"], ["instruction-tuning"],
+    ["chatbot", "instruction"], ["not-conversational", "instruction-tuning"]]) {
+    const fixture = declaredConversationRoster();
+    fixture.model.tags = ["safetensors", "text-generation", "license:apache-2.0", ...declarations];
+    const report = await discovery.discoverCandidates(fixture.options);
+    assert.equal(report.candidateCount, 0);
+    assert.equal(report.rejections[0].code, "not_conversation_model");
+  }
+  for (const modelId of ["Example/Small-General-Base", "Example/Small-General-Embedding", "Example/Small-General-Reward"]) {
+    const report = await discovery.discoverCandidates(declaredConversationRoster(modelId).options);
+    assert.equal(report.candidateCount, 0);
+    assert.equal(report.rejections[0].code, "not_conversation_model");
+  }
+});
+
 // Replays official config/tokenizer metadata with synthetic source identities after its rejection.
 // The real candidate remains excluded; model and tokenizer payload routes are absent.
 function qwen25CoderRoster() {

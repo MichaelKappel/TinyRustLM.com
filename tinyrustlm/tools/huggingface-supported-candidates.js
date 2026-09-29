@@ -201,7 +201,7 @@ function declaresConversationModel(model, profile) {
     return true;
   }
   return /(instruct|chat|assistant|dialog|sft|dpo|distill|heretic|abliterated|reason|expert|tutor|merged|finetun)/i
-    .test(modelId);
+    .test(modelId) || (tags.includes("conversational") && tags.includes("instruction-tuning"));
 }
 
 // A present access flag must explicitly be false; string-valued gates are not public access.
@@ -395,6 +395,10 @@ async function inspectCandidate(model, settings) {
     if (!sourceIsPublic(info)) return { rejection: "source_not_public" };
     invariant(String(info.pipeline_tag || model.pipeline_tag || "").toLowerCase() === "text-generation",
       "revision is not text generation");
+    // Repeat conversation admission against pinned declarations, never mutable search tags alone.
+    if (!declaresConversationModel({ ...info, pipeline_tag: info.pipeline_tag || model.pipeline_tag }, settings.profile)) {
+      return { rejection: "not_conversation_model" };
+    }
     invariant(String(info.cardData && info.cardData.license || "").toLowerCase() === "apache-2.0",
       "revision license metadata mismatch");
     const files = validateSiblings(info, settings.profile);

@@ -1,0 +1,75 @@
+{
+  "schema": "tinyrustlm.source_candidate_metadata_capture.v1",
+  "createdAtUtc": "2026-09-29T22:25:00Z",
+  "status": "partial-metadata-only-tokenizer-config-unresolved",
+  "scope": "Bounded follow-up after more than eleven minutes of metadata-request backoff. No model payload acquisition, source-file rewriting, or model execution.",
+  "modelId": "Pluto-AI-Labs/Pluto-Genesis-0.6B",
+  "revision": "a52e0229b7611bd96dac8594ab2f6924c89249c2",
+  "priorCapture": {
+    "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-metadata-review-20260929.json",
+    "byteCount": 31028,
+    "sha256": "7572eaf3aa6218b33154c13a7ed168eccb729862dfdfd4e1d6d8ad6f6bb03556",
+    "changed": false
+  },
+  "responses": [
+    {
+      "url": "https://huggingface.co/Pluto-AI-Labs/Pluto-Genesis-0.6B/resolve/a52e0229b7611bd96dac8594ab2f6924c89249c2/generation_config.json",
+      "filename": "generation_config.json",
+      "retrievedAtUtc": "2026-09-29T22:23:51.027Z",
+      "status": 200,
+      "retryAfter": null,
+      "bytes": 214,
+      "sha256": "787409d8b23543ca6a24affbca01de9251ec48e5b0f268911ca92daabde329bf",
+      "gitBlobId": "6b204b47b535ecceeec0cd8ca14b8f8c4d8ebc9e",
+      "utf8": "{\n  \"bos_token_id\": 151643,\n  \"do_sample\": true,\n  \"eos_token_id\": [\n    151645,\n    151643\n  ],\n  \"pad_token_id\": 151643,\n  \"temperature\": 0.6,\n  \"top_k\": 20,\n  \"top_p\": 0.95,\n  \"transformers_version\": \"4.52.4\"\n}\n"
+    },
+    {
+      "url": "https://huggingface.co/Pluto-AI-Labs/Pluto-Genesis-0.6B/resolve/a52e0229b7611bd96dac8594ab2f6924c89249c2/tokenizer_config.json",
+      "filename": "tokenizer_config.json",
+      "retrievedAtUtc": "2026-09-29T22:24:21.750Z",
+      "status": 429,
+      "retryAfter": null,
+      "bytes": 26,
+      "sha256": "14d0561094b650bcbdfec25703e2a6d4114f393d7966d71afb200b5454c40405",
+      "gitBlobId": "eaeafcd7ecc79e7573bd2973effd465b7e6161bb",
+      "utf8": "maximum queue size reached"
+    }
+  ],
+  "wrapperFailure": {
+    "occurredAfterUtc": "2026-09-29T22:23:32Z",
+    "request": "Exact pinned tokenizer_config.json, one request before the successful generation_config request.",
+    "description": "The command completed, then the orchestration wrapper attempted to store an undefined session_id before preserving the completed tool result. Serialization failed. Its response status, bytes and content were not retained and cannot be claimed verified.",
+    "error": "failed to serialize JavaScript value: expected value at line 1 column 1",
+    "correction": "Preserve the entire returned tool result before examining optional session_id. Root authorized one corrected metadata request; that response is captured above and remains HTTP429.",
+    "modelOrAcquisitionAttempt": false
+  },
+  "verifiedGenerationConfig": {
+    "byteCount": 214,
+    "sha256": "787409d8b23543ca6a24affbca01de9251ec48e5b0f268911ca92daabde329bf",
+    "gitBlobId": "6b204b47b535ecceeec0cd8ca14b8f8c4d8ebc9e",
+    "matchesPriorApiSibling": true,
+    "parsed": {
+      "bos_token_id": 151643,
+      "do_sample": true,
+      "eos_token_id": [
+        151645,
+        151643
+      ],
+      "pad_token_id": 151643,
+      "temperature": 0.6,
+      "top_k": 20,
+      "top_p": 0.95,
+      "transformers_version": "4.52.4"
+    }
+  },
+  "missingMetadata": {
+    "filename": "tokenizer_config.json",
+    "byteCount": 5404,
+    "gitBlobId": "ddaf69808214a44fdd26d3785b66c1367c78277a",
+    "exactContentCaptured": false
+  },
+  "decision": "Stop metadata requests following repeated HTTP429. Preserve the publisher files unchanged. Candidate inventory and combined one-shot screen plan remain pending exact tokenizer configuration admission.",
+  "modelPayloadAcquired": false,
+  "modelExecutionStarted": false,
+  "productionDefaultChanged": false
+}
