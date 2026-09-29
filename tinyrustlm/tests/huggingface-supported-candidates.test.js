@@ -97,7 +97,8 @@ function qwen25Roster() {
     searchLimit: 20, candidateLimit: 10, profileId: "qwen2.5-1.5b-bpe", fetchImpl: fixtureFetch(routes) } };
 }
 
-// Replays immutable official Coder metadata; model and tokenizer payload routes are absent.
+// Replays official config/tokenizer metadata with synthetic source identities after its rejection.
+// The real candidate remains excluded; model and tokenizer payload routes are absent.
 function qwen25CoderRoster() {
   const captured = fs.readFileSync(path.resolve(__dirname,
     "../../artifacts/ecosystem-cleanup-20260912/qwen2.5-coder-0.5b-contingency-metadata-20260929.json"));
@@ -105,10 +106,16 @@ function qwen25CoderRoster() {
     "f70bac3ae6fab486f6624dacd1075ded3b33c5dd573900caa0ea6b4cc8230bd1");
   const metadata = JSON.parse(captured);
   const info = JSON.parse(metadata.responses.find(row => row.url.includes("/api/models/")).utf8);
+  const sourceModelId = info.id;
+  const sourceRevision = info.sha;
+  info.id = "Fixture/Qwen2.5-Coder-0.5B-Instruct";
+  info.sha = revision;
+  info.siblings.find(row => row.rfilename === "model.safetensors").lfs.sha256 = weightSha;
   const search = "Qwen/Qwen2.5-Coder-0.5B-Instruct";
   const searchUrl = discovery.buildSearchUrl("https://huggingface.co", search, 1);
   const licenseUrl = "https://www.apache.org/licenses/LICENSE-2.0.txt";
-  const routes = Object.fromEntries(metadata.responses.map(row => [row.url, { text: row.utf8 }]));
+  const routes = Object.fromEntries(metadata.responses.map(row => [
+    row.url.replace(sourceModelId, info.id).replace(sourceRevision, info.sha), { text: row.utf8 }]));
   routes[discovery.buildRevisionInfoUrl("https://huggingface.co", info.id, info.sha)] = { json: info };
   routes[searchUrl] = { json: [info] };
   // This authority response is synthetic test data, not a publication-license receipt.
@@ -121,7 +128,7 @@ function qwen25CoderRoster() {
   } };
 }
 
-test("official Qwen2.5 Coder 0.5B metadata admits exact source evidence without payload downloads", async () => {
+test("Qwen2.5 Coder 0.5B profile admits synthetic identities with pinned config metadata without payload downloads", async () => {
   const fixture = qwen25CoderRoster();
   const report = await discovery.discoverCandidates(fixture.options);
   assert.equal(report.schema, "tinyrustlm.huggingface_supported_candidate_inventory.v4");
@@ -129,12 +136,12 @@ test("official Qwen2.5 Coder 0.5B metadata admits exact source evidence without 
   assert.deepEqual(report.rejections, []);
   const candidate = report.candidates[0];
   assert.equal(candidate.sourceTemplate, "qwen2.5-0.5b-bpe");
-  assert.equal(candidate.modelId, "Qwen/Qwen2.5-Coder-0.5B-Instruct");
-  assert.equal(candidate.revision, "ea3f2471cf1b1f0db85067f1ef93848e38e88c25");
+  assert.equal(candidate.modelId, "Fixture/Qwen2.5-Coder-0.5B-Instruct");
+  assert.equal(candidate.revision, revision);
   assert.equal(candidate.configSha256, "b1e58593cd31852f7da5c2fc31ddf6135b9c066c0fd9177a4bbe95717083adff");
   assert.equal(candidate.sourceWeightByteCount, 988097824);
   assert.deepEqual(candidate.weightFiles.map(row => [row.filename, row.byteCount, row.sha256]),
-    [["model.safetensors", 988097824, "f9523886352217ded3aeeef552b381af79d568c6d49a4b9e423288cea56b0a44"]]);
+    [["model.safetensors", 988097824, weightSha]]);
   assert.equal(candidate.weightIndex, null);
   assert.equal(candidate.chatTemplateFile, null);
   assert.equal(candidate.tokenizer.byteCount, 7031645);

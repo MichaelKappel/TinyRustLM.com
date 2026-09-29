@@ -1,0 +1,131 @@
+{
+  "schema": "tinyrustlm.source_development_combined_start.v1",
+  "startedUtc": "2026-09-29T21:57:55.104Z",
+  "plan": {
+    "path": "artifacts/ecosystem-cleanup-20260912/qwen2.5-coder-0.5b-development-plan-20260929.json",
+    "bytes": 16335,
+    "sha256": "25041b569500babf874adde7acca3efe4cd110daf43755f5aa724713cb7c67cd"
+  },
+  "source": {
+    "modelId": "Qwen/Qwen2.5-Coder-0.5B-Instruct",
+    "revision": "ea3f2471cf1b1f0db85067f1ef93848e38e88c25",
+    "weightSha256": "f9523886352217ded3aeeef552b381af79d568c6d49a4b9e423288cea56b0a44",
+    "weightIdentity": "e2eeafda5df8dedec2eedbf06e1d09cc6107b35c55e0fc3f9bd58df955858f76",
+    "sourceWeightBytes": 988097824,
+    "totalParameters": 494032768,
+    "profile": "qwen2.5-0.5b-bpe",
+    "checkpointDirectory": "D:\\LLMs\\TinyRustLM\\sources\\source-8334f8dcfe693b2a916f02ff16265fc55c0e34e332bb20f47eacf3b3217fda4a"
+  },
+  "before": {
+    "head": "7a6a593d74ec242205a63d48e04e06db7313a60d",
+    "tree": "0f0d04f52b641e7ed2b563169680cb20305fb8e3",
+    "status": "M contracts/vnext/qwen3-numerical-differential-profile.v2.json\n M dotnet/samples/TinyRustLM.ConsoleSample/Program.cs\n M dotnet/tests/TinyRustLM.Core.Tests/TinyRustLM.Core.Tests.csproj\n M tinyrustlm/tests/qwen3-numerical-differential-profile.test.js\n M tinyrustlm/tests/qwen3-numerical-execution-owner.test.js\n M tinyrustlm/tools/qwen3-numerical-execution-owner.js\n?? artifacts/ecosystem-cleanup-20260912/default-readiness-standard-gate-review-20260929.json\n?? dotnet/samples/TinyRustLM.ConsoleSample/SampleConversation.cs\n?? dotnet/samples/TinyRustLM.ConsoleSample/SampleRuntimePolicy.cs\n?? dotnet/tests/TinyRustLM.Core.Tests/SampleConversation_test.cs\n?? dotnet/tests/TinyRustLM.Core.Tests/SampleRuntimePolicy_test.cs",
+    "boundInputs": [
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen2.5-coder-0.5b-development-plan-20260929.json",
+        "bytes": 16335,
+        "sha256": "25041b569500babf874adde7acca3efe4cd110daf43755f5aa724713cb7c67cd"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen2.5-coder-0.5b-contingency-metadata-20260929.json",
+        "bytes": 36886,
+        "sha256": "f70bac3ae6fab486f6624dacd1075ded3b33c5dd573900caa0ea6b4cc8230bd1"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen2.5-coder-0.5b-inventory-20260929.json",
+        "bytes": 2172,
+        "sha256": "3686495dfb5808909d14238dd8100b614cab3a925ce16ad0ea305cffe64f390a"
+      },
+      {
+        "path": "contracts/vnext/source-candidate-exclusions.v1.json",
+        "bytes": 21578,
+        "sha256": "78219ff15919c88cfe9f0474cc4ecaaa35f3ea6f3fc2c936a4fb882d08e6ee03"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-untied-development-screen-20260929.eval",
+        "bytes": 1308,
+        "sha256": "946e6bdda7512bde3db4dac5a4f66e66eb5353141e7d19b8a0ca3735fd2903c9"
+      },
+      {
+        "path": "tinyrustlm/tools/reference-raw-quality.py",
+        "bytes": 34527,
+        "sha256": "30dd01e388433dfe926f5990ab778817167fd50a6c81a55a19e10870ebb289fb"
+      },
+      {
+        "path": "tinyrustlm/tools/huggingface-supported-candidates.js",
+        "bytes": 25666,
+        "sha256": "e51058951be4899d6f95c3292855e9ba942f95ab2dd34b0b257ffbca60f4b33f"
+      },
+      {
+        "path": "tinyrustlm/tools/huggingface-candidate-acquire.js",
+        "bytes": 33531,
+        "sha256": "c179d2d343689ef930ee765b64447589a84a2c6efac4b59ceba83271fadcd1de"
+      },
+      {
+        "path": "tinyrustlm/tools/huggingface-candidate-storage.js",
+        "bytes": 7471,
+        "sha256": "d94c9e90df4b110523d5238d361b348b565b7a2dd9f3840103cb20652b6a9a33"
+      },
+      {
+        "path": "tinyrustlm/tools/huggingface-metadata.js",
+        "bytes": 4158,
+        "sha256": "f6e26c0255a7eec38d35c116d4e1983fab42f33955e04074cb413f45ea97a341"
+      },
+      {
+        "path": "tinyrustlm/tools/huggingface-weight-layout.js",
+        "bytes": 3690,
+        "sha256": "002b9cbe9111a89a01a6c36ff63def0d18e9c5e7060a798636eac440dd6f2911"
+      },
+      {
+        "path": "tinyrustlm/tools/source-candidate-exclusions.js",
+        "bytes": 1885,
+        "sha256": "43a71f9760a2d1038f9b3b017c61a445577a68bcd285098ab915ba5b0df4b836"
+      },
+      {
+        "path": "tinyrustlm/tools/strict-json.js",
+        "bytes": 11529,
+        "sha256": "8935f3918c9a12722404ad120c73dae80965c723301a00c7e60767c45a78790e"
+      },
+      {
+        "path": "tinyrustlm/tools/canonical-operation-scratch.js",
+        "bytes": 9276,
+        "sha256": "52b6024d121479d20a634ee639d641cb1ff4896bce99b1110a3e26720bf5a7f9"
+      },
+      {
+        "path": "tinyrustlm/tools/verify-single-source-authority.js",
+        "bytes": 144521,
+        "sha256": "e8867b01d00399f319852449ff80c249edab30a8bcee4c09fd3789300f65aaf7"
+      },
+      {
+        "path": "D:\\LLMs\\TinyRustLM\\training-env-py312\\Scripts\\python.exe",
+        "bytes": 274424,
+        "sha256": "0b471133e110cfb53a061cad528ce8e517d7b9ac41a0a396c39ad795a487fc14"
+      },
+      {
+        "path": "D:\\LLMs\\TinyRustLM\\training-env-py312\\Lib\\site-packages\\transformers\\tokenization_utils_base.py",
+        "bytes": 183764,
+        "sha256": "f86fc8ce6ad86bcbb4bad93b84b3cde9f7b93b516703b5d220889c66bbdd7b5a"
+      }
+    ]
+  },
+  "sourceGate": {
+    "status": 0,
+    "signal": null,
+    "error": null,
+    "durationMs": 36247,
+    "stdoutBytes": 164,
+    "stdoutSha256": "23bf73a83fe1c67061b85372209405f9748df2315d3dac1122d5cc2a4eae7999",
+    "stdout": "{\"canonicalLayoutAvailable\":true,\"coverageClass\":\"registered-governed-roots-only\",\"localScanPerformed\":true,\"verdict\":\"pass\",\"wholeVolumeInventoryPerformed\":false}\n",
+    "stderr": ""
+  },
+  "knownParallelChanges": [
+    "Root numerical-execution-owner.js, matching test and numerical differential profile changes, outside the bound input closure",
+    "Runtime ConsoleSample and related tests",
+    "Hosting catalog/installer/preflight and related tests/docs",
+    "Canonical operation-owned test/log artifacts"
+  ],
+  "scratch": {
+    "root": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\qwen25-coder-combined\\tinyrustlm-operation-4tIt2Y",
+    "marker": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\qwen25-coder-combined\\tinyrustlm-operation-4tIt2Y.owner.v2"
+  }
+}

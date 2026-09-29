@@ -1,0 +1,522 @@
+{
+  "schema": "tinyrustlm.source_development_combined_execution.v1",
+  "status": "execution-complete-awaiting-independent-quality-assessment",
+  "plan": {
+    "path": "artifacts/ecosystem-cleanup-20260912/qwen2.5-coder-0.5b-development-plan-20260929.json",
+    "bytes": 16335,
+    "sha256": "25041b569500babf874adde7acca3efe4cd110daf43755f5aa724713cb7c67cd"
+  },
+  "source": {
+    "modelId": "Qwen/Qwen2.5-Coder-0.5B-Instruct",
+    "revision": "ea3f2471cf1b1f0db85067f1ef93848e38e88c25",
+    "weightSha256": "f9523886352217ded3aeeef552b381af79d568c6d49a4b9e423288cea56b0a44",
+    "weightIdentity": "e2eeafda5df8dedec2eedbf06e1d09cc6107b35c55e0fc3f9bd58df955858f76",
+    "sourceWeightBytes": 988097824,
+    "totalParameters": 494032768,
+    "profile": "qwen2.5-0.5b-bpe",
+    "checkpointDirectory": "D:\\LLMs\\TinyRustLM\\sources\\source-8334f8dcfe693b2a916f02ff16265fc55c0e34e332bb20f47eacf3b3217fda4a"
+  },
+  "stageOrder": [
+    "registered-root-source-authority-and-remote-exact",
+    "bound-input-code-and-runtime-identity",
+    "exclusive-start-record",
+    "one-acquisition",
+    "exact-six-source-files-plus-receipt-verification",
+    "config-tokenizer-only-preflight",
+    "one-six-case-source-screen",
+    "post-operation-bound-identity-and-evidence-closure"
+  ],
+  "knownParallelChanges": [
+    "Root numerical-execution-owner.js, matching test and numerical differential profile changes, outside the bound input closure",
+    "Runtime ConsoleSample and related tests",
+    "Hosting catalog/installer/preflight and related tests/docs",
+    "Canonical operation-owned test/log artifacts"
+  ],
+  "requireAllRepositoryWorktreesClean": false,
+  "stages": [
+    {
+      "stage": "acquisition",
+      "elapsedMs": 29207,
+      "receiptVerified": true
+    },
+    {
+      "stage": "preflight",
+      "elapsedMs": 5467,
+      "status": 0,
+      "signal": null,
+      "error": null,
+      "stdout": {
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen2.5-coder-0.5b-preflight-20260929.json",
+        "bytes": 1582,
+        "sha256": "b6710446b61f4f891a4a54b8b66b319a38d153a5733ef28cc8f42d209928b0e7"
+      },
+      "stderr": {
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen2.5-coder-0.5b-preflight-stderr-20260929.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "stage": "screen",
+      "elapsedMs": 26783,
+      "status": 0,
+      "signal": null,
+      "error": null,
+      "stdout": {
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen2.5-coder-0.5b-development-stdout-20260929.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen2.5-coder-0.5b-development-stderr-20260929.txt",
+        "bytes": 197,
+        "sha256": "a672e928c02f5844d7abd0022acbcc52902e9f4d757f0e37d8b01d002f497e36"
+      }
+    }
+  ],
+  "downloadRequests": [
+    {
+      "url": "https://huggingface.co/Qwen/Qwen2.5-Coder-0.5B-Instruct/resolve/ea3f2471cf1b1f0db85067f1ef93848e38e88c25/config.json",
+      "startedUtc": "2026-09-29T21:57:55.116Z"
+    },
+    {
+      "url": "https://huggingface.co/Qwen/Qwen2.5-Coder-0.5B-Instruct/resolve/ea3f2471cf1b1f0db85067f1ef93848e38e88c25/tokenizer.json",
+      "startedUtc": "2026-09-29T21:57:55.345Z"
+    },
+    {
+      "url": "https://huggingface.co/Qwen/Qwen2.5-Coder-0.5B-Instruct/resolve/ea3f2471cf1b1f0db85067f1ef93848e38e88c25/tokenizer_config.json",
+      "startedUtc": "2026-09-29T21:57:55.565Z"
+    },
+    {
+      "url": "https://huggingface.co/Qwen/Qwen2.5-Coder-0.5B-Instruct/resolve/ea3f2471cf1b1f0db85067f1ef93848e38e88c25/generation_config.json",
+      "startedUtc": "2026-09-29T21:57:55.669Z"
+    },
+    {
+      "url": "https://www.apache.org/licenses/LICENSE-2.0.txt",
+      "startedUtc": "2026-09-29T21:57:55.760Z"
+    },
+    {
+      "url": "https://huggingface.co/Qwen/Qwen2.5-Coder-0.5B-Instruct/resolve/ea3f2471cf1b1f0db85067f1ef93848e38e88c25/model.safetensors",
+      "startedUtc": "2026-09-29T21:57:55.845Z"
+    }
+  ],
+  "before": {
+    "head": "7a6a593d74ec242205a63d48e04e06db7313a60d",
+    "tree": "0f0d04f52b641e7ed2b563169680cb20305fb8e3",
+    "status": "M contracts/vnext/qwen3-numerical-differential-profile.v2.json\n M dotnet/samples/TinyRustLM.ConsoleSample/Program.cs\n M dotnet/tests/TinyRustLM.Core.Tests/TinyRustLM.Core.Tests.csproj\n M tinyrustlm/tests/qwen3-numerical-differential-profile.test.js\n M tinyrustlm/tests/qwen3-numerical-execution-owner.test.js\n M tinyrustlm/tools/qwen3-numerical-execution-owner.js\n?? artifacts/ecosystem-cleanup-20260912/default-readiness-standard-gate-review-20260929.json\n?? dotnet/samples/TinyRustLM.ConsoleSample/SampleConversation.cs\n?? dotnet/samples/TinyRustLM.ConsoleSample/SampleRuntimePolicy.cs\n?? dotnet/tests/TinyRustLM.Core.Tests/SampleConversation_test.cs\n?? dotnet/tests/TinyRustLM.Core.Tests/SampleRuntimePolicy_test.cs",
+    "boundInputs": [
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen2.5-coder-0.5b-development-plan-20260929.json",
+        "bytes": 16335,
+        "sha256": "25041b569500babf874adde7acca3efe4cd110daf43755f5aa724713cb7c67cd"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen2.5-coder-0.5b-contingency-metadata-20260929.json",
+        "bytes": 36886,
+        "sha256": "f70bac3ae6fab486f6624dacd1075ded3b33c5dd573900caa0ea6b4cc8230bd1"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen2.5-coder-0.5b-inventory-20260929.json",
+        "bytes": 2172,
+        "sha256": "3686495dfb5808909d14238dd8100b614cab3a925ce16ad0ea305cffe64f390a"
+      },
+      {
+        "path": "contracts/vnext/source-candidate-exclusions.v1.json",
+        "bytes": 21578,
+        "sha256": "78219ff15919c88cfe9f0474cc4ecaaa35f3ea6f3fc2c936a4fb882d08e6ee03"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-untied-development-screen-20260929.eval",
+        "bytes": 1308,
+        "sha256": "946e6bdda7512bde3db4dac5a4f66e66eb5353141e7d19b8a0ca3735fd2903c9"
+      },
+      {
+        "path": "tinyrustlm/tools/reference-raw-quality.py",
+        "bytes": 34527,
+        "sha256": "30dd01e388433dfe926f5990ab778817167fd50a6c81a55a19e10870ebb289fb"
+      },
+      {
+        "path": "tinyrustlm/tools/huggingface-supported-candidates.js",
+        "bytes": 25666,
+        "sha256": "e51058951be4899d6f95c3292855e9ba942f95ab2dd34b0b257ffbca60f4b33f"
+      },
+      {
+        "path": "tinyrustlm/tools/huggingface-candidate-acquire.js",
+        "bytes": 33531,
+        "sha256": "c179d2d343689ef930ee765b64447589a84a2c6efac4b59ceba83271fadcd1de"
+      },
+      {
+        "path": "tinyrustlm/tools/huggingface-candidate-storage.js",
+        "bytes": 7471,
+        "sha256": "d94c9e90df4b110523d5238d361b348b565b7a2dd9f3840103cb20652b6a9a33"
+      },
+      {
+        "path": "tinyrustlm/tools/huggingface-metadata.js",
+        "bytes": 4158,
+        "sha256": "f6e26c0255a7eec38d35c116d4e1983fab42f33955e04074cb413f45ea97a341"
+      },
+      {
+        "path": "tinyrustlm/tools/huggingface-weight-layout.js",
+        "bytes": 3690,
+        "sha256": "002b9cbe9111a89a01a6c36ff63def0d18e9c5e7060a798636eac440dd6f2911"
+      },
+      {
+        "path": "tinyrustlm/tools/source-candidate-exclusions.js",
+        "bytes": 1885,
+        "sha256": "43a71f9760a2d1038f9b3b017c61a445577a68bcd285098ab915ba5b0df4b836"
+      },
+      {
+        "path": "tinyrustlm/tools/strict-json.js",
+        "bytes": 11529,
+        "sha256": "8935f3918c9a12722404ad120c73dae80965c723301a00c7e60767c45a78790e"
+      },
+      {
+        "path": "tinyrustlm/tools/canonical-operation-scratch.js",
+        "bytes": 9276,
+        "sha256": "52b6024d121479d20a634ee639d641cb1ff4896bce99b1110a3e26720bf5a7f9"
+      },
+      {
+        "path": "tinyrustlm/tools/verify-single-source-authority.js",
+        "bytes": 144521,
+        "sha256": "e8867b01d00399f319852449ff80c249edab30a8bcee4c09fd3789300f65aaf7"
+      },
+      {
+        "path": "D:\\LLMs\\TinyRustLM\\training-env-py312\\Scripts\\python.exe",
+        "bytes": 274424,
+        "sha256": "0b471133e110cfb53a061cad528ce8e517d7b9ac41a0a396c39ad795a487fc14"
+      },
+      {
+        "path": "D:\\LLMs\\TinyRustLM\\training-env-py312\\Lib\\site-packages\\transformers\\tokenization_utils_base.py",
+        "bytes": 183764,
+        "sha256": "f86fc8ce6ad86bcbb4bad93b84b3cde9f7b93b516703b5d220889c66bbdd7b5a"
+      }
+    ]
+  },
+  "priorWrapperStop": {
+    "atUtc": "2026-09-29T21:56:56.543Z",
+    "stage": "before-source-gate-or-acquisition",
+    "observedHead": "7a6a593d74ec242205a63d48e04e06db7313a60d",
+    "cause": "Overstrict exact-HEAD assertion rejected an allowed independent parallel commit despite unchanged bound inputs; corrected to ancestor plus fresh remote-exact admission.",
+    "modelOrNetworkAttempt": false
+  },
+  "sourceGate": {
+    "status": 0,
+    "signal": null,
+    "error": null,
+    "durationMs": 36247,
+    "stdoutBytes": 164,
+    "stdoutSha256": "23bf73a83fe1c67061b85372209405f9748df2315d3dac1122d5cc2a4eae7999",
+    "stdout": "{\"canonicalLayoutAvailable\":true,\"coverageClass\":\"registered-governed-roots-only\",\"localScanPerformed\":true,\"verdict\":\"pass\",\"wholeVolumeInventoryPerformed\":false}\n",
+    "stderr": ""
+  },
+  "scratch": {
+    "root": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\qwen25-coder-combined\\tinyrustlm-operation-4tIt2Y",
+    "marker": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\qwen25-coder-combined\\tinyrustlm-operation-4tIt2Y.owner.v2",
+    "removedRoot": true,
+    "removedMarker": true
+  },
+  "sourceBefore": [
+    {
+      "filename": "LICENSE",
+      "byteCount": 11358,
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    },
+    {
+      "filename": "config.json",
+      "byteCount": 659,
+      "sha256": "b1e58593cd31852f7da5c2fc31ddf6135b9c066c0fd9177a4bbe95717083adff"
+    },
+    {
+      "filename": "generation_config.json",
+      "byteCount": 243,
+      "sha256": "fdaccbcb02f3e1e7914ccb0f69ebe899071ffd27cf825166d823163e156870f2"
+    },
+    {
+      "filename": "model.safetensors",
+      "byteCount": 988097824,
+      "sha256": "f9523886352217ded3aeeef552b381af79d568c6d49a4b9e423288cea56b0a44"
+    },
+    {
+      "filename": "source-acquisition.json",
+      "byteCount": 1827,
+      "sha256": "cc296906f29df245ab6d0d74bff1130ed6bdae0a3ce657bdc312bc7b1b009506"
+    },
+    {
+      "filename": "tokenizer.json",
+      "byteCount": 7031645,
+      "sha256": "c0382117ea329cdf097041132f6d735924b697924d6f6fc3945713e96ce87539"
+    },
+    {
+      "filename": "tokenizer_config.json",
+      "byteCount": 7305,
+      "sha256": "959e7f1d9a1b7641a6d6ce05ca97b75c7894fcb66cbe5a040406458fb1128ee4"
+    }
+  ],
+  "raw": {
+    "path": "artifacts/ecosystem-cleanup-20260912/qwen2.5-coder-0.5b-development-raw-20260929.json",
+    "bytes": 24896,
+    "sha256": "19c4a8e5d96280931a544bf643180f8e3fa9ba735e67d98cbe4e8c20de14f538"
+  },
+  "sourceAfter": [
+    {
+      "filename": "LICENSE",
+      "byteCount": 11358,
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    },
+    {
+      "filename": "config.json",
+      "byteCount": 659,
+      "sha256": "b1e58593cd31852f7da5c2fc31ddf6135b9c066c0fd9177a4bbe95717083adff"
+    },
+    {
+      "filename": "generation_config.json",
+      "byteCount": 243,
+      "sha256": "fdaccbcb02f3e1e7914ccb0f69ebe899071ffd27cf825166d823163e156870f2"
+    },
+    {
+      "filename": "model.safetensors",
+      "byteCount": 988097824,
+      "sha256": "f9523886352217ded3aeeef552b381af79d568c6d49a4b9e423288cea56b0a44"
+    },
+    {
+      "filename": "source-acquisition.json",
+      "byteCount": 1827,
+      "sha256": "cc296906f29df245ab6d0d74bff1130ed6bdae0a3ce657bdc312bc7b1b009506"
+    },
+    {
+      "filename": "tokenizer.json",
+      "byteCount": 7031645,
+      "sha256": "c0382117ea329cdf097041132f6d735924b697924d6f6fc3945713e96ce87539"
+    },
+    {
+      "filename": "tokenizer_config.json",
+      "byteCount": 7305,
+      "sha256": "959e7f1d9a1b7641a6d6ce05ca97b75c7894fcb66cbe5a040406458fb1128ee4"
+    }
+  ],
+  "after": {
+    "head": "399a38874f2f53f67eacae59ba0b60e609344187",
+    "tree": "f059301192c6a9e50f43adcb5e46b00f18d25d30",
+    "status": "M contracts/vnext/qwen3-numerical-differential-profile.v2.json\n M dotnet/samples/TinyRustLM.ConsoleSample/Program.cs\n M dotnet/tests/TinyRustLM.Core.Tests/TinyRustLM.Core.Tests.csproj\n M tinyrustlm/tests/qwen3-numerical-differential-profile.test.js\n M tinyrustlm/tests/qwen3-numerical-execution-owner.test.js\n M tinyrustlm/tools/qwen3-numerical-execution-owner.js\n?? artifacts/ecosystem-cleanup-20260912/qwen2.5-coder-0.5b-combined-start-20260929.json\n?? artifacts/ecosystem-cleanup-20260912/qwen2.5-coder-0.5b-development-raw-20260929.json\n?? artifacts/ecosystem-cleanup-20260912/qwen2.5-coder-0.5b-development-stderr-20260929.txt\n?? artifacts/ecosystem-cleanup-20260912/qwen2.5-coder-0.5b-development-stdout-20260929.txt\n?? artifacts/ecosystem-cleanup-20260912/qwen2.5-coder-0.5b-preflight-20260929.json\n?? artifacts/ecosystem-cleanup-20260912/qwen2.5-coder-0.5b-preflight-stderr-20260929.txt\n?? artifacts/ecosystem-cleanup-20260912/qwen2.5-coder-0.5b-source-acquisition-20260929.json\n?? artifacts/ecosystem-cleanup-20260912/qwen3-numerical-v6-failure-review-20260929.json\n?? artifacts/tests/qwen25-coder-combined/\n?? dotnet/samples/TinyRustLM.ConsoleSample/SampleConversation.cs\n?? dotnet/samples/TinyRustLM.ConsoleSample/SampleRuntimePolicy.cs\n?? dotnet/tests/TinyRustLM.Core.Tests/SampleConversation_test.cs\n?? dotnet/tests/TinyRustLM.Core.Tests/SampleRuntimePolicy_test.cs",
+    "boundInputs": [
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen2.5-coder-0.5b-development-plan-20260929.json",
+        "bytes": 16335,
+        "sha256": "25041b569500babf874adde7acca3efe4cd110daf43755f5aa724713cb7c67cd"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen2.5-coder-0.5b-contingency-metadata-20260929.json",
+        "bytes": 36886,
+        "sha256": "f70bac3ae6fab486f6624dacd1075ded3b33c5dd573900caa0ea6b4cc8230bd1"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen2.5-coder-0.5b-inventory-20260929.json",
+        "bytes": 2172,
+        "sha256": "3686495dfb5808909d14238dd8100b614cab3a925ce16ad0ea305cffe64f390a"
+      },
+      {
+        "path": "contracts/vnext/source-candidate-exclusions.v1.json",
+        "bytes": 21578,
+        "sha256": "78219ff15919c88cfe9f0474cc4ecaaa35f3ea6f3fc2c936a4fb882d08e6ee03"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-untied-development-screen-20260929.eval",
+        "bytes": 1308,
+        "sha256": "946e6bdda7512bde3db4dac5a4f66e66eb5353141e7d19b8a0ca3735fd2903c9"
+      },
+      {
+        "path": "tinyrustlm/tools/reference-raw-quality.py",
+        "bytes": 34527,
+        "sha256": "30dd01e388433dfe926f5990ab778817167fd50a6c81a55a19e10870ebb289fb"
+      },
+      {
+        "path": "tinyrustlm/tools/huggingface-supported-candidates.js",
+        "bytes": 25666,
+        "sha256": "e51058951be4899d6f95c3292855e9ba942f95ab2dd34b0b257ffbca60f4b33f"
+      },
+      {
+        "path": "tinyrustlm/tools/huggingface-candidate-acquire.js",
+        "bytes": 33531,
+        "sha256": "c179d2d343689ef930ee765b64447589a84a2c6efac4b59ceba83271fadcd1de"
+      },
+      {
+        "path": "tinyrustlm/tools/huggingface-candidate-storage.js",
+        "bytes": 7471,
+        "sha256": "d94c9e90df4b110523d5238d361b348b565b7a2dd9f3840103cb20652b6a9a33"
+      },
+      {
+        "path": "tinyrustlm/tools/huggingface-metadata.js",
+        "bytes": 4158,
+        "sha256": "f6e26c0255a7eec38d35c116d4e1983fab42f33955e04074cb413f45ea97a341"
+      },
+      {
+        "path": "tinyrustlm/tools/huggingface-weight-layout.js",
+        "bytes": 3690,
+        "sha256": "002b9cbe9111a89a01a6c36ff63def0d18e9c5e7060a798636eac440dd6f2911"
+      },
+      {
+        "path": "tinyrustlm/tools/source-candidate-exclusions.js",
+        "bytes": 1885,
+        "sha256": "43a71f9760a2d1038f9b3b017c61a445577a68bcd285098ab915ba5b0df4b836"
+      },
+      {
+        "path": "tinyrustlm/tools/strict-json.js",
+        "bytes": 11529,
+        "sha256": "8935f3918c9a12722404ad120c73dae80965c723301a00c7e60767c45a78790e"
+      },
+      {
+        "path": "tinyrustlm/tools/canonical-operation-scratch.js",
+        "bytes": 9276,
+        "sha256": "52b6024d121479d20a634ee639d641cb1ff4896bce99b1110a3e26720bf5a7f9"
+      },
+      {
+        "path": "tinyrustlm/tools/verify-single-source-authority.js",
+        "bytes": 144521,
+        "sha256": "e8867b01d00399f319852449ff80c249edab30a8bcee4c09fd3789300f65aaf7"
+      },
+      {
+        "path": "D:\\LLMs\\TinyRustLM\\training-env-py312\\Scripts\\python.exe",
+        "bytes": 274424,
+        "sha256": "0b471133e110cfb53a061cad528ce8e517d7b9ac41a0a396c39ad795a487fc14"
+      },
+      {
+        "path": "D:\\LLMs\\TinyRustLM\\training-env-py312\\Lib\\site-packages\\transformers\\tokenization_utils_base.py",
+        "bytes": 183764,
+        "sha256": "f86fc8ce6ad86bcbb4bad93b84b3cde9f7b93b516703b5d220889c66bbdd7b5a"
+      }
+    ]
+  },
+  "rawOutcomes": [
+    {
+      "index": 0,
+      "raw_output_text": "READY",
+      "outputTokenCount": 2,
+      "lastTokenId": 151645,
+      "generationCalls": 1
+    },
+    {
+      "index": 1,
+      "raw_output_text": "```json\n{\n  \"name\": \"Mira\",\n  \"day\": \"Tuesday\"\n}\n```",
+      "outputTokenCount": 22,
+      "lastTokenId": 151645,
+      "generationCalls": 1
+    },
+    {
+      "index": 2,
+      "raw_output_text": "Friday",
+      "outputTokenCount": 2,
+      "lastTokenId": 151645,
+      "generationCalls": 1
+    },
+    {
+      "index": 3,
+      "raw_output_text": "1. **Prepare the Paper**: Start by laying out the paper on a clean surface. You can use a clean, dry cloth or a piece of paper to cover the paper. Make sure the paper is flat and not too wet.\n\n2. **Write the Checklist**: Use a pencil or a pen to write down the following items:\n   - Coat: A clean, dry cloth or a piece of paper.\n   - Bottle: A clean, dry cloth or a piece of paper",
+      "outputTokenCount": 96,
+      "lastTokenId": 5567,
+      "generationCalls": 1
+    },
+    {
+      "index": 4,
+      "raw_output_text": "red",
+      "outputTokenCount": 2,
+      "lastTokenId": 151645,
+      "generationCalls": 1
+    },
+    {
+      "index": 5,
+      "raw_output_text": "The library is open from 9 a.m. to 6 p.m. on weekdays and from 6 p.m. to 6 p.m. on Sundays.",
+      "outputTokenCount": 35,
+      "lastTokenId": 151645,
+      "generationCalls": 1
+    }
+  ],
+  "finalBoundInputs": [
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/qwen2.5-coder-0.5b-development-plan-20260929.json",
+      "bytes": 16335,
+      "sha256": "25041b569500babf874adde7acca3efe4cd110daf43755f5aa724713cb7c67cd"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/qwen2.5-coder-0.5b-contingency-metadata-20260929.json",
+      "bytes": 36886,
+      "sha256": "f70bac3ae6fab486f6624dacd1075ded3b33c5dd573900caa0ea6b4cc8230bd1"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/qwen2.5-coder-0.5b-inventory-20260929.json",
+      "bytes": 2172,
+      "sha256": "3686495dfb5808909d14238dd8100b614cab3a925ce16ad0ea305cffe64f390a"
+    },
+    {
+      "path": "contracts/vnext/source-candidate-exclusions.v1.json",
+      "bytes": 21578,
+      "sha256": "78219ff15919c88cfe9f0474cc4ecaaa35f3ea6f3fc2c936a4fb882d08e6ee03"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-untied-development-screen-20260929.eval",
+      "bytes": 1308,
+      "sha256": "946e6bdda7512bde3db4dac5a4f66e66eb5353141e7d19b8a0ca3735fd2903c9"
+    },
+    {
+      "path": "tinyrustlm/tools/reference-raw-quality.py",
+      "bytes": 34527,
+      "sha256": "30dd01e388433dfe926f5990ab778817167fd50a6c81a55a19e10870ebb289fb"
+    },
+    {
+      "path": "tinyrustlm/tools/huggingface-supported-candidates.js",
+      "bytes": 25666,
+      "sha256": "e51058951be4899d6f95c3292855e9ba942f95ab2dd34b0b257ffbca60f4b33f"
+    },
+    {
+      "path": "tinyrustlm/tools/huggingface-candidate-acquire.js",
+      "bytes": 33531,
+      "sha256": "c179d2d343689ef930ee765b64447589a84a2c6efac4b59ceba83271fadcd1de"
+    },
+    {
+      "path": "tinyrustlm/tools/huggingface-candidate-storage.js",
+      "bytes": 7471,
+      "sha256": "d94c9e90df4b110523d5238d361b348b565b7a2dd9f3840103cb20652b6a9a33"
+    },
+    {
+      "path": "tinyrustlm/tools/huggingface-metadata.js",
+      "bytes": 4158,
+      "sha256": "f6e26c0255a7eec38d35c116d4e1983fab42f33955e04074cb413f45ea97a341"
+    },
+    {
+      "path": "tinyrustlm/tools/huggingface-weight-layout.js",
+      "bytes": 3690,
+      "sha256": "002b9cbe9111a89a01a6c36ff63def0d18e9c5e7060a798636eac440dd6f2911"
+    },
+    {
+      "path": "tinyrustlm/tools/source-candidate-exclusions.js",
+      "bytes": 1885,
+      "sha256": "43a71f9760a2d1038f9b3b017c61a445577a68bcd285098ab915ba5b0df4b836"
+    },
+    {
+      "path": "tinyrustlm/tools/strict-json.js",
+      "bytes": 11529,
+      "sha256": "8935f3918c9a12722404ad120c73dae80965c723301a00c7e60767c45a78790e"
+    },
+    {
+      "path": "tinyrustlm/tools/canonical-operation-scratch.js",
+      "bytes": 9276,
+      "sha256": "52b6024d121479d20a634ee639d641cb1ff4896bce99b1110a3e26720bf5a7f9"
+    },
+    {
+      "path": "tinyrustlm/tools/verify-single-source-authority.js",
+      "bytes": 144521,
+      "sha256": "e8867b01d00399f319852449ff80c249edab30a8bcee4c09fd3789300f65aaf7"
+    },
+    {
+      "path": "D:\\LLMs\\TinyRustLM\\training-env-py312\\Scripts\\python.exe",
+      "bytes": 274424,
+      "sha256": "0b471133e110cfb53a061cad528ce8e517d7b9ac41a0a396c39ad795a487fc14"
+    },
+    {
+      "path": "D:\\LLMs\\TinyRustLM\\training-env-py312\\Lib\\site-packages\\transformers\\tokenization_utils_base.py",
+      "bytes": 183764,
+      "sha256": "f86fc8ce6ad86bcbb4bad93b84b3cde9f7b93b516703b5d220889c66bbdd7b5a"
+    }
+  ],
+  "finishedUtc": "2026-09-29T21:58:58.175Z",
+  "elapsedMs": 99463
+}

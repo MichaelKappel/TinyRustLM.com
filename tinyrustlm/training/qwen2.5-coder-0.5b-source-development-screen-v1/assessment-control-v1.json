@@ -1,0 +1,74 @@
+{
+  "schema": "tinyrustlm.source_model_screen_assessment.v1",
+  "sourceModelId": "Qwen/Qwen2.5-Coder-0.5B-Instruct",
+  "sourceRevision": "ea3f2471cf1b1f0db85067f1ef93848e38e88c25",
+  "sourceModelArtifactSha256": "f9523886352217ded3aeeef552b381af79d568c6d49a4b9e423288cea56b0a44",
+  "sourceScreenSha256": "19c4a8e5d96280931a544bf643180f8e3fa9ba735e67d98cbe4e8c20de14f538",
+  "sourceScreenPath": "artifacts/ecosystem-cleanup-20260912/qwen2.5-coder-0.5b-development-raw-20260929.json",
+  "executionReceiptPath": "artifacts/ecosystem-cleanup-20260912/qwen2.5-coder-0.5b-combined-execution-20260929.json",
+  "executionReceiptSha256": "2258ba0abef8a69bb711bfb00788b40f85f98dca55f91a54ff91437c5f05c5b2",
+  "prospectivePlanPath": "artifacts/ecosystem-cleanup-20260912/qwen2.5-coder-0.5b-development-plan-20260929.json",
+  "prospectivePlanSha256": "25041b569500babf874adde7acca3efe4cd110daf43755f5aa724713cb7c67cd",
+  "decision": "rejected",
+  "decisionAuthority": "engineering-source-screen-v1",
+  "independentAssessment": "Root agent independently read all six exact raw answers after input and source identity closure. Cases0,2,4 pass; cases1,3,5 fail under the unchanged prospective criteria.",
+  "architectureFamily": "qwen2-dense-gqa",
+  "runtimeAdmission": "not-admitted-current-slm2",
+  "licenseDisposition": "apache-2.0-publisher-license-and-official-authority-text-verified",
+  "blockerCode": "model_quality_rejected",
+  "passedCaseCount": 3,
+  "caseCount": 6,
+  "criticalFailureCodes": [
+    "answer-format-violated",
+    "task-fidelity-violated",
+    "unavailable-resources-invented",
+    "source-facts-contradicted"
+  ],
+  "caseDispositions": [
+    {
+      "index": 0,
+      "status": "pass",
+      "failureCodes": []
+    },
+    {
+      "index": 1,
+      "status": "fail",
+      "failureCodes": [
+        "answer-format-violated"
+      ],
+      "reason": "Markdown code fences violate the required single JSON object with no other text. No raw-answer stripping or repair was performed."
+    },
+    {
+      "index": 2,
+      "status": "pass",
+      "failureCodes": []
+    },
+    {
+      "index": 3,
+      "status": "fail",
+      "failureCodes": [
+        "task-fidelity-violated",
+        "unavailable-resources-invented"
+      ],
+      "reason": "The answer invents cloth and pencil, describes coat and bottle as cloth or paper, and does not produce the requested three-item packing checklist. It reaches the unchanged96-token cap before including keys. No longer generation or alternate prompt was attempted."
+    },
+    {
+      "index": 4,
+      "status": "pass",
+      "failureCodes": []
+    },
+    {
+      "index": 5,
+      "status": "fail",
+      "failureCodes": [
+        "source-facts-contradicted"
+      ],
+      "reason": "The answer invents Sunday opening hours of6p.m. to6p.m. instead of preserving the stated Sunday closure."
+    }
+  ],
+  "executionBoundary": "One authorized combined acquisition, exact six-source-files-plus-receipt verification, tokenizer/config-only preflight and six-case reference screen. One greedy call per case, native non-thinking template, no retries, output repair or source/prompt/sampling changes. Bound helpers, cases, plan, runtime and all source file identities remained unchanged before/after. Known independent numerical/runtime/hosting work was recorded; no all-tree-clean, conversion, browser, final holdout or default qualification claim.",
+  "officialReferences": [
+    "https://huggingface.co/Qwen/Qwen2.5-Coder-0.5B-Instruct/tree/ea3f2471cf1b1f0db85067f1ef93848e38e88c25",
+    "https://www.apache.org/licenses/LICENSE-2.0.txt"
+  ]
+}
