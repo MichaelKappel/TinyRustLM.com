@@ -1,0 +1,27 @@
+✖ execution owner output reaches the real verifier with exact directory and manifest bindings (90.9189ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 159.6265
+
+✖ failing tests:
+
+test at tinyrustlm\tests\qwen3-numerical-differential-profile.test.js:698:1
+✖ execution owner output reaches the real verifier with exact directory and manifest bindings (90.9189ms)
+  Error: numerical-verifier-source-binding
+      at fail (E:\Source\Rust\TinyRustLM.com\tinyrustlm\tools\qwen3-numerical-trace-verifier.js:63:9)
+      at invariant (E:\Source\Rust\TinyRustLM.com\tinyrustlm\tools\qwen3-numerical-trace-verifier.js:67:19)
+      at exactKeys (E:\Source\Rust\TinyRustLM.com\tinyrustlm\tools\qwen3-numerical-trace-verifier.js:79:3)
+      at loadBundle (E:\Source\Rust\TinyRustLM.com\tinyrustlm\tools\qwen3-numerical-trace-verifier.js:421:3)
+      at verify (E:\Source\Rust\TinyRustLM.com\tinyrustlm\tools\qwen3-numerical-trace-verifier.js:942:13)
+      at TestContext.<anonymous> (E:\Source\Rust\TinyRustLM.com\tinyrustlm\tests\qwen3-numerical-differential-profile.test.js:728:25)
+      at Test.runInAsyncScope (node:async_hooks:228:14)
+      at Test.run (node:internal/test_runner/test:1118:25)
+      at Test.start (node:internal/test_runner/test:1015:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:358:17) {
+    code: 'numerical-verifier-source-binding'
+  }

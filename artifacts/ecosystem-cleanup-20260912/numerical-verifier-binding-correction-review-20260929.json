@@ -1,0 +1,125 @@
+{
+  "schema": "tinyrustlm.numerical_verifier_binding_correction_review.v1",
+  "status": "implemented-fixture-tested-real-v9-not-run",
+  "createdAtUtc": "2026-09-29T23:09:07.119Z",
+  "defect": "Execution owner generated bundle.rootBasename; unchanged verifier requires bundle.root with an absolute admitted directory. v8 completed source/reconstructed/scalar but failed before numerical comparison.",
+  "change": "Use already-admitted absolute output directories in verifier request. Export the existing finalizer only to exercise the actual producer and consumer. Close v8 schemas and bind prospective v9 implementation; historical profiles and evidence remain unchanged.",
+  "tests": {
+    "baseline": {
+      "passed": 0,
+      "failed": 1,
+      "reason": "numerical-verifier-source-binding"
+    },
+    "focusedCorrected": {
+      "passed": 1,
+      "failed": 0
+    },
+    "intermediateSuite": {
+      "passed": 40,
+      "failed": 1,
+      "reason": "Current profile still bound the pre-edit owner length/hash; corrected only current owner reference, leaving historical closed owner intact."
+    },
+    "finalSuite": {
+      "passed": 43,
+      "failed": 0,
+      "skipped": 0,
+      "numericalOwnerAndVerifierTests": 41,
+      "materializerRequestGuards": 2,
+      "pinnedPythonSelfTests": true,
+      "modelExecution": false
+    }
+  },
+  "independentReview": {
+    "agent": "/root/runtime_state_review",
+    "result": "accepted bounded producer-consumer correction and manifest-drift rejection; no thresholds changed"
+  },
+  "files": [
+    {
+      "path": "tinyrustlm/tools/qwen3-numerical-execution-owner.js",
+      "byteLength": 84168,
+      "sha256": "2f72c9660692e8a89923e803ccba7f6dedaff71751e79e7131a7794449ef3776"
+    },
+    {
+      "path": "tinyrustlm/tests/qwen3-numerical-execution-owner.test.js",
+      "byteLength": 55962,
+      "sha256": "61db20588830e4890f7393ee6c2aefd4a803943823a338734db6659f57ffbe4a"
+    },
+    {
+      "path": "tinyrustlm/tests/qwen3-numerical-differential-profile.test.js",
+      "byteLength": 26732,
+      "sha256": "58e55de775b7e1a95c8f2c805fc05caf404bf64c876f81d554d04f0e7d0faad9"
+    },
+    {
+      "path": "contracts/vnext/qwen3-numerical-differential-profile.v2.json",
+      "byteLength": 18093,
+      "sha256": "7429be3f6253f58bfb93541c8612ba59c9bfa3812b91fe31d7357ae5bdf1adff"
+    }
+  ],
+  "rawEvidence": [
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/numerical-verifier-binding-baseline-20260929-stdout.txt",
+      "byteLength": 1442,
+      "sha256": "2d0df343403b94088dde778df048d1d2ac92576eb681d7db4a631b342786fd3b"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/numerical-verifier-binding-baseline-20260929-stderr.txt",
+      "byteLength": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/numerical-verifier-binding-corrected-20260929-stdout.txt",
+      "byteLength": 222,
+      "sha256": "c1fde474f8c032141134e2e08bcf0b2109a1718a36530a8dd77ec43fa6a9329a"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/numerical-verifier-binding-corrected-20260929-stderr.txt",
+      "byteLength": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/numerical-verifier-binding-v9-suite-20260929-stdout.txt",
+      "byteLength": 4729,
+      "sha256": "e891387a9eaf27d896492c81d16ad9464fc517584006639e38264476bbe8af06"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/numerical-verifier-binding-v9-suite-20260929-stderr.txt",
+      "byteLength": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/numerical-verifier-binding-v9-final-suite-20260929-stdout.txt",
+      "byteLength": 3922,
+      "sha256": "8f1e1b0ab580d542fa1a1f8f0233de977d046e977be63a53e00e0bf702928bf9"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/numerical-verifier-binding-v9-final-suite-20260929-stderr.txt",
+      "byteLength": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "materializerCheckpoint": {
+    "status": "in-progress-not-approved-for-use",
+    "files": [
+      {
+        "path": "tinyrustlm/tools/qualification-materializer.js",
+        "byteLength": 23848,
+        "sha256": "aad8bb065bf8869efdccf54769608426f2b8bbfb3622006601b174106bc7af5f"
+      },
+      {
+        "path": "tinyrustlm/tests/qualification-materializer_test.js",
+        "byteLength": 1997,
+        "sha256": "63bca0db792e631ec79fa13aaeff8d5c4b110d121314edaed9ff31e77a2788da"
+      }
+    ],
+    "scope": "Standalone development checkpoint with two request/reviewer guard tests and no application integration or generated qualification. Full source/structural/numerical/raw-capture guards and tests remain pending.",
+    "realModelQualified": false
+  },
+  "claimBoundary": {
+    "v8RemainsFailed": true,
+    "v9Registered": false,
+    "v9Executed": false,
+    "numericalPass": false,
+    "productionDefaultChanged": false,
+    "thresholdsChanged": false
+  }
+}

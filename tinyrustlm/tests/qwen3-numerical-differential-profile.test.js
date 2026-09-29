@@ -467,9 +467,9 @@ test("preserves closed implementation history without adopting its execution aut
     "implementation-prepared-registration-required");
   assert.equal(profile.implementations.soleExecutionOwner.historicalOperationMayBeReplayed, false);
   assert.equal(profile.implementations.soleExecutionOwner.profileId,
-    "tinyrustlm.qwen3-numerical-execution-owner/8");
+    "tinyrustlm.qwen3-numerical-execution-owner/9");
   assert.equal(profile.execution.soleOwnerStatus,
-    "current-v8-implementation-requires-fresh-registration");
+    "current-v9-implementation-requires-fresh-registration");
   const dependencies = profile.implementations.soleExecutionOwner.dependencies;
   assert.deepEqual(dependencies.map((record) => record.path), [
     "tinyrustlm/tools/canonical-operation-scratch.js",
@@ -693,4 +693,46 @@ test("verifier source contains no evidence-writing or permissive selection path"
   assert.doesNotMatch(source, /response[_-]repair/iu);
   assert.match(source, /firstDivergence/u);
   assert.match(source, /writesPerformed: false/u);
+});
+
+test("execution owner output reaches the real verifier with exact directory and manifest bindings", () => {
+  const owner = require("../tools/qwen3-numerical-execution-owner.js");
+  for (const corruptAfterBinding of [false, true]) {
+    const value = fixture();
+    try {
+      const original = JSON.parse(fs.readFileSync(value.requestPath, "utf8"));
+      const paths = Object.fromEntries(["source", "reconstructed", "scalar"].map((role) =>
+        [role + "OutputRoot", value.bundles[role].root]));
+      const state = {
+        registrationIdentity: { sha256: registrationSha256 },
+        registration: { ownerContract: {
+          operationId: original.operationId, traceProfileId: original.traceProfileId, cases: [],
+          requests: { source: {}, reconstructed: {}, scalar: {}, verification: {
+            schema: original.schema, differentialProfile: original.differentialProfile,
+            comparison: original.comparison, policy: original.policy
+          } }
+        } }
+      };
+      const requests = owner.childRequests(state, paths);
+      const finalized = owner.finalizeVerificationRequest(requests, paths);
+      const requestPath = path.join(value.parent, "actual-owner-verify-request.json");
+      fs.writeFileSync(requestPath, owner.canonicalJsonBytes(finalized), { flag: "wx" });
+      if (corruptAfterBinding) {
+        const manifest = path.join(value.bundles.source.root, "probe.json");
+        fs.appendFileSync(manifest, "\n");
+        assert.throws(() => verify([requestPath]), (error) =>
+          error instanceof NumericalTraceVerificationError &&
+          error.code === "numerical-verifier-source-binding");
+      } else {
+        const before = treeIdentity(value.parent);
+        const receipt = verify([requestPath]);
+        assert.equal(receipt.status, "pass");
+        assert.equal(receipt.comparison.arrowResults.length, 2);
+        assert.equal(receipt.writesPerformed, false);
+        assert.deepEqual(treeIdentity(value.parent), before);
+      }
+    } finally {
+      value.close();
+    }
+  }
 });

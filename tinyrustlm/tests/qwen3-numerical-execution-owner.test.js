@@ -108,7 +108,7 @@ function registeredComparison() {
 
 /** Synthetic current contract values exercise validation without registering or launching a model. */
 function ownerContract() {
-  const operationId = "qwen3-numerical-c1899de-1111111-20260913-v8";
+  const operationId = "qwen3-numerical-c1899de-1111111-20260913-v9";
   return {
     schema: owner.OWNER_CONTRACT_SCHEMA,
     operationId,
@@ -329,7 +329,7 @@ function registration() {
   const contract = ownerContract();
   return {
     schema: owner.REGISTRATION_SCHEMA,
-    profileId: "tinyrustlm.qwen3-numerical-differential-execution/8",
+    profileId: "tinyrustlm.qwen3-numerical-differential-execution/9",
     status: "registered-before-private-request-roots-and-real-traces",
     registeredAtUtc: "2026-09-13T12:00:00Z",
     registrationParentCommit: "1".repeat(40),
@@ -356,7 +356,7 @@ function registration() {
       parentCommit: "1".repeat(40),
       parentTree: "2".repeat(40),
       allowedRegistrationCommitPaths: [
-        "contracts/vnext/qwen3-numerical-differential-execution-preregistration.v8.json"
+        "contracts/vnext/qwen3-numerical-differential-execution-preregistration.v9.json"
       ],
       cleanAtRegistration: true,
       trackingFetchHeadAndRemoteExactAtRegistration: true
@@ -671,8 +671,8 @@ test("rejects operation, trace, implementation-role, and executable drift", () =
 
 test("rejects closed owner, registration, request, and source-template semantics", () => {
   assert.equal(owner.REGISTRATION_RELATIVE_PATH,
-    "contracts/vnext/qwen3-numerical-differential-execution-preregistration.v8.json");
-  assert.equal(owner.REQUEST_SCHEMA, "tinyrustlm.qwen3_numerical_execution_request.v8");
+    "contracts/vnext/qwen3-numerical-differential-execution-preregistration.v9.json");
+  assert.equal(owner.REQUEST_SCHEMA, "tinyrustlm.qwen3_numerical_execution_request.v9");
 
   const formerOwner = ownerContract();
   formerOwner.schema = "tinyrustlm.qwen3_numerical_execution_owner_contract.v1";
@@ -715,7 +715,7 @@ test("requires the exact corrected source-framework closure", () => {
 
 test("current contracts reject every closed schema and superseded lock path", async (t) => {
   const root = temporaryRoot(t);
-  for (const version of [1, 2, 3, 4, 5, 6, 7]) {
+  for (const version of [1, 2, 3, 4, 5, 6, 7, 8]) {
     const contract = ownerContract();
     contract.schema = `tinyrustlm.qwen3_numerical_execution_owner_contract.v${version}`;
     assert.throws(() => owner.validateOwnerContract(contract), /owner-contract/u);
@@ -830,7 +830,7 @@ test("derives all child requests from one registration without prompt or answer 
   assert.equal(requests.source.registrationSha256, "a".repeat(64));
   assert.equal(requests.reconstructed.compositionRoot, "E:\\composition");
   assert.equal(requests.scalar.outputRoot, "E:\\evidence\\scalar");
-  assert.equal(requests.verification.bundles.source.rootBasename, "source");
+  assert.equal(requests.verification.bundles.source.root, paths.sourceOutputRoot);
   const serialized = JSON.stringify(requests);
   assert.equal(/prompt|expected.?answer/iu.test(serialized), false);
 });
@@ -985,7 +985,7 @@ test("execute rejects a misplaced request before inspecting registration or crea
   const root = temporaryRoot(t);
   const requestPath = path.join(root, "request.json");
   fs.writeFileSync(requestPath, owner.canonicalJsonBytes({ schema: owner.REQUEST_SCHEMA,
-    operationId: "qwen3-numerical-c1899de-1111111-20260913-v8", registration: null,
+    operationId: "qwen3-numerical-c1899de-1111111-20260913-v9", registration: null,
     registrationSource: null, repositoryRoot: path.dirname(repositoryRoot), gitPath: null,
     evidenceParent: root, sourceDirectory: "D:\\LLMs\\TinyRustLM\\source",
     compositionRoot: "D:\\LLMs\\TinyRustLM\\composition", executables: null }), { flag: "wx" });
