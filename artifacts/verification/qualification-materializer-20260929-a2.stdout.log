@@ -1,0 +1,26 @@
+✔ qualification request requires the exact evidence closure and immutable identities (1.9201ms)
+✔ an explicit verdict alone cannot create a qualification receipt (0.4375ms)
+✔ complete metadata-only evidence produces the unchanged admission shape and limited claim (13.0443ms)
+✔ emitted admission and receipt pass the unchanged public loader using only closed in-memory routes (37.0231ms)
+✔ source, structural, numerical and explicit review guards reject mixed or failed evidence (51.5787ms)
+✔ all real backends, exact turns, actual history, cancellation and measured limits are mandatory (67.4262ms)
+✔ canonical metadata reader binds raw bytes and rejects traversal, drift and invalid JSON (13.4081ms)
+✔ retained native protocol and each exact request/capture must agree with the summary (116.4337ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 406.5095
+ℹ start of coverage report
+ℹ ---------------------------------------------------------------------------------------
+ℹ file                           | line % | branch % | funcs % | uncovered lines
+ℹ ---------------------------------------------------------------------------------------
+ℹ tools                          |        |          |         | 
+ℹ  qualification-materializer.js |  84.43 |    99.51 |   95.92 | 343-345 348-396 400-411
+ℹ ---------------------------------------------------------------------------------------
+ℹ all files                      |  84.43 |    99.51 |   95.92 | 
+ℹ ---------------------------------------------------------------------------------------
+ℹ end of coverage report

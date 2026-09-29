@@ -183,8 +183,8 @@
     },
     "independentVerifier": {
       "path": "tinyrustlm/tools/qwen3-numerical-trace-verifier.js",
-      "byteLength": 47068,
-      "sha256": "9460279c7bf5d2b7d3558616723452e43b621dd5059504bffb2ab6cd8bbe1304",
+      "byteLength": 47086,
+      "sha256": "6bab72dee2a5b959c73c6092fd67dacd3baae8233c5d5d961dace703d85762b3",
       "language": "JavaScript-Node",
       "writesPerformed": false,
       "verdictSelection": "first-registered-divergence-in-case-step-stage-element-order",

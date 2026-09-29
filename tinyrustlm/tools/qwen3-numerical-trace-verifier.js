@@ -825,6 +825,7 @@ function metricsPublic(metrics) {
     maximumSignDisagreementRate: metrics.maximumSignDisagreementRate,
     maximumUlp: metrics.maximumUlp
   };
+  return receipt;
 }
 
 function compareArrow(arrow, bundles, request) {

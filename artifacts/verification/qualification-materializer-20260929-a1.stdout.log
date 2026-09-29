@@ -1,0 +1,72 @@
+✔ qualification request requires the exact evidence closure and immutable identities (2.2267ms)
+✔ an explicit verdict alone cannot create a qualification receipt (0.5665ms)
+✖ complete metadata-only evidence produces the unchanged admission shape and limited claim (21.415ms)
+✔ source, structural, numerical and explicit review guards reject mixed or failed evidence (121.5533ms)
+✖ all real backends, exact turns, actual history, cancellation and measured limits are mandatory (34.2273ms)
+✔ canonical metadata reader binds raw bytes and rejects traversal, drift and invalid JSON (16.7886ms)
+✔ retained native protocol and each exact request/capture must agree with the summary (199.4096ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 5
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 716.4315
+ℹ start of coverage report
+ℹ ---------------------------------------------------------------------------------------
+ℹ file                           | line % | branch % | funcs % | uncovered lines
+ℹ ---------------------------------------------------------------------------------------
+ℹ tools                          |        |          |         | 
+ℹ  qualification-materializer.js |  84.43 |    99.42 |   93.88 | 343-345 348-396 400-411
+ℹ ---------------------------------------------------------------------------------------
+ℹ all files                      |  84.43 |    99.42 |   93.88 | 
+ℹ ---------------------------------------------------------------------------------------
+ℹ end of coverage report
+
+✖ failing tests:
+
+test at tests\qualification-materializer_test.js:153:1
+✖ complete metadata-only evidence produces the unchanged admission shape and limited claim (21.415ms)
+  TypeError: runtime.wasmByteCount is invalid
+      at invariant (E:\Source\Rust\TinyRustLM.com\tinyrustlm\app\browser-model-admission.js:127:13)
+      at integer (E:\Source\Rust\TinyRustLM.com\tinyrustlm\app\browser-model-admission.js:181:5)
+      at normalizeRuntime (E:\Source\Rust\TinyRustLM.com\tinyrustlm\app\browser-model-admission.js:364:22)
+      at normalizeAdmission (E:\Source\Rust\TinyRustLM.com\tinyrustlm\app\browser-model-admission.js:392:16)
+      at Object.serializeAdmission (E:\Source\Rust\TinyRustLM.com\tinyrustlm\app\browser-model-admission.js:397:42)
+      at Object.validateEvidence (E:\Source\Rust\TinyRustLM.com\tinyrustlm\tools\qualification-materializer.js:278:35)
+      at TestContext.<anonymous> (E:\Source\Rust\TinyRustLM.com\tinyrustlm\tests\qualification-materializer_test.js:154:39)
+      at Test.runInAsyncScope (node:async_hooks:228:14)
+      at Test.run (node:internal/test_runner/test:1118:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:787:18)
+
+test at tests\qualification-materializer_test.js:185:1
+✖ all real backends, exact turns, actual history, cancellation and measured limits are mandatory (34.2273ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /untested-default-sampling/. Input:
+  
+  'Error: qualification-wire-binding'
+  
+      at TestContext.<anonymous> (E:\Source\Rust\TinyRustLM.com\tinyrustlm\tests\qualification-materializer_test.js:208:47)
+      at Test.runInAsyncScope (node:async_hooks:228:14)
+      at Test.run (node:internal/test_runner/test:1118:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:787:18)
+      at Test.postRun (node:internal/test_runner/test:1247:19)
+      at Test.run (node:internal/test_runner/test:1175:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: Error: qualification-wire-binding
+        at requireValue (E:\Source\Rust\TinyRustLM.com\tinyrustlm\tools\qualification-materializer.js:24:64)
+        at E:\Source\Rust\TinyRustLM.com\tinyrustlm\tools\qualification-materializer.js:232:7
+        at Array.forEach (<anonymous>)
+        at validateExecution (E:\Source\Rust\TinyRustLM.com\tinyrustlm\tools\qualification-materializer.js:226:26)
+        at Object.validateEvidence (E:\Source\Rust\TinyRustLM.com\tinyrustlm\tools\qualification-materializer.js:267:16)
+        at E:\Source\Rust\TinyRustLM.com\tinyrustlm\tests\qualification-materializer_test.js:208:66
+        at getActual (node:assert:611:5)
+        at strict.throws (node:assert:759:24)
+        at TestContext.<anonymous> (E:\Source\Rust\TinyRustLM.com\tinyrustlm\tests\qualification-materializer_test.js:208:47)
+        at Test.runInAsyncScope (node:async_hooks:228:14),
+    expected: /untested-default-sampling/,
+    operator: 'throws',
+    diff: 'simple'
+  }

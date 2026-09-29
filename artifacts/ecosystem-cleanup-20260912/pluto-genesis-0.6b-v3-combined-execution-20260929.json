@@ -1,0 +1,972 @@
+{
+  "schema": "tinyrustlm.source_development_combined_execution.v1",
+  "status": "execution-complete-awaiting-independent-quality-assessment",
+  "plan": {
+    "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-development-plan-20260929.json",
+    "bytes": 18562,
+    "sha256": "aa1b98278b74d4ca7c555d7039193264c24adc2c8b787f236366fabe581dc753"
+  },
+  "retryPlan": {
+    "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-cache-retry-plan-20260929.json",
+    "bytes": 11877,
+    "sha256": "fd4c2850356127469cdb03ea3964c90fcfcfbf91ac190916462b0ca0e0e74a74"
+  },
+  "source": {
+    "modelId": "Pluto-AI-Labs/Pluto-Genesis-0.6B",
+    "revision": "a52e0229b7611bd96dac8594ab2f6924c89249c2",
+    "weightSha256": "3c3fed56cd33189d386b9b690ada71f55daee5a158afda69486efc6fe57a8ad9",
+    "weightIdentity": "638452e95a0c6f5235dd65a2e2df9bb7f81e16f74caa0912b7eabcbdd41a6634",
+    "sourceWeightBytes": 1192134784,
+    "totalParameters": 596049920,
+    "profile": "qwen3-0.6b-bpe",
+    "checkpointDirectory": "D:\\LLMs\\TinyRustLM\\sources\\source-bd2ce82e254af7040110ad6ff3b4285d2f2a652610bbc78fafeb3327999af36f"
+  },
+  "stageOrder": [
+    "registered-root-source-authority-and-remote-exact",
+    "bound-input-code-and-runtime-identity",
+    "exclusive-start-record",
+    "one-acquisition",
+    "exact-seven-source-files-plus-receipt-verification",
+    "config-tokenizer-only-preflight",
+    "one-six-case-source-screen",
+    "post-operation-bound-identity-and-evidence-closure"
+  ],
+  "knownParallelChanges": [
+    "Parent-coordinated root numerical owner/profile/registration/tests, scalar.rs runtime correction and rebuilt native/browser WASM artifacts, independent dotnet/tools/TinyRustLM.ConversationProbe and tinyrustlm/tools/real-composition-execution.js with their focused tests, hosting/catalog/installer/preflight source/tests, and corresponding docs/review/test output may change in their owning agents. They are outside this experiment bound input closure. Record actual status and ownership. No bound helper/input, unknown source copy, failed authority scan or model mutation is exempt."
+  ],
+  "requireAllRepositoryWorktreesClean": false,
+  "stages": [
+    {
+      "stage": "acquisition",
+      "elapsedMs": 45568,
+      "receiptVerified": true
+    },
+    {
+      "stage": "preflight",
+      "elapsedMs": 22636,
+      "status": 0,
+      "signal": null,
+      "error": null,
+      "stdout": {
+        "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-v3-preflight-20260929.json",
+        "bytes": 1692,
+        "sha256": "3c346e6dd88c642c3c210637503c6c321c2890fc693101eb468791d5d684306f"
+      },
+      "stderr": {
+        "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-v3-preflight-stderr-20260929.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "stage": "screen",
+      "elapsedMs": 34039,
+      "status": 0,
+      "signal": null,
+      "error": null,
+      "stdout": {
+        "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-v3-development-stdout-20260929.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-v3-development-stderr-20260929.txt",
+        "bytes": 195,
+        "sha256": "70482185b716e967a7c2e17ae5045abfbdcca807c1eeb5a355f32d50bcd2e15d"
+      }
+    }
+  ],
+  "downloadRequests": [
+    {
+      "requestedUrl": "https://huggingface.co/Pluto-AI-Labs/Pluto-Genesis-0.6B/resolve/a52e0229b7611bd96dac8594ab2f6924c89249c2/config.json",
+      "source": "verified-cache",
+      "networkRequest": false,
+      "cacheSource": {
+        "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-metadata-review-20260929.json",
+        "bytes": 31028,
+        "sha256": "7572eaf3aa6218b33154c13a7ed168eccb729862dfdfd4e1d6d8ad6f6bb03556",
+        "selector": "responses: status200 and url ending /config.json -> utf8",
+        "origin": "Exact official pinned resolve-endpoint response."
+      },
+      "bytes": 726,
+      "sha256": "17b1b9e1263d1a3892a628760a928ccd8eeb980b5f7a59b4e9da62b6c675c709",
+      "startedUtc": "2026-09-29T23:15:07.447Z"
+    },
+    {
+      "requestedUrl": "https://huggingface.co/Pluto-AI-Labs/Pluto-Genesis-0.6B/resolve/a52e0229b7611bd96dac8594ab2f6924c89249c2/tokenizer.json",
+      "source": "verified-cache",
+      "networkRequest": false,
+      "cacheSource": {
+        "path": "D:/LLMs/TinyRustLM/sources/Qwen/Qwen3-0.6B/c1899de289a04d12100db370d81485cdf75e47ca/tokenizer.json",
+        "bytes": 11422654,
+        "sha256": "aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4",
+        "selector": "entire regular file",
+        "origin": "Existing canonical tokenizer bytes independently rehashed against Pluto's pinned LFS identity before this still-unrun plan amendment. Reusing identical tokenizer bytes does not reopen the rejected base model or substitute its weights.",
+        "receipt": {
+          "path": "artifacts/ecosystem-cleanup-20260912/canonical-training-source-review.json",
+          "bytes": 2944,
+          "sha256": "4eed22be24a3541670bf899033b6c1d76676406c4779e981af86e33940312f5c"
+        }
+      },
+      "bytes": 11422654,
+      "sha256": "aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4",
+      "startedUtc": "2026-09-29T23:15:07.477Z"
+    },
+    {
+      "requestedUrl": "https://huggingface.co/Pluto-AI-Labs/Pluto-Genesis-0.6B/resolve/a52e0229b7611bd96dac8594ab2f6924c89249c2/tokenizer_config.json",
+      "source": "verified-cache",
+      "networkRequest": false,
+      "cacheSource": {
+        "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-metadata-closure-20260929.json",
+        "bytes": 10935,
+        "sha256": "b91643e9739b43be735d211f8beb17969ceeff105e234eeaf56a9c8ebf10db52",
+        "selector": "responses: filename=tokenizer_config.json -> utf8",
+        "origin": "Exact official pinned raw-endpoint response."
+      },
+      "bytes": 5404,
+      "sha256": "443bfa629eb16387a12edbf92a76f6a6f10b2af3b53d87ba1550adfcf45f7fa0",
+      "startedUtc": "2026-09-29T23:15:07.543Z"
+    },
+    {
+      "requestedUrl": "https://huggingface.co/Pluto-AI-Labs/Pluto-Genesis-0.6B/resolve/a52e0229b7611bd96dac8594ab2f6924c89249c2/chat_template.jinja",
+      "source": "verified-cache",
+      "networkRequest": false,
+      "cacheSource": {
+        "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-metadata-review-20260929.json",
+        "bytes": 31028,
+        "sha256": "7572eaf3aa6218b33154c13a7ed168eccb729862dfdfd4e1d6d8ad6f6bb03556",
+        "selector": "apiEmbeddedFile.utf8",
+        "origin": "Exact API-embedded Jinja text matching pinned sibling Git blob."
+      },
+      "bytes": 785,
+      "sha256": "48ee2be15a49d5ebae42b2db3183aa58747605c99af00a5f77a5003e77cdf3fc",
+      "startedUtc": "2026-09-29T23:15:07.558Z"
+    },
+    {
+      "requestedUrl": "https://huggingface.co/Pluto-AI-Labs/Pluto-Genesis-0.6B/resolve/a52e0229b7611bd96dac8594ab2f6924c89249c2/generation_config.json",
+      "source": "verified-cache",
+      "networkRequest": false,
+      "cacheSource": {
+        "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-metadata-closure-20260929.json",
+        "bytes": 10935,
+        "sha256": "b91643e9739b43be735d211f8beb17969ceeff105e234eeaf56a9c8ebf10db52",
+        "selector": "responses: filename=generation_config.json -> utf8",
+        "origin": "Exact official pinned resolve-endpoint response."
+      },
+      "bytes": 214,
+      "sha256": "787409d8b23543ca6a24affbca01de9251ec48e5b0f268911ca92daabde329bf",
+      "startedUtc": "2026-09-29T23:15:07.572Z"
+    },
+    {
+      "requestedUrl": "https://www.apache.org/licenses/LICENSE-2.0.txt",
+      "source": "verified-cache",
+      "networkRequest": false,
+      "cacheSource": {
+        "path": "D:/LLMs/TinyRustLM/sources/source-8334f8dcfe693b2a916f02ff16265fc55c0e34e332bb20f47eacf3b3217fda4a/LICENSE",
+        "bytes": 11358,
+        "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+        "selector": "entire regular file",
+        "origin": "Exact previously downloaded official Apache authority bytes; verified acquisition receipt below.",
+        "receipt": {
+          "path": "artifacts/ecosystem-cleanup-20260912/qwen2.5-coder-0.5b-source-acquisition-20260929.json",
+          "bytes": 1827,
+          "sha256": "cc296906f29df245ab6d0d74bff1130ed6bdae0a3ce657bdc312bc7b1b009506"
+        }
+      },
+      "bytes": 11358,
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+      "startedUtc": "2026-09-29T23:15:07.595Z"
+    },
+    {
+      "requestedUrl": "https://huggingface.co/Pluto-AI-Labs/Pluto-Genesis-0.6B/resolve/a52e0229b7611bd96dac8594ab2f6924c89249c2/model.safetensors",
+      "actualUrl": "https://huggingface.co/Pluto-AI-Labs/Pluto-Genesis-0.6B/resolve/a52e0229b7611bd96dac8594ab2f6924c89249c2/model.safetensors",
+      "source": "network-lfs",
+      "networkRequest": true,
+      "startedUtc": "2026-09-29T23:15:07.603Z"
+    }
+  ],
+  "metadataTransport": {
+    "mode": "exact-verified-cache-plus-one-lfs-request",
+    "cacheEntries": [
+      {
+        "filename": "config.json",
+        "requestedUrl": "https://huggingface.co/Pluto-AI-Labs/Pluto-Genesis-0.6B/resolve/a52e0229b7611bd96dac8594ab2f6924c89249c2/config.json",
+        "bytes": 726,
+        "sha256": "17b1b9e1263d1a3892a628760a928ccd8eeb980b5f7a59b4e9da62b6c675c709",
+        "gitBlobId": "0cb1a6152d11dd2c4d20a8d4deadb478e9b0f72e",
+        "cacheSource": {
+          "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-metadata-review-20260929.json",
+          "bytes": 31028,
+          "sha256": "7572eaf3aa6218b33154c13a7ed168eccb729862dfdfd4e1d6d8ad6f6bb03556",
+          "selector": "responses: status200 and url ending /config.json -> utf8",
+          "origin": "Exact official pinned resolve-endpoint response."
+        }
+      },
+      {
+        "filename": "tokenizer_config.json",
+        "requestedUrl": "https://huggingface.co/Pluto-AI-Labs/Pluto-Genesis-0.6B/resolve/a52e0229b7611bd96dac8594ab2f6924c89249c2/tokenizer_config.json",
+        "bytes": 5404,
+        "sha256": "443bfa629eb16387a12edbf92a76f6a6f10b2af3b53d87ba1550adfcf45f7fa0",
+        "gitBlobId": "ddaf69808214a44fdd26d3785b66c1367c78277a",
+        "cacheSource": {
+          "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-metadata-closure-20260929.json",
+          "bytes": 10935,
+          "sha256": "b91643e9739b43be735d211f8beb17969ceeff105e234eeaf56a9c8ebf10db52",
+          "selector": "responses: filename=tokenizer_config.json -> utf8",
+          "origin": "Exact official pinned raw-endpoint response."
+        }
+      },
+      {
+        "filename": "generation_config.json",
+        "requestedUrl": "https://huggingface.co/Pluto-AI-Labs/Pluto-Genesis-0.6B/resolve/a52e0229b7611bd96dac8594ab2f6924c89249c2/generation_config.json",
+        "bytes": 214,
+        "sha256": "787409d8b23543ca6a24affbca01de9251ec48e5b0f268911ca92daabde329bf",
+        "gitBlobId": "6b204b47b535ecceeec0cd8ca14b8f8c4d8ebc9e",
+        "cacheSource": {
+          "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-metadata-closure-20260929.json",
+          "bytes": 10935,
+          "sha256": "b91643e9739b43be735d211f8beb17969ceeff105e234eeaf56a9c8ebf10db52",
+          "selector": "responses: filename=generation_config.json -> utf8",
+          "origin": "Exact official pinned resolve-endpoint response."
+        }
+      },
+      {
+        "filename": "chat_template.jinja",
+        "requestedUrl": "https://huggingface.co/Pluto-AI-Labs/Pluto-Genesis-0.6B/resolve/a52e0229b7611bd96dac8594ab2f6924c89249c2/chat_template.jinja",
+        "bytes": 785,
+        "sha256": "48ee2be15a49d5ebae42b2db3183aa58747605c99af00a5f77a5003e77cdf3fc",
+        "gitBlobId": "15253c5b00bc821eb3e42cbab6f9a414d9319b0a",
+        "cacheSource": {
+          "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-metadata-review-20260929.json",
+          "bytes": 31028,
+          "sha256": "7572eaf3aa6218b33154c13a7ed168eccb729862dfdfd4e1d6d8ad6f6bb03556",
+          "selector": "apiEmbeddedFile.utf8",
+          "origin": "Exact API-embedded Jinja text matching pinned sibling Git blob."
+        }
+      },
+      {
+        "filename": "tokenizer.json",
+        "requestedUrl": "https://huggingface.co/Pluto-AI-Labs/Pluto-Genesis-0.6B/resolve/a52e0229b7611bd96dac8594ab2f6924c89249c2/tokenizer.json",
+        "bytes": 11422654,
+        "sha256": "aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4",
+        "gitBlobId": null,
+        "cacheSource": {
+          "path": "D:/LLMs/TinyRustLM/sources/Qwen/Qwen3-0.6B/c1899de289a04d12100db370d81485cdf75e47ca/tokenizer.json",
+          "bytes": 11422654,
+          "sha256": "aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4",
+          "selector": "entire regular file",
+          "origin": "Existing canonical tokenizer bytes independently rehashed against Pluto's pinned LFS identity before this still-unrun plan amendment. Reusing identical tokenizer bytes does not reopen the rejected base model or substitute its weights.",
+          "receipt": {
+            "path": "artifacts/ecosystem-cleanup-20260912/canonical-training-source-review.json",
+            "bytes": 2944,
+            "sha256": "4eed22be24a3541670bf899033b6c1d76676406c4779e981af86e33940312f5c"
+          }
+        }
+      },
+      {
+        "filename": "LICENSE",
+        "requestedUrl": "https://www.apache.org/licenses/LICENSE-2.0.txt",
+        "bytes": 11358,
+        "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+        "gitBlobId": null,
+        "cacheSource": {
+          "path": "D:/LLMs/TinyRustLM/sources/source-8334f8dcfe693b2a916f02ff16265fc55c0e34e332bb20f47eacf3b3217fda4a/LICENSE",
+          "bytes": 11358,
+          "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+          "selector": "entire regular file",
+          "origin": "Exact previously downloaded official Apache authority bytes; verified acquisition receipt below.",
+          "receipt": {
+            "path": "artifacts/ecosystem-cleanup-20260912/qwen2.5-coder-0.5b-source-acquisition-20260929.json",
+            "bytes": 1827,
+            "sha256": "cc296906f29df245ab6d0d74bff1130ed6bdae0a3ce657bdc312bc7b1b009506"
+          }
+        }
+      }
+    ],
+    "networkEntries": [
+      {
+        "filename": "model.safetensors",
+        "url": "https://huggingface.co/Pluto-AI-Labs/Pluto-Genesis-0.6B/resolve/a52e0229b7611bd96dac8594ab2f6924c89249c2/model.safetensors",
+        "bytes": 1192134784,
+        "sha256": "3c3fed56cd33189d386b9b690ada71f55daee5a158afda69486efc6fe57a8ad9"
+      }
+    ]
+  },
+  "before": {
+    "head": "ac194ef95959140ffeda799466d256cc5db2af9c",
+    "tree": "f23ef9333334939d6b586473e477ec5e12225390",
+    "status": "",
+    "boundInputs": [
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-cache-retry-plan-20260929.json",
+        "bytes": 11877,
+        "sha256": "fd4c2850356127469cdb03ea3964c90fcfcfbf91ac190916462b0ca0e0e74a74"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-transport-retry-plan-20260929.json",
+        "bytes": 7210,
+        "sha256": "d5e2b5502d71ba4b64c394022bebdc29bea5c683daa8698baa73c308c28cfa8c"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-combined-start-20260929.json",
+        "bytes": 8241,
+        "sha256": "57177a0e10196c08ec3e6483b25fb9a69f3d14b35752a663c68c0266451faa84"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-combined-execution-20260929.json",
+        "bytes": 14105,
+        "sha256": "a52f0fed6d3e1cef13b4e5ec2ad78b198e9019a9fd590fa0e0fdb63172227348"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-v2-combined-start-20260929.json",
+        "bytes": 11438,
+        "sha256": "1699a3ea8fb8da4a14b06031880d472ba966f39648fe26b931b6e1890a2f1fdf"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-v2-combined-execution-20260929.json",
+        "bytes": 17965,
+        "sha256": "9fdc594fdb083d6e395810bc42fd89f6829b67072b3bbe8f2d6511163fe49925"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-metadata-review-20260929.json",
+        "bytes": 31028,
+        "sha256": "7572eaf3aa6218b33154c13a7ed168eccb729862dfdfd4e1d6d8ad6f6bb03556"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-metadata-closure-20260929.json",
+        "bytes": 10935,
+        "sha256": "b91643e9739b43be735d211f8beb17969ceeff105e234eeaf56a9c8ebf10db52"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-metadata-closure-20260929.json",
+        "bytes": 10935,
+        "sha256": "b91643e9739b43be735d211f8beb17969ceeff105e234eeaf56a9c8ebf10db52"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-metadata-review-20260929.json",
+        "bytes": 31028,
+        "sha256": "7572eaf3aa6218b33154c13a7ed168eccb729862dfdfd4e1d6d8ad6f6bb03556"
+      },
+      {
+        "path": "D:/LLMs/TinyRustLM/sources/Qwen/Qwen3-0.6B/c1899de289a04d12100db370d81485cdf75e47ca/tokenizer.json",
+        "bytes": 11422654,
+        "sha256": "aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4"
+      },
+      {
+        "path": "D:/LLMs/TinyRustLM/sources/source-8334f8dcfe693b2a916f02ff16265fc55c0e34e332bb20f47eacf3b3217fda4a/LICENSE",
+        "bytes": 11358,
+        "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/canonical-training-source-review.json",
+        "bytes": 2944,
+        "sha256": "4eed22be24a3541670bf899033b6c1d76676406c4779e981af86e33940312f5c"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen2.5-coder-0.5b-source-acquisition-20260929.json",
+        "bytes": 1827,
+        "sha256": "cc296906f29df245ab6d0d74bff1130ed6bdae0a3ce657bdc312bc7b1b009506"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-development-plan-20260929.json",
+        "bytes": 18562,
+        "sha256": "aa1b98278b74d4ca7c555d7039193264c24adc2c8b787f236366fabe581dc753"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-metadata-closure-20260929.json",
+        "bytes": 10935,
+        "sha256": "b91643e9739b43be735d211f8beb17969ceeff105e234eeaf56a9c8ebf10db52"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-metadata-review-20260929.json",
+        "bytes": 31028,
+        "sha256": "7572eaf3aa6218b33154c13a7ed168eccb729862dfdfd4e1d6d8ad6f6bb03556"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-metadata-followup-20260929.json",
+        "bytes": 3771,
+        "sha256": "0b04edd7be4d7959481ebde5fcf2c80a1e8d3ebdb59fd7f9cb1be079f86eb914"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-inventory-20260929.json",
+        "bytes": 2338,
+        "sha256": "635d875f3e8b946908836007a63f297b8c0199f00893d6108a3648056ff196fc"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-untied-development-binding-20260929.json",
+        "bytes": 5733,
+        "sha256": "980ee3d8628cecb46692f44ed3a88ec65755226b8251f62bd4432ec68b411335"
+      },
+      {
+        "path": "contracts/vnext/source-candidate-exclusions.v1.json",
+        "bytes": 22048,
+        "sha256": "ac618797998007053d3012f87fcda806b5c1f7449be8af3d59bbbdee922ddc82"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-untied-development-screen-20260929.eval",
+        "bytes": 1308,
+        "sha256": "946e6bdda7512bde3db4dac5a4f66e66eb5353141e7d19b8a0ca3735fd2903c9"
+      },
+      {
+        "path": "tinyrustlm/tools/reference-raw-quality.py",
+        "bytes": 34527,
+        "sha256": "30dd01e388433dfe926f5990ab778817167fd50a6c81a55a19e10870ebb289fb"
+      },
+      {
+        "path": "tinyrustlm/tools/huggingface-supported-candidates.js",
+        "bytes": 26025,
+        "sha256": "0b8509d1d7a330923520e64efd462a72d8dc2f042f86d422890e3f2420597906"
+      },
+      {
+        "path": "tinyrustlm/tools/huggingface-candidate-acquire.js",
+        "bytes": 33531,
+        "sha256": "c179d2d343689ef930ee765b64447589a84a2c6efac4b59ceba83271fadcd1de"
+      },
+      {
+        "path": "tinyrustlm/tools/huggingface-candidate-storage.js",
+        "bytes": 7471,
+        "sha256": "d94c9e90df4b110523d5238d361b348b565b7a2dd9f3840103cb20652b6a9a33"
+      },
+      {
+        "path": "tinyrustlm/tools/huggingface-metadata.js",
+        "bytes": 4158,
+        "sha256": "f6e26c0255a7eec38d35c116d4e1983fab42f33955e04074cb413f45ea97a341"
+      },
+      {
+        "path": "tinyrustlm/tools/huggingface-weight-layout.js",
+        "bytes": 3690,
+        "sha256": "002b9cbe9111a89a01a6c36ff63def0d18e9c5e7060a798636eac440dd6f2911"
+      },
+      {
+        "path": "tinyrustlm/tools/source-candidate-exclusions.js",
+        "bytes": 1885,
+        "sha256": "43a71f9760a2d1038f9b3b017c61a445577a68bcd285098ab915ba5b0df4b836"
+      },
+      {
+        "path": "tinyrustlm/tools/strict-json.js",
+        "bytes": 11529,
+        "sha256": "8935f3918c9a12722404ad120c73dae80965c723301a00c7e60767c45a78790e"
+      },
+      {
+        "path": "tinyrustlm/tools/canonical-operation-scratch.js",
+        "bytes": 9276,
+        "sha256": "52b6024d121479d20a634ee639d641cb1ff4896bce99b1110a3e26720bf5a7f9"
+      },
+      {
+        "path": "tinyrustlm/tools/verify-single-source-authority.js",
+        "bytes": 144521,
+        "sha256": "e8867b01d00399f319852449ff80c249edab30a8bcee4c09fd3789300f65aaf7"
+      },
+      {
+        "path": "D:\\LLMs\\TinyRustLM\\training-env-py312\\Scripts\\python.exe",
+        "bytes": 274424,
+        "sha256": "0b471133e110cfb53a061cad528ce8e517d7b9ac41a0a396c39ad795a487fc14"
+      },
+      {
+        "path": "D:\\LLMs\\TinyRustLM\\training-env-py312\\Lib\\site-packages\\transformers\\tokenization_utils_base.py",
+        "bytes": 183764,
+        "sha256": "f86fc8ce6ad86bcbb4bad93b84b3cde9f7b93b516703b5d220889c66bbdd7b5a"
+      }
+    ]
+  },
+  "sourceGate": {
+    "status": 0,
+    "signal": null,
+    "error": null,
+    "durationMs": 41077,
+    "stdoutBytes": 164,
+    "stdoutSha256": "23bf73a83fe1c67061b85372209405f9748df2315d3dac1122d5cc2a4eae7999",
+    "stdout": "{\"canonicalLayoutAvailable\":true,\"coverageClass\":\"registered-governed-roots-only\",\"localScanPerformed\":true,\"verdict\":\"pass\",\"wholeVolumeInventoryPerformed\":false}\n",
+    "stderr": ""
+  },
+  "scratch": {
+    "root": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\pluto-genesis-v3-combined\\tinyrustlm-operation-E7OM8X",
+    "marker": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\pluto-genesis-v3-combined\\tinyrustlm-operation-E7OM8X.owner.v2",
+    "removedRoot": true,
+    "removedMarker": true
+  },
+  "sourceBefore": [
+    {
+      "filename": "LICENSE",
+      "byteCount": 11358,
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    },
+    {
+      "filename": "chat_template.jinja",
+      "byteCount": 785,
+      "sha256": "48ee2be15a49d5ebae42b2db3183aa58747605c99af00a5f77a5003e77cdf3fc"
+    },
+    {
+      "filename": "config.json",
+      "byteCount": 726,
+      "sha256": "17b1b9e1263d1a3892a628760a928ccd8eeb980b5f7a59b4e9da62b6c675c709"
+    },
+    {
+      "filename": "generation_config.json",
+      "byteCount": 214,
+      "sha256": "787409d8b23543ca6a24affbca01de9251ec48e5b0f268911ca92daabde329bf"
+    },
+    {
+      "filename": "model.safetensors",
+      "byteCount": 1192134784,
+      "sha256": "3c3fed56cd33189d386b9b690ada71f55daee5a158afda69486efc6fe57a8ad9"
+    },
+    {
+      "filename": "source-acquisition.json",
+      "byteCount": 2131,
+      "sha256": "314355a6ea2e2f6f8239acb0d5bf1b3ca6e1b7d5d1753e7280651e3df45d697d"
+    },
+    {
+      "filename": "tokenizer.json",
+      "byteCount": 11422654,
+      "sha256": "aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4"
+    },
+    {
+      "filename": "tokenizer_config.json",
+      "byteCount": 5404,
+      "sha256": "443bfa629eb16387a12edbf92a76f6a6f10b2af3b53d87ba1550adfcf45f7fa0"
+    }
+  ],
+  "raw": {
+    "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-v3-development-raw-20260929.json",
+    "bytes": 24781,
+    "sha256": "b86195d6cb4ffcb1e2267c5574d670911b240de22e6f158fcf0bfeb15e7b2ae4"
+  },
+  "sourceAfter": [
+    {
+      "filename": "LICENSE",
+      "byteCount": 11358,
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    },
+    {
+      "filename": "chat_template.jinja",
+      "byteCount": 785,
+      "sha256": "48ee2be15a49d5ebae42b2db3183aa58747605c99af00a5f77a5003e77cdf3fc"
+    },
+    {
+      "filename": "config.json",
+      "byteCount": 726,
+      "sha256": "17b1b9e1263d1a3892a628760a928ccd8eeb980b5f7a59b4e9da62b6c675c709"
+    },
+    {
+      "filename": "generation_config.json",
+      "byteCount": 214,
+      "sha256": "787409d8b23543ca6a24affbca01de9251ec48e5b0f268911ca92daabde329bf"
+    },
+    {
+      "filename": "model.safetensors",
+      "byteCount": 1192134784,
+      "sha256": "3c3fed56cd33189d386b9b690ada71f55daee5a158afda69486efc6fe57a8ad9"
+    },
+    {
+      "filename": "source-acquisition.json",
+      "byteCount": 2131,
+      "sha256": "314355a6ea2e2f6f8239acb0d5bf1b3ca6e1b7d5d1753e7280651e3df45d697d"
+    },
+    {
+      "filename": "tokenizer.json",
+      "byteCount": 11422654,
+      "sha256": "aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4"
+    },
+    {
+      "filename": "tokenizer_config.json",
+      "byteCount": 5404,
+      "sha256": "443bfa629eb16387a12edbf92a76f6a6f10b2af3b53d87ba1550adfcf45f7fa0"
+    }
+  ],
+  "after": {
+    "head": "ac194ef95959140ffeda799466d256cc5db2af9c",
+    "tree": "f23ef9333334939d6b586473e477ec5e12225390",
+    "status": "M tinyrustlm/tests/qwen3-numerical-differential-profile.test.js\n M tinyrustlm/tools/qualification-materializer.js\n?? artifacts/ecosystem-cleanup-20260912/numerical-divergence-metrics-baseline-20260929-stderr.txt\n?? artifacts/ecosystem-cleanup-20260912/numerical-divergence-metrics-baseline-20260929-stdout.txt\n?? artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-v3-combined-start-20260929.json\n?? artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-v3-development-raw-20260929.json\n?? artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-v3-development-stderr-20260929.txt\n?? artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-v3-development-stdout-20260929.txt\n?? artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-v3-preflight-20260929.json\n?? artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-v3-preflight-stderr-20260929.txt\n?? artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-v3-source-acquisition-20260929.json\n?? artifacts/tests/pluto-genesis-v3-combined/",
+    "boundInputs": [
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-cache-retry-plan-20260929.json",
+        "bytes": 11877,
+        "sha256": "fd4c2850356127469cdb03ea3964c90fcfcfbf91ac190916462b0ca0e0e74a74"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-transport-retry-plan-20260929.json",
+        "bytes": 7210,
+        "sha256": "d5e2b5502d71ba4b64c394022bebdc29bea5c683daa8698baa73c308c28cfa8c"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-combined-start-20260929.json",
+        "bytes": 8241,
+        "sha256": "57177a0e10196c08ec3e6483b25fb9a69f3d14b35752a663c68c0266451faa84"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-combined-execution-20260929.json",
+        "bytes": 14105,
+        "sha256": "a52f0fed6d3e1cef13b4e5ec2ad78b198e9019a9fd590fa0e0fdb63172227348"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-v2-combined-start-20260929.json",
+        "bytes": 11438,
+        "sha256": "1699a3ea8fb8da4a14b06031880d472ba966f39648fe26b931b6e1890a2f1fdf"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-v2-combined-execution-20260929.json",
+        "bytes": 17965,
+        "sha256": "9fdc594fdb083d6e395810bc42fd89f6829b67072b3bbe8f2d6511163fe49925"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-metadata-review-20260929.json",
+        "bytes": 31028,
+        "sha256": "7572eaf3aa6218b33154c13a7ed168eccb729862dfdfd4e1d6d8ad6f6bb03556"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-metadata-closure-20260929.json",
+        "bytes": 10935,
+        "sha256": "b91643e9739b43be735d211f8beb17969ceeff105e234eeaf56a9c8ebf10db52"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-metadata-closure-20260929.json",
+        "bytes": 10935,
+        "sha256": "b91643e9739b43be735d211f8beb17969ceeff105e234eeaf56a9c8ebf10db52"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-metadata-review-20260929.json",
+        "bytes": 31028,
+        "sha256": "7572eaf3aa6218b33154c13a7ed168eccb729862dfdfd4e1d6d8ad6f6bb03556"
+      },
+      {
+        "path": "D:/LLMs/TinyRustLM/sources/Qwen/Qwen3-0.6B/c1899de289a04d12100db370d81485cdf75e47ca/tokenizer.json",
+        "bytes": 11422654,
+        "sha256": "aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4"
+      },
+      {
+        "path": "D:/LLMs/TinyRustLM/sources/source-8334f8dcfe693b2a916f02ff16265fc55c0e34e332bb20f47eacf3b3217fda4a/LICENSE",
+        "bytes": 11358,
+        "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/canonical-training-source-review.json",
+        "bytes": 2944,
+        "sha256": "4eed22be24a3541670bf899033b6c1d76676406c4779e981af86e33940312f5c"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen2.5-coder-0.5b-source-acquisition-20260929.json",
+        "bytes": 1827,
+        "sha256": "cc296906f29df245ab6d0d74bff1130ed6bdae0a3ce657bdc312bc7b1b009506"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-development-plan-20260929.json",
+        "bytes": 18562,
+        "sha256": "aa1b98278b74d4ca7c555d7039193264c24adc2c8b787f236366fabe581dc753"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-metadata-closure-20260929.json",
+        "bytes": 10935,
+        "sha256": "b91643e9739b43be735d211f8beb17969ceeff105e234eeaf56a9c8ebf10db52"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-metadata-review-20260929.json",
+        "bytes": 31028,
+        "sha256": "7572eaf3aa6218b33154c13a7ed168eccb729862dfdfd4e1d6d8ad6f6bb03556"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-metadata-followup-20260929.json",
+        "bytes": 3771,
+        "sha256": "0b04edd7be4d7959481ebde5fcf2c80a1e8d3ebdb59fd7f9cb1be079f86eb914"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-inventory-20260929.json",
+        "bytes": 2338,
+        "sha256": "635d875f3e8b946908836007a63f297b8c0199f00893d6108a3648056ff196fc"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-untied-development-binding-20260929.json",
+        "bytes": 5733,
+        "sha256": "980ee3d8628cecb46692f44ed3a88ec65755226b8251f62bd4432ec68b411335"
+      },
+      {
+        "path": "contracts/vnext/source-candidate-exclusions.v1.json",
+        "bytes": 22048,
+        "sha256": "ac618797998007053d3012f87fcda806b5c1f7449be8af3d59bbbdee922ddc82"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-untied-development-screen-20260929.eval",
+        "bytes": 1308,
+        "sha256": "946e6bdda7512bde3db4dac5a4f66e66eb5353141e7d19b8a0ca3735fd2903c9"
+      },
+      {
+        "path": "tinyrustlm/tools/reference-raw-quality.py",
+        "bytes": 34527,
+        "sha256": "30dd01e388433dfe926f5990ab778817167fd50a6c81a55a19e10870ebb289fb"
+      },
+      {
+        "path": "tinyrustlm/tools/huggingface-supported-candidates.js",
+        "bytes": 26025,
+        "sha256": "0b8509d1d7a330923520e64efd462a72d8dc2f042f86d422890e3f2420597906"
+      },
+      {
+        "path": "tinyrustlm/tools/huggingface-candidate-acquire.js",
+        "bytes": 33531,
+        "sha256": "c179d2d343689ef930ee765b64447589a84a2c6efac4b59ceba83271fadcd1de"
+      },
+      {
+        "path": "tinyrustlm/tools/huggingface-candidate-storage.js",
+        "bytes": 7471,
+        "sha256": "d94c9e90df4b110523d5238d361b348b565b7a2dd9f3840103cb20652b6a9a33"
+      },
+      {
+        "path": "tinyrustlm/tools/huggingface-metadata.js",
+        "bytes": 4158,
+        "sha256": "f6e26c0255a7eec38d35c116d4e1983fab42f33955e04074cb413f45ea97a341"
+      },
+      {
+        "path": "tinyrustlm/tools/huggingface-weight-layout.js",
+        "bytes": 3690,
+        "sha256": "002b9cbe9111a89a01a6c36ff63def0d18e9c5e7060a798636eac440dd6f2911"
+      },
+      {
+        "path": "tinyrustlm/tools/source-candidate-exclusions.js",
+        "bytes": 1885,
+        "sha256": "43a71f9760a2d1038f9b3b017c61a445577a68bcd285098ab915ba5b0df4b836"
+      },
+      {
+        "path": "tinyrustlm/tools/strict-json.js",
+        "bytes": 11529,
+        "sha256": "8935f3918c9a12722404ad120c73dae80965c723301a00c7e60767c45a78790e"
+      },
+      {
+        "path": "tinyrustlm/tools/canonical-operation-scratch.js",
+        "bytes": 9276,
+        "sha256": "52b6024d121479d20a634ee639d641cb1ff4896bce99b1110a3e26720bf5a7f9"
+      },
+      {
+        "path": "tinyrustlm/tools/verify-single-source-authority.js",
+        "bytes": 144521,
+        "sha256": "e8867b01d00399f319852449ff80c249edab30a8bcee4c09fd3789300f65aaf7"
+      },
+      {
+        "path": "D:\\LLMs\\TinyRustLM\\training-env-py312\\Scripts\\python.exe",
+        "bytes": 274424,
+        "sha256": "0b471133e110cfb53a061cad528ce8e517d7b9ac41a0a396c39ad795a487fc14"
+      },
+      {
+        "path": "D:\\LLMs\\TinyRustLM\\training-env-py312\\Lib\\site-packages\\transformers\\tokenization_utils_base.py",
+        "bytes": 183764,
+        "sha256": "f86fc8ce6ad86bcbb4bad93b84b3cde9f7b93b516703b5d220889c66bbdd7b5a"
+      }
+    ]
+  },
+  "rawOutcomes": [
+    {
+      "index": 0,
+      "raw_output_text": "\nReady.",
+      "outputTokenCount": 4,
+      "lastTokenId": 151645,
+      "generationCalls": 1
+    },
+    {
+      "index": 1,
+      "raw_output_text": "\n{\n  \"name\": \"Mira\",\n  \"day\": \"Tuesday\"\n}",
+      "outputTokenCount": 19,
+      "lastTokenId": 151645,
+      "generationCalls": 1
+    },
+    {
+      "index": 2,
+      "raw_output_text": "\nThe draft is now due Friday.",
+      "outputTokenCount": 9,
+      "lastTokenId": 151645,
+      "generationCalls": 1
+    },
+    {
+      "index": 3,
+      "raw_output_text": "\n1. Write down the contents of each item you want to pack: coat, bottle, and keys. This will help you organize your packing list and avoid missing any important items.\n\n2. Use the pen to write down the contents of each item you want to pack. This will help you visualize your packing list and make sure you don't forget any important items.",
+      "outputTokenCount": 75,
+      "lastTokenId": 151645,
+      "generationCalls": 1
+    },
+    {
+      "index": 4,
+      "raw_output_text": "\nThe pens in Box B are red.",
+      "outputTokenCount": 10,
+      "lastTokenId": 151645,
+      "generationCalls": 1
+    },
+    {
+      "index": 5,
+      "raw_output_text": "\nThe library is open from 9 a.m. to 6 p.m. on weekdays and Sundays, with no closing time on Sundays.",
+      "outputTokenCount": 30,
+      "lastTokenId": 151645,
+      "generationCalls": 1
+    }
+  ],
+  "finalBoundInputs": [
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-cache-retry-plan-20260929.json",
+      "bytes": 11877,
+      "sha256": "fd4c2850356127469cdb03ea3964c90fcfcfbf91ac190916462b0ca0e0e74a74"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-transport-retry-plan-20260929.json",
+      "bytes": 7210,
+      "sha256": "d5e2b5502d71ba4b64c394022bebdc29bea5c683daa8698baa73c308c28cfa8c"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-combined-start-20260929.json",
+      "bytes": 8241,
+      "sha256": "57177a0e10196c08ec3e6483b25fb9a69f3d14b35752a663c68c0266451faa84"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-combined-execution-20260929.json",
+      "bytes": 14105,
+      "sha256": "a52f0fed6d3e1cef13b4e5ec2ad78b198e9019a9fd590fa0e0fdb63172227348"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-v2-combined-start-20260929.json",
+      "bytes": 11438,
+      "sha256": "1699a3ea8fb8da4a14b06031880d472ba966f39648fe26b931b6e1890a2f1fdf"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-v2-combined-execution-20260929.json",
+      "bytes": 17965,
+      "sha256": "9fdc594fdb083d6e395810bc42fd89f6829b67072b3bbe8f2d6511163fe49925"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-metadata-review-20260929.json",
+      "bytes": 31028,
+      "sha256": "7572eaf3aa6218b33154c13a7ed168eccb729862dfdfd4e1d6d8ad6f6bb03556"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-metadata-closure-20260929.json",
+      "bytes": 10935,
+      "sha256": "b91643e9739b43be735d211f8beb17969ceeff105e234eeaf56a9c8ebf10db52"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-metadata-closure-20260929.json",
+      "bytes": 10935,
+      "sha256": "b91643e9739b43be735d211f8beb17969ceeff105e234eeaf56a9c8ebf10db52"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-metadata-review-20260929.json",
+      "bytes": 31028,
+      "sha256": "7572eaf3aa6218b33154c13a7ed168eccb729862dfdfd4e1d6d8ad6f6bb03556"
+    },
+    {
+      "path": "D:/LLMs/TinyRustLM/sources/Qwen/Qwen3-0.6B/c1899de289a04d12100db370d81485cdf75e47ca/tokenizer.json",
+      "bytes": 11422654,
+      "sha256": "aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4"
+    },
+    {
+      "path": "D:/LLMs/TinyRustLM/sources/source-8334f8dcfe693b2a916f02ff16265fc55c0e34e332bb20f47eacf3b3217fda4a/LICENSE",
+      "bytes": 11358,
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/canonical-training-source-review.json",
+      "bytes": 2944,
+      "sha256": "4eed22be24a3541670bf899033b6c1d76676406c4779e981af86e33940312f5c"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/qwen2.5-coder-0.5b-source-acquisition-20260929.json",
+      "bytes": 1827,
+      "sha256": "cc296906f29df245ab6d0d74bff1130ed6bdae0a3ce657bdc312bc7b1b009506"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-development-plan-20260929.json",
+      "bytes": 18562,
+      "sha256": "aa1b98278b74d4ca7c555d7039193264c24adc2c8b787f236366fabe581dc753"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-metadata-closure-20260929.json",
+      "bytes": 10935,
+      "sha256": "b91643e9739b43be735d211f8beb17969ceeff105e234eeaf56a9c8ebf10db52"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-metadata-review-20260929.json",
+      "bytes": 31028,
+      "sha256": "7572eaf3aa6218b33154c13a7ed168eccb729862dfdfd4e1d6d8ad6f6bb03556"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-metadata-followup-20260929.json",
+      "bytes": 3771,
+      "sha256": "0b04edd7be4d7959481ebde5fcf2c80a1e8d3ebdb59fd7f9cb1be079f86eb914"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-inventory-20260929.json",
+      "bytes": 2338,
+      "sha256": "635d875f3e8b946908836007a63f297b8c0199f00893d6108a3648056ff196fc"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-untied-development-binding-20260929.json",
+      "bytes": 5733,
+      "sha256": "980ee3d8628cecb46692f44ed3a88ec65755226b8251f62bd4432ec68b411335"
+    },
+    {
+      "path": "contracts/vnext/source-candidate-exclusions.v1.json",
+      "bytes": 22048,
+      "sha256": "ac618797998007053d3012f87fcda806b5c1f7449be8af3d59bbbdee922ddc82"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-untied-development-screen-20260929.eval",
+      "bytes": 1308,
+      "sha256": "946e6bdda7512bde3db4dac5a4f66e66eb5353141e7d19b8a0ca3735fd2903c9"
+    },
+    {
+      "path": "tinyrustlm/tools/reference-raw-quality.py",
+      "bytes": 34527,
+      "sha256": "30dd01e388433dfe926f5990ab778817167fd50a6c81a55a19e10870ebb289fb"
+    },
+    {
+      "path": "tinyrustlm/tools/huggingface-supported-candidates.js",
+      "bytes": 26025,
+      "sha256": "0b8509d1d7a330923520e64efd462a72d8dc2f042f86d422890e3f2420597906"
+    },
+    {
+      "path": "tinyrustlm/tools/huggingface-candidate-acquire.js",
+      "bytes": 33531,
+      "sha256": "c179d2d343689ef930ee765b64447589a84a2c6efac4b59ceba83271fadcd1de"
+    },
+    {
+      "path": "tinyrustlm/tools/huggingface-candidate-storage.js",
+      "bytes": 7471,
+      "sha256": "d94c9e90df4b110523d5238d361b348b565b7a2dd9f3840103cb20652b6a9a33"
+    },
+    {
+      "path": "tinyrustlm/tools/huggingface-metadata.js",
+      "bytes": 4158,
+      "sha256": "f6e26c0255a7eec38d35c116d4e1983fab42f33955e04074cb413f45ea97a341"
+    },
+    {
+      "path": "tinyrustlm/tools/huggingface-weight-layout.js",
+      "bytes": 3690,
+      "sha256": "002b9cbe9111a89a01a6c36ff63def0d18e9c5e7060a798636eac440dd6f2911"
+    },
+    {
+      "path": "tinyrustlm/tools/source-candidate-exclusions.js",
+      "bytes": 1885,
+      "sha256": "43a71f9760a2d1038f9b3b017c61a445577a68bcd285098ab915ba5b0df4b836"
+    },
+    {
+      "path": "tinyrustlm/tools/strict-json.js",
+      "bytes": 11529,
+      "sha256": "8935f3918c9a12722404ad120c73dae80965c723301a00c7e60767c45a78790e"
+    },
+    {
+      "path": "tinyrustlm/tools/canonical-operation-scratch.js",
+      "bytes": 9276,
+      "sha256": "52b6024d121479d20a634ee639d641cb1ff4896bce99b1110a3e26720bf5a7f9"
+    },
+    {
+      "path": "tinyrustlm/tools/verify-single-source-authority.js",
+      "bytes": 144521,
+      "sha256": "e8867b01d00399f319852449ff80c249edab30a8bcee4c09fd3789300f65aaf7"
+    },
+    {
+      "path": "D:\\LLMs\\TinyRustLM\\training-env-py312\\Scripts\\python.exe",
+      "bytes": 274424,
+      "sha256": "0b471133e110cfb53a061cad528ce8e517d7b9ac41a0a396c39ad795a487fc14"
+    },
+    {
+      "path": "D:\\LLMs\\TinyRustLM\\training-env-py312\\Lib\\site-packages\\transformers\\tokenization_utils_base.py",
+      "bytes": 183764,
+      "sha256": "f86fc8ce6ad86bcbb4bad93b84b3cde9f7b93b516703b5d220889c66bbdd7b5a"
+    }
+  ],
+  "finishedUtc": "2026-09-29T23:16:52.165Z",
+  "elapsedMs": 146198
+}

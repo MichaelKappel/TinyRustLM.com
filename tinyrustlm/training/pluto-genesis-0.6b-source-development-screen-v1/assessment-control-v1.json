@@ -1,0 +1,78 @@
+{
+  "schema": "tinyrustlm.source_model_screen_assessment.v1",
+  "sourceModelId": "Pluto-AI-Labs/Pluto-Genesis-0.6B",
+  "sourceRevision": "a52e0229b7611bd96dac8594ab2f6924c89249c2",
+  "sourceModelArtifactSha256": "3c3fed56cd33189d386b9b690ada71f55daee5a158afda69486efc6fe57a8ad9",
+  "sourceScreenSha256": "b86195d6cb4ffcb1e2267c5574d670911b240de22e6f158fcf0bfeb15e7b2ae4",
+  "sourceScreenPath": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-v3-development-raw-20260929.json",
+  "executionReceiptPath": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-v3-combined-execution-20260929.json",
+  "executionReceiptSha256": "77b12c56e3e80ca72dd54431bf1ceb84664aa80df5cd9541dd794ef45121a2c2",
+  "prospectivePlanPath": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-cache-retry-plan-20260929.json",
+  "prospectivePlanSha256": "fd4c2850356127469cdb03ea3964c90fcfcfbf91ac190916462b0ca0e0e74a74",
+  "decision": "rejected",
+  "decisionAuthority": "engineering-source-screen-v1",
+  "independentAssessment": "Root agent independently read all six exact raw answers and frozen cases after input/source identity closure. Case1 passes; cases0,2,3,4,5 fail under the unchanged prospective criteria.",
+  "architectureFamily": "qwen3-dense-gqa",
+  "runtimeAdmission": "not-admitted-current-slm2",
+  "licenseDisposition": "apache-2.0-publisher-license-and-official-authority-text-verified",
+  "blockerCode": "model_quality_rejected",
+  "passedCaseCount": 1,
+  "caseCount": 6,
+  "criticalFailureCodes": [
+    "answer-format-violated",
+    "task-fidelity-violated",
+    "source-facts-contradicted"
+  ],
+  "caseDispositions": [
+    {
+      "index": 0,
+      "status": "fail",
+      "failureCodes": [
+        "answer-format-violated"
+      ],
+      "reason": "The raw answer Ready. differs from the required exact READY in capitalization and punctuation; surrounding whitespace alone is permitted."
+    },
+    {
+      "index": 1,
+      "status": "pass",
+      "failureCodes": []
+    },
+    {
+      "index": 2,
+      "status": "fail",
+      "failureCodes": [
+        "answer-format-violated"
+      ],
+      "reason": "The answer names the corrected Friday deadline but adds sentence text despite the required day-only response. No answer extraction or repair was performed."
+    },
+    {
+      "index": 3,
+      "status": "fail",
+      "failureCodes": [
+        "task-fidelity-violated"
+      ],
+      "reason": "Two numbered paragraphs redundantly instruct writing the contents of each item rather than providing two meaningful steps yielding the requested handwritten packing checklist for coat, bottle and keys. This is a task-fidelity failure, not an invented-tool finding."
+    },
+    {
+      "index": 4,
+      "status": "fail",
+      "failureCodes": [
+        "answer-format-violated"
+      ],
+      "reason": "The answer identifies red but adds a sentence despite the required color-only response. No answer extraction or repair was performed."
+    },
+    {
+      "index": 5,
+      "status": "fail",
+      "failureCodes": [
+        "source-facts-contradicted"
+      ],
+      "reason": "The answer extends weekday opening hours to Sundays and invents no Sunday closing time, explicitly contradicting the stated Sunday closure."
+    }
+  ],
+  "executionBoundary": "Two prior acquisition attempts closed on config.json HTTP429 before weights, preflight or generation; their evidence is preserved. The third prospective cache-bound attempt succeeded using six exact verified cache entries and one candidate-weight network request, then verified seven source files plus receipt, passed tokenizer/config-only preflight, and made one greedy call per case in the first six-case source screen. No model retry, publisher-file rewrite, changed cases/criteria/system/template/sampling, answer repair or conversion occurred. All34 bound identities and source files remained unchanged before/after; known independent work was recorded. No browser, final holdout or default qualification claim.",
+  "officialReferences": [
+    "https://huggingface.co/Pluto-AI-Labs/Pluto-Genesis-0.6B/tree/a52e0229b7611bd96dac8594ab2f6924c89249c2",
+    "https://www.apache.org/licenses/LICENSE-2.0.txt"
+  ]
+}

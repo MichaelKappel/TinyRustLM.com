@@ -1,0 +1,130 @@
+{
+  "schema": "tinyrustlm.qualification-materializer-implementation-review/1",
+  "reviewedAtUtc": "2026-09-29T23:28:24.899Z",
+  "status": "focused-validation-passed-real-materialization-not-executed",
+  "sourceBasis": {
+    "checkpoint": "152ec61",
+    "freshSourceAdmission": "ac194ef95959140ffeda799466d256cc5db2af9c",
+    "admissionObservedAtUtc": "2026-09-29T23:15:07.437Z",
+    "authority": "Parent and candidate agent observed gate pass before this scoped source work."
+  },
+  "source": [
+    {
+      "path": "tinyrustlm/tools/qualification-materializer.js",
+      "bytes": 33374,
+      "sha256": "18d0e560bae598b28c0ad707296dd164e9b18a39dead8098c6fe90680372d85d"
+    },
+    {
+      "path": "tinyrustlm/tests/qualification-materializer_test.js",
+      "bytes": 24165,
+      "sha256": "8370630ba17e07f3cfcf7b6b2ba0698d93bfcb967d22a7697a8734cf38a01fa8"
+    }
+  ],
+  "changes": [
+    "Standalone evidence-backed preparation tool; no app/runtime/admission schema changes.",
+    "Exact source lock/revision/weight exclusion, source raw and eval bytes, redistribution review, conversion receipt and independently reconstructed ACG2 identities.",
+    "Separate numerical terminal, preregistration, request, profile and unchanged read-only verifier recheck; enclosing compositionResult identity remains distinct from converter receipt.",
+    "Actual source/model/tool bytes are rehashed only on future real CLI execution; current tests use metadata fixtures.",
+    "Exact public acceptance input/turn mapping, actual preceding raw output in history, native and desktop/mobile browser records, explicit per-case reviewer decisions, cancellation/next/reset and timing bounds.",
+    "Retained native stdout/stderr and every per-turn request/capture must agree with report; emit unchanged public admission/receipt schemas only after all evidence passes.",
+    "Qualification preparation does not publish a catalog, seed, site or NuGet package."
+  ],
+  "validation": {
+    "attempts": [
+      {
+        "id": "checkpoint",
+        "pass": 2,
+        "fail": 0,
+        "note": "Initial request/empty-review guards only; captured by parent43-check checkpoint."
+      },
+      {
+        "id": "a1",
+        "pass": 5,
+        "fail": 2,
+        "exitCode": 1,
+        "classification": "Fixture defects: WASM metadata length1 was below unchanged parser minimum8; shared sampling object made expected untested-default rejection hit exact-wire mismatch. Preserved, no production gate relaxed."
+      },
+      {
+        "id": "a2",
+        "pass": 8,
+        "fail": 0,
+        "exitCode": 0
+      },
+      {
+        "id": "a3",
+        "pass": 8,
+        "fail": 0,
+        "exitCode": 0,
+        "note": "Final registration/hardware/failure-marker guards included."
+      }
+    ],
+    "finalCommand": "node --experimental-test-coverage --test-coverage-include=**/qualification-materializer.js --test tests/qualification-materializer_test.js",
+    "coverage": {
+      "linePercent": 82.42,
+      "branchPercent": 99.53,
+      "functionPercent": 95.92,
+      "unexecuted": "Real CLI/source Git admission, actual evidence/model/tool rehash and numerical verifier invocation remain unexecuted because no candidate has complete passing evidence."
+    },
+    "publicConsumer": "Unchanged catalog-admission-loader accepted emitted fixture metadata using exactly two closed in-memory routes; no external request, real model or public qualification.",
+    "diffCheck": "passed",
+    "independentReview": "Agent /root/candidate_runtime_boundary reviewed frozen source/test read-only and found no concrete false-qualification, cross-model or custody defect. This was source-level review only; real-evidence CLI execution remains unverified."
+  },
+  "logs": [
+    {
+      "path": "artifacts/verification/qualification-materializer-20260929-a1.stdout.log",
+      "bytes": 4631,
+      "sha256": "4887897f57371d3c21dacd1076aad2eb141e01d371ac535cd00fcaa6dbc500c3"
+    },
+    {
+      "path": "artifacts/verification/qualification-materializer-20260929-a1.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifacts/verification/qualification-materializer-20260929-a2.stdout.log",
+      "bytes": 1664,
+      "sha256": "956fdc7f5073c4d097dcf3afc092a594d9953dac79abb362e21a1a88a6db47f3"
+    },
+    {
+      "path": "artifacts/verification/qualification-materializer-20260929-a2.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifacts/verification/qualification-materializer-20260929-a3.stdout.log",
+      "bytes": 1663,
+      "sha256": "3511c7208bf24a2632133ccec11d3196aaa92a2fd89493c4ef795d941e9a71dc"
+    },
+    {
+      "path": "artifacts/verification/qualification-materializer-20260929-a3.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "privacyReview": {
+    "status": "reviewed-safe-for-scoped-Git-evidence",
+    "contents": "Test summaries, stack traces from fixture failures and canonical source paths only; no credentials, model payloads or private conversation."
+  },
+  "cleanup": {
+    "operationChildren": "All test-created operation roots and markers retired using retained original owner records.",
+    "parentDirectories": [
+      "artifacts/tests/qualification-materializer",
+      "artifacts/tests/qualification-materializer-run"
+    ],
+    "parentRemoval": {
+      "status": "rejected-before-execution",
+      "reason": "blocked by policy",
+      "retryAllowed": false
+    },
+    "readOnlyFinalInventory": "Both retained parents empty. No historical blocked cohort touched."
+  },
+  "limits": [
+    "No source candidate or real model qualified.",
+    "No real numerical producer or inference invocation by this tool during this work.",
+    "No claim of browser numerical logits parity, physical-phone performance or UI Stop/New Chat coverage.",
+    "Public installation/reload/offline/interrupted-install/seed/publication and package gates remain separate.",
+    "Use no partial output directory without a successful final materialization.json; failed outputs cannot be retried or adopted."
+  ],
+  "modelQualified": false,
+  "publicPublication": false
+}

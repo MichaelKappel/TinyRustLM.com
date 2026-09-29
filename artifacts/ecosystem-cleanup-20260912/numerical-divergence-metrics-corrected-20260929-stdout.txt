@@ -1,0 +1,38 @@
+✔ freezes report-derived clean-slate numerical authority boundaries (7.1177ms)
+✔ binds current reference components and durable report-memory links by content (6.9609ms)
+✔ preserves closed implementation history without adopting its execution authority (277.7127ms)
+✔ both private owners expose bounded dependency-free self-tests (505.2836ms)
+✔ pinned Python executes synthetic Qwen3 hooks and reconstructed kernels (12794.5317ms)
+✔ failed fixture setup removes its exact owned canonical output (93.0552ms)
+✔ read-only verifier passes identical complete traces without touching evidence (436.8647ms)
+✔ localizes the first source-to-reconstructed divergence by layer head element and chunk (69.6478ms)
+✔ localizes reconstructed-to-scalar only after the first arrow passes (129.0145ms)
+✔ rejects a syntactically valid cross-arm environment drift (49.5359ms)
+✔ rejects superseded profile and environment paths without compatibility (83.1003ms)
+✔ rejects trace drift and an unknown request member instead of repairing either (140.7095ms)
+✔ verifier source contains no evidence-writing or permissive selection path (0.7209ms)
+✔ execution owner output reaches the real verifier with exact directory and manifest bindings (302.971ms)
+✔ current exclusions preserve all exact prior decisions and their evidence identities (9.9457ms)
+✔ exclusions are exact negative evidence, not a family ban or positive admission (0.6534ms)
+✔ source rejection blocks smollm2-current-candidate-inventory-20260927.json selection 0 without fetching or writing (1.4909ms)
+✔ source rejection blocks qwen3-expanded-candidate-inventory-20260927.json selection 0 without fetching or writing (0.665ms)
+✔ source rejection blocks qwen3-expanded-candidate-inventory-20260927.json selection 1 without fetching or writing (0.5786ms)
+✔ source rejection blocks qwen3-expanded-candidate-inventory-20260927.json selection 2 without fetching or writing (0.5056ms)
+✔ source rejection blocks qwen3-next-candidate-inventory-20260928.json selection 0 without fetching or writing (0.5721ms)
+✔ source rejection blocks qwen3-next-candidate-inventory-20260928.json selection 1 without fetching or writing (0.5741ms)
+✔ source rejection blocks qwen3-next-candidate-inventory-20260928.json selection 2 without fetching or writing (0.5687ms)
+✔ source rejection blocks qwen3-reaper-untied-inventory-20260929.json selection 1 without fetching or writing (0.5515ms)
+✔ source rejection blocks qwen3-reaper-untied-inventory-20260929.json selection 0 without fetching or writing (0.8975ms)
+✔ source rejection blocks qwen2.5-coder-0.5b-inventory-20260929.json selection 0 without fetching or writing (0.3507ms)
+✔ source rejection blocks pluto-genesis-0.6b-inventory-20260929.json selection 0 without fetching or writing (0.3155ms)
+✔ discovery excludes recorded revision before model-specific requests (22.6665ms)
+✔ discovery refuses a renamed repository with the rejected weight digest (2.0687ms)
+✔ acquisition independently rejects stale or fabricated inventories before any write or fetch (0.9226ms)
+ℹ tests 30
+ℹ suites 0
+ℹ pass 30
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 14984.5079

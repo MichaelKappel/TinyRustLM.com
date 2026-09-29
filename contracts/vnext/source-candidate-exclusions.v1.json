@@ -483,6 +483,16 @@
         "path": "tinyrustlm/training/qwen3-json-hutgaecha-source-development-screen-v1/assessment-control-v1.json",
         "sha256": "631c5b5319b018603187631f95696d681658fc801aa149eb1fdcdbbac888a28a"
       }
+    },
+    {
+      "modelId": "Pluto-AI-Labs/Pluto-Genesis-0.6B",
+      "revision": "a52e0229b7611bd96dac8594ab2f6924c89249c2",
+      "kind": "quality",
+      "weightSha256": "3c3fed56cd33189d386b9b690ada71f55daee5a158afda69486efc6fe57a8ad9",
+      "evidence": {
+        "path": "tinyrustlm/training/pluto-genesis-0.6b-source-development-screen-v1/assessment-control-v1.json",
+        "sha256": "f962272da18d5ca27cd9344efc46778f1d2cb14cd7479dbf84bf783e75cf02d5"
+      }
     }
   ]
 }

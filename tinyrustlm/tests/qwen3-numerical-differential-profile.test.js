@@ -567,6 +567,10 @@ test("localizes the first source-to-reconstructed divergence by layer head eleme
     const receipt = verify([value.requestPath]);
     assert.equal(receipt.status, "fail");
     assert.equal(receipt.comparison.arrowResults.length, 1);
+    assert.ok(receipt.comparison.firstDivergence.metrics, "failure receipt retains measured metrics");
+    assert.equal(receipt.comparison.firstDivergence.metrics.maximumAbsoluteError, 0.25);
+    assert.deepEqual(Object.keys(receipt.comparison.firstDivergence.metrics).sort(),
+      Object.keys(exactThreshold()).sort());
     assert.deepEqual({
       arrow: receipt.comparison.firstDivergence.arrow,
       caseId: receipt.comparison.firstDivergence.caseId,
@@ -609,6 +613,8 @@ test("localizes reconstructed-to-scalar only after the first arrow passes", () =
     assert.equal(receipt.comparison.firstDivergence.stage, "feed-forward-activated");
     assert.equal(receipt.comparison.firstDivergence.layer, 2);
     assert.equal(receipt.comparison.firstDivergence.elementIndex, 130);
+    assert.ok(receipt.comparison.firstDivergence.metrics, "scalar failure retains measured metrics");
+    assert.equal(receipt.comparison.firstDivergence.metrics.maximumAbsoluteError, 0.5);
   } finally {
     value.close();
   }

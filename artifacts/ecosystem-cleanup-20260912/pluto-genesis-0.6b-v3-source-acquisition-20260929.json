@@ -1,0 +1,63 @@
+{
+  "schema": "tinyrustlm.huggingface_source_acquisition.v4",
+  "status": "verified",
+  "verifiedUtc": "2026-09-29T23:15:53.002Z",
+  "sourceTemplate": "qwen3-0.6b-bpe",
+  "modelId": "Pluto-AI-Labs/Pluto-Genesis-0.6B",
+  "revision": "a52e0229b7611bd96dac8594ab2f6924c89249c2",
+  "weightIdentity": "638452e95a0c6f5235dd65a2e2df9bb7f81e16f74caa0912b7eabcbdd41a6634",
+  "sourceWeightByteCount": 1192134784,
+  "chatTemplateKind": "revision-chatml-template-v1",
+  "chatTemplateSha256": "48ee2be15a49d5ebae42b2db3183aa58747605c99af00a5f77a5003e77cdf3fc",
+  "chatTemplateFile": {
+    "filename": "chat_template.jinja",
+    "byteCount": 785,
+    "sha256": null,
+    "gitBlobId": "15253c5b00bc821eb3e42cbab6f9a414d9319b0a"
+  },
+  "generationConfig": {
+    "filename": "generation_config.json",
+    "byteCount": 214,
+    "sha256": null,
+    "gitBlobId": "6b204b47b535ecceeec0cd8ca14b8f8c4d8ebc9e"
+  },
+  "licenseId": "apache-2.0",
+  "licenseEvidenceKind": "revision-metadata-plus-apache-authority-text",
+  "files": [
+    {
+      "filename": "config.json",
+      "byteCount": 726,
+      "sha256": "17b1b9e1263d1a3892a628760a928ccd8eeb980b5f7a59b4e9da62b6c675c709"
+    },
+    {
+      "filename": "tokenizer.json",
+      "byteCount": 11422654,
+      "sha256": "aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4"
+    },
+    {
+      "filename": "tokenizer_config.json",
+      "byteCount": 5404,
+      "sha256": "443bfa629eb16387a12edbf92a76f6a6f10b2af3b53d87ba1550adfcf45f7fa0"
+    },
+    {
+      "filename": "chat_template.jinja",
+      "byteCount": 785,
+      "sha256": "48ee2be15a49d5ebae42b2db3183aa58747605c99af00a5f77a5003e77cdf3fc"
+    },
+    {
+      "filename": "generation_config.json",
+      "byteCount": 214,
+      "sha256": "787409d8b23543ca6a24affbca01de9251ec48e5b0f268911ca92daabde329bf"
+    },
+    {
+      "filename": "LICENSE",
+      "byteCount": 11358,
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    },
+    {
+      "filename": "model.safetensors",
+      "byteCount": 1192134784,
+      "sha256": "3c3fed56cd33189d386b9b690ada71f55daee5a158afda69486efc6fe57a8ad9"
+    }
+  ]
+}

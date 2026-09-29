@@ -1,0 +1,46 @@
+✖ localizes the first source-to-reconstructed divergence by layer head element and chunk (100.6812ms)
+✖ localizes reconstructed-to-scalar only after the first arrow passes (157.5998ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 0
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 385.9043
+
+✖ failing tests:
+
+test at tinyrustlm\tests\qwen3-numerical-differential-profile.test.js:557:1
+✖ localizes the first source-to-reconstructed divergence by layer head element and chunk (100.6812ms)
+  AssertionError [ERR_ASSERTION]: failure receipt retains measured metrics
+      at TestContext.<anonymous> (E:\Source\Rust\TinyRustLM.com\tinyrustlm\tests\qwen3-numerical-differential-profile.test.js:570:12)
+      at Test.runInAsyncScope (node:async_hooks:228:14)
+      at Test.run (node:internal/test_runner/test:1118:25)
+      at Test.start (node:internal/test_runner/test:1015:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:358:17) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tinyrustlm\tests\qwen3-numerical-differential-profile.test.js:598:1
+✖ localizes reconstructed-to-scalar only after the first arrow passes (157.5998ms)
+  AssertionError [ERR_ASSERTION]: scalar failure retains measured metrics
+      at TestContext.<anonymous> (E:\Source\Rust\TinyRustLM.com\tinyrustlm\tests\qwen3-numerical-differential-profile.test.js:616:12)
+      at Test.runInAsyncScope (node:async_hooks:228:14)
+      at Test.run (node:internal/test_runner/test:1118:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:787:18)
+      at Test.postRun (node:internal/test_runner/test:1247:19)
+      at Test.run (node:internal/test_runner/test:1175:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }

@@ -1,5 +1,10 @@
 "use strict";
 
+// Prospective local CLI: node tools/qualification-materializer.js <canonical-artifact-request.json>.
+// Inputs are exact retained evidence, including an explicit reviewer decision; this tool never runs a model.
+// A successful final materialization.json is required before using either emitted public metadata file.
+// Failed or partial directories must not be retried or adopted. No catalog, seed, website or package is published.
+
 const fs = require("node:fs");
 const path = require("node:path");
 const crypto = require("node:crypto");
@@ -11,11 +16,12 @@ const numerical = require("./qwen3-numerical-trace-verifier.js");
 const exclusions = require("./source-candidate-exclusions.js");
 const storage = require("./huggingface-candidate-storage.js");
 const scratch = require("./canonical-operation-scratch.js");
+const graph = require("./acg2-reference.js");
 
 const ROOT = path.resolve(__dirname, "../..");
 const SCHEMA = "tinyrustlm.default-model-qualification-materialization/1";
 const REVIEW_SCHEMA = "tinyrustlm.default-model-qualification-review/1";
-const EVIDENCE = Object.freeze(["sourceLock", "sourceRaw", "structural", "numericalOwner",
+const EVIDENCE = Object.freeze(["sourceLock", "sourceRaw", "sourceCases", "structural", "numericalOwner", "numericalRegistration",
   "numericalVerifier", "numericalRequest", "numericalProfile", "executionRequest", "execution", "evalCases", "review"]);
 const HASH = /^[a-f0-9]{64}$/;
 
@@ -47,6 +53,15 @@ function time(value) {
   return Date.parse(value);
 }
 
+/** A reference is a bounded canonical repository artifact, including secondary license references. */
+function validateReference(item) {
+  exact(item, ["path", "bytes", "sha256"], "reference");
+  requireValue(typeof item.path === "string" && /^(?:artifacts|contracts)\/[A-Za-z0-9._/-]+$/.test(item.path) &&
+    !item.path.split("/").some((part) => part === "" || part === "." || part === "..") &&
+    Number.isSafeInteger(item.bytes) && item.bytes > 0 && item.bytes <= 32 * 1024 * 1024 && HASH.test(item.sha256), "reference");
+  return item;
+}
+
 /** Validate an immutable request; it contains evidence references, never a force/pass flag. */
 function validateRequest(value) {
   exact(value, ["schema", "sourceCommit", "issuedAtUtc", "compositionRoot", "outputDirectory", "defaultSampling", "evidence"], "request");
@@ -55,12 +70,7 @@ function validateRequest(value) {
     /^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\dZ$/.test(value.issuedAtUtc), "request");
   time(value.issuedAtUtc);
   exact(value.evidence, EVIDENCE, "evidence-closure");
-  for (const item of Object.values(value.evidence)) {
-    exact(item, ["path", "bytes", "sha256"], "reference");
-    requireValue(typeof item.path === "string" && /^(?:artifacts|contracts)\/[A-Za-z0-9._/-]+$/.test(item.path) &&
-      !item.path.split("/").some((part) => part === "" || part === "." || part === "..") &&
-      Number.isSafeInteger(item.bytes) && item.bytes > 0 && item.bytes <= 32 * 1024 * 1024 && HASH.test(item.sha256), "reference");
-  }
+  Object.values(value.evidence).forEach(validateReference);
   return value;
 }
 
@@ -76,8 +86,11 @@ function validateSource(request, docs) {
     raw.source_revision === lock.revision && raw.generation_contract === "one-call-unmodified-v1" &&
     raw.generation_retries_allowed === false && raw.response_repairs_allowed === false &&
     raw.field_assembly_allowed === false && raw.expected_answer_injection_allowed === false &&
-    raw.adapter === null && Array.isArray(raw.cases) && raw.case_count === raw.cases.length && raw.cases.length > 0, "source-raw");
+    raw.adapter === null && raw.eval_cases_sha256 === request.evidence.sourceCases.sha256 &&
+    Array.isArray(raw.cases) && raw.case_count === raw.cases.length && raw.cases.length > 0, "source-raw");
   for (const item of Object.values(lock.files)) {
+    storage.requireFilename(item.path);
+    requireValue(Number.isSafeInteger(item.byteLength) && item.byteLength > 0 && HASH.test(item.sha256), "source-file");
     if (["LICENSE", "README.md"].includes(item.path)) continue;
     const observed = raw.checkpoint_artifacts?.[item.path];
     requireValue(observed?.bytes === item.byteLength && observed.sha256 === item.sha256, "source-file-binding");
@@ -85,6 +98,7 @@ function validateSource(request, docs) {
   requireValue(review.license?.status === "redistribution-approved" && review.license.spdx === lock.licenseSpdx &&
     text(review.license.rationale) && Array.isArray(review.license.evidence) && review.license.evidence.length > 0,
   "license-review");
+  review.license.evidence.forEach(validateReference);
   requireValue(Array.isArray(review.sourceCases) && review.sourceCases.length === raw.cases.length, "source-review-coverage");
   raw.cases.forEach((item, index) => {
     const decision = review.sourceCases[index];
@@ -102,21 +116,31 @@ function validateNumerical(request, docs, rechecked) {
   const profile = docs.numericalProfile;
   requireValue(owner.schema === "tinyrustlm.qwen3_numerical_execution_terminal.v1" && owner.status === "terminal-pass" &&
     equal(owner.launchedStages, ["source", "reconstructed", "scalar", "verifier"]) &&
-    equal(owner.launchCounts, { source: 1, reconstructed: 1, scalar: 1, verifier: 1 }), "numerical-terminal");
+    equal(owner.launchCounts, { source: 1, reconstructed: 1, scalar: 1, verifier: 1 }) &&
+    equal(owner.verifierReceipt, result) && owner.registration?.sha256 === result.registrationSha256 &&
+    equal(owner.immutableClosure, { retryAllowed: false, overwriteAllowed: false, repairAllowed: false,
+      partialOutputCleanupAllowed: false, thresholdChangeAllowed: false, failedOutputAdoptionAllowed: false }), "numerical-terminal");
+  requireValue(owner.registration.sha256 === request.evidence.numericalRegistration.sha256 &&
+    owner.registration.byteLength === request.evidence.numericalRegistration.bytes &&
+    docs.numericalRegistration.ownerContract?.operationId === owner.operationId &&
+    docs.numericalRegistration.ownerContract.requests?.verification?.differentialProfile?.sha256 === request.evidence.numericalProfile.sha256,
+  "numerical-registration");
   requireValue(result.schema === "tinyrustlm.qwen3_numerical_trace_verification_receipt.v1" && result.status === "pass" &&
     result.operationId === owner.operationId && result.operationId === input.operationId &&
     result.registrationSha256 === input.registrationSha256 && result.comparison?.firstDivergence === null &&
     result.request?.sha256 === request.evidence.numericalRequest.sha256 &&
     result.request.byteLength === request.evidence.numericalRequest.bytes &&
     result.differentialProfile?.sha256 === request.evidence.numericalProfile.sha256 &&
-    result.differentialProfile.byteLength === request.evidence.numericalProfile.bytes && equal(result, rechecked), "numerical-recheck");
+    result.differentialProfile.byteLength === request.evidence.numericalProfile.bytes && result.writesPerformed === false &&
+    equal(result.comparison.arrowResults?.map((item) => [item.id, item.status]),
+      [["source-to-reconstructed", "pass"], ["reconstructed-to-scalar", "pass"]]) && equal(result, rechecked), "numerical-recheck");
   const candidate = profile.candidate, model = docs.structural.artifacts[0];
   requireValue(candidate?.modelId === docs.sourceLock.modelId && candidate.revision === docs.sourceLock.revision &&
     candidate.sourceLock.sha256 === request.evidence.sourceLock.sha256 &&
     candidate.sourceLock.byteLength === request.evidence.sourceLock.bytes &&
-    candidate.modelSlm2.sha256 === model.sha256 && candidate.modelSlm2.byteLength === model.byteLength &&
-    candidate.compositionResult.sha256 === request.evidence.structural.sha256 &&
-    candidate.compositionResult.byteLength === request.evidence.structural.bytes, "numerical-candidate");
+    candidate.modelSlm2.sha256 === model.sha256 && candidate.modelSlm2.byteLength === model.byteLength, "numerical-candidate");
+  validateReference({ path: candidate.compositionResult.path, bytes: candidate.compositionResult.byteLength,
+    sha256: candidate.compositionResult.sha256 });
 }
 
 /** Require exact prospective public-case messages and every declared turn, including actual-history dependencies. */
@@ -141,10 +165,12 @@ function validateAcceptance(plan, cases, review) {
       (turnIndex === 0 ? entry.historyFrom === null : entry.historyFrom === review.acceptanceTurns[index - 1].executionCaseId),
     "acceptance-input");
   });
-  const additional = plan.cases.filter((item) => !used.has(item.id));
-  requireValue(additional.some((item) => item.cancelAfterSteps !== null) &&
-    additional.some((item, index) => index > 0 && additional[index - 1].cancelAfterSteps !== null && !item.resetBefore) &&
-    additional.some((item) => item.resetBefore && item.cancelAfterSteps === null), "interaction-plan");
+  requireValue(plan.policy.maximumSequenceTokens === cases.generation.maximumSequenceTokens, "acceptance-context");
+  const stop = plan.cases.findIndex((item) => !used.has(item.id) && item.cancelAfterSteps >= 1);
+  const next = plan.cases[stop + 1];
+  requireValue(stop >= 0 && next && !used.has(next.id) && !next.resetBefore && next.cancelAfterSteps === null &&
+    next.conversation === plan.cases[stop].conversation && plan.cases.slice(stop + 2).some((item) =>
+      !used.has(item.id) && item.resetBefore && item.cancelAfterSteps === null), "interaction-plan");
   return used;
 }
 
@@ -161,14 +187,17 @@ function validateCapture(record, item, limits, semantic, required) {
     value.elapsedMilliseconds <= Math.min(item.deadlineMilliseconds, limits.maximumTurnMilliseconds), "turn-latency");
   if (output.tokenIds.length > 0) requireValue(Number.isFinite(value.firstEmittedTokenMilliseconds) &&
     value.firstEmittedTokenMilliseconds >= 0 && value.firstEmittedTokenMilliseconds <= limits.maximumFirstTokenMilliseconds, "first-token");
-  const emitted = value.steps.filter((step) => step.step.emittedTokenId !== null);
-  requireValue(value.steps.every((step, index) => Number.isFinite(step.elapsedMilliseconds) && step.elapsedMilliseconds >= 0 &&
+  requireValue(Array.isArray(value.steps) && value.steps.every((step, index) => Number.isFinite(step.elapsedMilliseconds) &&
+    step.elapsedMilliseconds >= 0 && step.elapsedMilliseconds <= value.elapsedMilliseconds &&
+    (step.step?.emittedTokenId === null || Number.isSafeInteger(step.step?.emittedTokenId) && step.step.emittedTokenId >= 0) &&
     (index === 0 || step.elapsedMilliseconds >= value.steps[index - 1].elapsedMilliseconds)), "step-timing");
+  const emitted = value.steps.filter((step) => step.step.emittedTokenId !== null);
   if (emitted.length >= 2) {
     const span = emitted.at(-1).elapsedMilliseconds - emitted[0].elapsedMilliseconds;
     requireValue(span > 0 && (emitted.length - 1) * 1000 / span >= limits.minimumSustainedDecodeTokensPerSecond, "decode-rate");
   }
   if (item.cancelAfterSteps !== null) requireValue(value.cancellationRequested === true && output.status.kind === "cancelled" &&
+    value.steps.length >= item.cancelAfterSteps &&
     Number.isFinite(value.cancellationLatencyMilliseconds) && value.cancellationLatencyMilliseconds >= 0 &&
     value.cancellationLatencyMilliseconds <= limits.maximumStopLatencyMilliseconds, "cancellation");
   else requireValue(output.status.kind !== "cancelled", "unexpected-cancellation");
@@ -183,6 +212,10 @@ function validateExecution(request, docs) {
     time(report.finishedAtUtc) >= time(report.startedAtUtc) && plan.compositionRoot === request.compositionRoot &&
     plan.browserViewports.length === 2 && plan.browserViewports.some((v) => v.isMobile) &&
     plan.browserViewports.some((v) => !v.isMobile), "execution");
+  requireValue(report.hardware?.platform === "win32" && ["x64", "arm64"].includes(report.hardware.architecture) &&
+    text(report.hardware.cpuModel, 500) && Number.isSafeInteger(report.hardware.logicalProcessors) && report.hardware.logicalProcessors > 0 &&
+    Number.isSafeInteger(report.hardware.totalMemoryBytes) && report.hardware.totalMemoryBytes > 0 && text(report.hardware.nodeVersion, 100),
+  "execution-hardware");
   requireValue(plan.compositionId === docs.structural.graph.graphIdentitySha256 &&
     equal(plan.members, docs.structural.artifacts.map((item) => ({ name: item.file, bytes: item.byteLength, sha256: item.sha256 }))), "execution-composition");
   requireValue(plan.cases.some((item) => equal(item.sampling, request.defaultSampling)), "untested-default-sampling");
@@ -200,10 +233,16 @@ function validateExecution(request, docs) {
   const decisionKeys = new Set();
   for (const backend of backends) {
     requireValue(backend.data.status === "captured" && backend.data.modelQualified === false &&
-      backend.data.records.length === plan.cases.length, "backend-status");
+      backend.data.records.length === plan.cases.length &&
+      backend.data.activations?.length === plan.cases.filter((item, index) => index === 0 || item.resetBefore).length,
+    "backend-status");
     const preceding = [];
     backend.data.records.forEach((record, index) => {
       const item = plan.cases[index], wire = capture.caseRequest(item, preceding);
+      requireValue(record.capture?.output?.operationId === plan.operationId &&
+        equal(record.capture.output.composition, { artifactBytes: plan.members[5].bytes,
+          artifactSha256: plan.members[5].sha256, graphIdentitySha256: docs.structural.graph.graphIdentitySha256,
+          memberTableSha256: docs.structural.graph.memberTableSha256 }), "output-identity");
       requireValue(equal(wire, { id: record.id, messages: record.messages, requestBytes: record.requestBytes,
         requestSha256: record.requestSha256, requestBase64: record.requestBase64 }), "wire-binding");
       const decisions = review.backendCases.filter((entry) => entry.backend === backend.id && entry.caseId === item.id);
@@ -231,6 +270,13 @@ function validateEvidence(request, docs, numericalRecheck) {
     structural.structuralCompositionStatus === "verified" && structural.artifacts?.length === 6 &&
     structural.artifacts.every((item, index) => item.ordinal === index && item.file === capture.MEMBERS[index] &&
       item.formatProfileSha256 === admission.artifactSpecs[index].profileSha256), "structural");
+  const rebuilt = graph.parseGraph(graph.writeGraph(structural.artifacts.slice(0, 5).map((item, index) => ({
+    ordinal: index, role: admission.artifactSpecs[index].role, format: admission.artifactSpecs[index].format,
+    artifactBytes: item.byteLength, artifactSha256: item.sha256, formatProfileSha256: item.formatProfileSha256 }))));
+  requireValue(equal(structural.graph, { graphIdentitySha256: rebuilt.graphIdentitySha256,
+    memberTableSha256: rebuilt.memberTableSha256, resolvedMemberBytes: rebuilt.resolvedMemberBytes }) &&
+    structural.artifacts[5].sha256 === rebuilt.artifactSha256 && structural.artifacts[5].byteLength === rebuilt.artifactBytes,
+  "graph-binding");
   validateSource(request, docs); validateNumerical(request, docs, numericalRecheck);
   const plan = validateExecution(request, docs);
   const qualification = { receiptId: `sha256:${request.evidence.review.sha256}`,
@@ -254,7 +300,8 @@ function validateEvidence(request, docs, numericalRecheck) {
 }
 
 /** Read only exact ordinary bounded canonical files, rejecting ancestry redirection and changed identities. */
-function readReference(item) {
+function readReference(item, parseJson = true) {
+  validateReference(item);
   const file = path.join(ROOT, ...item.path.split("/"));
   for (let parent = path.dirname(file); ; parent = path.dirname(parent)) {
     const stat = fs.lstatSync(parent);
@@ -264,7 +311,46 @@ function readReference(item) {
   capture.verifyFile({ ...item, path: file });
   const bytes = storage.readBoundedFile(file, item.bytes);
   requireValue(bytes.length === item.bytes && hash(bytes) === item.sha256, "reference-drift");
-  return { file, bytes, value: JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(bytes)) };
+  return { file, bytes, value: parseJson ? JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(bytes)) : null };
+}
+
+/** Reconcile retained raw protocol and per-turn files with the embedded report before trusting its summary. */
+function verifyRawCapture(plan, report) {
+  scratch.requireCanonicalArtifactPath(plan.outputDirectory);
+  const inventory = [];
+  /** Each file is read once, bounded, and identified; per-turn duplicates must preserve original bytes. */
+  function read(name, maximum, expected) {
+    const file = path.join(plan.outputDirectory, name);
+    const stat = fs.lstatSync(file);
+    requireValue(stat.isFile() && !stat.isSymbolicLink() && stat.nlink === 1 && stat.size <= maximum, "raw-file");
+    if (stat.size === 0) capture.verifyFile({ path: file, bytes: 0, sha256: hash(Buffer.alloc(0)) });
+    const bytes = stat.size === 0 ? Buffer.alloc(0) : storage.readBoundedFile(file, maximum);
+    requireValue(bytes.length === stat.size, "raw-file");
+    if (expected !== undefined) requireValue(bytes.equals(Buffer.from(`${JSON.stringify(expected, null, 2)}\n`)), "raw-copy");
+    inventory.push({ name, bytes: bytes.length, sha256: hash(bytes) });
+    return bytes;
+  }
+  read("request.json", 1024 * 1024, plan);
+  const stdout = read("native.stdout.bin", 16 * 1024 * 1024);
+  requireValue(read("native.stderr.bin", 65536).length === 0, "native-stderr");
+  const text = new TextDecoder("utf-8", { fatal: true }).decode(stdout);
+  requireValue(text.endsWith("\n"), "native-framing");
+  const events = text.slice(0, -1).split("\n").map((line) => JSON.parse(line.replace(/\r$/, "")));
+  requireValue(events.length === 2 + 2 * plan.cases.length && events[0].kind === "ready" &&
+    events.at(-1).kind === "terminal", "native-protocol");
+  const { records, exit, ...terminal } = report.native;
+  requireValue(equal(events.at(-1).value, terminal), "native-terminal");
+  for (let index = 0; index < plan.cases.length; index++) {
+    requireValue(events[1 + 2 * index].kind === "case-started" && events[1 + 2 * index].id === plan.cases[index].id &&
+      events[2 + 2 * index].kind === "case" && equal(events[2 + 2 * index].value, records[index].capture), "native-case");
+  }
+  const backends = [{ id: "native", records }, ...report.browser.map((value) => ({ id: `browser-${value.viewport.id}`, records: value.records }))];
+  for (const backend of backends) for (const record of backend.records) {
+    const { capture: ignored, ...wire } = record;
+    read(`${backend.id}-${record.id}.request.json`, 2 * 1024 * 1024, wire);
+    read(`${backend.id}-${record.id}.capture.json`, 4 * 1024 * 1024, record);
+  }
+  return inventory;
 }
 
 /** Execute only read-only Git commands with no shell and bounded output. */
@@ -281,28 +367,62 @@ function materialize(requestValue) {
     "--require-clean", "--require-remote-exact"], { cwd: ROOT, windowsHide: true, timeout: 120000, encoding: "utf8", maxBuffer: 4 * 1024 * 1024 });
   requireValue(gate.status === 0 && !gate.error && git(["rev-parse", "HEAD"]) === request.sourceCommit, "source-authority");
   requireValue(time(request.issuedAtUtc) <= Date.now() + 300000, "future-issue");
-  const inputs = Object.fromEntries(EVIDENCE.map((name) => [name, readReference(request.evidence[name])]));
+  const inputs = Object.fromEntries(EVIDENCE.map((name) => [name, readReference(request.evidence[name], name !== "sourceCases")]));
   const docs = Object.fromEntries(Object.entries(inputs).map(([name, value]) => [name, value.value]));
   const plan = capture.validateRequest(docs.executionRequest);
   git(["merge-base", "--is-ancestor", plan.sourceCommit, request.sourceCommit]);
+  const registrationCommit = docs.numericalOwner.registrationSource?.commit;
+  requireValue(/^[a-f0-9]{40}$/.test(registrationCommit), "registration-source");
+  git(["merge-base", "--is-ancestor", registrationCommit, request.sourceCommit]);
+  const registrationBytes = childProcess.execFileSync("git", ["show", `${registrationCommit}:${request.evidence.numericalRegistration.path}`],
+    { cwd: ROOT, windowsHide: true, timeout: 15000, maxBuffer: 32 * 1024 * 1024 });
+  requireValue(registrationBytes.equals(inputs.numericalRegistration.bytes), "registration-source");
+  requireValue(git(["diff", "--name-only", `${plan.sourceCommit}..${request.sourceCommit}`, "--", "rust", "dotnet/src",
+    "dotnet/tools/TinyRustLM.ConversationProbe", "tinyrustlm/tools/real-composition-execution.js", "tinyrustlm/app/model-runtime-client.js",
+    "tinyrustlm/app/model-runtime-worker.js", "tinyrustlm/app/prompt2-request.js"]) === "", "stale-execution-source");
+  const prospective = childProcess.execFileSync("git", ["show", `${plan.sourceCommit}:${request.evidence.evalCases.path}`],
+    { cwd: ROOT, windowsHide: true, timeout: 15000, maxBuffer: 32 * 1024 * 1024 });
+  requireValue(prospective.equals(inputs.evalCases.bytes) && time(docs.evalCases.createdAtUtc) <= time(docs.execution.startedAtUtc),
+    "cases-not-prospective");
+  requireValue(path.resolve(inputs.execution.file) === path.join(path.resolve(plan.outputDirectory), "execution.json"), "execution-report-path");
   for (const item of [...Object.values(plan.tools).filter((item) => !Array.isArray(item)), ...plan.tools.managed, ...plan.tools.assets]) capture.verifyFile(item);
   for (const item of plan.members) capture.verifyFile({ path: path.join(request.compositionRoot, item.name), bytes: item.bytes, sha256: item.sha256 });
-  for (const item of docs.review.license.evidence) readReference(item);
+  for (const item of docs.review.license.evidence) readReference(item, false);
+  const numericComposition = docs.numericalProfile.candidate.compositionResult;
+  readReference({ path: numericComposition.path, bytes: numericComposition.byteLength, sha256: numericComposition.sha256 });
+  storage.requireModelOutputRoot(docs.sourceRaw.checkpoint);
+  for (const item of Object.values(docs.sourceLock.files)) {
+    storage.requireFilename(item.path);
+    capture.verifyFile({ path: path.join(docs.sourceRaw.checkpoint, item.path), bytes: item.byteLength, sha256: item.sha256 });
+  }
   const rechecked = numerical.verify([inputs.numericalRequest.file]);
   const output = validateEvidence(request, docs, rechecked);
+  const rawCapture = verifyRawCapture(plan, docs.execution);
   // Rehash metadata after asynchronous-owner evidence reads; exact byte drift is fatal before any output.
-  EVIDENCE.forEach((name) => readReference(request.evidence[name]));
+  EVIDENCE.forEach((name) => readReference(request.evidence[name], name !== "sourceCases"));
+  requireValue(equal(verifyRawCapture(plan, docs.execution), rawCapture), "raw-drift");
+  scratch.requireCanonicalArtifactPath(request.outputDirectory);
   fs.mkdirSync(request.outputDirectory);
-  fs.writeFileSync(path.join(request.outputDirectory, "admission.json"), output.admissionText, { flag: "wx" });
-  fs.writeFileSync(path.join(request.outputDirectory, "qualification.json"), output.receiptText, { flag: "wx" });
-  fs.writeFileSync(path.join(request.outputDirectory, "materialization.json"), `${JSON.stringify({ schema: SCHEMA,
-    status: "materialized-not-released", sourceCommit: request.sourceCommit, evidence: request.evidence,
+  try {
+    fs.writeFileSync(path.join(request.outputDirectory, "admission.json"), output.admissionText, { flag: "wx" });
+    fs.writeFileSync(path.join(request.outputDirectory, "qualification.json"), output.receiptText, { flag: "wx" });
+    fs.writeFileSync(path.join(request.outputDirectory, "materialization.json"), `${JSON.stringify({ schema: SCHEMA,
+    status: "materialized-not-released", sourceCommit: request.sourceCommit, evidence: request.evidence, rawCapture,
+    numericalCompositionResult: numericComposition,
+    limits: ["source-to-reconstructed-to-scalar numerical scope", "desktop browser and mobile viewport only",
+      "public installation, visible Stop/New Chat, reload, offline, interrupted installation and deployment remain separate"],
     admission: { bytes: Buffer.byteLength(output.admissionText), sha256: hash(output.admissionText) },
-    receipt: { bytes: Buffer.byteLength(output.receiptText), sha256: hash(output.receiptText) }, releaseReady: false }, null, 2)}\n`, { flag: "wx" });
+      receipt: { bytes: Buffer.byteLength(output.receiptText), sha256: hash(output.receiptText) }, releaseReady: false }, null, 2)}\n`, { flag: "wx" });
+  } catch (error) {
+    // Preserve a create-only failed attempt; its partial admission/receipt never establishes successful materialization.
+    try { fs.writeFileSync(path.join(request.outputDirectory, "failure.json"), `${JSON.stringify({ schema: SCHEMA,
+      status: "failed", releaseReady: false, outputAdoptionAllowed: false })}\n`, { flag: "wx" }); } catch (_) {}
+    throw error;
+  }
   return output;
 }
 
-module.exports = Object.freeze({ SCHEMA, REVIEW_SCHEMA, EVIDENCE, validateRequest, validateEvidence, readReference, materialize });
+module.exports = Object.freeze({ SCHEMA, REVIEW_SCHEMA, EVIDENCE, validateRequest, validateEvidence, readReference, verifyRawCapture, materialize });
 if (require.main === module) {
   try {
     requireValue(process.argv.length === 3, "arguments");

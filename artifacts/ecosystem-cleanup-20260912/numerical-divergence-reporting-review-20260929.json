@@ -1,0 +1,66 @@
+{
+  "schema": "tinyrustlm.numerical_divergence_reporting_fix.v1",
+  "reviewedAtUtc": "2026-09-29T23:36:41.172Z",
+  "status": "implemented-and-focused-tests-passed",
+  "defect": "metricsPublic constructed but did not return its object, omitting firstDivergence.metrics. The comparison itself and verdict were unaffected.",
+  "fix": "Return the existing six-field receipt; synchronize only current v2 verifier identity. Keep historical bindings and actual v9 rejection unchanged.",
+  "baseline": {
+    "passed": 0,
+    "failed": 2,
+    "logs": [
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/numerical-divergence-metrics-baseline-20260929-stdout.txt",
+        "byteLength": 2023,
+        "sha256": "238735c7a6b45e6aab98baf84ca7c95fdeb6bdb0644e4aab10d6fee0608eff7d"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/numerical-divergence-metrics-baseline-20260929-stderr.txt",
+        "byteLength": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ]
+  },
+  "corrected": {
+    "passed": 30,
+    "failed": 0,
+    "skipped": 0,
+    "command": "node --test tinyrustlm/tests/qwen3-numerical-differential-profile.test.js tinyrustlm/tests/source-candidate-exclusions.test.js (pinned oracle Python enabled)",
+    "logs": [
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/numerical-divergence-metrics-corrected-20260929-stdout.txt",
+        "byteLength": 3216,
+        "sha256": "98938abbc48ca634da47dd6e258f26afccff9539ee9ae217011ed69330109bc2"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/numerical-divergence-metrics-corrected-20260929-stderr.txt",
+        "byteLength": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ]
+  },
+  "files": [
+    {
+      "path": "tinyrustlm/tools/qwen3-numerical-trace-verifier.js",
+      "byteLength": 47086,
+      "sha256": "6bab72dee2a5b959c73c6092fd67dacd3baae8233c5d5d961dace703d85762b3"
+    },
+    {
+      "path": "tinyrustlm/tests/qwen3-numerical-differential-profile.test.js",
+      "byteLength": 27244,
+      "sha256": "304e17ab64c94b568afc4bac4ce35ec574f44743311a82d09d566850806a7d1d"
+    },
+    {
+      "path": "contracts/vnext/qwen3-numerical-differential-profile.v2.json",
+      "byteLength": 18093,
+      "sha256": "a7dc47d75d6e1ccc568163bd2037cd528c3d4d2746cfe161c27e11a29288351f"
+    }
+  ],
+  "preservedRejection": {
+    "path": "artifacts/ecosystem-cleanup-20260912/qwen3-numerical-v9-failure-review-20260929.json",
+    "byteLength": 19726,
+    "sha256": "f3399021f31e2b2219d1e5224d3d97d0c6f965b3ba03dad9c9d96504cc51bde6"
+  },
+  "numericPass": false,
+  "modelQualified": false,
+  "published": false
+}

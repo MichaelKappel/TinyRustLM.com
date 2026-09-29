@@ -284,3 +284,14 @@ artifacts/ecosystem-cleanup-20260912/numerical-verifier-binding-v9-suite-2026092
 artifacts/ecosystem-cleanup-20260912/numerical-verifier-binding-v9-suite-20260929-stderr.txt -text
 artifacts/ecosystem-cleanup-20260912/numerical-verifier-binding-v9-final-suite-20260929-stdout.txt -text
 artifacts/ecosystem-cleanup-20260912/numerical-verifier-binding-v9-final-suite-20260929-stderr.txt -text
+
+/artifacts/ecosystem-cleanup-20260912/numerical-divergence-metrics-baseline-20260929-stdout.txt -text
+/artifacts/ecosystem-cleanup-20260912/numerical-divergence-metrics-baseline-20260929-stderr.txt -text
+/artifacts/ecosystem-cleanup-20260912/numerical-divergence-metrics-corrected-20260929-stdout.txt -text
+/artifacts/ecosystem-cleanup-20260912/numerical-divergence-metrics-corrected-20260929-stderr.txt -text
+/artifacts/verification/qualification-materializer-20260929-a1.stdout.log -text
+/artifacts/verification/qualification-materializer-20260929-a1.stderr.log -text
+/artifacts/verification/qualification-materializer-20260929-a2.stdout.log -text
+/artifacts/verification/qualification-materializer-20260929-a2.stderr.log -text
+/artifacts/verification/qualification-materializer-20260929-a3.stdout.log -text
+/artifacts/verification/qualification-materializer-20260929-a3.stderr.log -text
