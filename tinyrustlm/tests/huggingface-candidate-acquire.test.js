@@ -54,6 +54,52 @@ function externalTemplateCandidate() {
   return fixture;
 }
 
+test("byte-identical embedded and external templates preserve both files through acquisition and receipt reuse", async () => {
+  const fixture = externalTemplateCandidate();
+  fixture.bodies["tokenizer_config.json"] = Buffer.from(JSON.stringify({
+    chat_template: fixture.bodies["chat_template.jinja"].toString("utf8") }));
+  fixture.candidate.tokenizerConfig = { filename: "tokenizer_config.json",
+    byteCount: fixture.bodies["tokenizer_config.json"].length,
+    sha256: sha256(fixture.bodies["tokenizer_config.json"]), gitBlobId: null };
+  const storage = createSourceAcquisitionFixture();
+  const requests = [];
+  const fetchImpl = async url => { const name = new URL(url).pathname.split('/').at(-1);
+    requests.push(name); return new Response(fixture.bodies[name]); };
+  try {
+    const receipt = await acquire.acquireCandidate(fixture.candidate, storage.rootPath, { fetchImpl });
+    const directory = acquire.candidateDirectory(storage.rootPath, fixture.candidate);
+    for (const name of ["tokenizer_config.json", "chat_template.jinja"]) {
+      assert.deepEqual(fs.readFileSync(path.join(directory, name)), fixture.bodies[name]);
+    }
+    assert.ok(requests.indexOf("chat_template.jinja") < requests.indexOf("model.safetensors"));
+    requests.length = 0;
+    assert.deepEqual(await acquire.acquireCandidate(fixture.candidate, storage.rootPath, { fetchImpl }), receipt);
+    assert.deepEqual(requests, []);
+    fs.appendFileSync(path.join(directory, "chat_template.jinja"), "\n");
+    await assert.rejects(acquire.acquireCandidate(fixture.candidate, storage.rootPath, { fetchImpl }), /mismatch/);
+    assert.deepEqual(requests, []);
+  } finally { storage.remove(); }
+});
+
+test("dual template admission rejects byte drift and non-string embedded declarations before weights", async () => {
+  for (const embedded of [null, {}, "different", "trailing-newline"]) {
+    const fixture = externalTemplateCandidate();
+    const value = embedded === "trailing-newline" ? `${fixture.bodies["chat_template.jinja"]}\n` : embedded;
+    fixture.bodies["tokenizer_config.json"] = Buffer.from(JSON.stringify({ chat_template: value }));
+    fixture.candidate.tokenizerConfig = { filename: "tokenizer_config.json",
+      byteCount: fixture.bodies["tokenizer_config.json"].length,
+      sha256: sha256(fixture.bodies["tokenizer_config.json"]), gitBlobId: null };
+    const storage = createSourceAcquisitionFixture();
+    const requests = [];
+    try {
+      await assert.rejects(acquire.acquireCandidate(fixture.candidate, storage.rootPath, { fetchImpl: async url => {
+        const name = new URL(url).pathname.split('/').at(-1); requests.push(name); return new Response(fixture.bodies[name]);
+      } }), /chat template sources are ambiguous/);
+      assert.ok(!requests.includes("model.safetensors"));
+    } finally { storage.remove(); }
+  }
+});
+
 test("external template acquisition preserves source bytes and closes resume over template and generation files", async () => {
   const fixture = externalTemplateCandidate();
   const storage = createSourceAcquisitionFixture();

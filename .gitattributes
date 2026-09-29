@@ -295,3 +295,18 @@ artifacts/ecosystem-cleanup-20260912/numerical-verifier-binding-v9-final-suite-2
 /artifacts/verification/qualification-materializer-20260929-a2.stderr.log -text
 /artifacts/verification/qualification-materializer-20260929-a3.stdout.log -text
 /artifacts/verification/qualification-materializer-20260929-a3.stderr.log -text
+
+/artifacts/ecosystem-cleanup-20260912/meet7-0.6b-combined-start-20260929.json -text
+/artifacts/ecosystem-cleanup-20260912/meet7-0.6b-combined-execution-20260929.json -text
+/artifacts/ecosystem-cleanup-20260912/meet7-0.6b-source-acquisition-20260929.json -text
+/artifacts/ecosystem-cleanup-20260912/meet7-0.6b-preflight-20260929.json -text
+/artifacts/ecosystem-cleanup-20260912/meet7-0.6b-preflight-stderr-20260929.txt -text
+/artifacts/ecosystem-cleanup-20260912/meet7-0.6b-development-raw-20260929.json -text
+/artifacts/ecosystem-cleanup-20260912/meet7-0.6b-development-stdout-20260929.txt -text
+/artifacts/ecosystem-cleanup-20260912/meet7-0.6b-development-stderr-20260929.txt -text
+/artifacts/ecosystem-cleanup-20260912/meet7-eligibility-baseline-20260929-stdout.txt -text
+/artifacts/ecosystem-cleanup-20260912/meet7-eligibility-baseline-20260929-stderr.txt -text
+/artifacts/ecosystem-cleanup-20260912/meet7-eligibility-final-20260929-stdout.txt -text
+/artifacts/ecosystem-cleanup-20260912/meet7-eligibility-final-20260929-stderr.txt -text
+/artifacts/ecosystem-cleanup-20260912/meet7-eligibility-corrected-20260929-stdout.txt -text
+/artifacts/ecosystem-cleanup-20260912/meet7-eligibility-corrected-20260929-stderr.txt -text

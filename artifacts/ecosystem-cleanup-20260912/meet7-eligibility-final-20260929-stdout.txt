@@ -1,0 +1,120 @@
+✔ byte-identical embedded and external templates preserve both files through acquisition and receipt reuse (290.0799ms)
+✔ dual template admission rejects byte drift and non-string embedded declarations before weights (407.6124ms)
+✔ external template acquisition preserves source bytes and closes resume over template and generation files (241.5974ms)
+✔ external template admission fails before weights for ambiguity corruption or unsafe file references (305.9516ms)
+✔ embedded receipts reject newly added unbound template or generation settings without network (223.4374ms)
+✔ v4 sidecar declarations and obsolete v3 inventory are validated before source I/O (3.674ms)
+✔ correctly hashed but invalid template and generation bytes never admit source weights (371.6938ms)
+✔ sharded acquisition retains the index required by the source screen and verifies cached closure (310.3754ms)
+✔ shard index admission rejects unsafe maps before any other source download (128.2175ms)
+✔ index identities and obsolete inventories reject before acquisition side effects (3.9043ms)
+✔ Git-blob index verification binds fresh bytes and obsolete receipts never resume (145.4172ms)
+✔ invalid explicit acquisition selection never falls back to downloading candidates (3.8208ms)
+✔ every selected candidate is validated before the first source request (4.0824ms)
+✔ acquisition CLI rejects zero, nonnumeric and empty explicit limits without output (390.5112ms)
+Verified source Example/Selection-One@aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+Verified source Example/Selection-Two@aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+Verified source Example/Selection-Two@aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+Verified source Example/Selection-One@aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+Verified source Example/Selection-Two@aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+✔ acquisition honors explicit slices and omitted selection defaults (489.8995ms)
+✔ resumes pinned files, verifies every digest, and reuses a complete receipt (183.4852ms)
+✔ rejects a downloaded source whose pinned digest does not match (107.8318ms)
+✔ preserves repeated short reads and resumes them on the next acquisition (208.5385ms)
+✔ candidate discovery, acquisition and rejection suites participate in the standard gate (185.8461ms)
+✔ pinned model-card tuning and byte-identical dual templates admit a generic conversational name (32.2097ms)
+✔ model-card admission requires bound affirmative tuning evidence and pinned conversational intent (20.6872ms)
+✔ dual template evidence rejects even a single added byte or a non-string embedded template (8.1933ms)
+✔ generic names with explicit conversation and instruction declarations still require pinned shape and template (6.3175ms)
+✔ generic or base checkpoints cannot claim conversation eligibility through absent partial or unrelated tags (4.6762ms)
+✔ Qwen2.5 Coder 0.5B profile admits synthetic identities with pinned config metadata without payload downloads (5.4963ms)
+✔ Qwen2.5 0.5B profile refuses different shapes and weight bounds without widening the 1.5B profile (17.5929ms)
+✔ Qwen2.5 0.5B source profile preserves the terminal general-model exclusion before metadata reads (1.5343ms)
+✔ untied discovery pins a separate template and publisher generation settings without model downloads (4.3025ms)
+✖ untied discovery refuses ambiguous missing oversized and mismatched template evidence (4.5619ms)
+✔ external metadata also binds LFS digests and rejects a correctly hashed non-ChatML template (6.1719ms)
+✔ invalid explicit discovery limits fail before metadata requests (2.9199ms)
+✔ discovery applies omitted limits and admits both inclusive limit boundaries (1.0242ms)
+✔ discovery CLI rejects invalid explicit limits before producing a report (412.1962ms)
+✔ discovery CLI rejects invalid output paths before any metadata request (406.3099ms)
+✔ discovery CLI reports the effective requested count and signals a shortfall (218.6063ms)
+✔ discovers distinct immutable Qwen3 full-weight conversation candidates (2.436ms)
+✔ accepts exact SmolLM2 shape and rejects non-conversation or prequantized packages (2.1943ms)
+✔ the sole discovery producer covers Qwen2.5 and emits the downloader's current inventory (24.5338ms)
+✔ discovery excludes gated or unavailable search and pinned revision metadata (8.1801ms)
+✔ discovery retains the exact index identity without downloading its contents (14.4023ms)
+✔ discovery rejects incomplete and ambiguous weight layouts before config or license retrieval (15.0583ms)
+✔ current exclusions preserve all exact prior decisions and their evidence identities (8.6808ms)
+✔ exclusions are exact negative evidence, not a family ban or positive admission (0.7285ms)
+✔ source rejection blocks smollm2-current-candidate-inventory-20260927.json selection 0 without fetching or writing (1.6482ms)
+✔ source rejection blocks qwen3-expanded-candidate-inventory-20260927.json selection 0 without fetching or writing (0.6237ms)
+✔ source rejection blocks qwen3-expanded-candidate-inventory-20260927.json selection 1 without fetching or writing (0.4964ms)
+✔ source rejection blocks qwen3-expanded-candidate-inventory-20260927.json selection 2 without fetching or writing (0.528ms)
+✔ source rejection blocks qwen3-next-candidate-inventory-20260928.json selection 0 without fetching or writing (0.5687ms)
+✔ source rejection blocks qwen3-next-candidate-inventory-20260928.json selection 1 without fetching or writing (0.507ms)
+✔ source rejection blocks qwen3-next-candidate-inventory-20260928.json selection 2 without fetching or writing (1.0707ms)
+✔ source rejection blocks qwen3-reaper-untied-inventory-20260929.json selection 1 without fetching or writing (0.3961ms)
+✔ source rejection blocks qwen3-reaper-untied-inventory-20260929.json selection 0 without fetching or writing (0.318ms)
+✔ source rejection blocks qwen2.5-coder-0.5b-inventory-20260929.json selection 0 without fetching or writing (0.2865ms)
+✔ source rejection blocks pluto-genesis-0.6b-inventory-20260929.json selection 0 without fetching or writing (0.3068ms)
+✔ discovery excludes recorded revision before model-specific requests (30.9348ms)
+✔ discovery refuses a renamed repository with the rejected weight digest (2.3425ms)
+✔ acquisition independently rejects stale or fabricated inventories before any write or fetch (2.3968ms)
+ℹ Warning: Could not clean up code coverage. Error: ENOENT: no such file or directory, mkdir ''
+ℹ tests 57
+ℹ suites 0
+ℹ pass 56
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3949.865
+ℹ start of coverage report
+ℹ -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ℹ file                                              | line % | branch % | funcs % | uncovered lines
+ℹ -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ℹ tinyrustlm                                        |        |          |         | 
+ℹ  tests                                            |        |          |         | 
+ℹ   helpers                                         |        |          |         | 
+ℹ    source-acquisition-fixture.js                  | 100.00 |   100.00 |  100.00 | 
+ℹ    vnext-campaign-release-surface-test-custody.js |  43.00 |   100.00 |    0.00 | 28-36 38-48 50-65 67-87
+ℹ  tools                                            |        |          |         | 
+ℹ   campaign-evidence-store.js                      |  27.86 |    73.68 |   16.67 | 79-80 85-86 93-94 127-129 131-142 144-149 151-169 171-183 185-206 211-220 222-255 257-262 264-268 270-282 284-296 298-380 382-390 392-412 414-437 439-457 461-472 475-478 481-491 494-551 554-557 560-578 581-584 587-591
+ℹ   canonical-operation-scratch.js                  |  94.79 |    86.84 |  100.00 | 67-70 150-155
+ℹ   durable-files.js                                |  18.56 |   100.00 |    0.00 | 7-11 13-17 19-29 31-46 48-51 53-75 77-91
+ℹ   huggingface-candidate-acquire.js                |  93.32 |    88.94 |   89.36 | 240-241 301-303 333-344 396-399 469-472 512-516 679-690 693-697
+ℹ   huggingface-candidate-storage.js                |  77.38 |   100.00 |   85.71 | 126-134 137-165
+ℹ   huggingface-metadata.js                         |  71.43 |    38.46 |   62.50 | 9-12 16-18 23-24 29-30 38-40 46-48 52-53 55-56 74-75 80-81 85-87 98-99
+ℹ   huggingface-supported-candidates.js             |  95.01 |    80.00 |   95.12 | 198-199 201-202 247-248 447-448 458-459 570-584 587-591
+ℹ   huggingface-weight-layout.js                    | 100.00 |   100.00 |  100.00 | 
+ℹ   run-vnext-campaign-release-surface-gate.js      |  21.84 |    48.15 |   24.64 | 31-35 54-55 88-89 98-99 105-106 115-116 131-132 135-136 142-143 148-193 200-201 216-217 222-223 254-255 286-287 296-297 308-309 341-342 353-354 361-362 368-369 387-390 392-427 429-431 433-435 437-457 459-461 463-467 469-482 484-494 496-509 511-534 536-566 568-580 582-614 616-632 634-645 647-660 662-677 679-738 740-743 745-751 753-773 775-784 786-795 797-808 810-812 814-834 836-856 858-864 866-922 924-958 960-970 972-991 993-995 997-1005 1007-1131 1133-1148 1150-1183 1185-1200 1202-1260 1262-1396 1398-1429 1431-1511 1513-1515 1517-1528 1530-1537 1539-1606 1608-1616 1618-1643 1646-1650
+ℹ   run-vnext-unit-test-gate.js                     |  33.55 |    53.85 |   40.00 | 18-22 24-26 28-42 44-55 62-63 66-67 71-72 75-76 80-81 85-98 100-112 114-122 124-138 141-145
+ℹ   source-candidate-exclusions.js                  |  88.89 |    86.36 |  100.00 | 8-9 14-15
+ℹ   source-model-screen-evidence.js                 |  26.08 |    55.56 |   45.16 | 35-36 41-42 78-79 98-101 118-121 207-211 213-217 219-223 225-235 237-244 246-279 281-292 294-328 330-408 410-438 440-458 460-560 562-644 646-651 653-802 805-826
+ℹ   strict-json.js                                  |  73.85 |    57.94 |   86.96 | 43-44 59-60 71-72 74-75 79-80 120 130-131 152-153 176 185-187 190-191 204 217-218 222-225 229-235 238-239 246-247 249 253-272 275-282 285-290 296-297 303-306 308-312 315-316 321-322 325-326
+ℹ   verify-single-source-authority.js               |  21.97 |    90.91 |   10.71 | 514-519 521-524 526-528 530-532 534-542 545-557 560-570 573-579 582-601 604-614 628-645 648-652 655-662 665-669 671-675 678-686 688-691 694-727 729-732 735-756 759-788 791-809 818-831 833-836 839-866 869-892 895-967 970-992 995-1021 1024-1083 1086-1092 1095-1117 1120-1272 1274-1290 1292-1305 1307-1314 1316-1321 1323-1329 1332-1356 1358-1361 1363-1366 1369-1416 1419-1483 1485-1507 1509-1556 1558-1696 1698-1852 1855-2296 2298-2300 2302-2304 2306-2316 2318-2321 2325-2378 2380-2400 2402-2412 2415-2431 2434-2510 2512-2540 2543-2644 2646-2670 2673-2688 2691-2705 2708-2715 2717-2744 2746-2763 2765-2790 2793-2834 2836-2841 2844-2994 2996-3020 3022-3031 3033-3196 3199-3215 3217-3229 3231-3235 3238-3245
+ℹ   vnext-evidence-error.js                         |  43.24 |   100.00 |    0.00 | 8-17 20-22 24-31
+ℹ   vnext-jcs.js                                    |  17.22 |   100.00 |    0.00 | 17-21 23-43 45-52 54-75 77-91 93-112 114-169 171-179 181-183 185-195 197-199
+ℹ -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ℹ all files                                         |  39.56 |    76.65 |   47.09 | 
+ℹ -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ℹ end of coverage report
+
+✖ failing tests:
+
+test at tinyrustlm\tests\huggingface-supported-candidates.test.js:379:1
+✖ untied discovery refuses ambiguous missing oversized and mismatched template evidence (4.5619ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  1 !== 0
+  
+      at TestContext.<anonymous> (E:\Source\Rust\TinyRustLM.com\tinyrustlm\tests\huggingface-supported-candidates.test.js:394:12)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

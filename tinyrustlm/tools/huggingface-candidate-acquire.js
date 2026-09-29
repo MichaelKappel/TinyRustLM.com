@@ -247,9 +247,11 @@ function verifyChatTemplate(directory, candidate, guard) {
   guard(externalPath);
   let template = config.chat_template;
   if (candidate.chatTemplateFile) {
-    invariant(!Object.hasOwn(config, "chat_template"), "chat template sources are ambiguous");
     template = new TextDecoder("utf-8", { fatal: true, ignoreBOM: true })
       .decode(readBoundedFile(externalPath, maximumSourceSidecarBytes, guard));
+    invariant(!Object.hasOwn(config, "chat_template") ||
+      (typeof config.chat_template === "string" && config.chat_template === template),
+    "chat template sources are ambiguous");
   } else {
     invariant(!fs.existsSync(externalPath), "undeclared chat template file");
   }

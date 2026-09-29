@@ -1,0 +1,44 @@
+✖ byte-identical embedded and external templates preserve both files through acquisition and receipt reuse (128.2643ms)
+✔ dual template admission rejects byte drift and non-string embedded declarations before weights (379.3175ms)
+✖ pinned model-card tuning and byte-identical dual templates admit a generic conversational name (24.7903ms)
+✔ model-card admission requires bound affirmative tuning evidence and pinned conversational intent (10.7988ms)
+✔ dual template evidence rejects even a single added byte or a non-string embedded template (8.6312ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 3
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 602.0703
+
+✖ failing tests:
+
+test at tinyrustlm\tests\huggingface-candidate-acquire.test.js:57:1
+✖ byte-identical embedded and external templates preserve both files through acquisition and receipt reuse (128.2643ms)
+  Error: chat template sources are ambiguous
+      at invariant (E:\Source\Rust\TinyRustLM.com\tinyrustlm\tools\huggingface-candidate-acquire.js:24:25)
+      at verifyChatTemplate (E:\Source\Rust\TinyRustLM.com\tinyrustlm\tools\huggingface-candidate-acquire.js:250:5)
+      at E:\Source\Rust\TinyRustLM.com\tinyrustlm\tools\huggingface-candidate-acquire.js:617:5
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async withCandidateDirectory (E:\Source\Rust\TinyRustLM.com\tinyrustlm\tools\huggingface-candidate-storage.js:117:12)
+      at async TestContext.<anonymous> (E:\Source\Rust\TinyRustLM.com\tinyrustlm\tests\huggingface-candidate-acquire.test.js:69:21)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3)
+
+test at tinyrustlm\tests\huggingface-supported-candidates.test.js:138:1
+✖ pinned model-card tuning and byte-identical dual templates admit a generic conversational name (24.7903ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  0 !== 1
+  
+      at TestContext.<anonymous> (E:\Source\Rust\TinyRustLM.com\tinyrustlm\tests\huggingface-supported-candidates.test.js:143:10)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 0,
+    expected: 1,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

@@ -167,7 +167,7 @@ function buildRevisionInfoUrl(baseUrl, modelId, revision) {
 
 // Builds a revision-pinned route for one allowlisted evidence file.
 function buildResolveUrl(baseUrl, modelId, revision, filename) {
-  invariant(["config.json", "tokenizer_config.json", "chat_template.jinja", "generation_config.json"].includes(filename),
+  invariant(["config.json", "tokenizer_config.json", "chat_template.jinja", "generation_config.json", "README.md"].includes(filename),
     "resolve filename is not allowlisted");
   const safeId = requireModelId(modelId).split("/").map(encodeURIComponent).join("/");
   return `${normalizeBaseUrl(baseUrl)}/${safeId}/resolve/${requireRevision(revision)}/${filename}`;
@@ -204,6 +204,25 @@ function declaresConversationModel(model, profile) {
     .test(modelId) || (tags.includes("conversational") && tags.includes("instruction-tuning"));
 }
 
+// A conversational tag permits bounded card inspection, never admission by that tag alone.
+function canReviewConversationModelCard(model) {
+  const modelId = String(model && model.id || "");
+  const tags = Array.isArray(model && model.tags) ? model.tags : [];
+  return !/(?:embedding|reranker|guard|reward|classifier|(?:^|[-_.])base(?:$|[-_.]))/i.test(modelId) &&
+    (model.pipeline_tag === "text-generation" || tags.includes("text-generation")) && tags.includes("conversational");
+}
+
+// Recognize an affirmative publisher description, not benchmark prose or arbitrary keyword presence.
+function declaresConversationTuning(text) {
+  const body = text.replace(/^---\r?\n[\s\S]*?\r?\n---(?:\r?\n|$)/, "").replace(/\*\*/g, "");
+  return body.split(/\r?\n\s*\r?\n/).some(paragraph => {
+    const declaration = paragraph.trim();
+    if (declaration.length > 1024 || /\b(?:not|never|isn't|is not|no longer)\b/i.test(declaration)) return false;
+    return /^(?:a|an|this (?:model|checkpoint) is (?:a|an)) (?:general[- ]purpose|general[- ]assistant) (?:non[- ]reasoning )?(?:lora )?fine[- ]tune\b/i.test(declaration) ||
+      /^(?:a|an|this (?:model|checkpoint) is (?:a|an)) instruction[- ]tuned (?:assistant|model|checkpoint)\b/i.test(declaration);
+  });
+}
+
 // A present access flag must explicitly be false; string-valued gates are not public access.
 function sourceIsPublic(model) {
   return ["private", "gated", "disabled"].every((key) => !Object.hasOwn(model, key) || model[key] === false);
@@ -227,7 +246,7 @@ function searchRejectionCode(model, profile) {
       !model.config.architectures.includes(profile.architecture)) {
     return "unsupported_architecture";
   }
-  if (!declaresConversationModel(model, profile)) {
+  if (!declaresConversationModel(model, profile) && !canReviewConversationModelCard(model)) {
     return "not_conversation_model";
   }
   if (searchLicenseId(model) !== "apache-2.0") {
@@ -251,7 +270,8 @@ function validateConfig(config, profile) {
 function validateTokenizerConfig(config, externalTemplate = null) {
   invariant(config && typeof config === "object" && !Array.isArray(config),
     "tokenizer_config.json is invalid");
-  invariant(externalTemplate === null || !Object.hasOwn(config, "chat_template"),
+  invariant(externalTemplate === null || !Object.hasOwn(config, "chat_template") ||
+    (typeof config.chat_template === "string" && config.chat_template === externalTemplate),
     "chat template sources are ambiguous");
   const template = externalTemplate === null ? config.chat_template : externalTemplate;
   invariant(typeof template === "string" && template.length >= 32 &&
@@ -396,14 +416,26 @@ async function inspectCandidate(model, settings) {
     invariant(String(info.pipeline_tag || model.pipeline_tag || "").toLowerCase() === "text-generation",
       "revision is not text generation");
     // Repeat conversation admission against pinned declarations, never mutable search tags alone.
-    if (!declaresConversationModel({ ...info, pipeline_tag: info.pipeline_tag || model.pipeline_tag }, settings.profile)) {
+    const pinnedModel = { ...info, pipeline_tag: info.pipeline_tag || model.pipeline_tag };
+    const needsModelCard = !declaresConversationModel(model, settings.profile) ||
+      !declaresConversationModel(pinnedModel, settings.profile);
+    if (needsModelCard && (!canReviewConversationModelCard(model) || !canReviewConversationModelCard(pinnedModel)))
       return { rejection: "not_conversation_model" };
-    }
     invariant(String(info.cardData && info.cardData.license || "").toLowerCase() === "apache-2.0",
       "revision license metadata mismatch");
     const files = validateSiblings(info, settings.profile);
     const weightRejection = sourceCandidateRejection(modelId, revision, files.weights);
     if (weightRejection) return { rejection: weightRejection };
+    if (needsModelCard) {
+      const row = info.siblings.find(file => file.rfilename === "README.md");
+      if (!row) return { rejection: "not_conversation_model" };
+      const card = siblingIdentity(row, "README.md");
+      invariant(card.byteCount <= maximumSourceSidecarBytes, "model card size exceeds its limit");
+      const cardText = await settings.metadata.text(buildResolveUrl(settings.baseUrl, modelId, revision, "README.md"),
+        `${modelId} model card`, maximumSourceSidecarBytes);
+      verifyMetadataFileText(cardText, card);
+      if (!declaresConversationTuning(cardText)) return { rejection: "not_conversation_model" };
+    }
     const configText = await settings.metadata.text(
       buildResolveUrl(settings.baseUrl, modelId, revision, "config.json"),
       `${modelId} config`
@@ -427,7 +459,6 @@ async function inspectCandidate(model, settings) {
     }
     let externalTemplate = null;
     if (files.chatTemplateFile) {
-      invariant(!Object.hasOwn(tokenizerConfig, "chat_template"), "chat template sources are ambiguous");
       externalTemplate = await settings.metadata.text(
         buildResolveUrl(settings.baseUrl, modelId, revision, "chat_template.jinja"),
         `${modelId} chat template`, maximumSourceSidecarBytes);

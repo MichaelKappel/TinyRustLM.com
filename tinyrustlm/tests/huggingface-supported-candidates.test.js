@@ -117,6 +117,72 @@ function declaredConversationRoster(modelId = "Example/Small-General") {
     search: "Small-General", searchLimit: 1, candidateLimit: 1, fetchImpl: fixtureFetch(routes) } };
 }
 
+// Replay pinned publisher metadata under a synthetic identity, never retrying a real model.
+function modelCardConversationRoster() {
+  const capture = JSON.parse(fs.readFileSync(path.resolve(__dirname,
+    "../../artifacts/ecosystem-cleanup-20260912/meet7-0.6b-metadata-20260929.json")));
+  const pinned = JSON.parse(capture.responses[0].utf8);
+  const fixture = declaredConversationRoster("Fixture/General-0.6B");
+  fixture.fileUrl = filename => `https://huggingface.co/${fixture.model.id}/resolve/${revision}/${filename}`;
+  fixture.model.tags = fixture.model.tags.filter(tag => tag !== "instruction-tuning");
+  fixture.info.tags = [...fixture.model.tags];
+  for (const filename of ["README.md", "config.json", "tokenizer_config.json", "chat_template.jinja"]) {
+    const response = capture.responses.find(row => row.url.endsWith(`/${filename}`));
+    fixture.routes[fixture.fileUrl(filename)] = { text: response.utf8 };
+    fixture.info.siblings = fixture.info.siblings.filter(row => row.rfilename !== filename);
+    fixture.info.siblings.push(structuredClone(pinned.siblings.find(row => row.rfilename === filename)));
+  }
+  return fixture;
+}
+
+test("pinned model-card tuning and byte-identical dual templates admit a generic conversational name", async () => {
+  const fixture = modelCardConversationRoster();
+  const calls = [];
+  const report = await discovery.discoverCandidates({ ...fixture.options,
+    fetchImpl: async url => { calls.push(String(url)); return fixtureFetch(fixture.routes)(url); } });
+  assert.equal(report.candidateCount, 1);
+  assert.deepEqual(report.rejections, []);
+  const candidate = report.candidates[0];
+  assert.equal(candidate.chatTemplateSha256, "db733d157125e57af0ab7b0529d50bd2abd61315b431c53213221930db441edb");
+  assert.equal(candidate.chatTemplateFile.gitBlobId, "a31cebf568747bd2c66931c7c43e58bda73f8f08");
+  assert.equal(candidate.generationConfig, null);
+  assert.ok(calls.includes(fixture.fileUrl("README.md")));
+  assert.equal(calls.some(url => /\/tokenizer\.json$|\.safetensors$/.test(url)), false);
+});
+
+test("model-card admission requires bound affirmative tuning evidence and pinned conversational intent", async () => {
+  for (const variant of ["missing", "generic", "negated", "unrelated", "pinned-tag", "search-tag", "hash", "oversized", "wrong-type"]) {
+    const fixture = modelCardConversationRoster();
+    const row = fixture.info.siblings.find(file => file.rfilename === "README.md");
+    if (variant === "missing") fixture.info.siblings = fixture.info.siblings.filter(file => file !== row);
+    if (["generic", "negated", "unrelated"].includes(variant)) {
+      const text = { generic: "A general-purpose base model for text generation.",
+        negated: "This is not a general-purpose instruction fine-tune.",
+        unrelated: "A general-purpose guide to instruction fine-tuning other models." }[variant];
+      fixture.routes[fixture.fileUrl("README.md")].text = text;
+      row.size = Buffer.byteLength(text);
+      row.blobId = crypto.createHash("sha1").update(`blob ${row.size}\0`).update(text).digest("hex");
+    }
+    if (variant === "pinned-tag") fixture.info.tags = fixture.info.tags.filter(tag => tag !== "conversational");
+    if (variant === "search-tag") fixture.model.tags = fixture.model.tags.filter(tag => tag !== "conversational");
+    if (variant === "hash") row.blobId = "0".repeat(40);
+    if (variant === "oversized") row.size = 262145;
+    if (variant === "wrong-type") fixture.routes[fixture.fileUrl("tokenizer_config.json")].text = JSON.stringify({ chat_template: {} });
+    const report = await discovery.discoverCandidates(fixture.options);
+    assert.equal(report.candidateCount, 0, variant);
+  }
+});
+
+test("dual template evidence rejects even a single added byte or a non-string embedded template", async () => {
+  for (const embedded of [null, {}, "different", `${chatTemplate}\n`]) {
+    const fixture = untiedExternalRoster();
+    fixture.routes[fixture.fileUrl("tokenizer_config.json")].text = JSON.stringify({ chat_template: embedded });
+    const report = await discovery.discoverCandidates(fixture.options);
+    assert.equal(report.candidateCount, 0);
+    assert.equal(report.rejections[0].code, "source_evidence_invalid");
+  }
+});
+
 test("generic names with explicit conversation and instruction declarations still require pinned shape and template", async () => {
   const fixture = declaredConversationRoster();
   const report = await discovery.discoverCandidates(fixture.options);
@@ -314,7 +380,7 @@ test("untied discovery refuses ambiguous missing oversized and mismatched templa
   const mutations = [
     f => { f.config.tie_word_embeddings = true; f.routes[f.fileUrl("config.json")].text = JSON.stringify(f.config); },
     f => { f.config.head_dim = 64; f.routes[f.fileUrl("config.json")].text = JSON.stringify(f.config); },
-    f => { f.routes[f.fileUrl("tokenizer_config.json")].text = JSON.stringify({ chat_template: chatTemplate }); },
+    f => { f.routes[f.fileUrl("tokenizer_config.json")].text = JSON.stringify({ chat_template: chatTemplate + "\n" }); },
     f => { f.info.siblings = f.info.siblings.filter(row => row.rfilename !== "chat_template.jinja"); },
     f => { f.info.siblings.find(row => row.rfilename === "chat_template.jinja").size = 262145; },
     f => { f.routes[f.fileUrl("chat_template.jinja")].text = chatTemplate + "changed"; },
