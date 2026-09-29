@@ -96,7 +96,48 @@ def exact_object(value: Any, keys: set[str], code: str) -> dict[str, Any]:
 
 
 def canonical_json_bytes(value: Any) -> bytes:
-    return (json.dumps(value, ensure_ascii=True, indent=2, sort_keys=True) + "\n").encode("utf-8")
+    """Encode bounded numerical metadata in the JavaScript owner's wire format.
+
+    The current request/result contracts contain safe integers and one admitted
+    fractional value: normalization epsilon. This is not a general float codec.
+    Reject new numeric shapes rather than silently changing their wire identity.
+    """
+    def render(item: Any, depth: int) -> str:
+        """Render one JSON value; preserve strings instead of rewriting numeric text."""
+        if item is None:
+            return "null"
+        if isinstance(item, bool):
+            return "true" if item else "false"
+        if isinstance(item, int):
+            if abs(item) > 9007199254740991:
+                raise ValueError("numerical-metadata-unsafe-integer")
+            return str(item)
+        if isinstance(item, float):
+            if item != 0.000001:
+                raise ValueError("numerical-metadata-unregistered-fraction")
+            return "0.000001"
+        if isinstance(item, str):
+            if not item.isascii():
+                raise ValueError("numerical-metadata-nonascii-string")
+            return json.dumps(item, ensure_ascii=True)
+        indent = "  " * depth
+        child_indent = indent + "  "
+        if isinstance(item, list):
+            if not item:
+                return "[]"
+            return "[\n" + ",\n".join(child_indent + render(child, depth + 1)
+                                     for child in item) + "\n" + indent + "]"
+        if isinstance(item, dict):
+            if not item:
+                return "{}"
+            if any(not isinstance(key, str) for key in item):
+                raise ValueError("numerical-metadata-key-type")
+            return "{\n" + ",\n".join(child_indent + render(key, depth + 1) + ": "
+                                     + render(item[key], depth + 1)
+                                     for key in sorted(item)) + "\n" + indent + "}"
+        raise ValueError("numerical-metadata-value-type")
+
+    return (render(value, 0) + "\n").encode("utf-8")
 
 
 def content_identity(path: Path, maximum_bytes: int, code: str) -> dict[str, Any]:

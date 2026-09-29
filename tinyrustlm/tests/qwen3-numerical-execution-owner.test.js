@@ -108,7 +108,7 @@ function registeredComparison() {
 
 /** Synthetic current contract values exercise validation without registering or launching a model. */
 function ownerContract() {
-  const operationId = "qwen3-numerical-c1899de-1111111-20260913-v3";
+  const operationId = "qwen3-numerical-c1899de-1111111-20260913-v4";
   return {
     schema: owner.OWNER_CONTRACT_SCHEMA,
     operationId,
@@ -332,7 +332,7 @@ function registration() {
   const contract = ownerContract();
   return {
     schema: owner.REGISTRATION_SCHEMA,
-    profileId: "tinyrustlm.qwen3-numerical-differential-execution/3",
+    profileId: "tinyrustlm.qwen3-numerical-differential-execution/4",
     status: "registered-before-private-request-roots-and-real-traces",
     registeredAtUtc: "2026-09-13T12:00:00Z",
     registrationParentCommit: "1".repeat(40),
@@ -359,7 +359,7 @@ function registration() {
       parentCommit: "1".repeat(40),
       parentTree: "2".repeat(40),
       allowedRegistrationCommitPaths: [
-        "contracts/vnext/qwen3-numerical-differential-execution-preregistration.v3.json"
+        "contracts/vnext/qwen3-numerical-differential-execution-preregistration.v4.json"
       ],
       cleanAtRegistration: true,
       trackingFetchHeadAndRemoteExactAtRegistration: true
@@ -674,8 +674,8 @@ test("rejects operation, trace, implementation-role, and executable drift", () =
 
 test("rejects closed owner, registration, request, and source-template semantics", () => {
   assert.equal(owner.REGISTRATION_RELATIVE_PATH,
-    "contracts/vnext/qwen3-numerical-differential-execution-preregistration.v3.json");
-  assert.equal(owner.REQUEST_SCHEMA, "tinyrustlm.qwen3_numerical_execution_request.v3");
+    "contracts/vnext/qwen3-numerical-differential-execution-preregistration.v4.json");
+  assert.equal(owner.REQUEST_SCHEMA, "tinyrustlm.qwen3_numerical_execution_request.v4");
 
   const formerOwner = ownerContract();
   formerOwner.schema = "tinyrustlm.qwen3_numerical_execution_owner_contract.v1";
@@ -988,7 +988,7 @@ test("execute rejects a misplaced request before inspecting registration or crea
   const root = temporaryRoot(t);
   const requestPath = path.join(root, "request.json");
   fs.writeFileSync(requestPath, owner.canonicalJsonBytes({ schema: owner.REQUEST_SCHEMA,
-    operationId: "qwen3-numerical-c1899de-1111111-20260913-v3", registration: null,
+    operationId: "qwen3-numerical-c1899de-1111111-20260913-v4", registration: null,
     registrationSource: null, repositoryRoot: path.dirname(repositoryRoot), gitPath: null,
     evidenceParent: root, sourceDirectory: "D:\\LLMs\\TinyRustLM\\source",
     compositionRoot: "D:\\LLMs\\TinyRustLM\\composition", executables: null }), { flag: "wx" });
@@ -1067,4 +1067,41 @@ test("process terminal binds one launch and immutable failure rules", () => {
   assert.equal(terminal.retryAllowed, false);
   assert.equal(terminal.overwriteAllowed, false);
   assert.equal(terminal.repairAllowed, false);
+});
+
+
+/** Exercise both real Python serializers against the JavaScript wire format without a model. */
+test("Python numerical metadata serializers agree with JavaScript on the registered epsilon", () => {
+  const { spawnSync } = require("node:child_process");
+  const python = process.env.TINYRUSTLM_QWEN3_NUMERICAL_ORACLE_PYTHON;
+  assert.ok(python && fs.existsSync(python), "set the existing numerical oracle Python for interop coverage");
+  const program = [
+    "import importlib.util,json,pathlib,sys",
+    "p=pathlib.Path(sys.argv[1]);spec=importlib.util.spec_from_file_location('numerical_owner_under_test',p)",
+    "module=importlib.util.module_from_spec(spec);sys.modules[spec.name]=module;spec.loader.exec_module(module)",
+    "value=json.load(sys.stdin);sys.stdout.buffer.write(module.canonical_json_bytes(value))"
+  ].join("\n");
+  const metadata = { schema: "test-only", modelSpec: { normalizationEpsilon: 0.000001,
+    contextLength: 40960 }, text: 'literal 1e-06, "normalizationEpsilon": 1e-06',
+    empty: {}, list: [0, true, null, "backslash\\and newline\n", { value: 0.000001 }] };
+  const expected = owner.canonicalJsonBytes(metadata);
+  for (const filename of ["qwen3-numerical-source-owner.py", "qwen3-slm2-reconstructed-owner.py"]) {
+    const result = spawnSync(python, ["-I", "-B", "-c", program,
+      path.join(repositoryRoot, "tinyrustlm/tools", filename)], {
+      input: expected, windowsHide: true, timeout: 30000, maxBuffer: 1024 * 1024
+    });
+    assert.equal(result.status, 0, result.stderr?.toString());
+    assert.deepEqual(JSON.parse(result.stdout), metadata, filename + " must preserve values");
+    assert.deepEqual(result.stdout, expected, filename + " must preserve canonical wire bytes");
+    for (const invalid of [{ value: 0.00001 }, { value: 1.0 }, { value: 9007199254740992 },
+      { value: "non-ascii \u00e9" }]) {
+      const input = invalid.value === 1 ? '{"value":NaN}' : JSON.stringify(invalid);
+      const rejected = spawnSync(python, ["-I", "-B", "-c", program,
+        path.join(repositoryRoot, "tinyrustlm/tools", filename)], {
+        input, windowsHide: true, timeout: 30000, maxBuffer: 1024 * 1024
+      });
+      assert.notEqual(rejected.status, 0, filename + " must reject unregistered numeric/string shapes");
+      assert.equal(rejected.stdout.length, 0);
+    }
+  }
 });

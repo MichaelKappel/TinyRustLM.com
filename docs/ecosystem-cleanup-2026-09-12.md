@@ -5,6 +5,27 @@ project under `E:\Source\Rust`, including completion of current-only SLM2
 acquisition, a real small default model and MiniModel server seeding. An audit,
 fixture test or source-only change does not complete this goal.
 
+## C127: real numerical execution exposes a cross-language framing defect
+
+The pushed v3 registration eb4b447 launches the pinned source and reconstructed
+owners once. Source completes three cases and seven full traces. Reconstructed
+request validation then rejects before model execution: JavaScript emits epsilon
+as `0.000001`, while Python canonical JSON requires `1e-06`. The source result
+contains the same mismatch for the JavaScript verifier. Numeric values agree.
+Scalar and verification stages never launch; v3 is terminal-failure, preserved
+without replay or evidence changes. No numerical or model-quality pass follows.
+
+A failing real Python/JavaScript interoperability test reproduces the defect.
+Both Python metadata encoders now emit the exact bounded JavaScript wire format
+for safe integers and the sole admitted fraction, preserving quoted text and
+rejecting unsupported numbers. Independent review confirms the correction.
+All37 numerical owner/profile tests pass, including pinned Python kernel tests,
+with zero skips. Cases, tolerances and model calculations are unchanged. Fresh
+v4 registration is required before another diagnostic; it cannot qualify this
+terminally rejected product candidate. See
+`artifacts/ecosystem-cleanup-20260912/qwen3-numerical-v3-failure-review-20260929.json`.
+
+
 ## C126: actual production startup and the remaining JSON candidates
 
 Fresh, unmodified production Edge contexts at 1440 and 390 pixels show version

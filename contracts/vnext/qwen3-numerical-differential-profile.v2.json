@@ -110,8 +110,8 @@
       "status": "implementation-prepared-registration-required",
       "path": "tinyrustlm/tools/qwen3-numerical-execution-owner.js",
       "byteLength": 83054,
-      "sha256": "423594402cb9ebe0ea6432ee7d30e32468dc06a5773a4f761f8a5b858de1beeb",
-      "profileId": "tinyrustlm.qwen3-numerical-execution-owner/3",
+      "sha256": "0087e4b752872ce0131dcc0be361d04d6568691a51ffbee265bf3c9d40431ace",
+      "profileId": "tinyrustlm.qwen3-numerical-execution-owner/4",
       "dependencies": [
         {
           "path": "tinyrustlm/tools/canonical-operation-scratch.js",
@@ -139,8 +139,8 @@
     },
     "publisherSourceOwner": {
       "path": "tinyrustlm/tools/qwen3-numerical-source-owner.py",
-      "byteLength": 51373,
-      "sha256": "d4aadb65bb58756fc73544bb7a3e153b7942dce1566438e72b4469e73bdf1830",
+      "byteLength": 53293,
+      "sha256": "0dde241630d7bce1114a150dc21c3665798bb956fdeb8ced30bfa08d3d048f41",
       "profileId": "tinyrustlm.qwen3-publisher-source-trace/2",
       "framework": "Transformers-Qwen3ForCausalLM-CPU-FP32-eager",
       "localCapabilityProbe": {
@@ -165,8 +165,8 @@
     },
     "reconstructedOwner": {
       "path": "tinyrustlm/tools/qwen3-slm2-reconstructed-owner.py",
-      "byteLength": 60272,
-      "sha256": "88ae027247e943232fb19da2ce60f16cfaa845f5efe62fba1d2debdfe38cde79",
+      "byteLength": 62192,
+      "sha256": "6dce31b15c1b6a0754b6617eff5ab270a2acf9f90f34269b3a497cb61185352f",
       "profileId": "tinyrustlm.qwen3-slm2-reconstructed-trace/1",
       "parser": "independent-read-only-SLM2-Q8-registry-and-payload-parser",
       "matrixExecution": "bounded-row-chunk-F32-reconstruction",
@@ -416,7 +416,7 @@
       "sole-owner-invokes-source-reconstructed-scalar-and-read-only-verifier-at-most-once-in-order",
       "preserve-terminal-result-without-retry-overwrite-repair-or-tolerance-change"
     ],
-    "soleOwnerStatus": "current-v3-implementation-requires-fresh-registration",
+    "soleOwnerStatus": "current-v4-implementation-requires-fresh-registration",
     "processCardinalityAuthority": "sole-execution-owner",
     "sourceOutput": "create-only-preserve-partial-on-failure",
     "reconstructedOutput": "create-only-preserve-partial-on-failure",

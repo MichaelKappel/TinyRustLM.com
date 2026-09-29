@@ -1,0 +1,150 @@
+{
+  "schema": "tinyrustlm.qwen3_numerical_diagnostic_review.v1",
+  "observedAtUtc": "2026-09-29T20:08:31.575Z",
+  "terminal": {
+    "allowedClaim": "none",
+    "claim": "no-numerical-pass-claim",
+    "evidenceInventoryBeforeTerminal": [
+      {
+        "byteLength": 2367,
+        "fileName": "binding.json",
+        "sha256": "32cac1544cbd023a4073946325e41f96fc8fdff6cd7568b83db4682ed3196ef7"
+      },
+      {
+        "byteLength": 1417,
+        "fileName": "reconstructed.process-terminal.json",
+        "sha256": "2848d614302dab580c7ae5415a0ceb9c19c35c8413f7f54537df8f59cafd2f84"
+      },
+      {
+        "byteLength": 2580,
+        "fileName": "reconstructed.request.json",
+        "sha256": "818755558d1c89354a89090ad5a69d482d6c332dfda2dcd26f0e52419ccd6a19"
+      },
+      {
+        "byteLength": 71,
+        "fileName": "reconstructed.stderr.bin",
+        "sha256": "3f64d9508513fea492a434c8902acc7dda1194ca42c254f2fd828d3de7bf340d"
+      },
+      {
+        "byteLength": 0,
+        "fileName": "reconstructed.stdout.bin",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "byteLength": 1375,
+        "fileName": "scalar.request.json",
+        "sha256": "32c6575d77e6d73691c3d1ed490a2e7bf391d8bc14f126854d612169013fb084"
+      },
+      {
+        "byteLength": 1407,
+        "fileName": "source.process-terminal.json",
+        "sha256": "9fdfae68847c8930e006731decff139b0ac214000163948fac909176004e8fee"
+      },
+      {
+        "byteLength": 2546,
+        "fileName": "source.request.json",
+        "sha256": "e58d9f04ab4ce6931f0b983269f5883795afbef454b2785bfd42381bf535b513"
+      },
+      {
+        "byteLength": 0,
+        "fileName": "source.stderr.bin",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "byteLength": 174,
+        "fileName": "source.stdout.bin",
+        "sha256": "ce2701b614d4dff4a2e0a9fdf2a80ac18aae44a358332b25cb2a3a5b009e2117"
+      },
+      {
+        "byteLength": 354,
+        "fileName": "start.json",
+        "sha256": "3d4c481b9866b93a247511962c99d9ae191129e58a8096a2738f7a99e522f7ac"
+      }
+    ],
+    "immutableClosure": {
+      "failedOutputAdoptionAllowed": false,
+      "overwriteAllowed": false,
+      "partialOutputCleanupAllowed": false,
+      "repairAllowed": false,
+      "retryAllowed": false,
+      "thresholdChangeAllowed": false
+    },
+    "launchCounts": {
+      "reconstructed": 1,
+      "scalar": 0,
+      "source": 1,
+      "verifier": 0
+    },
+    "launchedStages": [
+      "source",
+      "reconstructed"
+    ],
+    "operationId": "qwen3-numerical-c1899de-8072749-20260929-v3",
+    "ownerRequest": {
+      "byteLength": 1560,
+      "sha256": "4d6c2bb5103a022c7c4ebaa656afaf973d267ae5aabfe16bc28782fc0c7392d8"
+    },
+    "prohibitedClaims": [
+      "optimized-native-parity",
+      "browser-wasm-parity",
+      "behavioral-quality",
+      "p2p-availability",
+      "site-release",
+      "campaign-progress"
+    ],
+    "reasonCode": "reconstructed-process-not-pass",
+    "registration": {
+      "byteLength": 25368,
+      "sha256": "d9685b4dd8a632606bd9ed3a2fd4b66052b10e1de56ed3d043e31da8ea11568d"
+    },
+    "registrationSource": {
+      "branch": "codex/model-acquisition-v2",
+      "commit": "eb4b4479c7dd8d8f5eaa6abed2d2605ea4f4601e",
+      "fetchHeadExpected": true,
+      "remoteRef": "refs/remotes/origin/codex/model-acquisition-v2",
+      "trackingRef": "origin/codex/model-acquisition-v2",
+      "tree": "ca60849c5f316cda2550de3d89654d7fd02dc85f"
+    },
+    "schema": "tinyrustlm.qwen3_numerical_execution_terminal.v1",
+    "status": "terminal-failure",
+    "verifierReceipt": null
+  },
+  "sourceTraceManifest": {
+    "byteLength": 547913,
+    "sha256": "b0453318377215024839bc23d5008d5ea36f273290f6ac87486f48e7b184e86e",
+    "caseCount": 3,
+    "traceFiles": 7
+  },
+  "defect": {
+    "stage": "request-validation-before-reconstructed-model-execution",
+    "code": "reconstructed-trace-request-canonical",
+    "javascriptRequestBytes": 2580,
+    "pythonEquivalentRequestBytes": 2577,
+    "line": 62,
+    "javascriptNumber": "0.000001",
+    "pythonNumber": "1e-06",
+    "numericValuesIdentical": true,
+    "sourceResultHasSameEncodingMismatch": true,
+    "closedEvidenceModified": false
+  },
+  "scope": "Failed v3 diagnostic preserved. No scalar, verifier, numerical parity, model qualification or production claim. Serialization correction requires separately registered v4; no v3 replay.",
+  "correction": {
+    "scope": "Python source/reconstructed metadata framing only; bounded ASCII JSON with safe integers and exact decimal representation for the sole registered fraction. No computation, cases, thresholds, weights or closed evidence changes.",
+    "independentReview": "candidate_runtime_boundary confirmed request and source-result exponent mismatch and requirement to preserve numeric values and quoted text.",
+    "regressionBefore": {
+      "passed": 0,
+      "failed": 1,
+      "reason": "actual Python encoder produced exponent form differing from the JavaScript wire bytes"
+    },
+    "regressionAfter": {
+      "passed": 37,
+      "failed": 0,
+      "skipped": 0,
+      "log": "artifacts/ecosystem-cleanup-20260912/numerical-v4-focused-initial-20260929.log",
+      "logBytes": 3339,
+      "logSha256": "03effcd7ed57f78c1ca4ca20dcc92c1687bd00ed50b4f2e487e467749450e805"
+    },
+    "coverage": "Behavioral interop, negative numeric/string inputs, both real Python self-tests and synthetic kernel tests; percentage coverage was not measured for the new Python serializer.",
+    "futureOperation": "Fresh v4 registration required; v3 remains terminal-failure and cannot be replayed."
+  }
+}
