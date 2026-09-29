@@ -3594,3 +3594,35 @@ test("durable catalog cancellation before the commit point writes nothing", asyn
   await assert.rejects(store.readCatalogAuthority({ signal: controller.signal }));
   assert.equal(adapter.operations.some(op => op.type === "atomic-write"), false);
 });
+
+test("durable catalog unreadable commit is indeterminate and never treated as absent", async () => {
+  const source = fixture("catalog-unreadable");
+  const adapter = new MemoryAdapter();
+  const read = adapter.openReadable.bind(adapter);
+  const write = adapter.atomicWrite.bind(adapter);
+  adapter.atomicWrite = async (parts, value) => {
+    await write(parts, value);
+    adapter.openReadable = async () => { throw new Error("readback unavailable"); };
+  };
+  await assert.rejects(createStore(adapter).acceptCatalogAuthority(catalogUpdate(source)),
+    error => error.commitDisposition === "indeterminate");
+  await assert.rejects(createStore(adapter).readCatalogAuthority());
+  adapter.openReadable = read;
+  assert.equal((await createStore(adapter).readCatalogAuthority()).catalogAuthority.revision, 7);
+});
+
+test("durable catalog competing writers converge on the highest admitted revision", async () => {
+  const source = fixture("catalog-concurrent");
+  const adapter = new MemoryAdapter();
+  const older = catalogUpdate(source, { revision: 8, generated_at_utc: utc(-30000) });
+  const newer = catalogUpdate(source, { revision: 9, generated_at_utc: utc(-20000) });
+  const results = await Promise.allSettled([
+    createStore(adapter).acceptCatalogAuthority(newer),
+    createStore(adapter).acceptCatalogAuthority(older)
+  ]);
+  assert.equal(results[0].status, "fulfilled");
+  assert.equal(results[1].status, "rejected");
+  const restarted = createStore(adapter);
+  await restarted.cleanup();
+  assert.equal((await restarted.readCatalogAuthority()).catalogText, newer.catalogText);
+});

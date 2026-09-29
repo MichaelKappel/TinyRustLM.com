@@ -1,27 +1,72 @@
 {
   "schema": "tinyrustlm.offline-authority-recovery-review.v1",
-  "status": "implementation-under-validation",
+  "status": "implemented-and-tested-with-explicit-product-limitations",
+  "reviewedAtUtc": "2026-09-29T21:04:44Z",
+  "implementationCheckpoint": "dc48c6d",
   "scope": "Persist current verified catalog authority and revocation rollback barriers; reopen existing verified model on explicit Refresh; evict only a corrupt static asset after rejecting its request.",
   "preservedRuns": [
     { "stage": "durable catalog regression baseline before implementation", "tests": 7, "passed": 0, "failed": 7, "exitCode": 1, "reason": "New durable authority methods did not exist." },
     { "stage": "first durable implementation", "tests": 7, "passed": 4, "failed": 3, "exitCode": 1, "reason": "New accept method omitted its required fields from normalizeCall allowedFields; corrected." },
     { "stage": "corrected durable implementation", "tests": 7, "passed": 7, "failed": 0, "exitCode": 0 },
     { "stage": "corrupt static entry regression baseline", "tests": 1, "passed": 0, "failed": 1, "exitCode": 1, "reason": "The rejected corrupt entry remained cached." },
-    { "stage": "first combined affected suites", "tests": 283, "passed": 282, "failed": 1, "exitCode": 1, "reason": "Generated shell hashes had not yet been regenerated; the static corruption regression and durable authority tests passed." }
+    { "stage": "first combined affected suites", "tests": 283, "passed": 282, "failed": 1, "exitCode": 1, "reason": "Generated shell hashes had not yet been regenerated; the static corruption regression and durable authority tests passed." },
+    { "stage": "first focused application regressions", "tests": 16, "passed": 15, "failed": 1, "exitCode": 1, "reason": "The test's proposed newer revision had an earlier generated timestamp than its predecessor; monotonic admission correctly rejected it. Fixture corrected to newer issue time and shorter already-expired validity." },
+    { "stage": "corrected focused application regressions", "tests": 16, "passed": 16, "failed": 0, "exitCode": 0 },
+    { "stage": "strengthened application and full store suites", "tests": 213, "passed": 213, "failed": 0, "exitCode": 0 },
+    { "stage": "parent generated-static checks at dc48c6d", "tests": 9, "passed": 9, "failed": 0, "exitCode": 0, "evidenceSource": "Parent tool result relayed to this reviewer." },
+    { "stage": "parent initial browser launch at dc48c6d", "exitCode": 1, "reason": "Required browser was absent at the default profile path; the browser did not launch. This was an environment failure, not a runtime disagreement.", "evidenceSource": "Parent tool result relayed to this reviewer." },
+    { "stage": "parent pinned-browser rerun at dc48c6d", "tests": 1, "passed": 1, "failed": 0, "exitCode": 0, "durationMilliseconds": 2287, "evidenceSource": "Parent tool result relayed to this reviewer; existing canonical Playwright browser was selected without installation." },
+    { "stage": "first final coverage launcher", "exitCode": 0, "reason": "Child output contained 27643 characters, but a launcher summary filter dropped the totals and coverage table. No coverage percentage or inferred test count is claimed for that run; rerun corrected reporting." },
+    { "stage": "final affected suites with coverage", "tests": 292, "passed": 292, "failed": 0, "skipped": 0, "exitCode": 0, "durationMilliseconds": 11070.0551, "toolChunk": "af20ea" },
+    { "stage": "strengthened actual browser durable-authority restart", "tests": 1, "passed": 1, "failed": 0, "skipped": 0, "exitCode": 0, "durationMilliseconds": 2231.1534, "toolChunk": "74cb0e" }
   ],
-  "generation": "Both shell hashes and offline-worker.js were regenerated after the combined run; parity and git diff --check pass. That regeneration has not yet been followed by the final affected-suite rerun.",
-  "pending": [
-    "Focused application durable-refresh, failure, cancellation and saved-model restoration regressions",
-    "Final affected-suite rerun and changed-source coverage",
-    "Actual browser regression with current generated assets",
-    "Independent review of authority failure and restart semantics"
+  "generation": "Both shell hashes and offline-worker.js were regenerated before dc48c6d. Final 292-test run includes all nine static-shell checks and verifies the generated closure. No production source changed during final regression work.",
+  "commands": {
+    "affected": "node --experimental-test-coverage --test-coverage-include=**/app/model-composition-store.js --test-coverage-include=**/app/minimodel-catalog-v1.js --test-coverage-include=**/tools/static-shell-parity.js --test --test-concurrency=1 tinyrustlm/tests/app_test.js tinyrustlm/tests/model-acquisition-boundary-regression.test.js tinyrustlm/tests/static-shell-parity.test.js tinyrustlm/tests/model-composition-store.test.js tinyrustlm/tests/minimodel-catalog-v1.test.js",
+    "browser": "node --test tinyrustlm/tests/offline-worker.test.js",
+    "browserEnvironment": "PLAYWRIGHT_BROWSERS_PATH=E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\browser-packages\\playwright; TINYRUSTLM_PLAYWRIGHT_CHANNEL absent; NODE_V8_COVERAGE explicitly empty for the browser run. TEMP/TMP/TMPDIR use original-owner canonical scratch."
+  },
+  "coverage": {
+    "measurement": "Node V8 whole-file coverage from the final 292-test run; percentages are not a claim of browser or complete application coverage.",
+    "modelCompositionStore": { "linePercent": 90.59, "branchPercent": 86.93, "functionPercent": 94.41 },
+    "miniModelCatalog": { "linePercent": 83.94, "branchPercent": 70.37, "functionPercent": 88.89 },
+    "staticShellGenerator": { "linePercent": 90.09, "branchPercent": 95.65, "functionPercent": 85.29 },
+    "combined": { "linePercent": 87.85, "branchPercent": 81.22, "functionPercent": 91.52 },
+    "changedStoreLines": "The new catalog-authority functions have no lines listed as uncovered in the final report.",
+    "applicationLimit": "Focused application tests execute original functions extracted from app.js with explicit storage, fetch and activation boundaries. They verify orchestration behavior but do not attribute whole-app or changed-line coverage to app.js. Static-worker behavior is exercised in its existing VM harness and the browser; the generator's percentage is not generated-worker coverage."
+  },
+  "verifiedBehavior": [
+    "Exact accepted catalog text and derived identity survive a new store and a full browser-process restart in real OPFS. The browser test uses public synthetic empty catalog metadata, then persists a newer revision containing one synthetic revoked receipt identity.",
+    "Durable newer authority precedes live refresh; an expired newer revision remains a rollback barrier and cannot be replaced by older still-unexpired installation metadata. Same-revision equivocation, older issue times and changed catalog identity reject.",
+    "Current fetched metadata becomes runtime authority only after exact durable readback. Failed or unreadable storage suppresses older RAM fallback and active-model admission; boot's ignored return value does not bypass the empty current-entry view.",
+    "Atomic write acknowledgement failures and postcommit lock errors are resolved by exact readback; unreadable disposition is indeterminate. Competing writers converge on the newest admissible revision under the existing exclusive lock.",
+    "Explicit Refresh can reopen saved composition bytes after current authority renewal without invoking a download. Revoked, absent or busy cases do not activate; cancellation releases the restore command without invoking companion cancellation.",
+    "A corrupt cached static entry rejects its request and is the only entry evicted. Offline retry remains failed; a later online request admits only pinned expected bytes. Model/catalog/private bytes remain outside the static CacheStorage closure.",
+    "Actual production worker and WASM initialize online with service workers blocked, online with them active, and after a fresh browser process goes offline. This validates runtime availability and initialization, not model generation."
   ],
+  "review": {
+    "parentReview": "Parent independently reviewed the production diff before dc48c6d and required explicit storage-failure boot, expired newer floor, equivocation, unavailable OPFS, and Refresh restoration regressions; those regressions now pass.",
+    "finalReadback": "Scoped source readback confirms expiry remains enforced at activation and inference; the durable record is a rollback floor, not a new permission lifetime. No remaining defect was identified in the reviewed scope.",
+    "lastPostTestChange": "Only the browser test title and explanatory comment were clarified after its pass to distinguish static CacheStorage exclusion from deliberate OPFS authority persistence; assertions and executable behavior were unchanged.",
+    "diffCheck": "git diff --check passed for the three test files."
+  },
+  "scratch": {
+    "method": "Each launcher and browser test retained its original canonical scratch owner and removed its own output after terminal execution. Raw V8 coverage was reduced to the recorded numerical summary; no copied source or model payload was retained.",
+    "finalRootsRemoved": ["tinyrustlm-operation-Xz2vOr", "tinyrustlm-operation-e4TMn0", "tinyrustlm-operation-SYupJx"],
+    "finalReadback": "artifacts/tests/catalog-authority-recovery and artifacts/tests/offline-browser are empty. Historical policy-blocked offline-static-cache/WBZvmc evidence was not touched."
+  },
+  "pending": [],
   "limits": {
     "catalogMaximumAgeHours": 24,
     "catalogExpiryWeakened": false,
     "modelPayloadExecuted": false,
     "realModelQualification": false,
     "publicDeployment": false,
-    "visualParityMeasured": false
+    "visualParityMeasured": false,
+    "realSavedModelRefreshBrowserGeneration": false,
+    "offlineLifetime": "Accepted authority must still be within its actual valid_until_utc and the existing maximum 24-hour age. An expired installation needs a successful online authority refresh; this work does not promise indefinite offline use.",
+    "storageUnavailable": "Authority read/write failures fail closed. A fresh visitor without working OPFS cannot automatically acquire or activate a model through this path.",
+    "revocationDiscovery": "Offline clients cannot learn unseen remote revocations. A durably accepted revocation is retained across restart, including after expiry, as a rollback barrier.",
+    "remainingProductEvidence": "A qualified real model, real installed-model conversation through Refresh/offline return, and coherent public publication remain separate gates owned by the parent task."
   }
 }

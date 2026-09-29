@@ -220,3 +220,207 @@ test("external source discovery never chooses between multiple current compositi
   state.modelCatalogV1Entries = [{ modelId: "Qwen/Qwen3-0.6B" }];
   assert.equal(resolve("Qwen/Qwen3-0.6B"), null);
 });
+
+// Build bounded public metadata with the real catalog validator; there are no qualified model bytes.
+function authorityRecord(revision, ageMilliseconds = 60000, lifetimeMilliseconds = 3600000) {
+  const api = require("../app/minimodel-catalog-v1.js");
+  const catalog = JSON.parse(require("../tools/web-release-browser-smoke.js").declaredCatalogMetadata()[0].body);
+  const generated = Math.floor((Date.now() - ageMilliseconds) / 1000) * 1000;
+  catalog.revision = revision;
+  catalog.generated_at_utc = new Date(generated).toISOString().replace(".000Z", "Z");
+  catalog.valid_until_utc = new Date(generated + lifetimeMilliseconds).toISOString().replace(".000Z", "Z");
+  const catalogText = `${JSON.stringify(catalog)}\n`;
+  return { catalogDocument: api.validateCatalog(catalog, { now: new Date(generated) }), catalogText,
+    catalogAuthority: { id: catalog.catalog_id, revision, generatedAtUtc: catalog.generated_at_utc,
+      validUntilUtc: catalog.valid_until_utc,
+      sha256: `sha256:${require("node:crypto").createHash("sha256").update(catalogText).digest("hex")}` } };
+}
+
+// Exercise production refresh/storage orchestration with real timing and catalog validation.
+function authorityRefreshHarness(options = {}) {
+  const api = require("../app/minimodel-catalog-v1.js");
+  const previous = options.previous || null;
+  const next = options.next || authorityRecord(3, 1000);
+  const state = { modelCatalogV1Document: previous?.catalogDocument || null,
+    modelCatalogV1Text: previous?.catalogText || "", modelCatalogV1Authority: previous
+      ? { catalog: previous.catalogAuthority, peerFeed: null } : null,
+    modelCatalogV1Entries: [], modelCatalogV1PeerDocument: null, localModel: options.localModel || null,
+    modelLoaded: Boolean(options.localModel), companion: {}, generation: { inFlight: false } };
+  const events = [];
+  const store = {
+    async readCatalogAuthority() { events.push("read"); if (options.readError) throw options.readError; return options.durable || null; },
+    async acceptCatalogAuthority(value) {
+      events.push("write");
+      assert.notEqual(state.modelCatalogV1Document, next.catalogDocument, "RAM acceptance waits for durable commit");
+      if (options.writeError) throw options.writeError;
+      assert.equal(value.catalogText, next.catalogText);
+      return next;
+    }
+  };
+  const bindings = { state, el: {}, document: { activeElement: null }, AbortController,
+    operationLifetimeApi: require("../app/operation-lifetime.js"),
+    ensureModelCompositionStore: () => store,
+    miniModelCatalogV1Api: { ...api, async loadCurrentCatalog(value) {
+      events.push("fetch");
+      if (options.inspectPrevious) options.inspectPrevious(value.previousAuthority);
+      if (options.fetchError) throw options.fetchError;
+      return { catalog: { status: api.SOURCE_STATUSES.VALID, document: next.catalogDocument, text: next.catalogText },
+        peerFeed: { status: api.SOURCE_STATUSES.INVALID, error: { type: "fetch" } }, views: [],
+        authority: { catalog: next.catalogAuthority, peerFeed: null } };
+    } },
+    clearSimpleModelPeerExpiryTimer() {}, clearSimpleModelConversionRecovery() {}, renderSimpleModelPicker() {},
+    setSimpleModelPickerStatus: text => events.push(text), scheduleSimpleModelPeerExpiry() {},
+    reconcileSimpleModelSelection() {}, clearPendingCompanionAcquisition() {},
+    discardRejectedStoredActivation() { events.push("discard"); state.localModel = null; state.modelLoaded = false; },
+    simpleModelRouteViews: () => [], simpleModelRouteKinds: {}, restorePendingCompanionAcquisition: () => null,
+    verifiedInstalledSimpleModelEntry: () => null, companionIsPaired: () => false,
+    friendlyError: value => value, errorMessage: error => error.message,
+    maybePresentInitialModelChooser() {}, renderAcceptedHfResults() {}, scheduleSimpleModelPickerFocus() {},
+    scheduleSimpleCompanionPairingFocus() {} };
+  const names = ["catalogQualificationError", "acquisitionAbortError", "acceptedCatalogIsCurrent",
+    "acceptedPeerFeedIsCurrent", "removeExpiredPeerRoutes", "retainAcceptedCatalogAfterRefreshFailure",
+    "clearExpiredCatalogAuthority", "catalogAuthorityStorage", "restoreDurableCatalogAuthority", "loadSimpleModelCatalog"];
+  const functions = Function(...Object.keys(bindings),
+    `${names.map(functionText).join("\n")}\nreturn { ${names.join(",")} };`)(...Object.values(bindings));
+  return { state, events, ...functions };
+}
+
+test("catalog refresh uses the newer durable floor before network and persists before RAM acceptance", async () => {
+  const durable = authorityRecord(2, 30000);
+  const h = authorityRefreshHarness({ previous: authorityRecord(1), durable,
+    inspectPrevious: value => assert.equal(value.catalog.revision, 2) });
+  assert.equal(await h.loadSimpleModelCatalog(), true);
+  assert.equal(h.state.modelCatalogV1Authority.catalog.revision, 3);
+  assert.deepEqual(h.events.filter(value => ["read", "fetch", "write"].includes(value)), ["read", "fetch", "write"]);
+});
+
+test("an expired newer durable catalog remains the rollback floor over an unexpired installation", async () => {
+  const h = authorityRefreshHarness({ previous: authorityRecord(1),
+    durable: authorityRecord(2, 30000, 10000), fetchError: new Error("offline"),
+    inspectPrevious: value => assert.equal(value.catalog.revision, 2) });
+  assert.equal(await h.loadSimpleModelCatalog(), false);
+  assert.equal(h.state.modelCatalogV1Authority.catalog.revision, 2);
+  assert.equal(h.acceptedCatalogIsCurrent(), false);
+  assert.deepEqual(h.state.modelCatalogV1Entries, []);
+});
+
+test("durable authority equivocation and storage failures cannot keep the old loaded model active", async () => {
+  const previous = authorityRecord(2, 30000);
+  const equivocation = authorityRecord(2, 20000);
+  for (const failure of [{ durable: equivocation }, { readError: new Error("OPFS denied") },
+    { writeError: new Error("storage full") }]) {
+    const h = authorityRefreshHarness({ previous, localModel: {}, ...failure });
+    assert.equal(await h.loadSimpleModelCatalog(), false);
+    assert.equal(h.state.modelLoaded, false);
+    assert.deepEqual(h.state.modelCatalogV1Entries, []);
+    assert.ok(h.events.includes("discard"));
+  }
+});
+
+test("boot cannot activate older saved authority after durable storage fails or auto-download without OPFS", async () => {
+  for (const cached of [true, false]) {
+    const h = authorityRefreshHarness({ previous: cached ? authorityRecord(1) : null,
+      ...(cached ? { writeError: new Error("authority storage unavailable") }
+        : { readError: new Error("OPFS unavailable") }) });
+    let activations = 0;
+    let downloads = 0;
+    const saved = cached ? { admissionAuthority: { admissionText: "verified fixture admission",
+      qualificationReceiptText: "verified fixture receipt", catalogText: h.state.modelCatalogV1Text,
+      catalogDocument: h.state.modelCatalogV1Document, catalogAuthority: h.state.modelCatalogV1Authority.catalog } } : null;
+    const admissionBindings = { state: h.state,
+      browserModelAdmissionApi: { parseAdmissionText: () => ({ composition: { graphIdentitySha256: "a".repeat(64) } }) },
+      assertAdmissionRuntime() {}, catalogText: value => typeof value === "string" ? value.trim() : "" };
+    const admit = Function(...Object.keys(admissionBindings), [functionText("catalogQualificationError"),
+      functionText("currentCatalogEntryForAdmission"), functionText("requireCurrentStoredComposition"),
+      "return requireCurrentStoredComposition;"].join("\n"))(...Object.values(admissionBindings));
+    const bindings = { state: h.state, el: { appShell: { dataset: { mode: "simple" } } }, paths: { models: {} },
+      localModelKey: "local", setInteractive() {}, setText() {}, renderModelOptions() {}, setControls() {}, renderDiagnostics() {},
+      setSimpleModelPickerStatus() {}, friendlyError: value => value, errorMessage: error => error.message,
+      openStartupComposition: async () => { if (!cached) throw new Error("OPFS unavailable"); return saved; },
+      restoreStoredCatalogAuthority() {},
+      loadSimpleModelCatalog: h.loadSimpleModelCatalog,
+      async activateStoredComposition() {
+        activations += 1;
+        assert.equal(h.state.modelCatalogV1Entries.length, 0);
+        assert.throws(() => admit(saved), error => error.code === "model-catalog-delisted");
+        admit(saved);
+      },
+      discardRejectedStoredActivation() {}, appendConsole() {}, scheduleCompositionCleanup() {},
+      simpleModelRouteViews: () => h.state.modelCatalogV1Entries,
+      chooseBootstrapModelRoute: routes => routes[0] || null,
+      simpleModelAcquisitionIsActive: () => false, selectSimpleModelEntry() {}, toggleModelPopover() {},
+      async requestSimpleModelAcquisition() { downloads += 1; }, maybePresentInitialModelChooser() {} };
+    const boot = Function(...Object.keys(bindings), `${functionText("boot")}\nreturn boot;`)(...Object.values(bindings));
+    await boot();
+    assert.equal(activations, cached ? 1 : 0);
+    assert.equal(downloads, 0);
+    assert.equal(h.state.modelLoaded, false);
+  }
+});
+
+// Bind only orchestration: the saved bytes must pass the unchanged admission function before activation.
+function savedRefreshHarness(options = {}) {
+  const state = options.state || { generation: { inFlight: false }, modelLoaded: Boolean(options.loaded) };
+  const saved = { identity: "existing-installed-composition" };
+  const events = [];
+  const bindings = { state, AbortController,
+    simpleModelAcquisitionIsActive: () => Boolean(options.busy || state.activeAcquisitionAbort || state.modelAcquisitionCommand),
+    async loadSimpleModelCatalog() { events.push("refresh"); return options.refreshWork
+      ? options.refreshWork() : options.current !== false; },
+    async openStartupComposition(signal) {
+      events.push("open-existing");
+      if (options.waitForAbort) return new Promise((_resolve, reject) => signal.addEventListener("abort",
+        () => reject(Object.assign(new Error("cancelled"), { name: "AbortError" })), { once: true }));
+      return options.empty ? null : saved;
+    },
+    throwIfAcquisitionAborted(signal) { if (signal.aborted) throw new Error("cancelled"); },
+    requireCurrentStoredComposition(value) {
+      assert.strictEqual(value, saved); events.push("admit");
+      if (options.revoked) throw new Error("revoked");
+    },
+    async activateStoredComposition(value, text, signal) {
+      assert.strictEqual(value, saved); assert.equal(signal.aborted, false);
+      assert.match(text, /saved model/); events.push("activate"); state.modelLoaded = true;
+    },
+    renderSimpleModelPicker() {}, setSimpleModelPickerStatus: text => events.push(text), errorMessage: error => error.message };
+  const functions = Function(...Object.keys(bindings), [functionText("refreshModelsAndRestoreSavedComposition"),
+    functionText("requestSimpleModelAcquisitionCancellation"),
+    "return { refresh: refreshModelsAndRestoreSavedComposition, cancel: requestSimpleModelAcquisitionCancellation };"
+  ].join("\n"))(...Object.values(bindings));
+  return { state, events, ...functions };
+}
+
+test("explicit Refresh reopens the same saved model after metadata renewal without downloading", async () => {
+  const authority = authorityRefreshHarness({ previous: authorityRecord(1, 48 * 3600000) });
+  const h = savedRefreshHarness({ state: authority.state, refreshWork: authority.loadSimpleModelCatalog });
+  assert.equal(await h.refresh(), true);
+  assert.deepEqual(h.events, ["refresh", "open-existing", "admit", "activate"]);
+  assert.equal(h.state.initialModelRestored, true);
+  assert.equal(h.state.modelAcquisitionCommand, null);
+  assert.equal(h.state.activeAcquisitionAbort, null);
+  assert.equal(h.state.modelCatalogV1Authority.catalog.revision, 3);
+});
+
+test("explicit Refresh never activates a revoked, missing, busy or unauthorised saved model", async () => {
+  for (const options of [{ revoked: true }, { empty: true }, { busy: true }, { current: false }]) {
+    const h = savedRefreshHarness(options);
+    assert.equal(await h.refresh(), false);
+    assert.equal(h.events.includes("activate"), false);
+  }
+  const loaded = savedRefreshHarness({ loaded: true });
+  assert.equal(await loaded.refresh(), true);
+  assert.deepEqual(loaded.events, ["refresh"]);
+});
+
+test("Cancel during explicit saved-model reopening releases ownership without companion or download work", async () => {
+  const h = savedRefreshHarness({ waitForAbort: true });
+  const result = h.refresh();
+  await Promise.resolve();
+  assert.equal(h.events.includes("open-existing"), true);
+  assert.equal(await h.cancel(), false);
+  assert.equal(await result, false);
+  assert.equal(h.events.includes("activate"), false);
+  assert.ok(h.events.includes("Saved model loading cancelled."));
+  assert.equal(h.state.modelAcquisitionCommand, null);
+  assert.equal(h.state.activeAcquisitionAbort, null);
+});

@@ -8,8 +8,8 @@ const { startSourceServer } = require("../tools/static-server.js");
 const { declaredCatalogMetadata } = require("../tools/web-release-browser-smoke.js");
 const scratch = require("../tools/canonical-operation-scratch.js");
 
-/** A fresh browser process must reopen the real shell/runtime offline without caching live authorities. */
-test("installed public app and verified WASM reopen offline while catalogs remain live-only", { timeout: 90000 }, async () => {
+/** Static caches exclude catalogs; exact accepted authority persists separately in OPFS across restart. */
+test("public app and verified WASM reopen offline with durable catalog authority outside the static cache", { timeout: 90000 }, async () => {
   const owned = scratch.createOwnedTemporaryDirectory({
     temporaryParent: path.resolve(__dirname, "../../artifacts/tests/offline-browser")
   });
@@ -97,6 +97,31 @@ test("installed public app and verified WASM reopen offline while catalogs remai
         worker: await initial.evaluate(() => window.workerAudit) })}`);
     });
     assert.equal(onlineProbe.workerState, "empty");
+    // The app must durably accept live metadata before an offline return can reuse it.
+    await initial.waitForFunction(async () => {
+      const adapter = window.TinyRustLMModelCompositionStore.createOpfsAdapter({
+        createSha256: window.TinyRustLMIncrementalSha256.createSha256 });
+      return Boolean(await window.TinyRustLMModelCompositionStore.createModelCompositionStore({ adapter })
+        .readCatalogAuthority());
+    });
+    const renewed = await initial.evaluate(async () => {
+      const adapter = window.TinyRustLMModelCompositionStore.createOpfsAdapter({
+        createSha256: window.TinyRustLMIncrementalSha256.createSha256 });
+      const store = window.TinyRustLMModelCompositionStore.createModelCompositionStore({ adapter });
+      const prior = await store.readCatalogAuthority();
+      const document = JSON.parse(prior.catalogText);
+      document.revision += 1;
+      document.generated_at_utc = new Date(Date.parse(document.generated_at_utc) + 1000)
+        .toISOString().replace(".000Z", "Z");
+      document.revoked_qualification_receipt_ids = [`sha256:${"c".repeat(64)}`];
+      const catalogText = `${JSON.stringify(document)}\n`;
+      const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(catalogText));
+      const sha256 = `sha256:${Array.from(new Uint8Array(digest), value => value.toString(16).padStart(2, "0")).join("")}`;
+      await store.acceptCatalogAuthority({ catalogText, catalogAuthority: {
+        id: document.catalog_id, revision: document.revision, generatedAtUtc: document.generated_at_utc,
+        validUntilUtc: document.valid_until_utc, sha256 } });
+      return { revision: document.revision, sha256 };
+    });
     await browser.close();
     closed = true;
 
@@ -141,9 +166,16 @@ test("installed public app and verified WASM reopen offline while catalogs remai
       let metadataUnavailable = false;
       try { await fetch("https://minimodel.org/catalog/compositions.v1.json"); }
       catch (_) { metadataUnavailable = true; }
+      const adapter = window.TinyRustLMModelCompositionStore.createOpfsAdapter({
+        createSha256: window.TinyRustLMIncrementalSha256.createSha256 });
+      const authority = await window.TinyRustLMModelCompositionStore.createModelCompositionStore({ adapter })
+        .readCatalogAuthority();
       return { wasmValid, workerState,
         bytes, expectedBytes: loaded.manifest.byteCount,
         staleRejected, metadataUnavailable,
+        durableAuthority: authority && { revision: authority.catalogAuthority.revision,
+          sha256: authority.catalogAuthority.sha256,
+          revocations: authority.catalogDocument.revoked_qualification_receipt_ids },
         controlled: navigator.serviceWorker.controller !== null,
         cacheNames: (await caches.keys()).filter(name => name.startsWith("tinyrustlm-static-v1-")) };
     }
@@ -157,6 +189,9 @@ test("installed public app and verified WASM reopen offline while catalogs remai
     assert.equal(actual.staleRejected, true);
     assert.equal(actual.metadataUnavailable, true);
     assert.equal(actual.controlled, true);
+    assert.equal(actual.durableAuthority.revision, renewed.revision);
+    assert.equal(actual.durableAuthority.sha256, renewed.sha256);
+    assert.deepEqual(actual.durableAuthority.revocations, [`sha256:${"c".repeat(64)}`]);
     assert.deepEqual(actual.cacheNames, before.cacheNames);
     assert.deepEqual(pageErrors, []);
     // The alternate application shell uses the same fixed public closure.
