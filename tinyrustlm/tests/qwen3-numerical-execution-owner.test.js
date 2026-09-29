@@ -718,7 +718,7 @@ test("requires the exact corrected source-framework closure", () => {
 
 test("current contracts reject every closed schema and superseded lock path", async (t) => {
   const root = temporaryRoot(t);
-  for (const version of [1, 2]) {
+  for (const version of [1, 2, 3]) {
     const contract = ownerContract();
     contract.schema = `tinyrustlm.qwen3_numerical_execution_owner_contract.v${version}`;
     assert.throws(() => owner.validateOwnerContract(contract), /owner-contract/u);
