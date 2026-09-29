@@ -12,11 +12,11 @@ const CANONICAL_REPOSITORY_ROOT = path.resolve(__dirname, "../..");
 const MODEL_ROOT = "D:\\LLMs\\TinyRustLM";
 const ISOLATED_PYTHON_ARGUMENTS = Object.freeze(["-I", "-B", "-X", "utf8"]);
 
-const REQUEST_SCHEMA = "tinyrustlm.qwen3_numerical_execution_request.v7";
+const REQUEST_SCHEMA = "tinyrustlm.qwen3_numerical_execution_request.v8";
 const REGISTRATION_SCHEMA =
-  "tinyrustlm.qwen3_numerical_differential_execution_preregistration.v7";
+  "tinyrustlm.qwen3_numerical_differential_execution_preregistration.v8";
 const OWNER_CONTRACT_SCHEMA =
-  "tinyrustlm.qwen3_numerical_execution_owner_contract.v7";
+  "tinyrustlm.qwen3_numerical_execution_owner_contract.v8";
 const SOURCE_REQUEST_SCHEMA = "tinyrustlm.qwen3_numerical_source_request.v2";
 const RECONSTRUCTED_REQUEST_SCHEMA = "tinyrustlm.qwen3_slm2_reconstructed_request.v1";
 const SCALAR_REQUEST_SCHEMA = "tinyrustlm.scalar-numerical-probe-request.v1";
@@ -29,7 +29,7 @@ const OWNER_TERMINAL_SCHEMA =
 const VERIFIER_RECEIPT_SCHEMA =
   "tinyrustlm.qwen3_numerical_trace_verification_receipt.v1";
 const REGISTRATION_RELATIVE_PATH =
-  "contracts/vnext/qwen3-numerical-differential-execution-preregistration.v7.json";
+  "contracts/vnext/qwen3-numerical-differential-execution-preregistration.v8.json";
 const MAXIMUM_REQUEST_BYTES = 1024 * 1024;
 const MAXIMUM_REGISTRATION_BYTES = 4 * 1024 * 1024;
 const MAXIMUM_SOURCE_CONTROLLED_FILE_BYTES = 64 * 1024 * 1024;
@@ -47,7 +47,7 @@ const FILE_NAME_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._-]{0,159}$/u;
 const CANONICAL_UTC_SECONDS_PATTERN =
   /^\d{4}-(0[1-9]|1[0-2])-([0-2]\d|3[01])T([01]\d|2[0-3]):[0-5]\d:[0-5]\dZ$/u;
 const OPERATION_ID_PATTERN =
-  /^qwen3-numerical-c1899de-[a-f0-9]{7}-[0-9]{8}-v7$/u;
+  /^qwen3-numerical-c1899de-[a-f0-9]{7}-[0-9]{8}-v8$/u;
 const STAGES = Object.freeze(["source", "reconstructed", "scalar", "verifier"]);
 const REGISTERED_TRACE_PROFILE_ID = "tinyrustlm.scalar-full-stage-f32le/1";
 const MODEL_BYTE_LENGTH = 598308416;
@@ -976,7 +976,7 @@ function validateRegistration(value) {
     "outputBoundary", "claimBoundary", "campaignCounters"],
   "numerical-execution-registration-shape");
   invariant(value.schema === REGISTRATION_SCHEMA
-    && value.profileId === "tinyrustlm.qwen3-numerical-differential-execution/7"
+    && value.profileId === "tinyrustlm.qwen3-numerical-differential-execution/8"
     && value.status === "registered-before-private-request-roots-and-real-traces"
     && validCanonicalUtcSeconds(value.registeredAtUtc)
     && COMMIT_PATTERN.test(value.registrationParentCommit)
@@ -1010,7 +1010,7 @@ function validateRegistration(value) {
   const contract = validateOwnerContract(value.ownerContract);
   const operationDate = value.registeredAtUtc.slice(0, 10).replaceAll("-", "");
   invariant(contract.operationId ===
-    `qwen3-numerical-c1899de-${value.registrationParentCommit.slice(0, 7)}-${operationDate}-v7`,
+    `qwen3-numerical-c1899de-${value.registrationParentCommit.slice(0, 7)}-${operationDate}-v8`,
   "numerical-execution-registration-operation-binding");
   validateReportLineage(value.reportLineage);
   validateImplementationCheckpoint(value.implementationCheckpoint, value, contract);

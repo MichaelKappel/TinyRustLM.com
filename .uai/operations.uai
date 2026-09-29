@@ -1,5 +1,5 @@
 profile: tinyrustlm.operations.current.v1
-updated_utc: 2026-09-27T23:07:00Z
+updated_utc: 2026-09-29T22:41:24Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
@@ -13,6 +13,14 @@ owner_delivery_policy:
   packages: Publish NuGet directly to nuget.org over its HTTPS API after local package gates. The key location below remains authoritative; FTP is for websites, not the NuGet registry.
   source: Review and check in pending code coherently, preserve useful work, and distinguish source checkpoints from release passes. Do not commit secrets, model payloads, transient output or unreviewed obsolete executables merely to make status clean.
   regular_push_requirement: September27 owner reiterates that work must not remain only on this computer. Commit and push each coherent source/script/documentation change and reviewed non-sensitive durable result before handoff; verify direct remote equality. A clean Git status is not proof that ignored work is recoverable. Review ignored outputs explicitly; never conceal unique source or durable results behind broad artifact ignore rules. Credentials, private payloads, model binaries and disposable dependency/build output are not automatically authorized for Git publication.
+
+working_default_delivery_current:
+  authority: September29 owner explicitly authorizes necessary TinyRustLM.com and MiniModel.org FTPS publication and verified initial seed; preserve browser-local SLM2, Advanced tools, canonical source and D model storage.
+  actual_production: Still published0.5.0 shell with empty catalog; no qualified default or useful public model chat.
+  source_quality: 48 exclusions including official Qwen2.5-Coder-0.5B3of6. Pluto exact metadata prepared; two acquisitions HTTP429 before weights. Failures remain preserved without a model-quality claim.
+  runtime: Read cleanup C130. Real numerical v7 revealed unstable native SiLU; stable finite-input implementation35Rust tests and rebuiltWASM57 checks pass, with unchanged frozen ABI vector compatibility. Real numerical v8 not yet registered or executed.
+  source_control: Coherent code/evidence checkpoints are regularly pushed and direct remote equality checked; push is not deployment.
+  remaining: One passing source, correct conversion, actual numerical/native/browser evidence, real seed/catalog/maintained renewal, authorized publication and unmocked public desktop/mobile/cache/offline/recovery acceptance.
 
 publication_current:
   result: C114 TinyRustLM0.5.0 published from78665b15ceda70bf933c11e92241ec1555ebe6c5. Attempt20260927T2151371153188Z-31896acdc817 passed32 exact file checks,7 retirements, host policy and final marker publication; temporary remote cleanup and same-host lease cleanup verified.

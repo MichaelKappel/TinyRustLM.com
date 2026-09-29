@@ -1,0 +1,35 @@
+✔ canonical JSON is recursively sorted, UTF-8, and LF terminated (0.9456ms)
+✔ accepts the one clean owner contract and registration shape (4.5861ms)
+✔ rejects authority, claim, output, and campaign-counter drift (3.7339ms)
+✔ rejects candidate identity and cross-member binding drift (3.4474ms)
+✔ rejects report-lineage and implementation-checkpoint drift (3.7705ms)
+✔ rejects noncanonical time and any registration path closure drift (0.5952ms)
+✔ rejects nested request, case, process, and evidence-layout drift (2.2387ms)
+✔ rejects operation, trace, implementation-role, and executable drift (0.8923ms)
+✔ rejects closed owner, registration, request, and source-template semantics (0.5378ms)
+✔ requires the exact corrected source-framework closure (1.0107ms)
+✔ current contracts reject every closed schema and superseded lock path (35.1565ms)
+✔ registration binds operation date and source parent and preserves the product rejection (3.2565ms)
+✔ rejects token digest drift, retries, duplicate private names, and unknown fields (0.8827ms)
+✔ rejects missing implementation roles and permissive terminal policy (0.4088ms)
+✔ derives all child requests from one registration without prompt or answer fields (0.576ms)
+✔ captured process records a clean pass and does not overwrite streams (67.3186ms)
+✔ stderr, overflow, and timeout cannot be classified as process pass (603.4551ms)
+✔ operation locations require canonical source, artifacts, and disjoint D model roots (6.4664ms)
+✔ child environment keeps only OS support and canonical scratch with fixed runtime settings (6.3846ms)
+✔ invalid child locations reject before creating either capture or launching (7.361ms)
+✔ execute rejects a misplaced request before inspecting registration or creating outputs (5.8247ms)
+✔ real Node and isolated pinned Python children exclude injected parent settings (131.3194ms)
+✔ process terminal binds one launch and immutable failure rules (0.3137ms)
+✔ Python numerical metadata serializers agree with JavaScript on the registered epsilon (1317.5728ms)
+✔ JavaScript reconstructed request satisfies the real Python pre-load contract (874.0332ms)
+✔ scalar producer preserves the native contract order and rejects unknown fields (1.3973ms)
+✔ actual native probe accepts the JS scalar producer and rejects sorted request bytes (97.0303ms)
+ℹ tests 27
+ℹ suites 0
+ℹ pass 27
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3248.3163

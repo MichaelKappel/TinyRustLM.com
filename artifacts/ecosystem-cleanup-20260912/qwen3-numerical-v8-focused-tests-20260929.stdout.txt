@@ -1,0 +1,44 @@
+✔ canonical JSON is recursively sorted, UTF-8, and LF terminated (1.0893ms)
+✔ accepts the one clean owner contract and registration shape (5.4486ms)
+✔ rejects authority, claim, output, and campaign-counter drift (3.823ms)
+✔ rejects candidate identity and cross-member binding drift (3.1073ms)
+✔ rejects report-lineage and implementation-checkpoint drift (3.6405ms)
+✔ rejects noncanonical time and any registration path closure drift (0.5007ms)
+✔ rejects nested request, case, process, and evidence-layout drift (1.6431ms)
+✔ rejects operation, trace, implementation-role, and executable drift (0.7756ms)
+✔ rejects closed owner, registration, request, and source-template semantics (0.569ms)
+✔ requires the exact corrected source-framework closure (0.9232ms)
+✔ current contracts reject every closed schema and superseded lock path (28.3346ms)
+✔ registration binds operation date and source parent and preserves the product rejection (3.8978ms)
+✔ rejects token digest drift, retries, duplicate private names, and unknown fields (0.9162ms)
+✔ rejects missing implementation roles and permissive terminal policy (0.562ms)
+✔ derives all child requests from one registration without prompt or answer fields (0.7802ms)
+✔ captured process records a clean pass and does not overwrite streams (78.9061ms)
+✔ stderr, overflow, and timeout cannot be classified as process pass (703.8388ms)
+✔ operation locations require canonical source, artifacts, and disjoint D model roots (6.8942ms)
+✔ child environment keeps only OS support and canonical scratch with fixed runtime settings (6.1209ms)
+✔ invalid child locations reject before creating either capture or launching (6.4643ms)
+✔ execute rejects a misplaced request before inspecting registration or creating outputs (6.0358ms)
+✔ real Node and isolated pinned Python children exclude injected parent settings (127.5669ms)
+✔ process terminal binds one launch and immutable failure rules (0.279ms)
+✔ Python numerical metadata serializers agree with JavaScript on the registered epsilon (1515.5429ms)
+✔ JavaScript reconstructed request satisfies the real Python pre-load contract (996.3296ms)
+✔ scalar producer preserves the native contract order and rejects unknown fields (1.3813ms)
+✔ actual native probe accepts the JS scalar producer and rejects sorted request bytes (103.5947ms)
+✔ verifies one source-stage terminal failure without writing evidence (98.3623ms)
+✔ requires the exact two-field process executable identity shape (78.0755ms)
+✔ rejects wrong or changed process executable identities (120.5548ms)
+✔ accepts the exact scalar request without inventing registrationSha256 (58.853ms)
+✔ rejects owner launch inflation and output-root creation (98.968ms)
+✔ rejects stream drift and an unexpected evidence member (65.736ms)
+✔ rejects request, process, and terminal identity drift (74.3706ms)
+✔ CLI emits one canonical path-free verification summary (119.9516ms)
+✔ verifier source has no evidence writer, subprocess, network, or owner import (0.6065ms)
+ℹ tests 36
+ℹ suites 0
+ℹ pass 36
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3684.319

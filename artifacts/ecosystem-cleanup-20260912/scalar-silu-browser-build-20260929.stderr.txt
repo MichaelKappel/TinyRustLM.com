@@ -1,0 +1,31 @@
+   Compiling version_check v0.9.5
+   Compiling typenum v1.20.1
+   Compiling cfg-if v1.0.4
+   Compiling unicode-general-category v1.1.0
+   Compiling proc-macro2 v1.0.106
+   Compiling quote v1.0.46
+   Compiling unicode-ident v1.0.24
+   Compiling smallvec v1.15.2
+   Compiling serde_core v1.0.228
+   Compiling zmij v1.0.21
+   Compiling serde_json v1.0.150
+   Compiling serde v1.0.228
+   Compiling tinyrustlm-browser-runtime-wasm v0.1.8 (E:\Source\Rust\TinyRustLM.com\rust\crates\tinyrustlm-browser-runtime-wasm)
+   Compiling memchr v2.8.2
+   Compiling itoa v1.0.18
+   Compiling unicode-normalization-alignments v0.1.12
+   Compiling generic-array v0.14.7
+   Compiling block-buffer v0.10.4
+   Compiling crypto-common v0.1.7
+   Compiling syn v2.0.118
+   Compiling digest v0.10.7
+   Compiling sha2 v0.10.9
+   Compiling tinyrustlm-tokenizer2 v0.1.8 (E:\Source\Rust\TinyRustLM.com\rust\crates\tinyrustlm-tokenizer2)
+   Compiling tinyrustlm-template2 v0.1.8 (E:\Source\Rust\TinyRustLM.com\rust\crates\tinyrustlm-template2)
+   Compiling tinyrustlm-sampling2 v0.1.8 (E:\Source\Rust\TinyRustLM.com\rust\crates\tinyrustlm-sampling2)
+   Compiling tinyrustlm-slm2 v0.1.8 (E:\Source\Rust\TinyRustLM.com\rust\crates\tinyrustlm-slm2)
+   Compiling tinyrustlm-prompt2 v0.1.8 (E:\Source\Rust\TinyRustLM.com\rust\crates\tinyrustlm-prompt2)
+   Compiling serde_derive v1.0.228
+   Compiling tinyrustlm-composition2 v0.1.8 (E:\Source\Rust\TinyRustLM.com\rust\crates\tinyrustlm-composition2)
+   Compiling tinyrustlm-runtime v0.1.8 (E:\Source\Rust\TinyRustLM.com\rust\crates\tinyrustlm-runtime)
+    Finished `release` profile [optimized] target(s) in 8.27s

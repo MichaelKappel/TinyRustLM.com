@@ -1,0 +1,10 @@
+{
+  "schema": "tinyrustlm.numerical_v8_test_environment_review.v1",
+  "status": "environment-only-failure-before-corrected-test-run",
+  "toolChunk": "699927",
+  "passed": 25,
+  "failed": 2,
+  "skipped": 0,
+  "reason": "Invocation set TINYRUSTLM_NUMERICAL_TEST_PYTHON instead of the test-required TINYRUSTLM_QWEN3_NUMERICAL_ORACLE_PYTHON. Both failing assertions require the interpreter before any Python/model execution. No implementation changed to satisfy them.",
+  "limitation": "Initial full test output was printed to the tool result, not separately captured to a raw file."
+}

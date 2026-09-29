@@ -5,6 +5,37 @@ TinyRustLM.com and MiniModel.org. This file retains historical cleanup evidence,
 but optional campaigns, packages, memory and unrelated cleanup are separate.
 Source-only changes and an empty production catalog do not complete delivery.
 
+## C130: finite SiLU correction, preserved failures and delivery preparation
+
+Production still has no qualified default. Official Qwen2.5-Coder-0.5B passed
+three of six unchanged source cases and remains rejected; there are48 exclusions.
+Pluto-Genesis-0.6B metadata is pinned, but two acquisitions stopped on HTTP429
+before weights/preflight/generation. Failed attempts remain preserved separately.
+
+Numerical v6 failed scalar request field ordering; the producer was corrected and
+real native framing regressions passed. v7 reached real native inference and
+failed on finite negative SiLU gates. Read-only reconstruction of the retained
+partial trace found seven finite gates for which exp(-x) overflows. Stable
+exp(-abs(x)) with an explicit sign split fixes the mathematical evaluation while
+retaining nonfinite rejection and other overflow/transactional rollback guards.
+
+The new baseline reproduced two failures before the fix. Final35 Rust tests,
+four unchanged historical vector tests, and clippy pass. The shipped WASM is
+rebuilt;57 browser/runtime checks pass, including two reproducible builds and
+actual Edge ordinary-vector replay. The frozen historical Q8 oracle/vector stays
+byte-exact because Prompt2/ACG bind it; it is a compatibility baseline, not an
+authority for rejecting finite negative SiLU. Independent F64 boundary tests
+and the current stable reconstructed oracle cover the correction. No threshold,
+container, template, Prompt2 or model bytes changed. Fresh v8 registration and
+real-model differential execution remain required;40 owner/profile tests pass.
+
+Console sample context and immediate terminal handling are pushed with39 focused
+tests. Real native/browser conversation capture tooling is in development and
+has not run a model. MiniModel has tested narrow FTPS listing/empty-directory
+corrections and bounded streaming primitives, but no seed/sentinel upload or
+metadata renewal claim. Read the exact failure, correction, build and prospective
+release-case artifacts under artifacts/ecosystem-cleanup-20260912.
+
 ## C129: actual candidate rejection and stable independent activation
 
 The exact reaper untied source screen executed once from pushed8d20df4 after

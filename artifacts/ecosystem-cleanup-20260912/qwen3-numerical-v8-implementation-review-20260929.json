@@ -1,0 +1,121 @@
+{
+  "schema": "tinyrustlm.numerical_v8_implementation_review.v1",
+  "status": "implementation-tested-fresh-registration-and-real-execution-required",
+  "owner": {
+    "path": "tinyrustlm/tools/qwen3-numerical-execution-owner.js",
+    "byteLength": 84166,
+    "sha256": "ed91dc315ac40973b11964ef2b98ed5b56df689c218e3b6149a7ff7f898a0025"
+  },
+  "profile": {
+    "path": "contracts/vnext/qwen3-numerical-differential-profile.v2.json",
+    "byteLength": 18093,
+    "sha256": "f09269a2d65f3db8d115b3650d0da49a1f236e89530d9a10623b43f41b431e2c"
+  },
+  "change": "Advance sole execution request/registration/operation contract to v8 after immutable v7 failure; require fresh executable identity for repaired scalar. Historical registrations/failures unchanged. Differential thresholds, source/reconstruction code and scalar wire framing unchanged.",
+  "closedSchemaTest": "Versions1 through7 explicitly reject; no historical operation replay or output adoption.",
+  "tests": {
+    "ownerAndProfile": {
+      "passed": 40,
+      "failed": 0,
+      "skipped": 0
+    },
+    "sourceTerminalVerifierAndOwnerEarlier": {
+      "passed": 36,
+      "failed": 0
+    },
+    "initialWrongEnvironment": {
+      "passed": 25,
+      "failed": 2,
+      "reason": "Wrong interpreter environment variable; corrected without source changes."
+    },
+    "staleProfileExpectation": {
+      "passed": 39,
+      "failed": 1,
+      "reason": "Test still expected owner/7; corrected exact current expectation to owner/8."
+    },
+    "intermediateOwnerOnly": {
+      "passed": 27,
+      "failed": 0,
+      "limitation": "A second test argument named a nonexistent trace-verifier test; Node discovered only27 owner tests. Final run explicitly checked both actual owner/profile file paths."
+    }
+  },
+  "rawLogs": [
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/qwen3-numerical-v8-final-tests-20260929.stderr.txt",
+      "byteLength": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/qwen3-numerical-v8-final-tests-20260929.stdout.txt",
+      "byteLength": 2487,
+      "sha256": "58ba0a14018d2acbd1a775ff87d6fd7143c836354a376c8ecbfe83aa95d53be0"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/qwen3-numerical-v8-focused-tests-20260929.stderr.txt",
+      "byteLength": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/qwen3-numerical-v8-focused-tests-20260929.stdout.txt",
+      "byteLength": 3180,
+      "sha256": "6f132a82b25f1b03aa2ff66ed9859d1c41ba8e12c369ebb6a094dfabab2f83d6"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/qwen3-numerical-v8-owner-profile-final-20260929.stderr.txt",
+      "byteLength": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/qwen3-numerical-v8-owner-profile-final-20260929.stdout.txt",
+      "byteLength": 3640,
+      "sha256": "ed17ed2615cdaa13044b3f9d921066d367813589e34b73d1dfffacbe3943cba9"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/qwen3-numerical-v8-owner-profile-tests-20260929.stderr.txt",
+      "byteLength": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/qwen3-numerical-v8-owner-profile-tests-20260929.stdout.txt",
+      "byteLength": 4794,
+      "sha256": "288b5a6d8ca9bfddf134f1b5e425115f358ddb609578b9a3a35a709e91a530db"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/scalar-silu-browser-build-20260929.stderr.txt",
+      "byteLength": 1628,
+      "sha256": "cd120a9bf981f170b91fdbf4bd10dada2ec5eee1e22c006367b4b05d37628388"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/scalar-silu-browser-build-20260929.stdout.txt",
+      "byteLength": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/scalar-silu-browser-tests-20260929.stderr.txt",
+      "byteLength": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/scalar-silu-browser-tests-20260929.stdout.txt",
+      "byteLength": 4104,
+      "sha256": "f29630c3b1dcceadad6c154723289a3cebbe648cfe0975f2ff00b76fe59bf529"
+    }
+  ],
+  "browserArtifact": {
+    "wasm": {
+      "path": "tinyrustlm/browser-runtime/tinyrustlm-browser-runtime.wasm",
+      "byteLength": 576956,
+      "sha256": "2667c989452b4456ed4f8ff6cca979fcd0f1d838c769d9275dcc3d31e6ae22ea"
+    },
+    "manifest": {
+      "path": "tinyrustlm/browser-runtime/tinyrustlm-browser-runtime.wasm.manifest.json",
+      "byteLength": 1209,
+      "sha256": "7c58fc789c5a739ab5e139ab85743d13f4237668cab50fb95461b19ed045584e"
+    },
+    "passed": 57,
+    "failed": 0,
+    "reproducibleFreshBuilds": 2,
+    "realModelParity": false
+  },
+  "deployed": false
+}

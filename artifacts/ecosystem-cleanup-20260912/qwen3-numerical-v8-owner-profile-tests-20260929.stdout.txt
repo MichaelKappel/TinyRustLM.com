@@ -1,0 +1,73 @@
+✔ freezes report-derived clean-slate numerical authority boundaries (1.3603ms)
+✔ binds current reference components and durable report-memory links by content (4.6336ms)
+✖ preserves closed implementation history without adopting its execution authority (264.0515ms)
+✔ both private owners expose bounded dependency-free self-tests (429.6338ms)
+✔ pinned Python executes synthetic Qwen3 hooks and reconstructed kernels (10988.662ms)
+✔ failed fixture setup removes its exact owned canonical output (58.4927ms)
+✔ read-only verifier passes identical complete traces without touching evidence (251.5315ms)
+✔ localizes the first source-to-reconstructed divergence by layer head element and chunk (58.022ms)
+✔ localizes reconstructed-to-scalar only after the first arrow passes (138.7251ms)
+✔ rejects a syntactically valid cross-arm environment drift (51.6496ms)
+✔ rejects superseded profile and environment paths without compatibility (106.8873ms)
+✔ rejects trace drift and an unknown request member instead of repairing either (151.1588ms)
+✔ verifier source contains no evidence-writing or permissive selection path (0.5757ms)
+✔ canonical JSON is recursively sorted, UTF-8, and LF terminated (1.2051ms)
+✔ accepts the one clean owner contract and registration shape (5.0882ms)
+✔ rejects authority, claim, output, and campaign-counter drift (3.7251ms)
+✔ rejects candidate identity and cross-member binding drift (3.1153ms)
+✔ rejects report-lineage and implementation-checkpoint drift (2.6881ms)
+✔ rejects noncanonical time and any registration path closure drift (0.3708ms)
+✔ rejects nested request, case, process, and evidence-layout drift (1.5859ms)
+✔ rejects operation, trace, implementation-role, and executable drift (0.7901ms)
+✔ rejects closed owner, registration, request, and source-template semantics (0.5612ms)
+✔ requires the exact corrected source-framework closure (0.7762ms)
+✔ current contracts reject every closed schema and superseded lock path (31.8124ms)
+✔ registration binds operation date and source parent and preserves the product rejection (4.4043ms)
+✔ rejects token digest drift, retries, duplicate private names, and unknown fields (1.0008ms)
+✔ rejects missing implementation roles and permissive terminal policy (0.5642ms)
+✔ derives all child requests from one registration without prompt or answer fields (0.7767ms)
+✔ captured process records a clean pass and does not overwrite streams (70.3939ms)
+✔ stderr, overflow, and timeout cannot be classified as process pass (644.3017ms)
+✔ operation locations require canonical source, artifacts, and disjoint D model roots (6.6305ms)
+✔ child environment keeps only OS support and canonical scratch with fixed runtime settings (5.7999ms)
+✔ invalid child locations reject before creating either capture or launching (7.4158ms)
+✔ execute rejects a misplaced request before inspecting registration or creating outputs (7.1499ms)
+✔ real Node and isolated pinned Python children exclude injected parent settings (126.8499ms)
+✔ process terminal binds one launch and immutable failure rules (0.2867ms)
+✔ Python numerical metadata serializers agree with JavaScript on the registered epsilon (1378.1123ms)
+✔ JavaScript reconstructed request satisfies the real Python pre-load contract (899.1638ms)
+✔ scalar producer preserves the native contract order and rejects unknown fields (1.2993ms)
+✔ actual native probe accepts the JS scalar producer and rejects sorted request bytes (94.0398ms)
+ℹ tests 40
+ℹ suites 0
+ℹ pass 39
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 12579.5715
+
+✖ failing tests:
+
+test at tinyrustlm\tests\qwen3-numerical-differential-profile.test.js:459:1
+✖ preserves closed implementation history without adopting its execution authority (264.0515ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'tinyrustlm.qwen3-numerical-execution-owner/8'
+  - 'tinyrustlm.qwen3-numerical-execution-owner/7'
+  
+      at TestContext.<anonymous> (E:\Source\Rust\TinyRustLM.com\tinyrustlm\tests\qwen3-numerical-differential-profile.test.js:469:10)
+      at Test.runInAsyncScope (node:async_hooks:228:14)
+      at Test.run (node:internal/test_runner/test:1118:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:787:18)
+      at Test.postRun (node:internal/test_runner/test:1247:19)
+      at Test.run (node:internal/test_runner/test:1175:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'tinyrustlm.qwen3-numerical-execution-owner/8',
+    expected: 'tinyrustlm.qwen3-numerical-execution-owner/7',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

@@ -239,17 +239,17 @@
   },
   {
     "path": "/browser-runtime/tinyrustlm-browser-runtime.wasm",
-    "bytes": 576938,
-    "sha256": "6bd1b7b9180c1c083e24dc40b5198cdeb3be52c98fc14cd9949badb9265236da"
+    "bytes": 576956,
+    "sha256": "2667c989452b4456ed4f8ff6cca979fcd0f1d838c769d9275dcc3d31e6ae22ea"
   },
   {
     "path": "/browser-runtime/tinyrustlm-browser-runtime.wasm.manifest.json",
     "bytes": 1209,
-    "sha256": "3d68c9bc6b216568c9d05b4cc515137e3d5b4caf3aa3e6124560341f41567de2"
+    "sha256": "7c58fc789c5a739ab5e139ab85743d13f4237668cab50fb95461b19ed045584e"
   },
   {
     "path": "/index.html",
     "bytes": 48815,
     "sha256": "7459804a3c5a7a7673f840471bc34099949f27b1cd8270ea20f15d19b29e51f6"
   }
-], "tinyrustlm-static-v1-2e09d0d2f88209aa7e98873e311be02fc9d1a5eb17b7b02b23e32ccbf5ab0ec5");
+], "tinyrustlm-static-v1-6684028386c7d14e9ae907272569f7f1cb2b911c3c354d8c88e1efd4fde189a6");

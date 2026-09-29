@@ -233,3 +233,15 @@ artifacts/ecosystem-cleanup-20260912/qwen2.5-coder-0.5b-development-stderr-20260
 /artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-v2-development-raw-20260929.json -text
 /artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-v2-preflight-20260929.json -text
 /artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-v2-development-stderr-20260929.txt -text
+/artifacts/ecosystem-cleanup-20260912/qwen3-numerical-v8-final-tests-20260929.stderr.txt -text
+/artifacts/ecosystem-cleanup-20260912/qwen3-numerical-v8-final-tests-20260929.stdout.txt -text
+/artifacts/ecosystem-cleanup-20260912/qwen3-numerical-v8-focused-tests-20260929.stderr.txt -text
+/artifacts/ecosystem-cleanup-20260912/qwen3-numerical-v8-focused-tests-20260929.stdout.txt -text
+/artifacts/ecosystem-cleanup-20260912/qwen3-numerical-v8-owner-profile-final-20260929.stderr.txt -text
+/artifacts/ecosystem-cleanup-20260912/qwen3-numerical-v8-owner-profile-final-20260929.stdout.txt -text
+/artifacts/ecosystem-cleanup-20260912/qwen3-numerical-v8-owner-profile-tests-20260929.stderr.txt -text
+/artifacts/ecosystem-cleanup-20260912/qwen3-numerical-v8-owner-profile-tests-20260929.stdout.txt -text
+/artifacts/ecosystem-cleanup-20260912/scalar-silu-browser-build-20260929.stderr.txt -text
+/artifacts/ecosystem-cleanup-20260912/scalar-silu-browser-build-20260929.stdout.txt -text
+/artifacts/ecosystem-cleanup-20260912/scalar-silu-browser-tests-20260929.stderr.txt -text
+/artifacts/ecosystem-cleanup-20260912/scalar-silu-browser-tests-20260929.stdout.txt -text

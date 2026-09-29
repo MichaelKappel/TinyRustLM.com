@@ -1,0 +1,61 @@
+{
+  "schema": "tinyrustlm.scalar_silu_browser_rebuild.v1",
+  "sourceCommit": "57e6d545d7ee7e47a340df5ddc240046511ee17f",
+  "old": {
+    "wasm": {
+      "path": "tinyrustlm/browser-runtime/tinyrustlm-browser-runtime.wasm",
+      "byteLength": 576938,
+      "sha256": "6bd1b7b9180c1c083e24dc40b5198cdeb3be52c98fc14cd9949badb9265236da"
+    },
+    "manifest": {
+      "path": "tinyrustlm/browser-runtime/tinyrustlm-browser-runtime.wasm.manifest.json",
+      "byteLength": 1209,
+      "sha256": "3d68c9bc6b216568c9d05b4cc515137e3d5b4caf3aa3e6124560341f41567de2"
+    }
+  },
+  "new": {
+    "wasm": {
+      "path": "tinyrustlm/browser-runtime/tinyrustlm-browser-runtime.wasm",
+      "byteLength": 576956,
+      "sha256": "2667c989452b4456ed4f8ff6cca979fcd0f1d838c769d9275dcc3d31e6ae22ea"
+    },
+    "manifest": {
+      "path": "tinyrustlm/browser-runtime/tinyrustlm-browser-runtime.wasm.manifest.json",
+      "byteLength": 1209,
+      "sha256": "7c58fc789c5a739ab5e139ab85743d13f4237668cab50fb95461b19ed045584e"
+    }
+  },
+  "args": [
+    "build",
+    "--locked",
+    "--offline",
+    "--release",
+    "--target",
+    "wasm32-unknown-unknown",
+    "--target-dir",
+    "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\verification\\scalar-silu-web-build-20260929\\tinyrustlm-operation-lTc68w\\target",
+    "-p",
+    "tinyrustlm-browser-runtime-wasm"
+  ],
+  "exitCode": 0,
+  "buildRoot": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\verification\\scalar-silu-web-build-20260929\\tinyrustlm-operation-lTc68w",
+  "validation": "57/57 focused browser/runtime/loader checks passed, including two fresh deterministic builds, raw ABI limits and actual Edge replay of unchanged ordinary scalar vectors. No real-model parity claim.",
+  "deployed": false,
+  "tests": {
+    "passed": 57,
+    "failed": 0,
+    "skipped": 0,
+    "logs": [
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/scalar-silu-browser-tests-20260929.stdout.txt",
+        "byteLength": 4104,
+        "sha256": "f29630c3b1dcceadad6c154723289a3cebbe648cfe0975f2ff00b76fe59bf529"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/scalar-silu-browser-tests-20260929.stderr.txt",
+        "byteLength": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ]
+  }
+}

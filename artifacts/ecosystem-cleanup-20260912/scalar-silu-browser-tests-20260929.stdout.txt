@@ -1,0 +1,71 @@
+✔ runtime loader streams both bodies without using arrayBuffer (23.1276ms)
+✔ runtime loader rejects invalid lifetime options before any request (1.0713ms)
+▶ runtime loader bounds stalled fetches and readers at both stages
+  ✔ manifest fetch (20.0222ms)
+  ✔ manifest reader (19.8822ms)
+  ✔ wasm fetch (19.7607ms)
+  ✔ wasm reader (33.4949ms)
+✔ runtime loader bounds stalled fetches and readers at both stages (94.1817ms)
+✔ runtime caller cancellation interrupts ignored reads and never accepts late bytes (0.6978ms)
+✔ runtime deadline includes hashing and wipes rejected WASM buffers (29.7017ms)
+▶ runtime loader stops on the first decoded overflow at each stage
+  ✔ manifest (0.7314ms)
+  ✔ wasm (0.6016ms)
+✔ runtime loader stops on the first decoded overflow at each stage (1.7299ms)
+▶ runtime loader bounds and releases invalid streams and read failures
+  ✔ empty (0.481ms)
+  ✔ empty chunk (0.4607ms)
+  ✔ wrong chunk type (0.5611ms)
+  ✔ read failure (0.4387ms)
+✔ runtime loader bounds and releases invalid streams and read failures (2.3378ms)
+▶ runtime loader cancels rejected headers before consuming the body
+  ✔ 9007199254740992 (1.2136ms)
+  ✔ -1 (0.1691ms)
+  ✔ 1.5 (0.1447ms)
+  ✔ 09 (0.1402ms)
+  ✔ not a length (0.1422ms)
+  ✔ 16385 (0.1091ms)
+✔ runtime loader cancels rejected headers before consuming the body (2.3157ms)
+✔ runtime loader accepts fragmented views and releases successful readers (4.3389ms)
+▶ runtime loader rejects unavailable streams and preserves errors during cleanup
+  ✔ unavailable body (0.6077ms)
+  ✔ unavailable body (0.3148ms)
+  ✔ unavailable body (0.3456ms)
+  ✔ reader cleanup throws (0.4862ms)
+  ✔ fetch failure (0.2079ms)
+✔ runtime loader rejects unavailable streams and preserves errors during cleanup (2.4359ms)
+▶ runtime loader retains canonical manifest and exact WASM identity gates
+  ✔ noncanonical manifest (0.3744ms)
+  ✔ truncated (0.4462ms)
+  ✔ same-length corruption (4.3173ms)
+✔ runtime loader retains canonical manifest and exact WASM identity gates (5.4999ms)
+✔ native fetch enforces decoded bounds for gzip and chunked HTTP (46.1383ms)
+✔ installed browser enforces streamed runtime byte bounds (1177.1285ms)
+✔ builds the exact import-free ABI with an explicit 3 GiB memory ceiling (7873.0216ms)
+✔ raw ABI rejects pre-create artifacts, unknown kinds, and invalid lengths (3.0741ms)
+✔ raw ABI enforces every post-create transfer ceiling before allocation (1.9464ms)
+✔ raw ABI stages all closed kinds once and drops identity-mismatched pending bytes (1.6382ms)
+✔ raw ABI preserves the full transcript revision as exact low and high words (1.3443ms)
+✔ raw ABI rejects stale operations before mutation and release is terminal (1.6137ms)
+✔ binary path gate rejects host paths and permits deterministic virtual paths (1.9441ms)
+✔ tracked browser runtime contains no absolute or private build paths (2.4152ms)
+✔ browser runtime artifact and manifest remain the current tracked identity (6.8481ms)
+✔ current source reproduces in two owned E-drive roots without promotion (17925.1629ms)
+✔ fresh manifest parser rejects noncanonical, permissive, and wrong-ABI declarations (0.4255ms)
+✔ loader verifies fresh bytes without instantiating WASM in the top-window boundary (25.8446ms)
+✔ loader wipes and rejects a fresh WASM identity mismatch (2.5718ms)
+✔ freezes independently generated mixed-Q8 SLM2 scalar runtime vectors (15.4365ms)
+✔ binds vectors to the sole mixed-Q8 artifact and ordered f32 arithmetic (2.7275ms)
+✔ covers positions, exact KV growth, stages, logits, and generation state (1.7266ms)
+✔ keeps the reference oracle isolated from Rust, network, and process execution (0.6631ms)
+✔ builds one import-free bounded WASM module without executable unsafe Rust (5966.6164ms)
+✔ replays independent scalar vectors in the Node WASM engine (15.2093ms)
+✔ replays identical vectors inside real headless Chromium (552.9482ms)
+ℹ tests 57
+ℹ suites 0
+ℹ pass 57
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 34375.5856
