@@ -1,0 +1,217 @@
+{
+  "schema": "tinyrustlm.source_candidate_metadata_review.v1",
+  "reviewedAtUtc": "2026-09-29T20:05:45.694Z",
+  "metadata": {
+    "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-untied-metadata-20260929.json",
+    "bytes": 125570,
+    "sha256": "78c573ee16bf868fd3ffe02a9b0f57c565b57a7be2b60b80ec8fa9de7bca464e"
+  },
+  "source": {
+    "modelId": "reaperdoesntknow/Qwen3-0.6B-Distilled-30B-A3B",
+    "revision": "7bd368dce6747cd9647a4e05300f3294bc2e9108",
+    "weightFiles": [
+      {
+        "filename": "model.safetensors",
+        "byteCount": 1503300328,
+        "sha256": "cb003b4471fd18fac80b98dce7e3310bb77f8af463d395db7a33ec3c16651bd2"
+      }
+    ],
+    "weightIdentity": "416bbdde787b49106d9c1a20cbd9366a1fae8c95dc8bb64f5ac54a61673142a5",
+    "sourceWeightBytesVerifiedLocally": false
+  },
+  "exclusions": {
+    "path": "contracts/vnext/source-candidate-exclusions.v1.json",
+    "sha256": "333002de63a54bf6d0da0edb7b2380a5dd5eb2ced5a93ea47178624e04f7b93f",
+    "matchingIdentityFound": false,
+    "priorFailuresPreserved": true
+  },
+  "verifiedFacts": {
+    "public": true,
+    "gated": false,
+    "architecture": "Qwen3ForCausalLM",
+    "modelType": "qwen3",
+    "declaredPhysicalParameters": 751632384,
+    "tieWordEmbeddings": false,
+    "hiddenSize": 1024,
+    "intermediateSize": 3072,
+    "layers": 28,
+    "attentionHeads": 16,
+    "kvHeads": 8,
+    "headDim": 128,
+    "vocabularySize": 151936,
+    "nativeContext": 40960,
+    "tokenizerModelMaxLength": 131072,
+    "effectiveContextMustNotExceedConfig": true,
+    "sourceDtype": "bfloat16",
+    "dtypeField": "dtype",
+    "ropeParameters": {
+      "ropeType": "default",
+      "theta": 1000000
+    },
+    "externalChatTemplate": {
+      "filename": "chat_template.jinja",
+      "bytes": 4168,
+      "sha256": "a55ee1b1660128b7098723e0abcd92caa0788061051c62d51cbe87d9cf1974d8",
+      "enableThinkingFalseSupported": true
+    },
+    "embeddedChatTemplate": false,
+    "generationConfig": {
+      "eosTokenIds": [
+        151645,
+        151643
+      ],
+      "padTokenId": 151643,
+      "sourceSampling": true,
+      "plannedScreenGreedy": true
+    }
+  },
+  "publisherAssertions": {
+    "declaredLicense": "apache-2.0",
+    "base": "Qwen/Qwen3-0.6B",
+    "teacher": "Qwen/Qwen3-30B-A3B-Thinking-2507",
+    "trainingSamples": 5815,
+    "evaluationSamples": 307,
+    "totalSamples": 6122,
+    "trainingContext": 1024,
+    "epochs": 1,
+    "recipe": "55% proof-weighted cross entropy plus45% teacher KL, publisher-described STEM distillation",
+    "independentlyVerified": false
+  },
+  "provenance": {
+    "modelLicenseFilePresent": false,
+    "baseAndTeacherLicenseFilesRetrieved": true,
+    "exactBaseAndTeacherTrainingRevisionsDisclosed": false,
+    "datasets": [
+      {
+        "id": "0xZee/dataset-CoT-Advanced-Calculus-268",
+        "revision": "2f41e6a7d10fc2688954cc1da637c4309ed3e822",
+        "license": null,
+        "readmeLicenseDeclaration": false,
+        "apiSha256": "c95243179bd2c76a1beb8da416743e8889c3b9144fc91ad7e42b6452eedd9577",
+        "readmeSha256": "159343cf0a49761d0b2caee11aa0d10c43581c953bd7811670ac1ef7fd40ea52"
+      },
+      {
+        "id": "0xZee/dataset-CoT-Modern-Physics-177",
+        "revision": "53977d2c0f1459013516f342c385b5deaaa5e1bb",
+        "license": null,
+        "readmeLicenseDeclaration": false,
+        "apiSha256": "520e3ef50c08f00242049f4248982ccf03f8d2a9ed908847c42990745a20a795",
+        "readmeSha256": "e00b87df7ab4fc5e8707a2716e7457bbf2f88862cfa3940983794cd4fc7a4aa1"
+      },
+      {
+        "id": "0xZee/dataset-CoT-Theoretical-Mechanics-307",
+        "revision": "1a656418b00dbdab684cace99bb87cc4d2cadba2",
+        "license": null,
+        "readmeLicenseDeclaration": false,
+        "apiSha256": "4924f38faeab8080f279bd4fffd2edec65cc6122d98c877370d3e11998f2e0e9",
+        "readmeSha256": "c1326c36fd5f5af8aa33280a27dac66e8cfdc2c1fc56d4ba8412de7b2d079223"
+      },
+      {
+        "id": "0xZee/dataset-CoT-Linear-Algebra-667",
+        "revision": "68be3468684c020ced781f5e067d348fa4e48f6d",
+        "license": null,
+        "readmeLicenseDeclaration": false,
+        "apiSha256": "02b300afbf8a2263eb49836064b0150c217b2c184d7b0d63d0fc08952374478a",
+        "readmeSha256": "aefd1a2e2a20ba43e00d0b36af161213daa74c7a6c13b769321f90ce44af20e7"
+      },
+      {
+        "id": "0xZee/dataset-CoT-Electromagnetism-580",
+        "revision": "fec2518a4c2340d8b15a64f42478b1b2136693f5",
+        "license": null,
+        "readmeLicenseDeclaration": false,
+        "apiSha256": "cd24b92cfc41e15ecd3489769d08adf206205705ca154a725b5de92926cf03e7",
+        "readmeSha256": "e06170cf7336ec110452e072392b3f3778274693de2802057755561c22c43f0c"
+      },
+      {
+        "id": "0xZee/dataset-CoT-Molecular-Biology-71",
+        "revision": "45b80e9c055e3e0bd733eeba80039a29bef8b7fe",
+        "license": null,
+        "readmeLicenseDeclaration": false,
+        "apiSha256": "ec04fc0b6f8c606c3ad514a4557712774aa0fd6a4b9ff52c560e5e4a74cb1602",
+        "readmeSha256": "ae6bad1e02e53c005ab9198ac11a4211a5ef962e3f997a4789b8a2511c32c4e9"
+      },
+      {
+        "id": "0xZee/dataset-CoT-Physiology-114",
+        "revision": "92a7814c30a5f0aee1e15d879ef95200d9e417e5",
+        "license": null,
+        "readmeLicenseDeclaration": false,
+        "apiSha256": "8c70f5468c260c3da26fc96caa6c689272c5434fea7bdf76e02f344bdba678b3",
+        "readmeSha256": "f555d85d1d2617784479da7d78f8ff446696c9a47bfad8faa2269b4428324544"
+      },
+      {
+        "id": "0xZee/dataset-CoT-Classical-Mechanics-343",
+        "revision": "5733871ff9fce98dd723f131fae66909825facee",
+        "license": null,
+        "readmeLicenseDeclaration": false,
+        "apiSha256": "c91fd776a63c851398767a07d72d82e8d0fbfb1d89c9904407d7095669ada537",
+        "readmeSha256": "593d7bfe938fe120ae4773073a0f209248e111383aedfb0769f1b52843914708"
+      },
+      {
+        "id": "0xZee/dataset-CoT-Differential-Equations-636",
+        "revision": "fadcbe441a39335427f349b9cf1aa2beb3d9b5c5",
+        "license": null,
+        "readmeLicenseDeclaration": false,
+        "apiSha256": "d04e64819bc1e6df7ed9e74a6f06295e39d0d1e3d39cb879ed0e21e3cf8de2a1",
+        "readmeSha256": "4bc6280d562420f917d07659097fda4e6a142764c0453cee9f1c21a98100e404"
+      },
+      {
+        "id": "0xZee/dataset-CoT-Physics-2254",
+        "revision": "a95ffe932397581a4e23cd1a3570ce705031d325",
+        "license": null,
+        "readmeLicenseDeclaration": false,
+        "apiSha256": "ed71c38df6ea924185627b7c83ee844f0fb134ffba5afa4fd8c48198d53a8aa5",
+        "readmeSha256": "e053da7da55567c56ada16556e353b1e681cf5cfba1ebf36159ff8e5c9b84022"
+      },
+      {
+        "id": "0xZee/dataset-CoT-Engineering-574",
+        "revision": "d480628eeb60ebe8849b4f287dc1318a5f3bef22",
+        "license": null,
+        "readmeLicenseDeclaration": false,
+        "apiSha256": "6d2b7d9ce1b660752fd46cae54aa4a62bd037909fe904f2506e61cb00cfdf80d",
+        "readmeSha256": "77eb6ba935b9f06e30067f7c27beb5079f54bfb8f8d4b672d170b053cbcbb79c"
+      },
+      {
+        "id": "0xZee/dataset-CoT-mathematics",
+        "revision": "c1f93a301880755aa580912da0d03a7cc6b16255",
+        "license": null,
+        "readmeLicenseDeclaration": false,
+        "apiSha256": "4219c247172dd946d8f16ff14344f09048cd60128ce8f8529ed30cd0b2551bf2",
+        "readmeSha256": "f1d6d4e815d9527c759d8d0c732e9d5ce95c638aef0fcadc42506ff071551249"
+      }
+    ],
+    "trainingDatasetRevisionAndLicenseClosure": false,
+    "cardUsageAlias": "reaperdoesntknow/Qwen3-0.6B-STEM-Proof-Distilled-Thinking",
+    "aliasRequestStatus": 401,
+    "aliasFailureMeaning": "Public unauthenticated metadata was unavailable; this does not prove absence.",
+    "scope": "Named recipe and differing LFS digest support investigation only. No provenance-complete or redistribution-clearance claim; verify required upstream permissions before publication."
+  },
+  "currentAdmission": {
+    "metadataDiscovery": "rejects untied profile and absent embedded template",
+    "acquisition": "requires embedded tokenizer_config chat_template and does not acquire separate Jinja template",
+    "referenceCapture": "already binds optional chat_template.jinja and loads local AutoTokenizer; unchanged capture owner is prospectively viable after exact source acquisition",
+    "converter": "rejects untied embeddings, expects legacy torch_dtype/rope_theta fields, requires redundant lm_head equality and frozen Template2 identities",
+    "runtime": "has untied model.output-projection.weight route; this is not source conversion or parity evidence",
+    "requiredChange": "Coherent current contract for pinned external template and untied Qwen3 conversion; preserve exclusion, exact identities, source gate and all prior failures."
+  },
+  "sizeEstimate": {
+    "kind": "derived estimate, no conversion executed",
+    "maximumSixMemberBytes": 805306368,
+    "matrixCodeBytes": 751566848,
+    "scaleRows": 647936,
+    "rowScaleBytes": 2591744,
+    "f32NormParameters": 65536,
+    "f32NormBytes": 262144,
+    "weightPayloadBytes": 754420736,
+    "containerOverhead": "Unmeasured. Historical tied model has77888 overhead bytes; same topology plus one output tensor suggests about79KB.",
+    "projectedModelBytesApprox": 754500000,
+    "tokenizerBytesAssumption": 7038773,
+    "tokenizerAssumptionEvidence": "Existing canonical Qwen Tokenizer2 size only; candidate tokenizer SHA differs and actual converted size is unmeasured.",
+    "otherFourMembersBoundBytes": 1115784,
+    "projectedSixMemberBytesApprox": 762654557,
+    "projectedHeadroomBytesApprox": 42651811,
+    "headroomIsNotAdmission": true,
+    "requiredMeasurement": "Exact sum of all six converted artifacts must be <=805306368; tokenizer difference, output tensor count and finite Q8 conversion remain unverified.",
+    "browserMemoryAndSpeed": "Not inferred from download bytes; source FP32 weights alone require3006529536 bytes, and browser admission/performance require real measurements."
+  },
+  "nextDecision": "Prepare and independently review new public development screen before acquiring this distinct pinned source. Complete source acquisition contract and launch admission before one recorded greedy run. A pass justifies conversion work only; a failure closes this exact screen without repair or retries."
+}

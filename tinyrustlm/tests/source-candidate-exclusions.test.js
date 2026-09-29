@@ -61,9 +61,9 @@ test(`source rejection blocks ${inventoryName} selection ${start} without fetchi
     "artifacts/ecosystem-cleanup-20260912", inventoryName)));
   const output = path.join(root, "artifacts", "tests", `source-exclusion-${crypto.randomUUID()}`);
   let fetched = false;
-  await assert.rejects(acquire.acquireInventory(inventory, output, {
-    start,
-    count: 1,
+  // Preserve the immutable historical inventory and exercise its exact row's exclusion
+  // before current v4 fields or acquisition I/O, without pretending it is a v4 inventory.
+  await assert.rejects(acquire.acquireCandidate(inventory.candidates[start], output, {
     fetchImpl: async () => { fetched = true; throw new Error("Unexpected fetch"); }
   }), /prior_source_quality_rejected/);
   assert.equal(fetched, false);

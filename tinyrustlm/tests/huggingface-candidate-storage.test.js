@@ -32,6 +32,7 @@ function candidateFixture() {
     licenseSourceUrl: "https://fixture.invalid/LICENSE", licenseSha256: digest(files.LICENSE),
     configSha256: digest(files["config.json"]), tokenizer: identity("tokenizer.json"),
     tokenizerConfig: identity("tokenizer_config.json"), chatTemplateKind: "revision-chatml-template-v1",
+    chatTemplateFile: null, generationConfig: null,
     chatTemplateSha256: digest(Buffer.from(template)), sourceWeightByteCount: weight.byteCount,
     weightIndex: null, weightFiles: [weight], weightIdentity: digest(Buffer.from(`${weight.filename}:${weight.byteCount}:${weight.sha256}`)) };
   const calls = [];

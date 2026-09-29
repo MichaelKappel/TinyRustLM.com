@@ -1,0 +1,32 @@
+{
+  "schema": "tinyrustlm.independent_development_rubric_review.v1",
+  "reviewedAtUtc": "2026-09-29T20:16:50.493Z",
+  "reviewer": "root-independent-of-case-author",
+  "modelOutputsSeen": false,
+  "cases": {
+    "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-untied-development-screen-20260929.eval",
+    "byteLength": 1308,
+    "sha256": "946e6bdda7512bde3db4dac5a4f66e66eb5353141e7d19b8a0ca3735fd2903c9"
+  },
+  "unchangedCases": [
+    0,
+    1,
+    2,
+    4,
+    5
+  ],
+  "prospectiveCorrection": {
+    "case": 3,
+    "reason": "The former practical task omitted the checklist subject and explicit paper availability. Clarifying those facts is justified. The draft criterion additionally required using the checklist; the actual prompt does not require that extra action.",
+    "criterion": "Exactly two practical steps yielding a handwritten checklist covering coat, bottle and keys, explicitly or by unambiguous reference to all three stated items. Use only the given paper and pen. Do not introduce unavailable tools, additional packing items, or claims of actions already performed. Checklist use is allowed but not required; step boundaries are assessed semantically rather than by arbitrary punctuation."
+  },
+  "preservedRules": {
+    "strictColorOnly": true,
+    "noResponseRepair": true,
+    "oneCallPerCase": true,
+    "noNewOutputViewedToChangeRubric": true,
+    "noHistoricalResultRelabeled": true,
+    "noQualificationClaim": true
+  },
+  "admission": "This review approves prospective case meaning only. Actual v4 inventory, exact acquired closure, bound final execution plan, clean pushed source and runtime verification remain required before one source-reference execution."
+}

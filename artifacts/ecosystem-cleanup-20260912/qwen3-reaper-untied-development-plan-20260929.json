@@ -1,0 +1,147 @@
+{
+  "schema": "tinyrustlm.source_development_screen_plan.v1",
+  "status": "prospective-review-required-not-executable-admission",
+  "purpose": "One-shot source-reference screen of distinct untied STEM-distilled Qwen3 weights before any converter investment. Preserve five strict cases and clarify the single ambiguous practical task prospectively.",
+  "source": {
+    "modelId": "reaperdoesntknow/Qwen3-0.6B-Distilled-30B-A3B",
+    "revision": "7bd368dce6747cd9647a4e05300f3294bc2e9108",
+    "weightSha256": "cb003b4471fd18fac80b98dce7e3310bb77f8af463d395db7a33ec3c16651bd2",
+    "weightIdentity": "416bbdde787b49106d9c1a20cbd9366a1fae8c95dc8bb64f5ac54a61673142a5",
+    "metadata": {
+      "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-untied-metadata-20260929.json",
+      "bytes": 125570,
+      "sha256": "78c573ee16bf868fd3ffe02a9b0f57c565b57a7be2b60b80ec8fa9de7bca464e"
+    },
+    "review": {
+      "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-untied-source-review-20260929.json",
+      "bytes": 10236,
+      "sha256": "a1be8cedf98c379d2b064577b0d1494c53511fe5935283078d2b3385e731b4f6"
+    },
+    "acquisitionInventory": null,
+    "acquisitionReceipt": null,
+    "checkpointDirectory": "D:\\LLMs\\TinyRustLM\\sources\\source-af23eee80be2742c8438caea5c2a0aa0ba1e8137cc528c900e8dcb65e40e53cc"
+  },
+  "tool": {
+    "path": "tinyrustlm/tools/reference-raw-quality.py",
+    "sha256": "30dd01e388433dfe926f5990ab778817167fd50a6c81a55a19e10870ebb289fb",
+    "sourceRevision": "70b48ccbaba64cd4b0ef640778d70d3e46580757"
+  },
+  "cases": {
+    "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-untied-development-screen-20260929.eval",
+    "bytes": 1308,
+    "sha256": "946e6bdda7512bde3db4dac5a4f66e66eb5353141e7d19b8a0ca3735fd2903c9",
+    "count": 6,
+    "maximumTotalGeneratedTokens": 352,
+    "kind": "public-development-not-holdout",
+    "priorCases": {
+      "path": "artifacts/ecosystem-cleanup-20260912/smollm2-source-development-screen-20260927.eval",
+      "sha256": "fbd04add28b5e1eb76e711d86c38e09e89b3ff11d1823de932b4674609c5d8c6"
+    },
+    "changedCases": [
+      3
+    ],
+    "unchangedCases": [
+      0,
+      1,
+      2,
+      4,
+      5
+    ],
+    "reason": "Prior practical prompt omitted explicit blank-paper availability and checklist subject. This new case removes that ambiguity and rejects invented resources; it does not relax strict color or other past failures."
+  },
+  "execution": {
+    "python": "D:\\LLMs\\TinyRustLM\\training-env-py312\\Scripts\\python.exe",
+    "pythonFlags": [
+      "-I",
+      "-B"
+    ],
+    "torch": "2.13.0+cpu",
+    "transformers": "5.13.1",
+    "device": "cpu",
+    "dtype": "float32",
+    "generation": "greedy",
+    "systemPrompt": "You are TinyRustLM, a browser-local AI assistant. You do not have personal experiences. Answer directly and helpfully.",
+    "callsPerCase": 1,
+    "adapter": null,
+    "policyExamples": null,
+    "promptSuffix": null,
+    "remoteCode": false,
+    "localFilesOnly": true,
+    "retries": 0,
+    "timeoutSeconds": 600,
+    "threadLimit": 4,
+    "rawOutputTransform": "none",
+    "thinkingTemplateOptions": {
+      "enable_thinking": false
+    },
+    "runtimeBindings": [
+      {
+        "path": "D:\\LLMs\\TinyRustLM\\training-env-py312\\Scripts\\python.exe",
+        "bytes": 274424,
+        "sha256": "0b471133e110cfb53a061cad528ce8e517d7b9ac41a0a396c39ad795a487fc14"
+      },
+      {
+        "path": "D:\\LLMs\\TinyRustLM\\training-env-py312\\Lib\\site-packages\\transformers\\tokenization_utils_base.py",
+        "bytes": 183764,
+        "sha256": "f86fc8ce6ad86bcbb4bad93b84b3cde9f7b93b516703b5d220889c66bbdd7b5a"
+      }
+    ],
+    "runtimeBindingsMustBeReverifiedAtLaunch": true,
+    "sourceGenerationConfigMustBeAcquiredUnmodified": true,
+    "templateFileMustBeAcquiredUnmodified": true,
+    "tokenizerConfigMustNotBeRewritten": true
+  },
+  "criteria": [
+    {
+      "index": 0,
+      "expected": "Exact READY, allowing surrounding whitespace only."
+    },
+    {
+      "index": 1,
+      "expected": "A single JSON object exactly {name: Mira, day: Tuesday}; no extra text."
+    },
+    {
+      "index": 2,
+      "expected": "Friday only, allowing surrounding whitespace and final punctuation."
+    },
+    {
+      "index": 3,
+      "expected": "Exactly two actionable steps to create and use the stated handwritten packing checklist. Include coat, bottle and keys without adding items, devices, notebooks, internet, printers or other unavailable resources. Do not reinterpret paper as an academic paper. Do not claim to have performed real-world actions.",
+      "passExample": "1. Write coat, bottle, and keys on the sheet, with an empty checkbox beside each item. 2. Check the list as you pack each item, marking its checkbox with the pen.",
+      "failExamples": [
+        "Write the draft introduction and methodology in your notebook.",
+        "Print a checklist or search online for a packing list.",
+        "I packed your coat, bottle and keys."
+      ],
+      "scoringNote": "The model may use equivalent wording; exactly two steps and faithful resource/task use are required. The example is rubric evidence only and must never enter the model prompt."
+    },
+    {
+      "index": 4,
+      "expected": "Red only, allowing surrounding whitespace and final punctuation."
+    },
+    {
+      "index": 5,
+      "expected": "One sentence preserving weekday hours and Sunday closure with no invented facts."
+    }
+  ],
+  "decisionRule": "Record all raw outputs and each criterion separately. Any failure is a development failure and cannot be repaired, sampled again, or hidden. Even six passes only justify further source investigation and do not qualify the model.",
+  "output": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-untied-development-raw-20260929.json",
+  "externalSource": "https://huggingface.co/reaperdoesntknow/Qwen3-0.6B-Distilled-30B-A3B/blob/7bd368dce6747cd9647a4e05300f3294bc2e9108/README.md",
+  "executionStarted": false,
+  "independentRubricReview": {
+    "required": true,
+    "status": "not-yet-recorded",
+    "requirement": "A separately acting reviewer checks answerability, all six criteria, preservation of strict color-only output, resource completeness, and no post-output adjustment before launch."
+  },
+  "launchGate": [
+    "Independent rubric review recorded before any output is observed.",
+    "A coherent current acquisition contract admits exact external Jinja template and records all pinned source files; do not fabricate an accepted v3 inventory or rewrite source config.",
+    "Root fills and freezes actual inventory/receipt identities in a committed prospective registration before execution; until then this plan is not executable admission.",
+    "Commit and push the final plan and required source changes; require clean remote-exact canonical source admission and recheck all bound input hashes and output absence.",
+    "Reverify the exact Python/runtime bindings from the prior runtime review; no dependency upgrade or substitution.",
+    "Acquire the pinned source once into its canonical root with actual byte-count and SHA256 validation, including generation config and separate template, after source gate passes.",
+    "Execute exactly one greedy call per case using the unchanged raw capture owner, four threads and600-second total timeout; record stopped/failed stages and all raw outputs.",
+    "Preserve every prior failed screen and all45 exclusions. A six-case pass is not product qualification, license clearance, numerical parity, browser admission, holdout completion or default-catalog eligibility."
+  ],
+  "licensingBoundary": "Publisher Apache2 declaration and upstream license texts are available; dataset and exact training revision provenance are unresolved. This prospective behavior screen is not approval to redistribute or publish the derivative."
+}

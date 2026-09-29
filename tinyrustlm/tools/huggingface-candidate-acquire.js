@@ -10,10 +10,11 @@ const { validateWeightLayout, validateWeightIndex, maximumWeightIndexBytes } = r
 const { requireFilename, requireModelOutputRoot, readBoundedFile,
   withCandidateDirectory } = require("./huggingface-candidate-storage.js");
 
-const inventorySchema = "tinyrustlm.huggingface_supported_candidate_inventory.v3";
-const receiptSchema = "tinyrustlm.huggingface_source_acquisition.v3";
+const inventorySchema = "tinyrustlm.huggingface_supported_candidate_inventory.v4";
+const receiptSchema = "tinyrustlm.huggingface_source_acquisition.v4";
 const defaultBaseUrl = "https://huggingface.co";
 const maximumSmallFileBytes = 32 * 1024 * 1024;
+const maximumSourceSidecarBytes = 256 * 1024;
 const maximumReceiptBytes = 128 * 1024;
 const defaultDownloadTimeoutMs = 4 * 60 * 60 * 1000;
 const maximumShortReadRetries = 3;
@@ -96,6 +97,8 @@ function requireCandidate(value) {
   invariant(weightFiles.every((file) => file.sha256), "every weight requires SHA-256");
   const weightRejection = sourceCandidateRejection(modelId, revision, weightFiles);
   invariant(!weightRejection, weightRejection);
+  const chatTemplateFile = requireOptionalSidecar(value.chatTemplateFile, "chat_template.jinja");
+  const generationConfig = requireOptionalSidecar(value.generationConfig, "generation_config.json");
   const layout = validateWeightLayout(weightFiles);
   let weightIndex = null;
   if (layout === "single") {
@@ -124,6 +127,8 @@ function requireCandidate(value) {
     configSha256,
     tokenizer,
     tokenizerConfig,
+    chatTemplateFile,
+    generationConfig,
     chatTemplateKind: value.chatTemplateKind,
     chatTemplateSha256,
     sourceWeightByteCount,
@@ -131,6 +136,16 @@ function requireCandidate(value) {
     weightIndex,
     weightFiles: Object.freeze(weightFiles)
   });
+}
+
+// Absence is explicit in the sole current inventory; never infer a missing file declaration.
+function requireOptionalSidecar(value, filename) {
+  if (value === null) return null;
+  invariant(isPlainObject(value), `candidate ${filename} requires an explicit file identity or null`);
+  const identity = requireSourceFile(value, filename);
+  invariant(identity.filename === filename && identity.byteCount <= maximumSourceSidecarBytes,
+    `candidate ${filename} filename or size is invalid`);
+  return identity;
 }
 
 // Validates one expected repository file identity.
@@ -224,8 +239,22 @@ function verifyChatTemplate(directory, candidate, guard) {
   } catch (_error) {
     throw new Error("tokenizer_config.json is invalid JSON");
   }
-  const template = config && config.chat_template;
-  invariant(typeof template === "string" && template.length >= 32 && template.length <= 256 * 1024,
+  invariant(isPlainObject(config), "tokenizer_config.json is invalid");
+  const directoryPath = path.join(directory, "chat_templates");
+  guard();
+  invariant(!fs.lstatSync(directoryPath, { throwIfNoEntry: false }), "chat template directories are unsupported");
+  const externalPath = path.join(directory, "chat_template.jinja");
+  guard(externalPath);
+  let template = config.chat_template;
+  if (candidate.chatTemplateFile) {
+    invariant(!Object.hasOwn(config, "chat_template"), "chat template sources are ambiguous");
+    template = new TextDecoder("utf-8", { fatal: true, ignoreBOM: true })
+      .decode(readBoundedFile(externalPath, maximumSourceSidecarBytes, guard));
+  } else {
+    invariant(!fs.existsSync(externalPath), "undeclared chat template file");
+  }
+  invariant(typeof template === "string" && template.length >= 32 &&
+    Buffer.byteLength(template, "utf8") <= maximumSourceSidecarBytes,
     "tokenizer_config.json chat template is invalid");
   invariant(template.includes("<|im_start|>") && template.includes("<|im_end|>") &&
     (template.includes("message.role") || template.includes("message['role']") ||
@@ -233,6 +262,15 @@ function verifyChatTemplate(directory, candidate, guard) {
   "tokenizer_config.json chat template is not ChatML compatible");
   invariant(crypto.createHash("sha256").update(template).digest("hex") === candidate.chatTemplateSha256,
     "tokenizer_config.json chat template fingerprint mismatch");
+  const generationPath = path.join(directory, "generation_config.json");
+  guard(generationPath);
+  if (candidate.generationConfig) {
+    const generation = JSON.parse(new TextDecoder("utf-8", { fatal: true, ignoreBOM: true })
+      .decode(readBoundedFile(generationPath, maximumSourceSidecarBytes, guard)));
+    invariant(isPlainObject(generation), "generation_config.json is invalid");
+  } else {
+    invariant(!fs.existsSync(generationPath), "undeclared generation config file");
+  }
 }
 
 // A verified index must resolve exactly the admitted shard set before transfer or cache reuse.
@@ -487,7 +525,8 @@ async function existingReceipt(directory, candidate, guard) {
   invariant(receipt.schema === receiptSchema && receipt.status === "verified",
     "source acquisition receipt is invalid");
   const keys = ["schema", "status", "verifiedUtc", "sourceTemplate", "modelId", "revision", "weightIdentity",
-    "sourceWeightByteCount", "chatTemplateKind", "chatTemplateSha256", "licenseId", "licenseEvidenceKind", "files"];
+    "sourceWeightByteCount", "chatTemplateKind", "chatTemplateSha256", "chatTemplateFile", "generationConfig",
+    "licenseId", "licenseEvidenceKind", "files"];
   invariant(Object.keys(receipt).length === keys.length && keys.every((key) => Object.hasOwn(receipt, key)) &&
     typeof receipt.verifiedUtc === "string" && Number.isFinite(Date.parse(receipt.verifiedUtc)),
   "source acquisition receipt shape is invalid");
@@ -498,9 +537,16 @@ async function existingReceipt(directory, candidate, guard) {
     receipt.chatTemplateKind === candidate.chatTemplateKind &&
     receipt.chatTemplateSha256 === candidate.chatTemplateSha256,
   "source acquisition receipt identity changed");
+  for (const key of ["chatTemplateFile", "generationConfig"]) {
+    const wanted = candidate[key], actual = receipt[key];
+    invariant(wanted === null ? actual === null : isPlainObject(actual) && Object.keys(actual).length === 4 &&
+      ["filename", "byteCount", "sha256", "gitBlobId"].every(field => actual[field] === wanted[field]),
+    "source acquisition receipt sidecar identity changed");
+  }
   const expectedFiles = [
     { filename: "config.json", sha256: candidate.configSha256 }, candidate.tokenizer, candidate.tokenizerConfig,
     { filename: "LICENSE", sha256: candidate.licenseSha256 },
+    ...[candidate.chatTemplateFile, candidate.generationConfig].filter(Boolean),
     ...(candidate.weightIndex ? [candidate.weightIndex] : []), ...candidate.weightFiles
   ];
   invariant(Array.isArray(receipt.files) && receipt.files.length === expectedFiles.length &&
@@ -564,6 +610,10 @@ async function acquireCandidate(candidateValue, outputRoot, options = {}) {
       candidate.tokenizerConfig,
       settings
     ));
+    for (const sidecar of [candidate.chatTemplateFile, candidate.generationConfig].filter(Boolean)) {
+      files.push(await downloadExpectedFile(
+        pinnedFileUrl(settings.baseUrl, candidate, sidecar.filename), directory, sidecar, settings));
+    }
     verifyChatTemplate(directory, candidate, guard);
     files.push(await downloadSmallFile(
       candidate.licenseSourceUrl,
@@ -590,6 +640,8 @@ async function acquireCandidate(candidateValue, outputRoot, options = {}) {
       sourceWeightByteCount: candidate.sourceWeightByteCount,
       chatTemplateKind: candidate.chatTemplateKind,
       chatTemplateSha256: candidate.chatTemplateSha256,
+      chatTemplateFile: candidate.chatTemplateFile,
+      generationConfig: candidate.generationConfig,
       licenseId: candidate.licenseId,
       licenseEvidenceKind: candidate.licenseEvidenceKind,
       files: Object.freeze(files)

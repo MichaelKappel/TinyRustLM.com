@@ -1,0 +1,19 @@
+# Public development cases, not a holdout or qualification suite.
+tinyrustlm_eval_cases_version=1
+quality_gate_policy=one-call-conversation-quality-v1
+case_count=6
+case.0.prompt=Reply with only the word READY and no punctuation.
+case.0.max_new_tokens=32
+case.1.prompt=Extract these facts as one JSON object with exactly the keys name and day, and no other text: Mira will visit on Tuesday.
+case.1.max_new_tokens=64
+case.2.history_turn_count=1
+case.2.history.0.user=The draft is due Monday.
+case.2.history.0.assistant=The draft is due Monday.
+case.2.prompt=Correction: the draft is now due Friday, not Monday. What is its current due day? Answer with the day only.
+case.2.max_new_tokens=32
+case.3.prompt=I have a blank sheet of paper, a pen, and 30 minutes. I need a handwritten packing checklist for a coat, a bottle, and keys. I have no printer or internet access. Give exactly two practical steps using only those resources.
+case.3.max_new_tokens=96
+case.4.prompt=Use only this information: Box A contains 3 blue pens. Box B contains 2 red pens. What color are the pens in Box B? Answer with the color only.
+case.4.max_new_tokens=32
+case.5.prompt=Summarize in one sentence without adding facts: The library opens at 9 a.m. on weekdays. It closes at 6 p.m. It is closed on Sundays.
+case.5.max_new_tokens=96

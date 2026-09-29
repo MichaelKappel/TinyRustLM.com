@@ -1,0 +1,116 @@
+{
+  "schema": "tinyrustlm.huggingface_supported_candidate_inventory.v4",
+  "generatedUtc": "2026-09-29T20:16:56.590Z",
+  "authority": "huggingface-primary-api-revision-files-and-apache-license-authority",
+  "profileId": "qwen3-0.6b-untied-bpe",
+  "search": "reaperdoesntknow/Qwen3-0.6B-Distilled-30B-A3B",
+  "searchLimit": 20,
+  "requestedCandidateLimit": 20,
+  "candidateCount": 2,
+  "candidates": [
+    {
+      "sourceTemplate": "qwen3-0.6b-untied-bpe",
+      "modelId": "reaperdoesntknow/Qwen3-0.6B-Distilled-30B-A3B-Thinking-SFT",
+      "revision": "a79e8686ac71e1bde2e4097a8fae923bd3d37f2b",
+      "downloads": 5288,
+      "likes": 2,
+      "pipelineTag": "text-generation",
+      "licenseId": "apache-2.0",
+      "licenseEvidenceKind": "revision-metadata-plus-apache-authority-text",
+      "licenseSourceUrl": "https://www.apache.org/licenses/LICENSE-2.0.txt",
+      "licenseSha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+      "configSha256": "f8b365cde4485e8b3440a909945710642cfe75012ae6dc5ed2821f4466f4802d",
+      "tokenizer": {
+        "filename": "tokenizer.json",
+        "byteCount": 11422650,
+        "sha256": "be75606093db2094d7cd20f3c2f385c212750648bd6ea4fb2bf507a6a4c55506",
+        "gitBlobId": null
+      },
+      "tokenizerConfig": {
+        "filename": "tokenizer_config.json",
+        "byteCount": 665,
+        "sha256": null,
+        "gitBlobId": "7d75d3bb5300d205e48769cc1999073ab5971214"
+      },
+      "chatTemplateFile": {
+        "filename": "chat_template.jinja",
+        "byteCount": 4168,
+        "sha256": null,
+        "gitBlobId": "01be9b307daa2d425f7c168c9fb145a286e0afb4"
+      },
+      "generationConfig": {
+        "filename": "generation_config.json",
+        "byteCount": 187,
+        "sha256": null,
+        "gitBlobId": "c33fb7621c6fd6e6527ae4780aca01c8ea6aebfa"
+      },
+      "chatTemplateKind": "revision-chatml-template-v1",
+      "chatTemplateSha256": "a55ee1b1660128b7098723e0abcd92caa0788061051c62d51cbe87d9cf1974d8",
+      "sourceWeightByteCount": 1503300328,
+      "weightIdentity": "a0e0106e4255e27524cf1b3d749639c72e0f2a33834e7ad554b20009a550cdad",
+      "weightIndex": null,
+      "weightFiles": [
+        {
+          "filename": "model.safetensors",
+          "byteCount": 1503300328,
+          "sha256": "c1d2b15ffb4239c2d83a24ca59e35b8cb427a03dcdc3c667bba985e64907b258"
+        }
+      ]
+    },
+    {
+      "sourceTemplate": "qwen3-0.6b-untied-bpe",
+      "modelId": "reaperdoesntknow/Qwen3-0.6B-Distilled-30B-A3B",
+      "revision": "7bd368dce6747cd9647a4e05300f3294bc2e9108",
+      "downloads": 5150,
+      "likes": 0,
+      "pipelineTag": "text-generation",
+      "licenseId": "apache-2.0",
+      "licenseEvidenceKind": "revision-metadata-plus-apache-authority-text",
+      "licenseSourceUrl": "https://www.apache.org/licenses/LICENSE-2.0.txt",
+      "licenseSha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+      "configSha256": "65b3dc0ec1d71fb6a71457aea9d05385e507e09a0fb27ce2d15e1ebe681929bf",
+      "tokenizer": {
+        "filename": "tokenizer.json",
+        "byteCount": 11422650,
+        "sha256": "be75606093db2094d7cd20f3c2f385c212750648bd6ea4fb2bf507a6a4c55506",
+        "gitBlobId": null
+      },
+      "tokenizerConfig": {
+        "filename": "tokenizer_config.json",
+        "byteCount": 665,
+        "sha256": null,
+        "gitBlobId": "7d75d3bb5300d205e48769cc1999073ab5971214"
+      },
+      "chatTemplateFile": {
+        "filename": "chat_template.jinja",
+        "byteCount": 4168,
+        "sha256": null,
+        "gitBlobId": "01be9b307daa2d425f7c168c9fb145a286e0afb4"
+      },
+      "generationConfig": {
+        "filename": "generation_config.json",
+        "byteCount": 213,
+        "sha256": null,
+        "gitBlobId": "6ef425299323759f048f746eceac42e880d689fd"
+      },
+      "chatTemplateKind": "revision-chatml-template-v1",
+      "chatTemplateSha256": "a55ee1b1660128b7098723e0abcd92caa0788061051c62d51cbe87d9cf1974d8",
+      "sourceWeightByteCount": 1503300328,
+      "weightIdentity": "416bbdde787b49106d9c1a20cbd9366a1fae8c95dc8bb64f5ac54a61673142a5",
+      "weightIndex": null,
+      "weightFiles": [
+        {
+          "filename": "model.safetensors",
+          "byteCount": 1503300328,
+          "sha256": "cb003b4471fd18fac80b98dce7e3310bb77f8af463d395db7a33ec3c16651bd2"
+        }
+      ]
+    }
+  ],
+  "rejections": [
+    {
+      "modelId": "reaperdoesntknow/Qwen3-0.6B-Distilled-30B-A3B-Thinking-SFT-GGUF",
+      "code": "unsupported_packaging"
+    }
+  ]
+}

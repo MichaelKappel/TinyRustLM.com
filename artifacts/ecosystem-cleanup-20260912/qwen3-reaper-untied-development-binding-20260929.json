@@ -1,0 +1,119 @@
+{
+  "schema": "tinyrustlm.source_development_screen_binding.v1",
+  "status": "prospective-registration-ready-for-root-review-and-commit",
+  "createdAtUtc": "2026-09-29T20:18:21.006Z",
+  "originalPlan": {
+    "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-untied-development-plan-20260929.json",
+    "bytes": 7860,
+    "sha256": "daff6b5b0e1a15c0290139d32bb6d9a2ddb5445273607eacf96a240191c7bc13"
+  },
+  "implementationReview": {
+    "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-untied-acquisition-support-review-20260929.json",
+    "bytes": 6597,
+    "sha256": "997dd657f51d6553560a13bd1dd0681e809bd473cd233e3f4affc0e7bb749ea5"
+  },
+  "sourceInventory": {
+    "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-untied-inventory-20260929.json",
+    "bytes": 4516,
+    "sha256": "be3f23b7688f09fcbc44c810c619ff8dc58b124673def991203b3cf0c279fd6a"
+  },
+  "inventorySelectionStart": 1,
+  "inventorySelectionCount": 1,
+  "source": {
+    "modelId": "reaperdoesntknow/Qwen3-0.6B-Distilled-30B-A3B",
+    "revision": "7bd368dce6747cd9647a4e05300f3294bc2e9108",
+    "weightIdentity": "416bbdde787b49106d9c1a20cbd9366a1fae8c95dc8bb64f5ac54a61673142a5",
+    "weightFiles": [
+      {
+        "filename": "model.safetensors",
+        "byteCount": 1503300328,
+        "sha256": "cb003b4471fd18fac80b98dce7e3310bb77f8af463d395db7a33ec3c16651bd2"
+      }
+    ],
+    "chatTemplateFile": {
+      "filename": "chat_template.jinja",
+      "byteCount": 4168,
+      "sha256": null,
+      "gitBlobId": "01be9b307daa2d425f7c168c9fb145a286e0afb4"
+    },
+    "generationConfig": {
+      "filename": "generation_config.json",
+      "byteCount": 213,
+      "sha256": null,
+      "gitBlobId": "6ef425299323759f048f746eceac42e880d689fd"
+    }
+  },
+  "cases": {
+    "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-untied-development-screen-20260929.eval",
+    "bytes": 1308,
+    "sha256": "946e6bdda7512bde3db4dac5a4f66e66eb5353141e7d19b8a0ca3735fd2903c9"
+  },
+  "tool": {
+    "path": "tinyrustlm/tools/reference-raw-quality.py",
+    "bytes": 34527,
+    "sha256": "30dd01e388433dfe926f5990ab778817167fd50a6c81a55a19e10870ebb289fb"
+  },
+  "unchangedExecution": {
+    "python": "D:\\LLMs\\TinyRustLM\\training-env-py312\\Scripts\\python.exe",
+    "pythonFlags": [
+      "-I",
+      "-B"
+    ],
+    "torch": "2.13.0+cpu",
+    "transformers": "5.13.1",
+    "device": "cpu",
+    "dtype": "float32",
+    "generation": "greedy",
+    "systemPrompt": "You are TinyRustLM, a browser-local AI assistant. You do not have personal experiences. Answer directly and helpfully.",
+    "callsPerCase": 1,
+    "adapter": null,
+    "policyExamples": null,
+    "promptSuffix": null,
+    "remoteCode": false,
+    "localFilesOnly": true,
+    "retries": 0,
+    "timeoutSeconds": 600,
+    "threadLimit": 4,
+    "rawOutputTransform": "none",
+    "thinkingTemplateOptions": {
+      "enable_thinking": false
+    },
+    "runtimeBindings": [
+      {
+        "path": "D:\\LLMs\\TinyRustLM\\training-env-py312\\Scripts\\python.exe",
+        "bytes": 274424,
+        "sha256": "0b471133e110cfb53a061cad528ce8e517d7b9ac41a0a396c39ad795a487fc14"
+      },
+      {
+        "path": "D:\\LLMs\\TinyRustLM\\training-env-py312\\Lib\\site-packages\\transformers\\tokenization_utils_base.py",
+        "bytes": 183764,
+        "sha256": "f86fc8ce6ad86bcbb4bad93b84b3cde9f7b93b516703b5d220889c66bbdd7b5a"
+      }
+    ],
+    "runtimeBindingsMustBeReverifiedAtLaunch": true,
+    "sourceGenerationConfigMustBeAcquiredUnmodified": true,
+    "templateFileMustBeAcquiredUnmodified": true,
+    "tokenizerConfigMustNotBeRewritten": true
+  },
+  "independentRubricReview": {
+    "reviewerRole": "Root agent, separate from the child author of the prospective screen and support implementation",
+    "reviewBeforeModelOutput": true,
+    "reviewDecision": "Accept unchanged cases0,1,2,4,5. Refine case3 criterion prospectively to match its actual prompt; creating a checklist is required but using it is optional.",
+    "criterion3": "Exactly two actionable steps yielding a handwritten packing checklist covering coat, bottle and keys, either named explicitly or referred to unambiguously as all three stated items. Using the checklist is optional. No invented tools, added packing items, unavailable resources or falsely claimed real-world actions. Judge exactly two steps semantically, not by arbitrary punctuation.",
+    "allOtherCriteriaUnchanged": true,
+    "strictColorOnlyCriterionPreserved": true,
+    "oldFailuresAndOriginalPlanPreserved": true,
+    "secretHoldoutOrIndependentProductQualification": false
+  },
+  "remainingLaunchConditions": [
+    "Root reviews and commits/pushes the exact support changes, inventory, cases, original plan and this follow-up binding.",
+    "Fresh canonical source admission must be clean and remote-exact; dependency/tool/input hashes and output absence must match before acquisition/execution.",
+    "Only selected inventory index1 may be acquired. The other source is not selected by this registration.",
+    "Perform actual canonical source acquisition with v4 identity checks, preserving external Jinja and generation config without source rewriting; bind its real receipt before one-run execution.",
+    "Reverify runtime bindings already identified in the original plan; use its unchanged CPUfloat32 greedy one-call owner and enable_thinking=false.",
+    "No retry, output repair, candidate relabeling or lowering of criteria after any output. A pass only justifies further conversion and qualification work.",
+    "Training-data licensing and exact training revision provenance remain unresolved; behavior-screen authorization is not redistribution clearance."
+  ],
+  "executionStarted": false,
+  "modelPayloadAcquired": false
+}

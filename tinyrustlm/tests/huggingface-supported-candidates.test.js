@@ -1,6 +1,7 @@
 "use strict";
 
 const assert = require("node:assert/strict");
+const crypto = require("node:crypto");
 const fs = require("node:fs");
 const path = require("node:path");
 const test = require("node:test");
@@ -112,6 +113,85 @@ function revisionInfo(modelId, config, weightBytes) {
     config
   };
 }
+
+// Model-card-shaped metadata only; the fixture never serves model or tokenizer payloads.
+function untiedExternalRoster() {
+  const baseUrl = "https://huggingface.co";
+  const licenseUrl = "https://www.apache.org/licenses/LICENSE-2.0.txt";
+  const modelId = "Example/Qwen3-0.6B-Distilled-Untied";
+  const config = { ...qwen3Config(), tie_word_embeddings: false };
+  const model = { id: modelId, sha: revision, pipeline_tag: "text-generation",
+    tags: ["safetensors", "text-generation", "license:apache-2.0"], config };
+  const info = revisionInfo(modelId, config, 1_503_300_328);
+  const generation = JSON.stringify({ eos_token_id: [151645, 151643], pad_token_id: 151643 });
+  const identity = (filename, text) => ({ rfilename: filename, size: Buffer.byteLength(text),
+    blobId: crypto.createHash("sha1").update(`blob ${Buffer.byteLength(text)}\0`).update(text).digest("hex") });
+  info.siblings.push(identity("chat_template.jinja", chatTemplate), identity("generation_config.json", generation));
+  const search = "Qwen3-0.6B";
+  const fileUrl = name => `${baseUrl}/${modelId}/resolve/${revision}/${name}`;
+  const routes = {
+    [discovery.buildSearchUrl(baseUrl, search, 20)]: { json: [model] },
+    [discovery.buildRevisionInfoUrl(baseUrl, modelId, revision)]: { json: info },
+    [fileUrl("config.json")]: { text: JSON.stringify(config) },
+    [fileUrl("tokenizer_config.json")]: { text: JSON.stringify({ tokenizer_class: "Qwen2Tokenizer" }) },
+    [fileUrl("chat_template.jinja")]: { text: chatTemplate },
+    [fileUrl("generation_config.json")]: { text: generation },
+    [licenseUrl]: { text: "Apache License\nVersion 2.0, January 2004\n" }
+  };
+  return { config, info, routes, fileUrl, options: { baseUrl, licenseUrl, search, searchLimit: 20,
+    candidateLimit: 1, profileId: "qwen3-0.6b-untied-bpe", fetchImpl: fixtureFetch(routes) } };
+}
+
+test("untied discovery pins a separate template and publisher generation settings without model downloads", async () => {
+  const fixture = untiedExternalRoster();
+  const report = await discovery.discoverCandidates(fixture.options);
+  assert.equal(report.schema, "tinyrustlm.huggingface_supported_candidate_inventory.v4");
+  assert.equal(report.candidateCount, 1);
+  const candidate = report.candidates[0];
+  assert.equal(candidate.chatTemplateFile.filename, "chat_template.jinja");
+  assert.equal(candidate.chatTemplateFile.byteCount, Buffer.byteLength(chatTemplate));
+  assert.equal(candidate.chatTemplateSha256, crypto.createHash("sha256").update(chatTemplate).digest("hex"));
+  assert.equal(candidate.generationConfig.filename, "generation_config.json");
+  assert.equal(candidate.generationConfig.gitBlobId,
+    fixture.info.siblings.find(row => row.rfilename === "generation_config.json").blobId);
+  assert.equal(candidate.sourceTemplate, "qwen3-0.6b-untied-bpe");
+  assert.equal((await discovery.discoverCandidates({ ...fixture.options, profileId: "qwen3-0.6b-bpe" }))
+    .rejections[0].code, "shape_mismatch");
+});
+
+test("untied discovery refuses ambiguous missing oversized and mismatched template evidence", async () => {
+  const mutations = [
+    f => { f.config.tie_word_embeddings = true; f.routes[f.fileUrl("config.json")].text = JSON.stringify(f.config); },
+    f => { f.config.head_dim = 64; f.routes[f.fileUrl("config.json")].text = JSON.stringify(f.config); },
+    f => { f.routes[f.fileUrl("tokenizer_config.json")].text = JSON.stringify({ chat_template: chatTemplate }); },
+    f => { f.info.siblings = f.info.siblings.filter(row => row.rfilename !== "chat_template.jinja"); },
+    f => { f.info.siblings.find(row => row.rfilename === "chat_template.jinja").size = 262145; },
+    f => { f.routes[f.fileUrl("chat_template.jinja")].text = chatTemplate + "changed"; },
+    f => { f.info.siblings.push({ rfilename: "chat_templates/default.jinja", size: 42, blobId: "f".repeat(40) }); },
+    f => { f.info.siblings.find(row => row.rfilename === "generation_config.json").size = 262145; }
+  ];
+  for (const mutate of mutations) {
+    const fixture = untiedExternalRoster();
+    mutate(fixture);
+    const report = await discovery.discoverCandidates(fixture.options);
+    assert.equal(report.candidateCount, 0);
+    assert.equal(report.rejections.length, 1);
+  }
+});
+
+test("external metadata also binds LFS digests and rejects a correctly hashed non-ChatML template", async () => {
+  for (const variant of ["valid", "wrong-digest", "not-chatml"]) {
+    const fixture = untiedExternalRoster();
+    const text = variant === "not-chatml" ? "A long plain template with no supported message role or ChatML delimiters." : chatTemplate;
+    fixture.routes[fixture.fileUrl("chat_template.jinja")].text = text;
+    const row = fixture.info.siblings.find(file => file.rfilename === "chat_template.jinja");
+    row.lfs = { size: Buffer.byteLength(text), sha256: variant === "wrong-digest" ? "f".repeat(64) :
+      crypto.createHash("sha256").update(text).digest("hex") };
+    const report = await discovery.discoverCandidates(fixture.options);
+    assert.equal(report.candidateCount, variant === "valid" ? 1 : 0);
+    if (variant === "valid") assert.equal(report.candidates[0].chatTemplateFile.sha256, row.lfs.sha256);
+  }
+});
 
 test("invalid explicit discovery limits fail before metadata requests", async () => {
   let requests = 0;
@@ -247,7 +327,7 @@ test("discovers distinct immutable Qwen3 full-weight conversation candidates", a
     candidateLimit: 10
   });
 
-  assert.equal(report.schema, "tinyrustlm.huggingface_supported_candidate_inventory.v3");
+  assert.equal(report.schema, "tinyrustlm.huggingface_supported_candidate_inventory.v4");
   assert.equal(report.profileId, profileId);
   assert.equal(report.candidates.length, 1);
   assert.equal(report.candidates[0].modelId, firstId);
@@ -329,7 +409,7 @@ test("the sole discovery producer covers Qwen2.5 and emits the downloader's curr
   fixture.addRevision(wrongShape, { ...qwen25Config(), hidden_size: 2048 });
   fixture.addRevision(untied, { ...qwen25Config(), tie_word_embeddings: false });
   const report = await discovery.discoverCandidates(fixture.options);
-  assert.equal(report.schema, "tinyrustlm.huggingface_supported_candidate_inventory.v3");
+  assert.equal(report.schema, "tinyrustlm.huggingface_supported_candidate_inventory.v4");
   assert.equal(report.candidates.length, 1);
   const candidate = report.candidates[0];
   assert.equal(candidate.modelId, fixture.model.id);
@@ -396,7 +476,7 @@ test("discovery retains the exact index identity without downloading its content
     const report = await discovery.discoverCandidates({ ...fixture.options, fetchImpl: async (url) => {
       calls.push(url); return fixture.options.fetchImpl(url);
     } });
-    assert.equal(report.schema, "tinyrustlm.huggingface_supported_candidate_inventory.v3");
+    assert.equal(report.schema, "tinyrustlm.huggingface_supported_candidate_inventory.v4");
     assert.equal(report.candidates.length, 1);
     assert.deepEqual(report.rejections, []);
     const candidate = report.candidates[0];

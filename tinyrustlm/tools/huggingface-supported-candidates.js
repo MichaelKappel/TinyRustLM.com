@@ -6,11 +6,12 @@ const { createMetadataReader, MetadataReadError } = require("./huggingface-metad
 const { requireCandidateInventoryPath, writeCandidateInventory: writeReport } = require("./huggingface-candidate-storage.js");
 const { maximumWeightIndexBytes, validateWeightLayout } = require("./huggingface-weight-layout.js");
 
-const inventorySchema = "tinyrustlm.huggingface_supported_candidate_inventory.v3";
+const inventorySchema = "tinyrustlm.huggingface_supported_candidate_inventory.v4";
 const defaultBaseUrl = "https://huggingface.co";
 const defaultLicenseUrl = "https://www.apache.org/licenses/LICENSE-2.0.txt";
 const maximumSearchLimit = 500;
 const maximumCandidateLimit = 100;
+const maximumSourceSidecarBytes = 256 * 1024;
 const profiles = Object.freeze({
   "qwen3-0.6b-bpe": Object.freeze({
     defaultSearch: "Qwen3-0.6B",
@@ -27,6 +28,24 @@ const profiles = Object.freeze({
       intermediate_size: 3072,
       vocab_size: 151936,
       tie_word_embeddings: true
+    })
+  }),
+  // Source/reference screening only: the current converter still requires tied embeddings.
+  "qwen3-0.6b-untied-bpe": Object.freeze({
+    defaultSearch: "Qwen3-0.6B",
+    modelType: "qwen3",
+    architecture: "Qwen3ForCausalLM",
+    minimumWeightBytes: 1_000_000_000,
+    maximumWeightBytes: 1_700_000_000,
+    config: Object.freeze({
+      hidden_size: 1024,
+      num_hidden_layers: 28,
+      num_attention_heads: 16,
+      num_key_value_heads: 8,
+      head_dim: 128,
+      intermediate_size: 3072,
+      vocab_size: 151936,
+      tie_word_embeddings: false
     })
   }),
   "smollm2-360m-instruct-bpe": Object.freeze({
@@ -131,7 +150,7 @@ function buildRevisionInfoUrl(baseUrl, modelId, revision) {
 
 // Builds a revision-pinned route for one allowlisted evidence file.
 function buildResolveUrl(baseUrl, modelId, revision, filename) {
-  invariant(["config.json", "tokenizer_config.json"].includes(filename),
+  invariant(["config.json", "tokenizer_config.json", "chat_template.jinja", "generation_config.json"].includes(filename),
     "resolve filename is not allowlisted");
   const safeId = requireModelId(modelId).split("/").map(encodeURIComponent).join("/");
   return `${normalizeBaseUrl(baseUrl)}/${safeId}/resolve/${requireRevision(revision)}/${filename}`;
@@ -212,11 +231,14 @@ function validateConfig(config, profile) {
 }
 
 // Validates and fingerprints the exact revision-owned conversation template.
-function validateTokenizerConfig(config) {
+function validateTokenizerConfig(config, externalTemplate = null) {
   invariant(config && typeof config === "object" && !Array.isArray(config),
     "tokenizer_config.json is invalid");
-  const template = config.chat_template;
-  invariant(typeof template === "string" && template.length >= 32 && template.length <= 256 * 1024,
+  invariant(externalTemplate === null || !Object.hasOwn(config, "chat_template"),
+    "chat template sources are ambiguous");
+  const template = externalTemplate === null ? config.chat_template : externalTemplate;
+  invariant(typeof template === "string" && template.length >= 32 &&
+    Buffer.byteLength(template, "utf8") <= maximumSourceSidecarBytes,
     "chat template is missing or oversized");
   invariant(template.includes("<|im_start|>") && template.includes("<|im_end|>"),
     "chat template is not ChatML compatible");
@@ -226,6 +248,19 @@ function validateTokenizerConfig(config) {
     kind: "revision-chatml-template-v1",
     sha256: crypto.createHash("sha256").update(template).digest("hex")
   });
+}
+
+// Bind exact public metadata bytes to the pinned sibling before they influence acquisition.
+function verifyMetadataFileText(text, expected) {
+  const bytes = Buffer.from(text, "utf8");
+  invariant(bytes.length === expected.byteCount, `${expected.filename} byte count mismatch`);
+  if (expected.sha256) {
+    invariant(crypto.createHash("sha256").update(bytes).digest("hex") === expected.sha256,
+      `${expected.filename} SHA-256 mismatch`);
+  } else {
+    invariant(crypto.createHash("sha1").update(`blob ${bytes.length}\0`).update(bytes).digest("hex") === expected.gitBlobId,
+      `${expected.filename} Git blob mismatch`);
+  }
 }
 
 // Returns stable identity evidence for a non-weight repository file.
@@ -255,6 +290,8 @@ function validateSiblings(info, profile) {
     typeof row.rfilename === "string" && row.rfilename.length > 0), "revision sibling is invalid");
   const siblings = new Map(info.siblings.map((row) => [row.rfilename, row]));
   invariant(siblings.size === info.siblings.length, "revision sibling filenames are duplicated");
+  invariant(!info.siblings.some(row => row.rfilename === "chat_templates" || row.rfilename.startsWith("chat_templates/")),
+    "chat template directories are unsupported");
   invariant(siblings.has("config.json"), "config.json is missing");
   invariant(siblings.has("tokenizer.json"), "tokenizer.json is missing");
   invariant(siblings.has("tokenizer_config.json"), "tokenizer_config.json is missing");
@@ -280,12 +317,20 @@ function validateSiblings(info, profile) {
   const totalBytes = weights.reduce((sum, row) => sum + row.byteCount, 0);
   invariant(totalBytes >= profile.minimumWeightBytes && totalBytes <= profile.maximumWeightBytes,
     "weight size is outside profile bounds");
+  const sidecar = filename => {
+    if (!siblings.has(filename)) return null;
+    const identity = siblingIdentity(siblings.get(filename), filename);
+    invariant(identity.byteCount <= maximumSourceSidecarBytes, `${filename} size exceeds its limit`);
+    return identity;
+  };
   return Object.freeze({
     weights: Object.freeze(weights),
     weightIndex,
     totalBytes,
     tokenizer: siblingIdentity(siblings.get("tokenizer.json"), "tokenizer.json"),
-    tokenizerConfig: siblingIdentity(siblings.get("tokenizer_config.json"), "tokenizer_config.json")
+    tokenizerConfig: siblingIdentity(siblings.get("tokenizer_config.json"), "tokenizer_config.json"),
+    chatTemplateFile: sidecar("chat_template.jinja"),
+    generationConfig: sidecar("generation_config.json")
   });
 }
 
@@ -359,7 +404,24 @@ async function inspectCandidate(model, settings) {
     } catch (_error) {
       throw new Error("tokenizer config JSON is invalid");
     }
-    const chatTemplate = validateTokenizerConfig(tokenizerConfig);
+    let externalTemplate = null;
+    if (files.chatTemplateFile) {
+      invariant(!Object.hasOwn(tokenizerConfig, "chat_template"), "chat template sources are ambiguous");
+      externalTemplate = await settings.metadata.text(
+        buildResolveUrl(settings.baseUrl, modelId, revision, "chat_template.jinja"),
+        `${modelId} chat template`, maximumSourceSidecarBytes);
+      verifyMetadataFileText(externalTemplate, files.chatTemplateFile);
+    }
+    const chatTemplate = validateTokenizerConfig(tokenizerConfig, externalTemplate);
+    if (files.generationConfig) {
+      const generationText = await settings.metadata.text(
+        buildResolveUrl(settings.baseUrl, modelId, revision, "generation_config.json"),
+        `${modelId} generation config`, maximumSourceSidecarBytes);
+      verifyMetadataFileText(generationText, files.generationConfig);
+      const generation = JSON.parse(generationText);
+      invariant(generation && typeof generation === "object" && !Array.isArray(generation),
+        "generation config is invalid");
+    }
     const license = await apacheLicenseEvidence(settings);
     return {
       candidate: Object.freeze({
@@ -376,6 +438,8 @@ async function inspectCandidate(model, settings) {
         configSha256: crypto.createHash("sha256").update(configText).digest("hex"),
         tokenizer: files.tokenizer,
         tokenizerConfig: files.tokenizerConfig,
+        chatTemplateFile: files.chatTemplateFile,
+        generationConfig: files.generationConfig,
         chatTemplateKind: chatTemplate.kind,
         chatTemplateSha256: chatTemplate.sha256,
         sourceWeightByteCount: files.totalBytes,

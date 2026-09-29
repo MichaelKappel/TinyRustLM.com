@@ -1,0 +1,153 @@
+{
+  "schema": "tinyrustlm.source_acquisition_support_review.v1",
+  "reviewedAtUtc": "2026-09-29T20:18:21.004Z",
+  "problem": "Untied Qwen3 metadata and a separately stored publisher chat template could not reach the existing source-reference screen through the supported acquisition path.",
+  "change": "Add exact untied Qwen3 shape as source-reference metadata profile only. Replace the sole current inventory and acquisition receipt with v4, explicitly binding nullable chatTemplateFile and generationConfig. Download and verify admitted sidecars before weights; preserve source tokenizer config bytes and publisher generation settings; reject ambiguous templates, undeclared cached sidecars, unsafe paths, malformed/oversized metadata and mismatched identities.",
+  "priorHelperIdentities": [
+    {
+      "path": "tinyrustlm/tools/huggingface-supported-candidates.js",
+      "bytes": 21910,
+      "sha256": "6b4f1d265ee847162abaf6e39823d2501840bb1f2f8b90df05f48fd2ba0c26bb"
+    },
+    {
+      "path": "tinyrustlm/tools/huggingface-candidate-acquire.js",
+      "bytes": 30598,
+      "sha256": "c359d36e422d6546d552bade6ccacf9b10b086959d2930ee38b8f8f070ea993a"
+    }
+  ],
+  "changedFiles": [
+    {
+      "path": "tinyrustlm/tools/huggingface-supported-candidates.js",
+      "bytes": 25099,
+      "sha256": "97105f1a45df1c7ba9682e3d5a4e211b3a57dab1e01ee65ad36f52862b3a8b61"
+    },
+    {
+      "path": "tinyrustlm/tools/huggingface-candidate-acquire.js",
+      "bytes": 33531,
+      "sha256": "c179d2d343689ef930ee765b64447589a84a2c6efac4b59ceba83271fadcd1de"
+    },
+    {
+      "path": "tinyrustlm/tests/huggingface-supported-candidates.test.js",
+      "bytes": 27815,
+      "sha256": "a62ee58a99ecbfc756a0360d4a9489c283aa9fde61c4a2b6993bfa176f9146fa"
+    },
+    {
+      "path": "tinyrustlm/tests/huggingface-candidate-acquire.test.js",
+      "bytes": 32758,
+      "sha256": "3a4fbc90f1db4dcb4c3956a0f5fdc1942764a6e4bce0da44f68fc74cd8508ad8"
+    },
+    {
+      "path": "tinyrustlm/tests/source-candidate-exclusions.test.js",
+      "bytes": 8398,
+      "sha256": "da22934a968a63e2992a50f35789338ace22f9101911e25861ff56b188e633f5"
+    },
+    {
+      "path": "tinyrustlm/tests/huggingface-candidate-storage.test.js",
+      "bytes": 28337,
+      "sha256": "7a987351a264edffd9299aa8e77acbc452817f795ccb661eafd1f4befbd30446"
+    }
+  ],
+  "tests": {
+    "baseline": {
+      "scope": "four newly added external-template/untied-profile regressions against unchanged production",
+      "passed": 1,
+      "failed": 3,
+      "stdoutBytes": 3740,
+      "stdoutSha256": "7b5213f31364190aae6db57efaffbec2ef387dffd9da7148b988b3d4f73710ad",
+      "failures": [
+        "unsupported source profile: qwen3-0.6b-untied-bpe",
+        "tokenizer_config.json chat template is invalid"
+      ]
+    },
+    "intermediate": [
+      {
+        "stdoutBytes": 4607,
+        "stdoutSha256": "fec5f865e441e6073751e00e78bd21c71800dab7cedf84e4a432e0948606f7f9",
+        "passed": 28,
+        "failed": 1,
+        "interpretation": "Negative test attempted to derive a directory by revalidating its deliberately invalid candidate; bind the directory before mutation."
+      },
+      {
+        "stdoutBytes": 27339,
+        "stdoutSha256": "ef7b78ba7fb7166aecdc3db1bdc821beea8a19d7aa2167d53368085d2d55710c",
+        "failed": 14,
+        "interpretation": "Existing storage test fixture omitted the two explicit v4 null sidecar fields. Only that fixture row was migrated; production storage checks unchanged."
+      }
+    ],
+    "final": {
+      "suites": [
+        "huggingface-supported-candidates",
+        "huggingface-candidate-acquire",
+        "source-candidate-exclusions",
+        "huggingface-candidate-storage",
+        "huggingface-weight-layout",
+        "huggingface-metadata"
+      ],
+      "runner": "node --test",
+      "passed": 77,
+      "failed": 0,
+      "skipped": 0,
+      "stdoutBytes": 8163,
+      "stdoutSha256": "779613c42e91ae49be6aeb690297c6b4a8998fc50b7337cc11bcc0215f9b6326",
+      "stderr": "",
+      "coverage": {
+        "kind": "V8 selected function execution counts",
+        "functions": {
+          "requireOptionalSidecar": 505,
+          "verifyMetadataFileText": 7,
+          "verifyChatTemplate": 47,
+          "existingReceipt": 80,
+          "validateTokenizerConfig": 13
+        },
+        "limit": "No whole-project or branch-coverage claim; CLI children explicitly disable coverage."
+      }
+    },
+    "ownedScratch": {
+      "parent": "artifacts/tests/untied-source-acquisition",
+      "roots": [
+        "tinyrustlm-operation-Z9Asi4",
+        "tinyrustlm-operation-8f0BYb",
+        "tinyrustlm-operation-saBnI0",
+        "tinyrustlm-operation-Pgdlow"
+      ],
+      "retiredWithOriginalInProcessHelperOwnership": true,
+      "finalRootFiles": 6,
+      "finalRootLogicalBytes": 3804343,
+      "finalRootAndMarkerVerifiedAbsent": true,
+      "syntheticModelFixtures": "Existing bounded source-acquisition helper created and removed its own small fixtures under D:/LLMs/TinyRustLM/artifacts/tests/source-acquisition."
+    }
+  },
+  "migration": {
+    "soleCurrentInventory": "tinyrustlm.huggingface_supported_candidate_inventory.v4",
+    "soleCurrentReceipt": "tinyrustlm.huggingface_source_acquisition.v4",
+    "oldInventoriesAndReceipts": "Retained unchanged as historical evidence; not accepted as current acquisition inventories.",
+    "currentConsumerChanges": [
+      "discovery/acquisition tests assert v4 and explicit null source-sidecar identities",
+      "source exclusion tests inspect the same exact retained candidate rows directly, before current shape admission",
+      "storage test fixture declares both absent sidecars explicitly"
+    ],
+    "exclusionPolicyChanged": false,
+    "sourceAuthorityGateChanged": false,
+    "converterChanged": false
+  },
+  "publicMetadataCheck": {
+    "inventory": {
+      "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-untied-inventory-20260929.json",
+      "bytes": 4516,
+      "sha256": "be3f23b7688f09fcbc44c810c619ff8dc58b124673def991203b3cf0c279fd6a"
+    },
+    "selectedIndex": 1,
+    "selectedModelId": "reaperdoesntknow/Qwen3-0.6B-Distilled-30B-A3B",
+    "selectedRevision": "7bd368dce6747cd9647a4e05300f3294bc2e9108",
+    "selectedWeightIdentity": "416bbdde787b49106d9c1a20cbd9366a1fae8c95dc8bb64f5ac54a61673142a5",
+    "weightBytesDownloaded": 0,
+    "otherInventoryCandidatesSelected": false
+  },
+  "limits": {
+    "noSourceReferenceExecution": true,
+    "noModelQualification": true,
+    "noRustConversionSupportEstablished": true,
+    "noLicenseClearanceClaim": true,
+    "noDefaultCatalogAdmission": true
+  }
+}

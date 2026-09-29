@@ -32,10 +32,145 @@ function selectionCandidate(name = "One") {
     licenseEvidenceKind: "revision-metadata-plus-apache-authority-text",
     licenseSourceUrl: "https://example.invalid/LICENSE", licenseSha256: sha256(bodies.LICENSE),
     configSha256: sha256(bodies["config.json"]), tokenizer: file("tokenizer.json"),
-    tokenizerConfig: file("tokenizer_config.json"), chatTemplateKind: "revision-chatml-template-v1",
+    tokenizerConfig: file("tokenizer_config.json"), chatTemplateFile: null, generationConfig: null, chatTemplateKind: "revision-chatml-template-v1",
     chatTemplateSha256: sha256(Buffer.from(template)), sourceWeightByteCount: weight.byteCount,
     weightIdentity: sha256(Buffer.from(`${weight.filename}:${weight.byteCount}:${weight.sha256}`)), weightIndex: null, weightFiles: [weight] } };
 }
+
+// The source keeps its template in the publisher's separate file, with no config rewriting.
+function externalTemplateCandidate() {
+  const fixture = selectionCandidate("ExternalTemplate");
+  const template = JSON.parse(fixture.bodies["tokenizer_config.json"]).chat_template;
+  fixture.bodies["tokenizer_config.json"] = Buffer.from('{"tokenizer_class":"Qwen2Tokenizer"}');
+  fixture.bodies["chat_template.jinja"] = Buffer.from(template);
+  fixture.bodies["generation_config.json"] = Buffer.from('{"eos_token_id":[151645,151643],"pad_token_id":151643}');
+  const file = filename => ({ filename, byteCount: fixture.bodies[filename].length,
+    sha256: null, gitBlobId: crypto.createHash("sha1").update(`blob ${fixture.bodies[filename].length}\0`)
+      .update(fixture.bodies[filename]).digest("hex") });
+  fixture.candidate.tokenizerConfig = file("tokenizer_config.json");
+  fixture.candidate.chatTemplateFile = file("chat_template.jinja");
+  fixture.candidate.generationConfig = file("generation_config.json");
+  fixture.candidate.sourceTemplate = "qwen3-0.6b-untied-bpe";
+  return fixture;
+}
+
+test("external template acquisition preserves source bytes and closes resume over template and generation files", async () => {
+  const fixture = externalTemplateCandidate();
+  const storage = createSourceAcquisitionFixture();
+  const requests = [];
+  const fetchImpl = async url => { const name = new URL(url).pathname.split('/').at(-1);
+    requests.push(name); return new Response(fixture.bodies[name]); };
+  try {
+    const receipt = await acquire.acquireCandidate(fixture.candidate, storage.rootPath, { fetchImpl });
+    assert.equal(receipt.schema, "tinyrustlm.huggingface_source_acquisition.v4");
+    assert.deepEqual(receipt.chatTemplateFile, fixture.candidate.chatTemplateFile);
+    assert.deepEqual(receipt.generationConfig, fixture.candidate.generationConfig);
+    const directory = acquire.candidateDirectory(storage.rootPath, fixture.candidate);
+    assert.deepEqual(fs.readFileSync(path.join(directory, "tokenizer_config.json")), fixture.bodies["tokenizer_config.json"]);
+    for (const name of ["chat_template.jinja", "generation_config.json"]) {
+      assert.ok(receipt.files.some(file => file.filename === name));
+      assert.ok(requests.indexOf(name) < requests.indexOf("model.safetensors"));
+    }
+    requests.length = 0;
+    assert.deepEqual(await acquire.acquireCandidate(fixture.candidate, storage.rootPath, { fetchImpl }), receipt);
+    assert.deepEqual(requests, []);
+    for (const name of ["chat_template.jinja", "generation_config.json"]) {
+      fs.writeFileSync(path.join(directory, name), Buffer.alloc(fixture.bodies[name].length, 0x20));
+      await assert.rejects(acquire.acquireCandidate(fixture.candidate, storage.rootPath, { fetchImpl }), /mismatch/);
+      fs.writeFileSync(path.join(directory, name), fixture.bodies[name]);
+    }
+    assert.deepEqual(requests, []);
+  } finally { storage.remove(); }
+});
+
+test("external template admission fails before weights for ambiguity corruption or unsafe file references", async () => {
+  const mutations = [
+    f => { f.candidate.chatTemplateFile.filename = "../chat_template.jinja"; },
+    f => { f.candidate.chatTemplateFile.byteCount = 262145; },
+    f => { f.candidate.generationConfig.filename = "https://example.invalid/generation_config.json"; },
+    f => { f.candidate.generationConfig.byteCount = 262145; },
+    f => { f.bodies["chat_template.jinja"] = Buffer.from("wrong template"); },
+    f => { f.bodies["generation_config.json"] = Buffer.from("wrong settings"); },
+    f => {
+      f.bodies["tokenizer_config.json"] = Buffer.from(JSON.stringify({ chat_template: "also embedded" }));
+      f.candidate.tokenizerConfig = { filename: "tokenizer_config.json", byteCount: f.bodies["tokenizer_config.json"].length,
+        sha256: sha256(f.bodies["tokenizer_config.json"]), gitBlobId: null };
+    }
+  ];
+  for (const mutate of mutations) {
+    const fixture = externalTemplateCandidate();
+    const storage = createSourceAcquisitionFixture();
+    const directory = acquire.candidateDirectory(storage.rootPath, fixture.candidate);
+    mutate(fixture);
+    const requests = [];
+    try {
+      await assert.rejects(acquire.acquireCandidate(fixture.candidate, storage.rootPath, { fetchImpl: async url => {
+        const name = new URL(url).pathname.split('/').at(-1); requests.push(name); return new Response(fixture.bodies[name]);
+      } }));
+      assert.ok(!requests.includes("model.safetensors"));
+      assert.ok(!fs.existsSync(path.join(directory, "source-acquisition.json")));
+    } finally { storage.remove(); }
+  }
+});
+
+test("embedded receipts reject newly added unbound template or generation settings without network", async () => {
+  const fixture = selectionCandidate("UndeclaredSidecar");
+  const storage = createSourceAcquisitionFixture();
+  try {
+    await acquire.acquireCandidate(fixture.candidate, storage.rootPath, { fetchImpl: async url =>
+      new Response(fixture.bodies[new URL(url).pathname.split('/').at(-1)]) });
+    const directory = acquire.candidateDirectory(storage.rootPath, fixture.candidate);
+    for (const name of ["chat_template.jinja", "generation_config.json", "chat_templates"]) {
+      const target = path.join(directory, name);
+      if (name === "chat_templates") fs.mkdirSync(target);
+      else fs.writeFileSync(target, '{}');
+      await assert.rejects(acquire.acquireCandidate(fixture.candidate, storage.rootPath, { fetchImpl: async () => {
+        assert.fail("cached source must never hide a new unbound file by fetching again");
+      } }), /undeclared|unsupported/);
+      if (name === "chat_templates") fs.rmdirSync(target);
+      else fs.unlinkSync(target);
+    }
+  } finally { storage.remove(); }
+});
+
+test("v4 sidecar declarations and obsolete v3 inventory are validated before source I/O", async () => {
+  const storage = createSourceAcquisitionFixture();
+  const fixture = selectionCandidate("V4Sidecars");
+  const fetchImpl = async () => assert.fail("invalid current contract must not request any file");
+  try {
+    for (const key of ["chatTemplateFile", "generationConfig"]) {
+      const candidate = { ...fixture.candidate };
+      delete candidate[key];
+      await assert.rejects(acquire.acquireCandidate(candidate, storage.rootPath, { fetchImpl }), /explicit file identity or null/);
+    }
+    await assert.rejects(acquire.acquireInventory({ schema: "tinyrustlm.huggingface_supported_candidate_inventory.v3",
+      candidates: [fixture.candidate] }, storage.rootPath, { fetchImpl }), /inventory schema/);
+    assert.deepEqual(fs.readdirSync(storage.rootPath), [".fixture-owner"]);
+  } finally { storage.remove(); }
+});
+
+test("correctly hashed but invalid template and generation bytes never admit source weights", async () => {
+  for (const [filename, bytes] of [
+    ["chat_template.jinja", Buffer.from("A plain template with neither supported roles nor ChatML delimiters.")],
+    ["chat_template.jinja", Buffer.from([0xff, 0xfe, 0x80])],
+    ["generation_config.json", Buffer.from('[]')],
+    ["generation_config.json", Buffer.from('{invalid}')]
+  ]) {
+    const fixture = externalTemplateCandidate();
+    fixture.bodies[filename] = bytes;
+    const key = filename === "chat_template.jinja" ? "chatTemplateFile" : "generationConfig";
+    fixture.candidate[key] = { filename, byteCount: bytes.length, sha256: sha256(bytes), gitBlobId: null };
+    if (key === "chatTemplateFile") fixture.candidate.chatTemplateSha256 = sha256(bytes);
+    const storage = createSourceAcquisitionFixture();
+    const requests = [];
+    try {
+      await assert.rejects(acquire.acquireCandidate(fixture.candidate, storage.rootPath, { fetchImpl: async url => {
+        const name = new URL(url).pathname.split('/').at(-1); requests.push(name); return new Response(fixture.bodies[name]);
+      } }));
+      assert.ok(!requests.includes("model.safetensors"));
+    } finally { storage.remove(); }
+  }
+});
 
 // Keep shard bodies synthetic while binding the exact index needed by the real screen consumer.
 function shardedCandidate() {
@@ -141,7 +276,7 @@ test("Git-blob index verification binds fresh bytes and obsolete receipts never 
     return new Response(fixture.bodies[name]); };
   try {
     const receipt = await acquire.acquireCandidate(fixture.candidate, storage.rootPath, { fetchImpl });
-    assert.equal(receipt.schema, "tinyrustlm.huggingface_source_acquisition.v3");
+    assert.equal(receipt.schema, "tinyrustlm.huggingface_source_acquisition.v4");
     assert.equal(receipt.files.find(file => file.filename === "model.safetensors.index.json").sha256, sha256(index));
     const directory = acquire.candidateDirectory(storage.rootPath, fixture.candidate);
     const receiptPath = path.join(directory, "source-acquisition.json");
@@ -156,7 +291,7 @@ test("Git-blob index verification binds fresh bytes and obsolete receipts never 
 
 test("invalid explicit acquisition selection never falls back to downloading candidates", async () => {
   const storage = createSourceAcquisitionFixture();
-  const inventory = { schema: "tinyrustlm.huggingface_supported_candidate_inventory.v3",
+  const inventory = { schema: "tinyrustlm.huggingface_supported_candidate_inventory.v4",
     candidates: [selectionCandidate().candidate] };
   let requests = 0;
   const fetchImpl = async () => { requests++; throw Error("unexpected source request"); };
@@ -182,7 +317,7 @@ test("every selected candidate is validated before the first source request", as
       const candidates = [selectionCandidate().candidate];
       candidates.length = 2;
       if (tail !== undefined) candidates[1] = tail;
-      await assert.rejects(acquire.acquireInventory({ schema: "tinyrustlm.huggingface_supported_candidate_inventory.v3", candidates },
+      await assert.rejects(acquire.acquireInventory({ schema: "tinyrustlm.huggingface_supported_candidate_inventory.v4", candidates },
         storage.rootPath, { fetchImpl: async () => { requests++; throw Error("unexpected source request"); } }),
       /candidate revision is not immutable|candidate is invalid/);
     }
@@ -196,7 +331,7 @@ test("acquisition CLI rejects zero, nonnumeric and empty explicit limits without
   const storage = createSourceAcquisitionFixture();
   try {
     const inventory = path.join(metadata.rootPath, "inventory.json");
-    fs.writeFileSync(inventory, JSON.stringify({ schema: "tinyrustlm.huggingface_supported_candidate_inventory.v3",
+    fs.writeFileSync(inventory, JSON.stringify({ schema: "tinyrustlm.huggingface_supported_candidate_inventory.v4",
       candidates: [{ modelId: "invalid candidate must never be reached" }] }));
     for (const [start, count, message] of [["0", "0", "count"], ["0", "NaN", "count"],
       ["0", "", "count"], ["", "1", "start"], ["NaN", "1", "start"]]) {
@@ -217,7 +352,7 @@ test("acquisition honors explicit slices and omitted selection defaults", async 
     const one = selectionCandidate("One"), two = selectionCandidate("Two");
     const requests = [];
     try {
-      const receipts = await acquire.acquireInventory({ schema: "tinyrustlm.huggingface_supported_candidate_inventory.v3",
+      const receipts = await acquire.acquireInventory({ schema: "tinyrustlm.huggingface_supported_candidate_inventory.v4",
         candidates: [one.candidate, two.candidate] }, storage.rootPath, { ...options,
         fetchImpl: async url => { requests.push(String(url)); return new Response(one.bodies[new URL(url).pathname.split('/').at(-1)]); } });
       assert.deepEqual(receipts.map(receipt => receipt.modelId), expected.map(name => `Example/Selection-${name}`));
@@ -314,7 +449,7 @@ test("resumes pinned files, verifies every digest, and reuses a complete receipt
       sha256: sha256(tokenizerConfig),
       gitBlobId: null
     },
-    chatTemplateKind: "revision-chatml-template-v1",
+    chatTemplateFile: null, generationConfig: null, chatTemplateKind: "revision-chatml-template-v1",
     chatTemplateSha256: sha256(Buffer.from(chatTemplate)),
     sourceWeightByteCount: weight.length,
     weightIdentity: sha256(Buffer.from(`model.safetensors:${weight.length}:${sha256(weight)}`)),
@@ -376,7 +511,7 @@ test("rejects a downloaded source whose pinned digest does not match", async () 
       sha256: sha256(tokenizerConfig),
       gitBlobId: null
     },
-    chatTemplateKind: "revision-chatml-template-v1",
+    chatTemplateFile: null, generationConfig: null, chatTemplateKind: "revision-chatml-template-v1",
     chatTemplateSha256: sha256(Buffer.from(chatTemplate)),
     sourceWeightByteCount: bytes.length,
     weightIdentity: sha256(Buffer.from(`model.safetensors:${bytes.length}:${"d".repeat(64)}`)),
@@ -437,7 +572,7 @@ test("preserves repeated short reads and resumes them on the next acquisition", 
       sha256: sha256(tokenizerConfig),
       gitBlobId: null
     },
-    chatTemplateKind: "revision-chatml-template-v1",
+    chatTemplateFile: null, generationConfig: null, chatTemplateKind: "revision-chatml-template-v1",
     chatTemplateSha256: sha256(Buffer.from(chatTemplate)),
     sourceWeightByteCount: weight.length,
     weightIdentity: sha256(Buffer.from(`model.safetensors:${weight.length}:${sha256(weight)}`)),
