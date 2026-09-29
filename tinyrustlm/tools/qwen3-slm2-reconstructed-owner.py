@@ -945,6 +945,18 @@ class ReconstructedEngine:
             fail("reconstructed-trace-nonfinite")
         return output.reshape(-1)
 
+    def silu(self, value: Any) -> Any:
+        """Evaluate x * sigmoid(x) without a positive exponential for finite float32 x."""
+        np = self.np
+        decay = np.exp(np.negative(np.abs(value)), dtype=np.float32)
+        denominator = np.add(np.float32(1.0), decay, dtype=np.float32)
+        sigmoid = np.where(
+            value >= np.float32(0.0),
+            np.divide(np.float32(1.0), denominator, dtype=np.float32),
+            np.divide(decay, denominator, dtype=np.float32),
+        )
+        return np.multiply(value, sigmoid, dtype=np.float32)
+
     def forward_token(self, token_id: int, position: int) -> tuple[list[tuple[str, int | None, Any]], int]:
         np = self.np
         hidden = self.model.q8_row("model.token-embedding.weight", token_id)
@@ -1001,12 +1013,7 @@ class ReconstructedEngine:
             up = self.model.q8_matvec(
                 "layer.feed-forward.up-projection.weight", feed_normalized, self.chunk_rows, layer
             )
-            sigmoid = np.divide(
-                np.float32(1.0),
-                np.add(np.float32(1.0), np.exp(np.negative(gate), dtype=np.float32), dtype=np.float32),
-                dtype=np.float32,
-            )
-            activated = np.multiply(np.multiply(gate, sigmoid, dtype=np.float32), up, dtype=np.float32)
+            activated = np.multiply(self.silu(gate), up, dtype=np.float32)
             if not bool(np.isfinite(activated).all()):
                 fail("reconstructed-trace-nonfinite")
             records.append(("feed-forward-activated", layer, activated.copy()))
@@ -1369,6 +1376,22 @@ def numpy_self_test() -> None:
     engine.chunk_rows = 4
     engine.key_cache = [[] for _ in range(MODEL_SPEC["layerCount"])]
     engine.value_cache = [[] for _ in range(MODEL_SPEC["layerCount"])]
+    activation_input = np.asarray([
+        -np.finfo(np.float32).max, -1000.0, -100.0, -90.0, -20.0, -2.0,
+        -0.0, 0.0, 2.0, 20.0, 90.0, 100.0, 1000.0, np.finfo(np.float32).max,
+    ], dtype=np.float32)
+    # Overflow and invalid arithmetic must fail; do not silence the production warning gate.
+    with np.errstate(over="raise", invalid="raise", divide="raise"):
+        activated = engine.silu(activation_input)
+    expected = np.asarray([
+        float(value) / (1.0 + math.exp(-float(value))) if value >= 0.0
+        else float(value) * math.exp(float(value)) / (1.0 + math.exp(float(value)))
+        for value in activation_input
+    ], dtype=np.float32)
+    if (activated.dtype != np.float32 or not bool(np.isfinite(activated).all())
+            or not np.allclose(activated, expected, rtol=0.000001, atol=0.0000001)
+            or not bool(np.signbit(activated[6])) or bool(np.signbit(activated[7]))):
+        fail("reconstructed-trace-numpy-self-test-silu")
     value = np.asarray([1.0, -2.0, 3.0, -4.0], dtype=np.float32)
     normalized = engine.rms_norm(value, np.ones(4, dtype=np.float32))
     expected_scale = np.float32(1.0) / np.sqrt(

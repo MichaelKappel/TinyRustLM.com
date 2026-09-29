@@ -110,8 +110,8 @@
       "status": "implementation-prepared-registration-required",
       "path": "tinyrustlm/tools/qwen3-numerical-execution-owner.js",
       "byteLength": 82990,
-      "sha256": "4244154a73332e4efd0426dc6050f093144b74692b30122c8c123976cb30710f",
-      "profileId": "tinyrustlm.qwen3-numerical-execution-owner/5",
+      "sha256": "c5025a68660d355d99c205b5afc0f8e3f49542145cc806862ad67ea03ba0f0ba",
+      "profileId": "tinyrustlm.qwen3-numerical-execution-owner/6",
       "dependencies": [
         {
           "path": "tinyrustlm/tools/canonical-operation-scratch.js",
@@ -165,8 +165,8 @@
     },
     "reconstructedOwner": {
       "path": "tinyrustlm/tools/qwen3-slm2-reconstructed-owner.py",
-      "byteLength": 62192,
-      "sha256": "6dce31b15c1b6a0754b6617eff5ab270a2acf9f90f34269b3a497cb61185352f",
+      "byteLength": 63480,
+      "sha256": "f55248cece78cc454e18deaf081e1106c0d912aa2747d9ef4597ff1b562f0b60",
       "profileId": "tinyrustlm.qwen3-slm2-reconstructed-trace/1",
       "parser": "independent-read-only-SLM2-Q8-registry-and-payload-parser",
       "matrixExecution": "bounded-row-chunk-F32-reconstruction",
@@ -416,7 +416,7 @@
       "sole-owner-invokes-source-reconstructed-scalar-and-read-only-verifier-at-most-once-in-order",
       "preserve-terminal-result-without-retry-overwrite-repair-or-tolerance-change"
     ],
-    "soleOwnerStatus": "current-v5-implementation-requires-fresh-registration",
+    "soleOwnerStatus": "current-v6-implementation-requires-fresh-registration",
     "processCardinalityAuthority": "sole-execution-owner",
     "sourceOutput": "create-only-preserve-partial-on-failure",
     "reconstructedOutput": "create-only-preserve-partial-on-failure",

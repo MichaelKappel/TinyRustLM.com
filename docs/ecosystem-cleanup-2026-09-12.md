@@ -5,6 +5,34 @@ TinyRustLM.com and MiniModel.org. This file retains historical cleanup evidence,
 but optional campaigns, packages, memory and unrelated cleanup are separate.
 Source-only changes and an empty production catalog do not complete delivery.
 
+## C129: actual candidate rejection and stable independent activation
+
+The exact reaper untied source screen executed once from pushed8d20df4 after
+clean registered-root admission. Four of six cases pass. Raw JSON is wrapped in
+Markdown, and the packing plan describes contents and keep/discard choices rather
+than the requested checklist. Root independently reviewed all raw outputs. The
+failed source and 46 total exclusions remain preserved; it is not a default.
+See its development raw/start/execution records and training assessment.
+
+Numerical v5 also executed once from8d20df4. Source and reconstruction each wrote
+seven traces and exited0, but the reconstruction emitted an overflow warning in
+exp(-x) inside SiLU. The existing zero-stderr gate stopped before scalar and
+verification. The run is closed as failure, not adopted as numerical evidence.
+
+Synthetic extreme-input tests reproduce the overflowing arithmetic. The independent
+reconstruction now computes an equivalent sigmoid using exp(-abs(x)); this avoids
+positive exponential overflow for finite float32 inputs. Both signs, finite
+extremes and signed zeros pass against stable float64 math. Independent review
+passes and all38 affected tests pass; the intermediate stale v5 label failure is
+recorded. Shipping runtime, process warning gate and numerical comparison thresholds
+are unchanged. Fresh v6 registration is required. See the v5 failure review.
+
+MiniModel34a5367 pushes tested seed namespace/streaming primitives (69 Node checks,
+including40 PowerShell cases), not a seed upload. Read-only FTPS/public identities
+match; target sentinel and publication wiring remain unfinished. Offline catalog
+recovery is pushed atdc48c6d with final regression validation still in progress.
+Production still has no qualified default or verified real model chat.
+
 ## C128: verified offline assets, exact source acquisition and numerical request correction
 
 Offline public-asset caching is pushed at3729594. Nine focused tests and a real

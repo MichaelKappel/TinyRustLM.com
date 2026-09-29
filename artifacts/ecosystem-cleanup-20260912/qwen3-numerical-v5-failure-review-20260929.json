@@ -1,0 +1,421 @@
+{
+  "schema": "tinyrustlm.qwen3_numerical_diagnostic_review.v1",
+  "observedAtUtc": "2026-09-29T21:03:24.510Z",
+  "terminal": {
+    "allowedClaim": "none",
+    "claim": "no-numerical-pass-claim",
+    "evidenceInventoryBeforeTerminal": [
+      {
+        "byteLength": 2367,
+        "fileName": "binding.json",
+        "sha256": "8a3a69c688102d26e0fbf5bb344c84f6c8d4764e03ee6fd7066504c54b98f47d"
+      },
+      {
+        "byteLength": 1423,
+        "fileName": "reconstructed.process-terminal.json",
+        "sha256": "7c8003dffa11b099f524cd0c1c5c8b932863923f30c37fe8b73d2faccc7b91b6"
+      },
+      {
+        "byteLength": 2504,
+        "fileName": "reconstructed.request.json",
+        "sha256": "e75e0edaa1a2347ee5fa8aeddebf0301fe44ec12f9f487c7b99228cf27d9cce8"
+      },
+      {
+        "byteLength": 223,
+        "fileName": "reconstructed.stderr.bin",
+        "sha256": "0e4f43a38205b676756c1afea8f39d9866d51e3c424ea79e2e9ad1a76b58b726"
+      },
+      {
+        "byteLength": 174,
+        "fileName": "reconstructed.stdout.bin",
+        "sha256": "ab23dbd4dc6b823cc3e526b139803055c53cd9cb4fd072cf9aae4bd8f0000426"
+      },
+      {
+        "byteLength": 1375,
+        "fileName": "scalar.request.json",
+        "sha256": "0801ffd1f0215d849269800750af2665f3d4894585667be429c373ef561661f0"
+      },
+      {
+        "byteLength": 1407,
+        "fileName": "source.process-terminal.json",
+        "sha256": "eed12fe4292b37a1f6ce3950799168844e48fcb3f6002bc8aaed21081746af7f"
+      },
+      {
+        "byteLength": 2546,
+        "fileName": "source.request.json",
+        "sha256": "f5ec3d479e73025058c0f191cb2f31187d74387b342928d8a9edc49c73a07e31"
+      },
+      {
+        "byteLength": 0,
+        "fileName": "source.stderr.bin",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "byteLength": 174,
+        "fileName": "source.stdout.bin",
+        "sha256": "ab23dbd4dc6b823cc3e526b139803055c53cd9cb4fd072cf9aae4bd8f0000426"
+      },
+      {
+        "byteLength": 354,
+        "fileName": "start.json",
+        "sha256": "e27a9710364e9032fed464b3e7d9bfc87870b9a99abbb85ad285343c09582f26"
+      }
+    ],
+    "immutableClosure": {
+      "failedOutputAdoptionAllowed": false,
+      "overwriteAllowed": false,
+      "partialOutputCleanupAllowed": false,
+      "repairAllowed": false,
+      "retryAllowed": false,
+      "thresholdChangeAllowed": false
+    },
+    "launchCounts": {
+      "reconstructed": 1,
+      "scalar": 0,
+      "source": 1,
+      "verifier": 0
+    },
+    "launchedStages": [
+      "source",
+      "reconstructed"
+    ],
+    "operationId": "qwen3-numerical-c1899de-054c86b-20260929-v5",
+    "ownerRequest": {
+      "byteLength": 1560,
+      "sha256": "75d4b6a6e80b87ba8a8e2cc7c0e126a431295071b675dde509761c656bfd94d4"
+    },
+    "prohibitedClaims": [
+      "optimized-native-parity",
+      "browser-wasm-parity",
+      "behavioral-quality",
+      "p2p-availability",
+      "site-release",
+      "campaign-progress"
+    ],
+    "reasonCode": "reconstructed-process-not-pass",
+    "registration": {
+      "byteLength": 25274,
+      "sha256": "850aceedc784499a52210b694176bdde22f96c3aa4a56991921f99247e8316eb"
+    },
+    "registrationSource": {
+      "branch": "codex/model-acquisition-v2",
+      "commit": "8d20df4b77730097bff68408c2feb75e6e3b7407",
+      "fetchHeadExpected": true,
+      "remoteRef": "refs/remotes/origin/codex/model-acquisition-v2",
+      "trackingRef": "origin/codex/model-acquisition-v2",
+      "tree": "d7ab929794dff781343892d3289391ec036e784e"
+    },
+    "schema": "tinyrustlm.qwen3_numerical_execution_terminal.v1",
+    "status": "terminal-failure",
+    "verifierReceipt": null
+  },
+  "processes": {
+    "source": {
+      "argumentsSha256": "bc07f36806239d92f6ff0b28c844817a8319b02285989c6914948aac442ead22",
+      "executableAfter": {
+        "byteLength": 104952,
+        "sha256": "4d6f5f81a4bca11191c4c7c6b43632694d0a4ce74e068619d8fdc161d469859a"
+      },
+      "executableBefore": {
+        "byteLength": 104952,
+        "sha256": "4d6f5f81a4bca11191c4c7c6b43632694d0a4ce74e068619d8fdc161d469859a"
+      },
+      "executableUnchanged": true,
+      "launchCountLimit": 1,
+      "launchOrdinal": 1,
+      "operationId": "qwen3-numerical-c1899de-054c86b-20260929-v5",
+      "outcome": {
+        "durationMilliseconds": 111628,
+        "exitCode": 0,
+        "finishedAtUtc": "2026-09-29T20:55:44.563Z",
+        "killedForOverflow": false,
+        "processStarted": true,
+        "signal": null,
+        "spawnCode": null,
+        "stage": "source",
+        "startedAtUtc": "2026-09-29T20:53:52.935Z",
+        "stderr": {
+          "byteLength": 0,
+          "overflow": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "byteLength": 174,
+          "overflow": false,
+          "sha256": "ab23dbd4dc6b823cc3e526b139803055c53cd9cb4fd072cf9aae4bd8f0000426"
+        },
+        "streamCode": null,
+        "termination": {
+          "method": null,
+          "requested": false
+        },
+        "timedOut": false
+      },
+      "overwriteAllowed": false,
+      "repairAllowed": false,
+      "retryAllowed": false,
+      "schema": "tinyrustlm.qwen3_numerical_execution_process_terminal.v1",
+      "stage": "source"
+    },
+    "reconstructed": {
+      "argumentsSha256": "1a04e691a556bc18ad380d31f0d2a001ae5baec93c97125c7b4ad0734b52d891",
+      "executableAfter": {
+        "byteLength": 104952,
+        "sha256": "4d6f5f81a4bca11191c4c7c6b43632694d0a4ce74e068619d8fdc161d469859a"
+      },
+      "executableBefore": {
+        "byteLength": 104952,
+        "sha256": "4d6f5f81a4bca11191c4c7c6b43632694d0a4ce74e068619d8fdc161d469859a"
+      },
+      "executableUnchanged": true,
+      "launchCountLimit": 1,
+      "launchOrdinal": 1,
+      "operationId": "qwen3-numerical-c1899de-054c86b-20260929-v5",
+      "outcome": {
+        "durationMilliseconds": 104319,
+        "exitCode": 0,
+        "finishedAtUtc": "2026-09-29T20:57:28.887Z",
+        "killedForOverflow": false,
+        "processStarted": true,
+        "signal": null,
+        "spawnCode": null,
+        "stage": "reconstructed",
+        "startedAtUtc": "2026-09-29T20:55:44.568Z",
+        "stderr": {
+          "byteLength": 223,
+          "overflow": false,
+          "sha256": "0e4f43a38205b676756c1afea8f39d9866d51e3c424ea79e2e9ad1a76b58b726"
+        },
+        "stdout": {
+          "byteLength": 174,
+          "overflow": false,
+          "sha256": "ab23dbd4dc6b823cc3e526b139803055c53cd9cb4fd072cf9aae4bd8f0000426"
+        },
+        "streamCode": null,
+        "termination": {
+          "method": null,
+          "requested": false
+        },
+        "timedOut": false
+      },
+      "overwriteAllowed": false,
+      "repairAllowed": false,
+      "retryAllowed": false,
+      "schema": "tinyrustlm.qwen3_numerical_execution_process_terminal.v1",
+      "stage": "reconstructed"
+    }
+  },
+  "preservedEvidence": {
+    "owner": [
+      {
+        "fileName": "binding.json",
+        "byteLength": 2367,
+        "sha256": "8a3a69c688102d26e0fbf5bb344c84f6c8d4764e03ee6fd7066504c54b98f47d"
+      },
+      {
+        "fileName": "owner-terminal.json",
+        "byteLength": 3336,
+        "sha256": "5ae3bcb5ed2a77cf715f0fd2a9ceac4e0e58bfa3efa06507cf772965ab91e278"
+      },
+      {
+        "fileName": "reconstructed.process-terminal.json",
+        "byteLength": 1423,
+        "sha256": "7c8003dffa11b099f524cd0c1c5c8b932863923f30c37fe8b73d2faccc7b91b6"
+      },
+      {
+        "fileName": "reconstructed.request.json",
+        "byteLength": 2504,
+        "sha256": "e75e0edaa1a2347ee5fa8aeddebf0301fe44ec12f9f487c7b99228cf27d9cce8"
+      },
+      {
+        "fileName": "reconstructed.stderr.bin",
+        "byteLength": 223,
+        "sha256": "0e4f43a38205b676756c1afea8f39d9866d51e3c424ea79e2e9ad1a76b58b726"
+      },
+      {
+        "fileName": "reconstructed.stdout.bin",
+        "byteLength": 174,
+        "sha256": "ab23dbd4dc6b823cc3e526b139803055c53cd9cb4fd072cf9aae4bd8f0000426"
+      },
+      {
+        "fileName": "scalar.request.json",
+        "byteLength": 1375,
+        "sha256": "0801ffd1f0215d849269800750af2665f3d4894585667be429c373ef561661f0"
+      },
+      {
+        "fileName": "source.process-terminal.json",
+        "byteLength": 1407,
+        "sha256": "eed12fe4292b37a1f6ce3950799168844e48fcb3f6002bc8aaed21081746af7f"
+      },
+      {
+        "fileName": "source.request.json",
+        "byteLength": 2546,
+        "sha256": "f5ec3d479e73025058c0f191cb2f31187d74387b342928d8a9edc49c73a07e31"
+      },
+      {
+        "fileName": "source.stderr.bin",
+        "byteLength": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "fileName": "source.stdout.bin",
+        "byteLength": 174,
+        "sha256": "ab23dbd4dc6b823cc3e526b139803055c53cd9cb4fd072cf9aae4bd8f0000426"
+      },
+      {
+        "fileName": "start.json",
+        "byteLength": 354,
+        "sha256": "e27a9710364e9032fed464b3e7d9bfc87870b9a99abbb85ad285343c09582f26"
+      }
+    ],
+    "source": [
+      {
+        "fileName": "case-000-step-000.f32le",
+        "byteLength": 2106880,
+        "sha256": "7d6ec56005cc9da26fbd361d318159b6cf4bcd5af8e03fcb149a93f8b74f675d"
+      },
+      {
+        "fileName": "case-001-step-000.f32le",
+        "byteLength": 2106880,
+        "sha256": "507fe7bb94bad67ee214459437d63c51f4b37a901035ccc61fe96dd4ff797275"
+      },
+      {
+        "fileName": "case-001-step-001.f32le",
+        "byteLength": 2106880,
+        "sha256": "e850f34835da480ab8628d569f5e0c6bfcdbdb3a878cbbd69136dde2ce105815"
+      },
+      {
+        "fileName": "case-002-step-000.f32le",
+        "byteLength": 2106880,
+        "sha256": "83e97ba8f53b1fc7256498f5a6c60243450654e38003a4a5bc19a8a6cf603a20"
+      },
+      {
+        "fileName": "case-002-step-001.f32le",
+        "byteLength": 2106880,
+        "sha256": "fb5b8c5c13d472f33f7de7ed45f476750bda5dbe834567e5b77ad335d41479b9"
+      },
+      {
+        "fileName": "case-002-step-002.f32le",
+        "byteLength": 2106880,
+        "sha256": "aad8edaf1018422c6d34caf7a673333e0bc4eb45c98a7fc1e7727ca1e86ddf38"
+      },
+      {
+        "fileName": "case-002-step-003.f32le",
+        "byteLength": 2106880,
+        "sha256": "4774525080f1e27ab0aa850eac73ecc7ceddb78ae443c3b45fe7c36487a385b9"
+      },
+      {
+        "fileName": "probe.json",
+        "byteLength": 547916,
+        "sha256": "326c7d5b355a9b11eca9c3074c91504cc087df21a1f00c1c1ebe5e5c92d616b8"
+      }
+    ],
+    "reconstructed": [
+      {
+        "fileName": "case-000-step-000.f32le",
+        "byteLength": 2106880,
+        "sha256": "b3a5ef8a318875b3d305613028423fa649193fe570ae9fa728ab84243b9d6d51"
+      },
+      {
+        "fileName": "case-001-step-000.f32le",
+        "byteLength": 2106880,
+        "sha256": "662f898b1884ed90aff8ba14d4c1c900930a3f078a31c85719a74e209fa43213"
+      },
+      {
+        "fileName": "case-001-step-001.f32le",
+        "byteLength": 2106880,
+        "sha256": "9551129a8a4483ea1cb80d8a8256cb359ff9a7b52a2e5942d698078a86cdb1dd"
+      },
+      {
+        "fileName": "case-002-step-000.f32le",
+        "byteLength": 2106880,
+        "sha256": "50608046d9d16e8edf735cc003f22046e92e1ef9b3c927752292de49b644ad09"
+      },
+      {
+        "fileName": "case-002-step-001.f32le",
+        "byteLength": 2106880,
+        "sha256": "c5645a0725c53444186ca32636db61de380767b30a39923064edc391dfcc404e"
+      },
+      {
+        "fileName": "case-002-step-002.f32le",
+        "byteLength": 2106880,
+        "sha256": "067d8587adb451d466dc161c0256f4a0bac39fd8312b9cee0c114e2c10cd8d26"
+      },
+      {
+        "fileName": "case-002-step-003.f32le",
+        "byteLength": 2106880,
+        "sha256": "6443866f0fc24f7cd2e9beb834d8c954dfbb59808c86c975f9054b6376379b6a"
+      },
+      {
+        "fileName": "probe.json",
+        "byteLength": 547576,
+        "sha256": "1358985b3278035687eb8a11c3276cc7f7b8c6b63dd24c1a5fe3fdf4daf0d388"
+      }
+    ]
+  },
+  "defect": {
+    "summary": "Reconstructed SiLU evaluates exp(-x) for very negative finite float32 x, which overflows and emits RuntimeWarning. Both arms completed seven traces; exit0 with nonempty stderr correctly fails existing process gate. Scalar and verifier never launched.",
+    "warning": "RuntimeWarning: overflow encountered in exp",
+    "sourceLine": 1006,
+    "classification": "independent reconstruction arithmetic stability defect; no numerical comparison or product pass"
+  },
+  "correction": {
+    "scope": "Independent Python reconstructed owner only; shipping runtime unchanged.",
+    "formula": "d = exp(-abs(x)); sigmoid(x) = x>=0 ? 1/(1+d) : d/(1+d); SiLU = x*sigmoid(x).",
+    "why": "For finite float32 x, the exponential argument is nonpositive, d is in [0,1], and both eager branches have denominator in [1,2].",
+    "processWarningGateUnchanged": true,
+    "comparisonThresholdsUnchanged": true,
+    "closedOutputsChanged": false,
+    "freshRegistrationRequired": "v6"
+  },
+  "validation": {
+    "baseline": {
+      "toolOutput": "b0384a",
+      "exitCode": 1,
+      "reason": "Synthetic original arithmetic raises FloatingPointError: overflow encountered in exp."
+    },
+    "correctedKernel": {
+      "toolOutput": "c74574",
+      "exitCode": 0
+    },
+    "affectedSuites": {
+      "toolOutput": "ed8a01",
+      "passed": 38,
+      "failed": 0,
+      "skipped": 0,
+      "durationMilliseconds": 11636.4782
+    },
+    "intermediateFailure": "37/38 passed; current profile label still said v5. Corrected current label and reran38/38; preserved historical owner identity.",
+    "syntheticCases": "Both branches, +/-float32 max, +/-1000, +/-100, +/-90, +/-20, +/-2, and signed zeros under error-on-overflow/invalid/divide against a stable float64 math reference.",
+    "limits": "Synthetic allclose is not bit parity. No real trace comparison completed. No current full-suite or whole-file coverage percentage claimed.",
+    "independentReview": {
+      "reviewer": "/root/candidate_runtime_boundary",
+      "method": "read-only exact diff and arithmetic review; no model rerun or closed trace inspection",
+      "result": "pass",
+      "notes": "Both eager np.where branches remain finite; caller still rejects nonfinite activation. Near-zero absolute tolerance is permissive and does not establish bit parity."
+    }
+  },
+  "currentFiles": [
+    {
+      "path": "tinyrustlm/tools/qwen3-slm2-reconstructed-owner.py",
+      "byteLength": 63480,
+      "sha256": "f55248cece78cc454e18deaf081e1106c0d912aa2747d9ef4597ff1b562f0b60"
+    },
+    {
+      "path": "tinyrustlm/tools/qwen3-numerical-execution-owner.js",
+      "byteLength": 82990,
+      "sha256": "c5025a68660d355d99c205b5afc0f8e3f49542145cc806862ad67ea03ba0f0ba"
+    },
+    {
+      "path": "contracts/vnext/qwen3-numerical-differential-profile.v2.json",
+      "byteLength": 18093,
+      "sha256": "81244cc3da9e0d1db47172bf85dca554118cbd45cadc8bbb06a2a62f539606dd"
+    }
+  ],
+  "claims": {
+    "numericalParity": false,
+    "modelQuality": false,
+    "browserChat": false,
+    "productionDeployed": false
+  }
+}

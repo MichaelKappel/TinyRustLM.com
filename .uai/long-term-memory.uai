@@ -54,12 +54,12 @@ pointers:
   - id: cleanup-progress
     path: docs/ecosystem-cleanup-2026-09-12.md
     label: Ecosystem cleanup progress
-    summary: Open for C126 actual empty production startup, two more exact-source failures and MiniModel publication preparation; C123 full standard2758/2758 and C114 deployment remain historical evidence.
+    summary: C129 records the actual reaper4/6 failure, closed numerical v5 activation warning and tested stable correction; no production default.
     authority: owner_authorized_progress_record
     review_state: reviewed_for_routing_and_identity
     status: current
-    last_reviewed_utc: 2026-09-29T20:39:40.349Z
-    sha256: 52c536d7e0bd50a55d0e66ab37ddd8cdeb84b4149773917fc81b3b34a6adda7c
+    last_reviewed_utc: 2026-09-29T21:03:24.561Z
+    sha256: dc40367a38ffe8a47da36c17ef0e0eddda22cf447bac68f97887df38b4cfbee5
   - id: source-lock
     path: contracts/vnext/qwen3-0.6b-base-source-lock.v2.json
     label: Current diagnostic source identity
@@ -76,8 +76,8 @@ pointers:
     authority: current_experiment_contract
     review_state: reviewed_for_routing_and_identity
     status: pending_material_execution
-    last_reviewed_utc: 2026-09-29T20:39:40.350Z
-    sha256: 8a529f54c844175138b33d69df3e0a7e704efb6130212b52cdd502f4d92408fd
+    last_reviewed_utc: 2026-09-29T21:03:24.562Z
+    sha256: 81244cc3da9e0d1db47172bf85dca554118cbd45cadc8bbb06a2a62f539606dd
   - id: numerical-environment
     path: contracts/vnext/qwen3-numerical-oracle-environment-lock.v2.json
     label: Current reference environment lock
