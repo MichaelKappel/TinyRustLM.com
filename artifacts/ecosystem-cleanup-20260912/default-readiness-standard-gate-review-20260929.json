@@ -1,0 +1,301 @@
+{
+  "schema": "tinyrustlm.default_readiness_standard_gate_review.v1",
+  "recordedAtUtc": "2026-09-29T21:40:19.901Z",
+  "decision": "The corrected local standard partition passes; retain the failed environment run and the separately tested rejection-registry update.",
+  "command": "node tinyrustlm/tools/run-vnext-unit-test-gate.js standard",
+  "source": {
+    "earlierRunCommit": "5faa851d8d46135507e96297131c2bda2d69528a",
+    "correctedRunLaunchCommit": "c7d0f05f93913d65bbc19a0cc5859c886a4fae4a",
+    "correctedRunTerminalCommit": "98feb4b45d7d8c8a3fb1e81ae5c1c3a386460da6",
+    "trackedDiffAtTerminal": "",
+    "earlierToLaunchChanges": "One intervening commit added three candidate plan/metadata evidence files; no production or test implementation changed.",
+    "duringRunCommits": [
+      "98feb4b45d7d8c8a3fb1e81ae5c1c3a386460da6"
+    ],
+    "duringRunChanges": [
+      {
+        "status": "M",
+        "path": ".gitattributes"
+      },
+      {
+        "status": "A",
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-thinking-sft-combined-execution-20260929.json"
+      },
+      {
+        "status": "A",
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-thinking-sft-combined-start-20260929.json"
+      },
+      {
+        "status": "A",
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-thinking-sft-development-raw-20260929.json"
+      },
+      {
+        "status": "A",
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-thinking-sft-development-stderr-20260929.txt"
+      },
+      {
+        "status": "A",
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-thinking-sft-development-stdout-20260929.txt"
+      },
+      {
+        "status": "A",
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-thinking-sft-preflight-20260929.json"
+      },
+      {
+        "status": "A",
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-thinking-sft-preflight-stderr-20260929.txt"
+      },
+      {
+        "status": "A",
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-thinking-sft-source-acquisition-20260929.json"
+      },
+      {
+        "status": "A",
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-thinking-sft-tracked-source-before-20260929.json"
+      },
+      {
+        "status": "M",
+        "path": "contracts/vnext/source-candidate-exclusions.v1.json"
+      },
+      {
+        "status": "M",
+        "path": "tinyrustlm/tests/source-candidate-exclusions.test.js"
+      },
+      {
+        "status": "A",
+        "path": "tinyrustlm/training/qwen3-reaper-thinking-sft-source-development-screen-v1/assessment-control-v1.json"
+      }
+    ],
+    "interpretation": "This is not an exact all-tree run of either endpoint commit. The running standard suite had already executed the prior 46-entry exclusion test; the final 47-entry registry and updated test are covered by the separate 14-test run below. Other changes during the run were candidate evidence/assessment and exact raw-file Git attributes. No production implementation changed.",
+    "activeInputIdentities": [
+      {
+        "path": "contracts/vnext/source-candidate-exclusions.v1.json",
+        "before": {
+          "byteLength": 21075,
+          "sha256": "a100ff8125cb8a7b02bf0ced02a539894f28b307b92af2ac88d7bbeccf9ca58b"
+        },
+        "after": {
+          "byteLength": 21578,
+          "sha256": "78219ff15919c88cfe9f0474cc4ecaaa35f3ea6f3fc2c936a4fb882d08e6ee03"
+        }
+      },
+      {
+        "path": "tinyrustlm/tests/source-candidate-exclusions.test.js",
+        "before": {
+          "byteLength": 8452,
+          "sha256": "d71eaa75c7e4c9bb18376718d0480b0736de28d8325d118b9db3c8bfc317ee6c"
+        },
+        "after": {
+          "byteLength": 8506,
+          "sha256": "2d2001054c2ad844ba77b751f2dcfb7d34f3313a6e7be54b68e48ce52149e625"
+        }
+      }
+    ]
+  },
+  "earlierFailure": {
+    "outcome": "fail",
+    "stderrCode": "unit_gate_standard_tests_failed",
+    "tests": 2649,
+    "passed": 2511,
+    "failed": 134,
+    "skipped": 4,
+    "cancelled": 0,
+    "todo": 0,
+    "nodeDurationMilliseconds": 445039.1291,
+    "outerDurationMillisecondsReportedByParent": 472686,
+    "logs": [
+      {
+        "path": "artifacts/verification/default-readiness-standard-20260929-5faa851.stdout.log",
+        "byteLength": 396483,
+        "sha256": "888825d6515938ceab3ec95908d566c745d9d5c90ca88dd2d1b64e5c8c37a483"
+      },
+      {
+        "path": "artifacts/verification/default-readiness-standard-20260929-5faa851.stderr.log",
+        "byteLength": 32,
+        "sha256": "3cdd49a97c1ada9147f350207aa383cee8b15b81b2e27ec2baeb0bf067f82063"
+      }
+    ],
+    "classification": {
+      "detailedFailureSections": 130,
+      "note": "The 134 aggregate failed tests include failed parent containers; do not equate that aggregate with the 130 detailed final error sections.",
+      "groups": [
+        {
+          "count": 46,
+          "cause": "directory flush helper build failed: ENOENT"
+        },
+        {
+          "count": 5,
+          "cause": "test-file bootstrap failure from the missing directory-flush helper"
+        },
+        {
+          "count": 23,
+          "cause": "spawnSync cargo ENOENT"
+        },
+        {
+          "count": 23,
+          "cause": "where.exe cargo.exe could not find cargo"
+        },
+        {
+          "count": 19,
+          "cause": "archive helper unavailable with ENOENT"
+        },
+        {
+          "count": 4,
+          "cause": "rustup proxy discovery failed"
+        },
+        {
+          "count": 2,
+          "cause": "spawn python.exe ENOENT"
+        },
+        {
+          "count": 5,
+          "cause": "temporary output was not an absolute child of canonical project artifacts"
+        },
+        {
+          "count": 1,
+          "cause": "rustc unavailable"
+        },
+        {
+          "count": 1,
+          "cause": "cargo.exe unavailable through vector launcher"
+        },
+        {
+          "count": 1,
+          "cause": "generic vector regression child failure; a separate underlying cause was not established"
+        }
+      ],
+      "skips": [
+        "Bash readiness without selected WSL distribution",
+        "Synthetic conversation without canonical tokenizer/template dependency directory",
+        "Bash UI adapter without selected WSL distribution",
+        "Real Visual Studio observation without explicit environment opt-in"
+      ],
+      "conclusion": "Missing prerequisites prevented broad execution. This run did not establish product failures. Preserve its failure rather than relabel it as a pass."
+    }
+  },
+  "correctedStandard": {
+    "exitCode": 0,
+    "signal": null,
+    "startedAtUtc": "2026-09-29T21:22:34.727Z",
+    "completedAtUtc": "2026-09-29T21:37:28.693Z",
+    "outerDurationMilliseconds": 893966,
+    "nodeDurationMilliseconds": 861937.8086,
+    "tests": 2788,
+    "passed": 2788,
+    "failed": 0,
+    "skipped": 0,
+    "cancelled": 0,
+    "todo": 0,
+    "logs": [
+      {
+        "path": "artifacts/verification/default-readiness-standard-prerequisites-20260929-c7d0f05.stdout.log",
+        "byteLength": 217723,
+        "sha256": "9d045dd9961d4431ef68e25a858d76eff27af0425480dd1ebc6321b9ba4ec5fd"
+      },
+      {
+        "path": "artifacts/verification/default-readiness-standard-prerequisites-20260929-c7d0f05.stderr.log",
+        "byteLength": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ],
+    "prerequisites": {
+      "previousSuccessfulEnvironmentReceipt": "artifacts/ecosystem-cleanup-20260912/empty-test-folder-and-standard-gate-review-20260928.json",
+      "cargoHome": "C:\\Users\\AI\\.cargo",
+      "rustupHome": "C:\\Users\\AI\\.rustup",
+      "rustupToolchain": "stable-x86_64-pc-windows-msvc",
+      "cargoExecutable": "C:\\Users\\AI\\.cargo\\bin\\cargo.exe",
+      "rustcExecutable": "C:\\Users\\AI\\.cargo\\bin\\rustc.exe",
+      "rustupExecutable": "C:\\Users\\AI\\.cargo\\bin\\rustup.exe",
+      "cargoTargetDir": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\verification\\numerical-build-20260928",
+      "pathPrefixes": [
+        "C:\\Users\\AI\\.cargo\\bin",
+        "C:\\Users\\AI\\.rustup\\toolchains\\stable-x86_64-pc-windows-msvc\\bin",
+        "E:\\Source\\Python\\.runtimes\\Python312"
+      ],
+      "playwrightBrowsersPath": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\browser-packages\\playwright",
+      "playwrightChannel": "unset",
+      "wslDistribution": "OSM-Ubuntu",
+      "realMsvcEnvironmentObservation": "1",
+      "privateCompositionRoot": "D:\\LLMs\\TinyRustLM\\experiments\\TinyRustLM-vnext-private\\qwen3-composition-c1899de-908e73f-20260826-v12",
+      "privateCompositionPurpose": "Explicit structural WASM activation and canonical tokenizer/template dependencies for synthetic conversation; no real model generation or qualification.",
+      "numericalOraclePython": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\external\\qwen3-numerical-oracle\\environment\\Scripts\\python.exe",
+      "nodeV8Coverage": "explicitly empty",
+      "pythonDontWriteBytecode": "1",
+      "gitTrust": "Process-local existing Git config variables cleared; safe.directory reset followed by exactly seven canonical roots.",
+      "gitSafeDirectories": [
+        "E:/Source/Rust/TinyRustLM.com",
+        "E:/Source/Rust/TinyRustLM.MiRust.com",
+        "E:/Source/Rust/MiniModel.org",
+        "E:/Source/Rust/MiniModel.MiRust.com",
+        "E:/Source/Rust/MiRust.com",
+        "E:/Source/Rust/Runtime.MiRust.com",
+        "E:/Source/Rust/LMComposer.com"
+      ],
+      "tempAndTmp": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\verification\\full-standard-recheck\\tinyrustlm-operation-h2BgRK"
+    }
+  },
+  "postChangeExclusions": {
+    "command": "node --test --test-reporter=spec tinyrustlm/tests/source-candidate-exclusions.test.js",
+    "sourceCommit": "98feb4b45d7d8c8a3fb1e81ae5c1c3a386460da6",
+    "startedAtUtc": "2026-09-29T21:38:24.832Z",
+    "completedAtUtc": "2026-09-29T21:38:25.015Z",
+    "exitCode": 0,
+    "signal": null,
+    "tests": 14,
+    "passed": 14,
+    "failed": 0,
+    "skipped": 0,
+    "cancelled": 0,
+    "todo": 0,
+    "nodeDurationMilliseconds": 134.3085,
+    "logs": [
+      {
+        "path": "artifacts/verification/default-readiness-exclusions-20260929-98feb4b.stdout.log",
+        "byteLength": 1716,
+        "sha256": "304ce0b9eec2079e344133275007b3bfcb782773277d49cbfa086e8c0ae29503"
+      },
+      {
+        "path": "artifacts/verification/default-readiness-exclusions-20260929-98feb4b.stderr.log",
+        "byteLength": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ]
+  },
+  "logPublicationReview": {
+    "method": "Read-only use of the existing scanner's eight generic credential patterns over UTF-8, Latin-1, and aligned/shifted UTF-16LE views, plus bounded diagnostic review; not a CampaignEvidenceStore secret-scan receipt.",
+    "rulesSource": {
+      "path": "tinyrustlm/tools/public-evidence-secret-scan.js",
+      "byteLength": 21562,
+      "sha256": "97d94d20fec39776e18ab98a46448514246f56328d22b0b6dc8f121ab0e9191d"
+    },
+    "artifactsReviewed": 6,
+    "byteLength": 615954,
+    "patternFindings": 0,
+    "credentialFilesRead": false,
+    "knownSecretValuesLoaded": false,
+    "observations": "Logs contain test names, assertions, failure diagnostics, tool paths and summaries. No model payload bytes, private inference output, or NUL bytes observed. The only URL fragment is loopback HTTP in the original failed log. All six files use LF-only line endings.",
+    "recommendation": "Preserve these exact six raw log paths and hashes in Git. Do not replace the failed log or claim the generic pattern review proves universal absence of secrets."
+  },
+  "cleanup": {
+    "ownedTemporaryRoot": "artifacts/verification/full-standard-recheck/tinyrustlm-operation-h2BgRK",
+    "method": "Original ownership object retained in the launcher; removeOwnedTemporaryDirectory called after terminal child closure.",
+    "rootAbsent": true,
+    "markerAbsent": true,
+    "preexistingBuildTargetRetained": true,
+    "historicalPolicyBlockedPathsRetried": false,
+    "focusedExclusionRunCreatedModelOrScratchOutput": false
+  },
+  "limits": {
+    "standardPartitionOnly": true,
+    "releaseSurfacePartitionIncluded": false,
+    "appUnderscoreTestFileIncluded": false,
+    "fullRepositoryCoverageMeasured": false,
+    "realModelGenerated": false,
+    "numericalParityEstablished": false,
+    "defaultModelQualified": false,
+    "miniModelLiveSeedEstablished": false,
+    "websitesPublished": false,
+    "visualParityEstablished": false
+  },
+  "lesson": "Admit the actual child environment before a full run: compiler tools, Python, canonical absolute output roots, pinned browser, selected WSL and explicit fixture opt-ins. Preserve setup failures. Additive outcome evidence does not require replaying unchanged tests, but changed registry/test inputs need exact provenance and focused validation."
+}
