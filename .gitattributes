@@ -273,3 +273,5 @@ artifacts/ecosystem-cleanup-20260912/qwen2.5-coder-0.5b-development-stderr-20260
 /artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-v3-development-raw-20260929.json -text
 /artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-v3-preflight-20260929.json -text
 /artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-v3-development-stderr-20260929.txt -text
+/artifacts/ecosystem-cleanup-20260912/scalar-silu-native-build-20260929.stdout.txt -text
+/artifacts/ecosystem-cleanup-20260912/scalar-silu-native-build-20260929.stderr.txt -text

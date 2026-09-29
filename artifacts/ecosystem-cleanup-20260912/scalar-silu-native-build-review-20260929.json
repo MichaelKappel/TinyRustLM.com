@@ -1,0 +1,45 @@
+{
+  "schema": "tinyrustlm.scalar_silu_native_build.v1",
+  "sourceCommit": "da495703a1951f0bba9a491e42b9af333112039b",
+  "sourceTree": "c71e158872a78e67eb435c1b2a8d90151c2187d1",
+  "locked": true,
+  "offline": true,
+  "profile": "release",
+  "args": [
+    "build",
+    "--release",
+    "--locked",
+    "--offline",
+    "-p",
+    "tinyrustlm-numerical-probe",
+    "-p",
+    "tinyrustlm-native"
+  ],
+  "exitCode": 0,
+  "artifacts": [
+    {
+      "path": "artifacts/verification/scalar-silu-build-20260929/release/tinyrustlm-numerical-probe.exe",
+      "byteLength": 320000,
+      "sha256": "47e102e783a67ca5feaf10793065f52be857c8eee173cf94dd1d7b10831ec033"
+    },
+    {
+      "path": "artifacts/verification/scalar-silu-build-20260929/release/tinyrustlm_native.dll",
+      "byteLength": 1283072,
+      "sha256": "d64295fce711f459371ec7cb34c9bc38427fcadbf9016611ada69dbedfb288bd"
+    }
+  ],
+  "logs": [
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/scalar-silu-native-build-20260929.stdout.txt",
+      "byteLength": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/scalar-silu-native-build-20260929.stderr.txt",
+      "byteLength": 3222,
+      "sha256": "ee5ca2e7e00d30be4b50b897374d10c2ce8a684e0422c9c44807d5631d8894e9"
+    }
+  ],
+  "oldProbePreserved": true,
+  "modelExecuted": false
+}
