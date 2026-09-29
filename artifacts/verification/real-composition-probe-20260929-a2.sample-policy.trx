@@ -1,0 +1,109 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="049db463-f5eb-4ec9-8f87-22d1ffa9f191" name="isolated-build@PLUTO 2026-09-29 15:32:13" runUser="PLUTO\Michael" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-09-29T15:32:13.3339592-07:00" queuing="2026-09-29T15:32:13.3339595-07:00" start="2026-09-29T15:32:10.3946406-07:00" finish="2026-09-29T15:32:13.4847198-07:00" />
+  <TestSettings name="default" id="6d4a7a9f-50f5-4296-9eb4-1aecd3969403">
+    <Deployment runDeploymentRoot="isolated-build_PLUTO_2026-09-29_15_32_13" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="36c9e299-72f2-47c0-b32c-a98ce1e5930f" testId="5e671d57-b8ce-ed42-daff-04513e507aac" testName="TinyRustLM.Core.Tests.ConversationProbeTests.FailureIsCapturedAndNeverRetried(failure: &quot;bound&quot;)" computerName="PLUTO" duration="00:00:00.0004682" startTime="2026-09-29T15:32:13.2796712-07:00" endTime="2026-09-29T15:32:13.2796714-07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="36c9e299-72f2-47c0-b32c-a98ce1e5930f" />
+    <UnitTestResult executionId="6a00689d-2e43-4597-86d9-01b3387eb2e2" testId="517c8631-3d15-da20-0d3f-3c38df493338" testName="TinyRustLM.Core.Tests.ConversationProbeTests.BoundsTheFrozenProtocolBeforeExecution" computerName="PLUTO" duration="00:00:00.0020956" startTime="2026-09-29T15:32:13.3108942-07:00" endTime="2026-09-29T15:32:13.3108943-07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="6a00689d-2e43-4597-86d9-01b3387eb2e2" />
+    <UnitTestResult executionId="c8857e9c-1c82-4019-bae8-e63ce009d1c5" testId="f095056c-067d-a99b-73c7-3b6fd5ce61dc" testName="TinyRustLM.Core.Tests.ConversationProbeTests.CapturesActualHistoryInOneSessionAndNeverGradesIt" computerName="PLUTO" duration="00:00:00.0079393" startTime="2026-09-29T15:32:13.3113532-07:00" endTime="2026-09-29T15:32:13.3113533-07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="c8857e9c-1c82-4019-bae8-e63ce009d1c5" />
+    <UnitTestResult executionId="510ff38f-8c48-423c-ac74-843bb1783fb6" testId="b68e4a93-acf3-9aed-2868-e37ea5db5692" testName="TinyRustLM.Core.Tests.ConversationProbeTests.FailureIsCapturedAndNeverRetried(failure: &quot;error&quot;)" computerName="PLUTO" duration="00:00:00.1142455" startTime="2026-09-29T15:32:13.2716345-07:00" endTime="2026-09-29T15:32:13.2716555-07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="510ff38f-8c48-423c-ac74-843bb1783fb6" />
+    <UnitTestResult executionId="a2e55923-f083-4b78-bf7a-894f6078ab3f" testId="54e9ed8c-19e1-2a7d-2dee-6c4462610138" testName="TinyRustLM.Core.Tests.ConversationProbeTests.CancelsAndContinuesWithoutRepeatingGeneration" computerName="PLUTO" duration="00:00:00.0009720" startTime="2026-09-29T15:32:13.2824046-07:00" endTime="2026-09-29T15:32:13.2824047-07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="a2e55923-f083-4b78-bf7a-894f6078ab3f" />
+    <UnitTestResult executionId="c8ff74cb-879b-41b9-8312-9c2bc0533ea5" testId="e8362b1e-b8c1-7bfb-77ad-d0c550193ed5" testName="TinyRustLM.Core.Tests.ConversationProbeTests.ResetCreatesASeparateRuntime" computerName="PLUTO" duration="00:00:00.0010742" startTime="2026-09-29T15:32:13.2831785-07:00" endTime="2026-09-29T15:32:13.2831786-07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="c8ff74cb-879b-41b9-8312-9c2bc0533ea5" />
+    <UnitTestResult executionId="251804d0-909c-403e-8121-43cd0d27e95d" testId="d3d33d61-fbdd-a731-cd3e-e949d23b29ec" testName="TinyRustLM.Core.Tests.ConversationProbeTests.SerializedProtocolRoundTripsWithoutDroppingRawEvidence" computerName="PLUTO" duration="00:00:00.0888467" startTime="2026-09-29T15:32:13.3614185-07:00" endTime="2026-09-29T15:32:13.3614189-07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="251804d0-909c-403e-8121-43cd0d27e95d" />
+    <UnitTestResult executionId="be1616c7-a0ab-4449-9b8e-378f7604b0ce" testId="db9fb66f-0220-8e28-c0ad-94308d6b81b1" testName="TinyRustLM.Core.Tests.ConversationProbeTests.ImmediateTerminalDoesNotStep" computerName="PLUTO" duration="00:00:00.0009664" startTime="2026-09-29T15:32:13.2827996-07:00" endTime="2026-09-29T15:32:13.2827997-07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="be1616c7-a0ab-4449-9b8e-378f7604b0ce" />
+    <UnitTestResult executionId="91cef9fb-5cee-4fac-8b95-f058f2eb4282" testId="7b040590-8271-b94a-c6ba-cd0f488496db" testName="TinyRustLM.Core.Tests.ConversationProbeTests.RejectsInvalidCaptureArguments" computerName="PLUTO" duration="00:00:00.0008500" startTime="2026-09-29T15:32:13.2820218-07:00" endTime="2026-09-29T15:32:13.2820219-07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="91cef9fb-5cee-4fac-8b95-f058f2eb4282" />
+    <UnitTestResult executionId="9ab9fa67-ab97-4018-8685-fd55ee59fd36" testId="3a31aa56-08f3-cc22-e571-e47b4b322ab4" testName="TinyRustLM.Core.Tests.ConversationProbeTests.FailureIsCapturedAndNeverRetried(failure: &quot;begin&quot;)" computerName="PLUTO" duration="00:00:00.0000135" startTime="2026-09-29T15:32:13.2814403-07:00" endTime="2026-09-29T15:32:13.2814406-07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="9ab9fa67-ab97-4018-8685-fd55ee59fd36" />
+    <UnitTestResult executionId="948b3e4c-cba9-44f1-a7b2-8b2b441b0b15" testId="3846603c-2a76-de05-2579-8ace1b4ea47f" testName="TinyRustLM.Core.Tests.ConversationProbeTests.FailureIsCapturedAndNeverRetried(failure: &quot;cancel&quot;)" computerName="PLUTO" duration="00:00:00.0000265" startTime="2026-09-29T15:32:13.2806144-07:00" endTime="2026-09-29T15:32:13.2806146-07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="948b3e4c-cba9-44f1-a7b2-8b2b441b0b15" />
+    <UnitTestResult executionId="c2ceb970-472d-4919-9cab-262502dc4161" testId="c28f8095-c2b8-edb4-8e2b-1c4abc672e55" testName="TinyRustLM.Core.Tests.ConversationProbeTests.FailureIsCapturedAndNeverRetried(failure: &quot;timeout&quot;)" computerName="PLUTO" duration="00:00:00.0000419" startTime="2026-09-29T15:32:13.2809868-07:00" endTime="2026-09-29T15:32:13.2809868-07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="c2ceb970-472d-4919-9cab-262502dc4161" />
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="TinyRustLM.Core.Tests.ConversationProbeTests.FailureIsCapturedAndNeverRetried(failure: &quot;timeout&quot;)" storage="e:\source\rust\tinyrustlm.com\artifacts\verification\real-composition-probe\tinyrustlm-operation-60n5yl\build\bin\tinyrustlm.core.tests\release\tinyrustlm.core.tests.dll" id="c28f8095-c2b8-edb4-8e2b-1c4abc672e55">
+      <Execution id="c2ceb970-472d-4919-9cab-262502dc4161" />
+      <TestMethod codeBase="E:\Source\Rust\TinyRustLM.com\artifacts\verification\real-composition-probe\tinyrustlm-operation-60N5yl\build\bin\TinyRustLM.Core.Tests\release\TinyRustLM.Core.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TinyRustLM.Core.Tests.ConversationProbeTests" name="FailureIsCapturedAndNeverRetried" />
+    </UnitTest>
+    <UnitTest name="TinyRustLM.Core.Tests.ConversationProbeTests.FailureIsCapturedAndNeverRetried(failure: &quot;begin&quot;)" storage="e:\source\rust\tinyrustlm.com\artifacts\verification\real-composition-probe\tinyrustlm-operation-60n5yl\build\bin\tinyrustlm.core.tests\release\tinyrustlm.core.tests.dll" id="3a31aa56-08f3-cc22-e571-e47b4b322ab4">
+      <Execution id="9ab9fa67-ab97-4018-8685-fd55ee59fd36" />
+      <TestMethod codeBase="E:\Source\Rust\TinyRustLM.com\artifacts\verification\real-composition-probe\tinyrustlm-operation-60N5yl\build\bin\TinyRustLM.Core.Tests\release\TinyRustLM.Core.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TinyRustLM.Core.Tests.ConversationProbeTests" name="FailureIsCapturedAndNeverRetried" />
+    </UnitTest>
+    <UnitTest name="TinyRustLM.Core.Tests.ConversationProbeTests.SerializedProtocolRoundTripsWithoutDroppingRawEvidence" storage="e:\source\rust\tinyrustlm.com\artifacts\verification\real-composition-probe\tinyrustlm-operation-60n5yl\build\bin\tinyrustlm.core.tests\release\tinyrustlm.core.tests.dll" id="d3d33d61-fbdd-a731-cd3e-e949d23b29ec">
+      <Execution id="251804d0-909c-403e-8121-43cd0d27e95d" />
+      <TestMethod codeBase="E:\Source\Rust\TinyRustLM.com\artifacts\verification\real-composition-probe\tinyrustlm-operation-60N5yl\build\bin\TinyRustLM.Core.Tests\release\TinyRustLM.Core.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TinyRustLM.Core.Tests.ConversationProbeTests" name="SerializedProtocolRoundTripsWithoutDroppingRawEvidence" />
+    </UnitTest>
+    <UnitTest name="TinyRustLM.Core.Tests.ConversationProbeTests.FailureIsCapturedAndNeverRetried(failure: &quot;bound&quot;)" storage="e:\source\rust\tinyrustlm.com\artifacts\verification\real-composition-probe\tinyrustlm-operation-60n5yl\build\bin\tinyrustlm.core.tests\release\tinyrustlm.core.tests.dll" id="5e671d57-b8ce-ed42-daff-04513e507aac">
+      <Execution id="36c9e299-72f2-47c0-b32c-a98ce1e5930f" />
+      <TestMethod codeBase="E:\Source\Rust\TinyRustLM.com\artifacts\verification\real-composition-probe\tinyrustlm-operation-60N5yl\build\bin\TinyRustLM.Core.Tests\release\TinyRustLM.Core.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TinyRustLM.Core.Tests.ConversationProbeTests" name="FailureIsCapturedAndNeverRetried" />
+    </UnitTest>
+    <UnitTest name="TinyRustLM.Core.Tests.ConversationProbeTests.ResetCreatesASeparateRuntime" storage="e:\source\rust\tinyrustlm.com\artifacts\verification\real-composition-probe\tinyrustlm-operation-60n5yl\build\bin\tinyrustlm.core.tests\release\tinyrustlm.core.tests.dll" id="e8362b1e-b8c1-7bfb-77ad-d0c550193ed5">
+      <Execution id="c8ff74cb-879b-41b9-8312-9c2bc0533ea5" />
+      <TestMethod codeBase="E:\Source\Rust\TinyRustLM.com\artifacts\verification\real-composition-probe\tinyrustlm-operation-60N5yl\build\bin\TinyRustLM.Core.Tests\release\TinyRustLM.Core.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TinyRustLM.Core.Tests.ConversationProbeTests" name="ResetCreatesASeparateRuntime" />
+    </UnitTest>
+    <UnitTest name="TinyRustLM.Core.Tests.ConversationProbeTests.BoundsTheFrozenProtocolBeforeExecution" storage="e:\source\rust\tinyrustlm.com\artifacts\verification\real-composition-probe\tinyrustlm-operation-60n5yl\build\bin\tinyrustlm.core.tests\release\tinyrustlm.core.tests.dll" id="517c8631-3d15-da20-0d3f-3c38df493338">
+      <Execution id="6a00689d-2e43-4597-86d9-01b3387eb2e2" />
+      <TestMethod codeBase="E:\Source\Rust\TinyRustLM.com\artifacts\verification\real-composition-probe\tinyrustlm-operation-60N5yl\build\bin\TinyRustLM.Core.Tests\release\TinyRustLM.Core.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TinyRustLM.Core.Tests.ConversationProbeTests" name="BoundsTheFrozenProtocolBeforeExecution" />
+    </UnitTest>
+    <UnitTest name="TinyRustLM.Core.Tests.ConversationProbeTests.CapturesActualHistoryInOneSessionAndNeverGradesIt" storage="e:\source\rust\tinyrustlm.com\artifacts\verification\real-composition-probe\tinyrustlm-operation-60n5yl\build\bin\tinyrustlm.core.tests\release\tinyrustlm.core.tests.dll" id="f095056c-067d-a99b-73c7-3b6fd5ce61dc">
+      <Execution id="c8857e9c-1c82-4019-bae8-e63ce009d1c5" />
+      <TestMethod codeBase="E:\Source\Rust\TinyRustLM.com\artifacts\verification\real-composition-probe\tinyrustlm-operation-60N5yl\build\bin\TinyRustLM.Core.Tests\release\TinyRustLM.Core.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TinyRustLM.Core.Tests.ConversationProbeTests" name="CapturesActualHistoryInOneSessionAndNeverGradesIt" />
+    </UnitTest>
+    <UnitTest name="TinyRustLM.Core.Tests.ConversationProbeTests.ImmediateTerminalDoesNotStep" storage="e:\source\rust\tinyrustlm.com\artifacts\verification\real-composition-probe\tinyrustlm-operation-60n5yl\build\bin\tinyrustlm.core.tests\release\tinyrustlm.core.tests.dll" id="db9fb66f-0220-8e28-c0ad-94308d6b81b1">
+      <Execution id="be1616c7-a0ab-4449-9b8e-378f7604b0ce" />
+      <TestMethod codeBase="E:\Source\Rust\TinyRustLM.com\artifacts\verification\real-composition-probe\tinyrustlm-operation-60N5yl\build\bin\TinyRustLM.Core.Tests\release\TinyRustLM.Core.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TinyRustLM.Core.Tests.ConversationProbeTests" name="ImmediateTerminalDoesNotStep" />
+    </UnitTest>
+    <UnitTest name="TinyRustLM.Core.Tests.ConversationProbeTests.FailureIsCapturedAndNeverRetried(failure: &quot;error&quot;)" storage="e:\source\rust\tinyrustlm.com\artifacts\verification\real-composition-probe\tinyrustlm-operation-60n5yl\build\bin\tinyrustlm.core.tests\release\tinyrustlm.core.tests.dll" id="b68e4a93-acf3-9aed-2868-e37ea5db5692">
+      <Execution id="510ff38f-8c48-423c-ac74-843bb1783fb6" />
+      <TestMethod codeBase="E:\Source\Rust\TinyRustLM.com\artifacts\verification\real-composition-probe\tinyrustlm-operation-60N5yl\build\bin\TinyRustLM.Core.Tests\release\TinyRustLM.Core.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TinyRustLM.Core.Tests.ConversationProbeTests" name="FailureIsCapturedAndNeverRetried" />
+    </UnitTest>
+    <UnitTest name="TinyRustLM.Core.Tests.ConversationProbeTests.CancelsAndContinuesWithoutRepeatingGeneration" storage="e:\source\rust\tinyrustlm.com\artifacts\verification\real-composition-probe\tinyrustlm-operation-60n5yl\build\bin\tinyrustlm.core.tests\release\tinyrustlm.core.tests.dll" id="54e9ed8c-19e1-2a7d-2dee-6c4462610138">
+      <Execution id="a2e55923-f083-4b78-bf7a-894f6078ab3f" />
+      <TestMethod codeBase="E:\Source\Rust\TinyRustLM.com\artifacts\verification\real-composition-probe\tinyrustlm-operation-60N5yl\build\bin\TinyRustLM.Core.Tests\release\TinyRustLM.Core.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TinyRustLM.Core.Tests.ConversationProbeTests" name="CancelsAndContinuesWithoutRepeatingGeneration" />
+    </UnitTest>
+    <UnitTest name="TinyRustLM.Core.Tests.ConversationProbeTests.RejectsInvalidCaptureArguments" storage="e:\source\rust\tinyrustlm.com\artifacts\verification\real-composition-probe\tinyrustlm-operation-60n5yl\build\bin\tinyrustlm.core.tests\release\tinyrustlm.core.tests.dll" id="7b040590-8271-b94a-c6ba-cd0f488496db">
+      <Execution id="91cef9fb-5cee-4fac-8b95-f058f2eb4282" />
+      <TestMethod codeBase="E:\Source\Rust\TinyRustLM.com\artifacts\verification\real-composition-probe\tinyrustlm-operation-60N5yl\build\bin\TinyRustLM.Core.Tests\release\TinyRustLM.Core.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TinyRustLM.Core.Tests.ConversationProbeTests" name="RejectsInvalidCaptureArguments" />
+    </UnitTest>
+    <UnitTest name="TinyRustLM.Core.Tests.ConversationProbeTests.FailureIsCapturedAndNeverRetried(failure: &quot;cancel&quot;)" storage="e:\source\rust\tinyrustlm.com\artifacts\verification\real-composition-probe\tinyrustlm-operation-60n5yl\build\bin\tinyrustlm.core.tests\release\tinyrustlm.core.tests.dll" id="3846603c-2a76-de05-2579-8ace1b4ea47f">
+      <Execution id="948b3e4c-cba9-44f1-a7b2-8b2b441b0b15" />
+      <TestMethod codeBase="E:\Source\Rust\TinyRustLM.com\artifacts\verification\real-composition-probe\tinyrustlm-operation-60N5yl\build\bin\TinyRustLM.Core.Tests\release\TinyRustLM.Core.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TinyRustLM.Core.Tests.ConversationProbeTests" name="FailureIsCapturedAndNeverRetried" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="5e671d57-b8ce-ed42-daff-04513e507aac" executionId="36c9e299-72f2-47c0-b32c-a98ce1e5930f" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="517c8631-3d15-da20-0d3f-3c38df493338" executionId="6a00689d-2e43-4597-86d9-01b3387eb2e2" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="f095056c-067d-a99b-73c7-3b6fd5ce61dc" executionId="c8857e9c-1c82-4019-bae8-e63ce009d1c5" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="b68e4a93-acf3-9aed-2868-e37ea5db5692" executionId="510ff38f-8c48-423c-ac74-843bb1783fb6" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="54e9ed8c-19e1-2a7d-2dee-6c4462610138" executionId="a2e55923-f083-4b78-bf7a-894f6078ab3f" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="e8362b1e-b8c1-7bfb-77ad-d0c550193ed5" executionId="c8ff74cb-879b-41b9-8312-9c2bc0533ea5" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="d3d33d61-fbdd-a731-cd3e-e949d23b29ec" executionId="251804d0-909c-403e-8121-43cd0d27e95d" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="db9fb66f-0220-8e28-c0ad-94308d6b81b1" executionId="be1616c7-a0ab-4449-9b8e-378f7604b0ce" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="7b040590-8271-b94a-c6ba-cd0f488496db" executionId="91cef9fb-5cee-4fac-8b95-f058f2eb4282" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="3a31aa56-08f3-cc22-e571-e47b4b322ab4" executionId="9ab9fa67-ab97-4018-8685-fd55ee59fd36" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="3846603c-2a76-de05-2579-8ace1b4ea47f" executionId="948b3e4c-cba9-44f1-a7b2-8b2b441b0b15" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="c28f8095-c2b8-edb4-8e2b-1c4abc672e55" executionId="c2ceb970-472d-4919-9cab-262502dc4161" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Completed">
+    <Counters total="12" executed="12" passed="12" failed="0" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.8.2+699d445a1a (64-bit .NET 8.0.31)&#xD;
+[xUnit.net 00:00:00.76]   Discovering: TinyRustLM.Core.Tests&#xD;
+[xUnit.net 00:00:00.82]   Discovered:  TinyRustLM.Core.Tests&#xD;
+[xUnit.net 00:00:00.83]   Starting:    TinyRustLM.Core.Tests&#xD;
+[xUnit.net 00:00:01.09]   Finished:    TinyRustLM.Core.Tests&#xD;
+</StdOut>
+    </Output>
+    <CollectorDataEntries>
+      <Collector agentName="PLUTO" uri="datacollector://microsoft/CodeCoverage/2.0" collectorDisplayName="Code Coverage">
+        <UriAttachments>
+          <UriAttachment>
+            <A href="PLUTO\isolated-build_PLUTO_2026-09-29.15_32_13.cobertura.xml"></A>
+          </UriAttachment>
+        </UriAttachments>
+      </Collector>
+    </CollectorDataEntries>
+  </ResultSummary>
+</TestRun>

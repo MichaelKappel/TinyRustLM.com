@@ -1,0 +1,24 @@
+✔ frozen plan validates exact tool closure, greedy settings, bounds and declared history (7.8758ms)
+✔ dependent wire contains exact actual prior output and never substitutes a canned answer (2.6325ms)
+✔ exact file verification catches altered bytes, wrong size and nonordinary input (9.5962ms)
+✔ actual child protocol preserves split Unicode, dependent wire and terminal failure evidence (530.6685ms)
+✔ browser case orchestration streams each member, captures raw tokens, cancels and resets explicitly (36.84ms)
+✔ actual Chromium production worker preserves rejected non-model fixture activation (1104.6677ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1847.2106
+ℹ start of coverage report
+ℹ ---------------------------------------------------------------------------------------
+ℹ file                           | line % | branch % | funcs % | uncovered lines
+ℹ ---------------------------------------------------------------------------------------
+ℹ tools                          |        |          |         | 
+ℹ  real-composition-execution.js |  86.47 |    89.53 |   80.77 | 373-418 421-431 435-436
+ℹ ---------------------------------------------------------------------------------------
+ℹ all files                      |  86.47 |    89.53 |   80.77 | 
+ℹ ---------------------------------------------------------------------------------------
+ℹ end of coverage report

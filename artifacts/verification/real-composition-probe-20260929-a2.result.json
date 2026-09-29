@@ -1,0 +1,156 @@
+{
+  "startedUtc": "2026-09-29T22:31:50.202Z",
+  "ownedRoot": "artifacts/verification/real-composition-probe/tinyrustlm-operation-60N5yl",
+  "sdk": "10.0.401",
+  "packageCache": "C:\\Users\\Michael\\.nuget\\packages\\",
+  "additionalEnvironmentKeys": [
+    "ALLUSERSPROFILE",
+    "COMMONPROGRAMFILES",
+    "COMMONPROGRAMFILES(X86)",
+    "COMMONPROGRAMW6432",
+    "COMSPEC",
+    "NUMBER_OF_PROCESSORS",
+    "OS",
+    "PATHEXT",
+    "PROCESSOR_ARCHITECTURE",
+    "PROGRAMDATA",
+    "PROGRAMFILES",
+    "PROGRAMFILES(X86)",
+    "PROGRAMW6432"
+  ],
+  "steps": [
+    {
+      "name": "restore-sample",
+      "command": [
+        "C:\\Program Files\\dotnet\\dotnet.exe",
+        "restore",
+        "dotnet/tools/TinyRustLM.ConversationProbe/TinyRustLM.ConversationProbe.csproj",
+        "--configfile",
+        "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\verification\\real-composition-probe\\tinyrustlm-operation-60N5yl\\NuGet.Config",
+        "-p:ArtifactsPath=E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\verification\\real-composition-probe\\tinyrustlm-operation-60N5yl\\build",
+        "-p:NuGetAudit=false",
+        "-p:UseSharedCompilation=false"
+      ],
+      "startedUtc": "2026-09-29T22:31:50.204Z",
+      "completedUtc": "2026-09-29T22:31:51.353Z",
+      "exitCode": 0,
+      "signal": null,
+      "stdout": {
+        "path": "artifacts/verification/real-composition-probe-20260929-a2.restore-sample.stdout.log",
+        "byteLength": 397,
+        "sha256": "ee46ce9cba08ef943f132b28bda3154656b86a65ffdb45ace0e32615a07f5a52"
+      },
+      "stderr": {
+        "path": "artifacts/verification/real-composition-probe-20260929-a2.restore-sample.stderr.log",
+        "byteLength": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "build-sample",
+      "command": [
+        "C:\\Program Files\\dotnet\\dotnet.exe",
+        "build",
+        "dotnet/tools/TinyRustLM.ConversationProbe/TinyRustLM.ConversationProbe.csproj",
+        "--no-restore",
+        "--configuration",
+        "Release",
+        "-p:ArtifactsPath=E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\verification\\real-composition-probe\\tinyrustlm-operation-60N5yl\\build",
+        "-p:UseSharedCompilation=false"
+      ],
+      "startedUtc": "2026-09-29T22:31:51.356Z",
+      "completedUtc": "2026-09-29T22:31:58.964Z",
+      "exitCode": 0,
+      "signal": null,
+      "stdout": {
+        "path": "artifacts/verification/real-composition-probe-20260929-a2.build-sample.stdout.log",
+        "byteLength": 685,
+        "sha256": "ec608761bed22a8d25be383ab822d62971d46816e771fed37fdc8b7738171b7e"
+      },
+      "stderr": {
+        "path": "artifacts/verification/real-composition-probe-20260929-a2.build-sample.stderr.log",
+        "byteLength": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "restore-core-tests",
+      "command": [
+        "C:\\Program Files\\dotnet\\dotnet.exe",
+        "restore",
+        "dotnet/tests/TinyRustLM.Core.Tests/TinyRustLM.Core.Tests.csproj",
+        "--configfile",
+        "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\verification\\real-composition-probe\\tinyrustlm-operation-60N5yl\\NuGet.Config",
+        "-p:ArtifactsPath=E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\verification\\real-composition-probe\\tinyrustlm-operation-60N5yl\\build",
+        "-p:NuGetAudit=false",
+        "-p:UseSharedCompilation=false"
+      ],
+      "startedUtc": "2026-09-29T22:31:58.967Z",
+      "completedUtc": "2026-09-29T22:32:00.868Z",
+      "exitCode": 0,
+      "signal": null,
+      "stdout": {
+        "path": "artifacts/verification/real-composition-probe-20260929-a2.restore-core-tests.stdout.log",
+        "byteLength": 688,
+        "sha256": "80784a31f9a6b3feb7100366f70a667a602062558b3b62204bbc75d8a535b48a"
+      },
+      "stderr": {
+        "path": "artifacts/verification/real-composition-probe-20260929-a2.restore-core-tests.stderr.log",
+        "byteLength": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "test-policy",
+      "command": [
+        "C:\\Program Files\\dotnet\\dotnet.exe",
+        "test",
+        "dotnet/tests/TinyRustLM.Core.Tests/TinyRustLM.Core.Tests.csproj",
+        "--no-restore",
+        "--configuration",
+        "Release",
+        "-p:ArtifactsPath=E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\verification\\real-composition-probe\\tinyrustlm-operation-60N5yl\\build",
+        "--filter",
+        "FullyQualifiedName~ConversationProbeTests",
+        "--settings",
+        "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\verification\\real-composition-probe\\tinyrustlm-operation-60N5yl\\coverage.runsettings",
+        "--collect",
+        "Code Coverage",
+        "--results-directory",
+        "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\verification\\real-composition-probe\\tinyrustlm-operation-60N5yl\\reports",
+        "--logger",
+        "trx;LogFileName=sample-policy.trx",
+        "-p:UseSharedCompilation=false"
+      ],
+      "startedUtc": "2026-09-29T22:32:00.870Z",
+      "completedUtc": "2026-09-29T22:32:13.772Z",
+      "exitCode": 0,
+      "signal": null,
+      "stdout": {
+        "path": "artifacts/verification/real-composition-probe-20260929-a2.test-policy.stdout.log",
+        "byteLength": 2164,
+        "sha256": "6a5b024eeccd10ef59a5da32858b8dc04c32ce54e2c50e4c605c44852292ea22"
+      },
+      "stderr": {
+        "path": "artifacts/verification/real-composition-probe-20260929-a2.test-policy.stderr.log",
+        "byteLength": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "status": "pass",
+  "validationArtifacts": [
+    {
+      "path": "artifacts/verification/real-composition-probe-20260929-a2.isolated-build_PLUTO_2026-09-29.15_32_13.cobertura.xml",
+      "byteLength": 56707,
+      "sha256": "b1ff3dd5774559507d0353990bd6ed089889a6f4b007b433e3b5abfcc7a838f7"
+    },
+    {
+      "path": "artifacts/verification/real-composition-probe-20260929-a2.sample-policy.trx",
+      "byteLength": 19939,
+      "sha256": "94b79de15c01131e760b0cd396e074bbd704bf7b0aa1826a1545f31d44328f0a"
+    }
+  ],
+  "ownedRootRemoved": true,
+  "completedUtc": "2026-09-29T22:32:14.216Z"
+}

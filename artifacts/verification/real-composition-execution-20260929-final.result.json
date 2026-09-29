@@ -1,0 +1,26 @@
+{
+  "startedUtc": "2026-09-29T22:39:33.041Z",
+  "completedUtc": "2026-09-29T22:39:35.003Z",
+  "command": [
+    "C:\\Program Files\\nodejs\\node.exe",
+    "--test",
+    "--experimental-test-coverage",
+    "--test-coverage-include=tools/real-composition-execution.js",
+    "tests/real-composition-execution_test.js"
+  ],
+  "exitCode": 0,
+  "signal": null,
+  "error": null,
+  "logs": [
+    {
+      "path": "artifacts/verification/real-composition-execution-20260929-final.stdout.log",
+      "bytes": 1470,
+      "sha256": "57d4372b1c7dcf0f56eea577e07a7cc0d459fdcaa49e6b033f088305cd6f2730"
+    },
+    {
+      "path": "artifacts/verification/real-composition-execution-20260929-final.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

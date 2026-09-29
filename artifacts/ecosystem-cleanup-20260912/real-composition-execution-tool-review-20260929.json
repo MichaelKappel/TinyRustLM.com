@@ -1,0 +1,307 @@
+{
+  "schema": "tinyrustlm.real-composition-execution-tool-review/1",
+  "recordedAtUtc": "2026-09-29T22:41:03.662Z",
+  "status": "implemented-and-tested-capture-tool-real-model-execution-pending",
+  "modelQualified": false,
+  "modelExecutionPerformed": false,
+  "publicationPerformed": false,
+  "credentialsRead": false,
+  "scope": "One bounded input-agnostic native SDK and actual browser worker/WASM capture owner; raw outputs are separate from grading and qualification.",
+  "sourceFiles": [
+    {
+      "path": "dotnet/tools/TinyRustLM.ConversationProbe/TinyRustLM.ConversationProbe.csproj",
+      "bytes": 263,
+      "sha256": "f34268b0cbad6e84b86cfbd0e793e652680a24156eda9c90f685be9fd22122dd"
+    },
+    {
+      "path": "dotnet/tools/TinyRustLM.ConversationProbe/ConversationProbe.cs",
+      "bytes": 9413,
+      "sha256": "c18cdc12dfdcaa39ca3a91204c51d21c43bb054d8abf9c23359c3e256395661d"
+    },
+    {
+      "path": "dotnet/tools/TinyRustLM.ConversationProbe/Program.cs",
+      "bytes": 4385,
+      "sha256": "4677a9346ee4c254d173151a9f9bf0f3286e4633b9d90dfb919cc2e476430fd7"
+    },
+    {
+      "path": "dotnet/tools/TinyRustLM.ConversationProbe/README.md",
+      "bytes": 4956,
+      "sha256": "9aac9584ba7ff1b74d301f699956538a1182ad28c141e507038cc4198a585310"
+    },
+    {
+      "path": "dotnet/tests/TinyRustLM.Core.Tests/TinyRustLM.Core.Tests.csproj",
+      "bytes": 2797,
+      "sha256": "952137af93090e970e6de76b88fa3e9590afdb379256e9f5974b7d009f9928da"
+    },
+    {
+      "path": "dotnet/tests/TinyRustLM.Core.Tests/ConversationProbe_test.cs",
+      "bytes": 11031,
+      "sha256": "0c0f72fa1064a39ac80dc54e8d3ac4ae8dab2a1c23366deba18e4a1a2c752184"
+    },
+    {
+      "path": "tinyrustlm/tools/real-composition-execution.js",
+      "bytes": 29663,
+      "sha256": "2f18ca88fa8a537bbfc6977cf1c81cc3e30c199c085e6c82d19acdfd8e05c4b1"
+    },
+    {
+      "path": "tinyrustlm/tests/real-composition-execution_test.js",
+      "bytes": 13082,
+      "sha256": "c9f7cd15d9beafacb0829a01f0471f7def8b3c44d7d37a89205abacaa7f35d04"
+    },
+    {
+      "path": "tinyrustlm/tests/helpers/real-composition-probe-protocol-fixture.js",
+      "bytes": 2173,
+      "sha256": "7ba07bdef659d2fc0adb6050e8c96f9eeb36d371a2e13d31cc6f22daf8adf7ed"
+    }
+  ],
+  "evidence": [
+    {
+      "path": "artifacts/verification/real-composition-execution-20260929-final.result.json",
+      "bytes": 805,
+      "sha256": "50d20186f5225719f999292af4a71ebf6bf4873c640385ff6cca21dc02aa7f61"
+    },
+    {
+      "path": "artifacts/verification/real-composition-execution-20260929-final.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifacts/verification/real-composition-execution-20260929-final.stdout.log",
+      "bytes": 1470,
+      "sha256": "57d4372b1c7dcf0f56eea577e07a7cc0d459fdcaa49e6b033f088305cd6f2730"
+    },
+    {
+      "path": "artifacts/verification/real-composition-probe-20260929-a1.build-sample.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifacts/verification/real-composition-probe-20260929-a1.build-sample.stdout.log",
+      "bytes": 685,
+      "sha256": "cabdd7f6736008535ee7984b4a225aa5f9e38847ee64341362496380b391e80c"
+    },
+    {
+      "path": "artifacts/verification/real-composition-probe-20260929-a1.isolated-build_PLUTO_2026-09-29.15_26_57.cobertura.xml",
+      "bytes": 56526,
+      "sha256": "0e28776e48f715f3f72e8c74280b4d6f6707e33e9f7fb8a7fea7549cd2dba032"
+    },
+    {
+      "path": "artifacts/verification/real-composition-probe-20260929-a1.restore-core-tests.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifacts/verification/real-composition-probe-20260929-a1.restore-core-tests.stdout.log",
+      "bytes": 688,
+      "sha256": "e9351796b6db606b51cbab2f18514ec476a16365f0bbd30f6c6e62378a91d2af"
+    },
+    {
+      "path": "artifacts/verification/real-composition-probe-20260929-a1.restore-sample.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifacts/verification/real-composition-probe-20260929-a1.restore-sample.stdout.log",
+      "bytes": 397,
+      "sha256": "f6c9cd53d3f22a1b40826617f3cbea9ecbb314b1177355c295fbcf32d9b540c4"
+    },
+    {
+      "path": "artifacts/verification/real-composition-probe-20260929-a1.result.json",
+      "bytes": 6307,
+      "sha256": "885c5d9b4bcd709c2fe6a7a88d4e7532f3561b5173d4ee596235dc359fa55fa2"
+    },
+    {
+      "path": "artifacts/verification/real-composition-probe-20260929-a1.sample-policy.trx",
+      "bytes": 18416,
+      "sha256": "28c1686e76d2c706e332b8c7d201d340ce9a9cade385cdfec05ef18d1f111408"
+    },
+    {
+      "path": "artifacts/verification/real-composition-probe-20260929-a1.test-policy.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifacts/verification/real-composition-probe-20260929-a1.test-policy.stdout.log",
+      "bytes": 2164,
+      "sha256": "7bd96198b8ed5b1ed9b1f2d35c2abc3cec1884184e4f4feade856b5450469be8"
+    },
+    {
+      "path": "artifacts/verification/real-composition-probe-20260929-a2.build-sample.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifacts/verification/real-composition-probe-20260929-a2.build-sample.stdout.log",
+      "bytes": 685,
+      "sha256": "ec608761bed22a8d25be383ab822d62971d46816e771fed37fdc8b7738171b7e"
+    },
+    {
+      "path": "artifacts/verification/real-composition-probe-20260929-a2.isolated-build_PLUTO_2026-09-29.15_32_13.cobertura.xml",
+      "bytes": 56707,
+      "sha256": "b1ff3dd5774559507d0353990bd6ed089889a6f4b007b433e3b5abfcc7a838f7"
+    },
+    {
+      "path": "artifacts/verification/real-composition-probe-20260929-a2.restore-core-tests.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifacts/verification/real-composition-probe-20260929-a2.restore-core-tests.stdout.log",
+      "bytes": 688,
+      "sha256": "80784a31f9a6b3feb7100366f70a667a602062558b3b62204bbc75d8a535b48a"
+    },
+    {
+      "path": "artifacts/verification/real-composition-probe-20260929-a2.restore-sample.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifacts/verification/real-composition-probe-20260929-a2.restore-sample.stdout.log",
+      "bytes": 397,
+      "sha256": "ee46ce9cba08ef943f132b28bda3154656b86a65ffdb45ace0e32615a07f5a52"
+    },
+    {
+      "path": "artifacts/verification/real-composition-probe-20260929-a2.result.json",
+      "bytes": 6307,
+      "sha256": "6a956d7f4822a61be3e6046526c6ae125a7497a7ad51495a88d0e4078290d410"
+    },
+    {
+      "path": "artifacts/verification/real-composition-probe-20260929-a2.sample-policy.trx",
+      "bytes": 19939,
+      "sha256": "94b79de15c01131e760b0cd396e074bbd704bf7b0aa1826a1545f31d44328f0a"
+    },
+    {
+      "path": "artifacts/verification/real-composition-probe-20260929-a2.test-policy.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifacts/verification/real-composition-probe-20260929-a2.test-policy.stdout.log",
+      "bytes": 2164,
+      "sha256": "6a5b024eeccd10ef59a5da32858b8dc04c32ce54e2c50e4c605c44852292ea22"
+    }
+  ],
+  "validation": {
+    "native": {
+      "sdk": "10.0.401",
+      "framework": "net8.0",
+      "buildWarnings": 0,
+      "buildErrors": 0,
+      "firstTests": {
+        "passed": 11,
+        "failed": 0,
+        "skipped": 0
+      },
+      "finalTests": {
+        "passed": 12,
+        "failed": 0,
+        "skipped": 0
+      },
+      "coverage": {
+        "source": "ConversationProbe.cs compiled into existing Core tests",
+        "coveredLines": 145,
+        "validLines": 190,
+        "coveredBranches": 118,
+        "validBranches": 128,
+        "linePercent": 76.3157894736842,
+        "branchPercent": 92.1875
+      },
+      "entrypointCoverage": "Program.cs built successfully; real standalone SDK activation/CLI success remains unexecuted."
+    },
+    "node": {
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0,
+      "linePercent": 86.47,
+      "branchPercent": 89.53,
+      "functionPercent": 80.77,
+      "unexecuted": "Real-model execute/CLI admission and successful real-model generation; no gate bypass for coverage."
+    },
+    "browser": {
+      "browser": "Pinned Chromium 1228",
+      "fixture": "Six zero-filled invalid non-model members created only inside original-owner canonical temporary output.",
+      "actualProductionClient": true,
+      "actualProductionWorker": true,
+      "actualProductionWasm": true,
+      "expectedError": "acg2-header",
+      "observedError": "acg2-header",
+      "inferencePerformed": false,
+      "wasm": {
+        "path": "tinyrustlm/browser-runtime/tinyrustlm-browser-runtime.wasm",
+        "bytes": 576956,
+        "sha256": "2667c989452b4456ed4f8ff6cca979fcd0f1d838c769d9275dcc3d31e6ae22ea"
+      }
+    },
+    "sourceGate": "verify-single-source-authority.js passed before initial implementation validation; a clean remote-exact gate is separately required at actual operation launch.",
+    "diffCheck": "git diff --check passed; unrelated parent numerical-file CRLF warning was observed."
+  },
+  "preservedDevelopmentFailures": [
+    {
+      "kind": "launcher-framing",
+      "evidence": "Tool terminal abcdba",
+      "description": "Initial node -e PowerShell quoting failed with SyntaxError before scratch allocation or build. Fixed transport to base64, without modifying source or test expectations."
+    },
+    {
+      "kind": "test-fixture-length",
+      "evidence": "Session72937 partial terminal, full terminal not retained",
+      "description": "Synthetic browser fetch still supplied one-byte bodies after member metadata began enforcing fixed format lengths. Corrected fake responses and tested exact chunk lengths."
+    },
+    {
+      "kind": "invalid-policy",
+      "evidence": "Tool terminal31a329",
+      "tests": 6,
+      "passed": 5,
+      "failed": 1,
+      "description": "Actual Chromium reported model-runtime-client-command-timeout because synthetic resolved-member budget was less than model plus resident-dependency budgets. Added the unchanged worker reciprocal-policy checks to owner validation and corrected fixture policy. No runtime or timeout increase."
+    },
+    {
+      "kind": "chunk-framing",
+      "evidence": "Tool terminal41db8a",
+      "tests": 6,
+      "passed": 5,
+      "failed": 1,
+      "description": "Actual Chromium then rejected model-runtime-client-artifact-chunk. Owner streamed ArrayBuffer directly instead of required {offset,bytes}. Corrected owner stream and strengthened exact framing regression. Production client/WASM remained unchanged."
+    },
+    {
+      "kind": "wrapper-construction",
+      "evidence": "Functions isolate ReferenceError TextEncoder is not defined",
+      "description": "Final-log wrapper construction failed before shell execution; changed ASCII-only wrapper encoding. No test was started by that invocation."
+    }
+  ],
+  "integrity": {
+    "frozenInputs": "Exact source commit, canonical six-member lengths/hashes, DLL/managed/browser/JS/WASM identities, planned cases/messages/sampling/seed/limits/deadlines.",
+    "history": "Each backend derives its dependent turn from its own actual preceding raw assistant text; no trimming, substitution, answer repair or canned history.",
+    "attempts": "One generation per declared case per declared backend/viewport; no retries or output selection; remaining cases stop on an arm failure.",
+    "evidence": "Exclusive output directory and wx files; raw native stdout/stderr retained with explicit overflow failure; pre/post exact byte verification.",
+    "timing": "Activation measured separately; turn/first-token excludes activation and owner request preparation. Stop latency measures runtime cancellation, not visible UI responsiveness.",
+    "scratch": "All new operation-owned temporary roots removed through original owner records; prior blocked cohorts untouched.",
+    "scratchReadback": [
+      {
+        "path": "artifacts/tests/real-composition-execution",
+        "entries": []
+      },
+      {
+        "path": "artifacts/tests/real-composition-browser",
+        "entries": []
+      },
+      {
+        "path": "artifacts/verification/real-composition-probe",
+        "entries": []
+      }
+    ]
+  },
+  "privacyReview": {
+    "filesReviewed": 34,
+    "knownSecretPatternFindings": 0,
+    "findings": [],
+    "content": "Owned source, test names, canonical local tool paths, synthetic Unicode test output and build/coverage diagnostics only; no actual user prompt, model bytes, credential value or private source payload copied into evidence."
+  },
+  "limitations": [
+    "No candidate, real six-member model, native real-model answer, real browser inference, numerical agreement or product qualification follows from fixture validation.",
+    "Normal UI Stop/New Chat, reload/offline restoration, interrupted installation and MiniModel/publication need independent acceptance.",
+    "Browser process peak memory is unmeasured; a mobile viewport is not mobile hardware.",
+    "Final real-run identities must be measured after final native/probe/browser builds; public acceptance cases remain prospective.",
+    "No evidence-backed qualification receipt materializer is implemented by this capture-tool checkpoint."
+  ],
+  "nextAction": "After source quality and numerical prerequisites pass, build final native/probe tools, freeze exact request and run once; grade raw evidence separately."
+}

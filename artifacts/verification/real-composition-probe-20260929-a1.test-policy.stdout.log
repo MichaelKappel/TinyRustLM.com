@@ -1,0 +1,15 @@
+  TinyRustLM.Abstractions -> E:\Source\Rust\TinyRustLM.com\artifacts\verification\real-composition-probe\tinyrustlm-operation-KrbrVx\build\bin\TinyRustLM.Abstractions\release\TinyRustLM.Abstractions.dll
+  TinyRustLM.Core -> E:\Source\Rust\TinyRustLM.com\artifacts\verification\real-composition-probe\tinyrustlm-operation-KrbrVx\build\bin\TinyRustLM.Core\release\TinyRustLM.Core.dll
+  TinyRustLM.MemoryEndpoints -> E:\Source\Rust\TinyRustLM.com\artifacts\verification\real-composition-probe\tinyrustlm-operation-KrbrVx\build\bin\TinyRustLM.MemoryEndpoints\release\TinyRustLM.MemoryEndpoints.dll
+  TinyRustLM.P2P -> E:\Source\Rust\TinyRustLM.com\artifacts\verification\real-composition-probe\tinyrustlm-operation-KrbrVx\build\bin\TinyRustLM.P2P\release\TinyRustLM.P2P.dll
+  TinyRustLM.Conversion -> E:\Source\Rust\TinyRustLM.com\artifacts\verification\real-composition-probe\tinyrustlm-operation-KrbrVx\build\bin\TinyRustLM.Conversion\release\TinyRustLM.Conversion.dll
+  TinyRustLM.ConversionFixtureTool -> E:\Source\Rust\TinyRustLM.com\artifacts\verification\real-composition-probe\tinyrustlm-operation-KrbrVx\build\bin\TinyRustLM.ConversionFixtureTool\release\TinyRustLM.ConversionFixtureTool.dll
+  TinyRustLM.Core.Tests -> E:\Source\Rust\TinyRustLM.com\artifacts\verification\real-composition-probe\tinyrustlm-operation-KrbrVx\build\bin\TinyRustLM.Core.Tests\release\TinyRustLM.Core.Tests.dll
+Test run for E:\Source\Rust\TinyRustLM.com\artifacts\verification\real-composition-probe\tinyrustlm-operation-KrbrVx\build\bin\TinyRustLM.Core.Tests\release\TinyRustLM.Core.Tests.dll (.NETCoreApp,Version=v8.0)
+A total of 1 test files matched the specified pattern.
+Results File: E:\Source\Rust\TinyRustLM.com\artifacts\verification\real-composition-probe\tinyrustlm-operation-KrbrVx\reports\sample-policy.trx
+
+Passed!  - Failed:     0, Passed:    11, Skipped:     0, Total:    11, Duration: 145 ms - TinyRustLM.Core.Tests.dll (net8.0)
+
+Attachments:
+  E:\Source\Rust\TinyRustLM.com\artifacts\verification\real-composition-probe\tinyrustlm-operation-KrbrVx\reports\b1d7a5e7-f75a-4a75-9f86-fa26bfa524b4\isolated-build_PLUTO_2026-09-29.15_26_57.cobertura.xml

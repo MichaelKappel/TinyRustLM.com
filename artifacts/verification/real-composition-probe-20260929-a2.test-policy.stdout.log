@@ -1,0 +1,15 @@
+  TinyRustLM.Abstractions -> E:\Source\Rust\TinyRustLM.com\artifacts\verification\real-composition-probe\tinyrustlm-operation-60N5yl\build\bin\TinyRustLM.Abstractions\release\TinyRustLM.Abstractions.dll
+  TinyRustLM.Core -> E:\Source\Rust\TinyRustLM.com\artifacts\verification\real-composition-probe\tinyrustlm-operation-60N5yl\build\bin\TinyRustLM.Core\release\TinyRustLM.Core.dll
+  TinyRustLM.P2P -> E:\Source\Rust\TinyRustLM.com\artifacts\verification\real-composition-probe\tinyrustlm-operation-60N5yl\build\bin\TinyRustLM.P2P\release\TinyRustLM.P2P.dll
+  TinyRustLM.MemoryEndpoints -> E:\Source\Rust\TinyRustLM.com\artifacts\verification\real-composition-probe\tinyrustlm-operation-60N5yl\build\bin\TinyRustLM.MemoryEndpoints\release\TinyRustLM.MemoryEndpoints.dll
+  TinyRustLM.Conversion -> E:\Source\Rust\TinyRustLM.com\artifacts\verification\real-composition-probe\tinyrustlm-operation-60N5yl\build\bin\TinyRustLM.Conversion\release\TinyRustLM.Conversion.dll
+  TinyRustLM.ConversionFixtureTool -> E:\Source\Rust\TinyRustLM.com\artifacts\verification\real-composition-probe\tinyrustlm-operation-60N5yl\build\bin\TinyRustLM.ConversionFixtureTool\release\TinyRustLM.ConversionFixtureTool.dll
+  TinyRustLM.Core.Tests -> E:\Source\Rust\TinyRustLM.com\artifacts\verification\real-composition-probe\tinyrustlm-operation-60N5yl\build\bin\TinyRustLM.Core.Tests\release\TinyRustLM.Core.Tests.dll
+Test run for E:\Source\Rust\TinyRustLM.com\artifacts\verification\real-composition-probe\tinyrustlm-operation-60N5yl\build\bin\TinyRustLM.Core.Tests\release\TinyRustLM.Core.Tests.dll (.NETCoreApp,Version=v8.0)
+A total of 1 test files matched the specified pattern.
+Results File: E:\Source\Rust\TinyRustLM.com\artifacts\verification\real-composition-probe\tinyrustlm-operation-60N5yl\reports\sample-policy.trx
+
+Passed!  - Failed:     0, Passed:    12, Skipped:     0, Total:    12, Duration: 204 ms - TinyRustLM.Core.Tests.dll (net8.0)
+
+Attachments:
+  E:\Source\Rust\TinyRustLM.com\artifacts\verification\real-composition-probe\tinyrustlm-operation-60N5yl\reports\c6eefb0e-ff87-4c61-9902-9126c4abf94f\isolated-build_PLUTO_2026-09-29.15_32_13.cobertura.xml

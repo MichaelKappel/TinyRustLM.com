@@ -36,6 +36,8 @@
              Link="Samples\SampleRuntimePolicy.cs" />
     <Compile Include="..\..\samples\TinyRustLM.ConsoleSample\SampleConversation.cs"
              Link="Samples\SampleConversation.cs" />
+    <Compile Include="..\..\tools\TinyRustLM.ConversationProbe\ConversationProbe.cs"
+             Link="Tools\ConversationProbe.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\docs\nuget\memoryendpoints-distributed-sync-capabilities-v1.example.json"
