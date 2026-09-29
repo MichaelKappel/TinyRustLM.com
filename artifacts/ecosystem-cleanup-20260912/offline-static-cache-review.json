@@ -1,0 +1,94 @@
+{
+  "schema": "tinyrustlm.offline-static-cache-review.v1",
+  "status": "implemented-and-tested-static-assets-only",
+  "scope": "Hash-bound public app-shell, worker and WASM caching; no model or authority caching",
+  "initialFocusedRun": {
+    "tests": 9,
+    "passed": 9,
+    "failed": 0,
+    "logBytes": 1892,
+    "logSha256": "0963f1cd36cc6c34dc21e74d8cf8eb6e230ad7daa36b49e802dd99f42606e49c",
+    "launcherFailure": "The completed test launcher then failed while serializing the scratch owner BigInt fields. The original owner object was lost; it was not reconstructed for cleanup.",
+    "coverageLimitation": "String-evaluated worker code was not attributed to its source. The next harness directly exercised the original function."
+  },
+  "focusedSourceCoverage": {
+    "tests": 9,
+    "passed": 9,
+    "linePercent": 89.91,
+    "branchPercent": 95.56,
+    "functionPercent": 85.29
+  },
+  "browserEvidence": {
+    "engine": "pinned Playwright Chromium",
+    "initialAssetReopen": "passed: new browser process, same profile, browser offline, both app routes reopen and the production WASM validates",
+    "preservedFailure": "The stronger probe timed out online and offline. A subsequent online control with service workers blocked also failed before any cache-enabled arm: one test, zero passed, exit 1, 10.55 seconds. This exposed an invalid test policy, not an observed static-cache defect.",
+    "testPolicyCorrection": "The original 16 MiB resolved-member ceiling was below 2 MiB model plus 16 MiB resident dependencies. The unchanged worker rejected that policy and closed. Only the test was corrected to the exact valid 18 MiB boundary; its estimated peak is 39852160 bytes, below the unchanged 3221225472-byte linear-memory limit.",
+    "finalRun": {
+      "command": "node --test tinyrustlm/tests/offline-worker.test.js",
+      "tests": 1,
+      "passed": 1,
+      "failed": 0,
+      "exitCode": 0,
+      "testDurationMilliseconds": 1703.3614,
+      "arms": [
+        "online with service workers blocked: production worker initializes and releases",
+        "online after the verified static service worker takes control: production worker initializes and releases",
+        "fresh browser process using the same profile, offline: both app routes reopen; production WASM validates and its real worker initializes and releases"
+      ],
+      "authorityChecks": "The static cache contains no catalog/model/private entries; live catalog fetch fails offline and a 25-hour-old catalog remains rejected.",
+      "scratch": "Original-owner cleanup completed for the corrected run and its browser profile. The separately policy-blocked initial log, raw coverage and marker remain untouched."
+    },
+    "limitation": "No model was loaded or generated from. Offline model restoration still requires an installed composition with unexpired existing authority; the current catalog freshness limit remains 24 hours. No visual comparison or public deployment is claimed."
+  },
+  "affectedDeploymentValidation": {
+    "provenance": "Reported by the independent deployment agent from actual local output chunk 4f8f50 after final allowlist/count corrections",
+    "command": "node --test tests/deploy-tinyrustlm-web.test.js tests/web-deployment-manifest.test.js tests/web-deployment-custody.test.js",
+    "workingDirectory": "tinyrustlm",
+    "tests": 18,
+    "passed": 18,
+    "failed": 0,
+    "publicationPayloads": 33,
+    "secretScanInputsIncludingControlManifest": 34
+  },
+  "sourceIdentities": {
+    "tinyrustlm/tools/static-shell-parity.js": "4a346ac96f2d50e71375f86f271eb8459fca28f901c336b3aede7a1dfd5b1587",
+    "tinyrustlm/tests/static-shell-parity.test.js": "36d0547bee28e0b228832184d47f3edf78728bec5890de70232b6f033aebf196",
+    "tinyrustlm/offline-worker.js": "f87bfe37bf045614cbef103039181345912c1b00a3cc2ea93caf968480f2f389",
+    "tinyrustlm/tests/offline-worker.test.js": "6a03ea272e91afbf181a6ee5fcbc4dcaf3ec13c72e29eba41d88d092431bb187"
+  },
+  "cleanup": {
+    "lostOwnerRun": "artifacts/tests/offline-static-cache/tinyrustlm-operation-WBZvmc",
+    "review": "Fresh bounded review of the exact newly created directory; distinct from the helper original-owner protocol and from historical blocked cleanup. The initial review counted its test log and adjacent marker but omitted a nested Node coverage output. Root's later bounded readback found that third file; the corrected inventory below preserves all three without another deletion attempt.",
+    "status": "automatic-policy-review-rejected-before-execution",
+    "reason": "blocked by policy",
+    "filesRemain": 3,
+    "logicalBytesRemain": 642242,
+    "retainedFiles": [
+      {
+        "path": "artifacts/tests/offline-static-cache/tinyrustlm-operation-WBZvmc/focused-test.log",
+        "bytes": 1892,
+        "sha256": "0963f1cd36cc6c34dc21e74d8cf8eb6e230ad7daa36b49e802dd99f42606e49c",
+        "contentReview": "Nine local test summaries and coverage output; no private model content or credentials observed."
+      },
+      {
+        "path": "artifacts/tests/offline-static-cache/tinyrustlm-operation-WBZvmc/node-coverage-o1V4vo/coverage-42168-1790712229150-0.json",
+        "bytes": 640285,
+        "sha256": "ab4cd4275a98d0257fc999e2d7eeabe5f57221316905468a2228a33405da4a88",
+        "contentReview": "Parsed V8 coverage contains result and timestamp only: 192 scripts with scriptId, URL and function names/ranges/counts. URLs are Node internals, canonical repository files or anonymous evaluation; no source-map/source bodies, model content or credential patterns observed."
+      },
+      {
+        "path": "artifacts/tests/offline-static-cache/tinyrustlm-operation-WBZvmc.owner.v2",
+        "bytes": 65,
+        "sha256": "e8c390d750de939d938881a4929c9eb486ced97c092081cde88cbafe72ffe2cd",
+        "contentReview": "A local cleanup ownership nonce; no external-service credential."
+      }
+    ],
+    "boundary": "Do not retry through another API, helper, or parent deletion."
+  },
+  "claims": {
+    "realModelExecution": false,
+    "modelQualification": false,
+    "publicDeployment": false,
+    "modelAuthorityExpiryChanged": false
+  }
+}

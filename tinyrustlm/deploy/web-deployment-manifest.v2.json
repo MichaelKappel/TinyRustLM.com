@@ -136,6 +136,11 @@
     },
     {
       "source": "source",
+      "local": "offline-worker.js",
+      "remote": "offline-worker.js"
+    },
+    {
+      "source": "source",
       "local": "companion/index.html",
       "remote": "companion/index.html"
     },

@@ -47,8 +47,8 @@ test("complete web release input passes the bounded secret scan", async (context
     generatedRoot
   });
   assert.equal(result.status, "pass");
-  // Scan all 32 publication members plus the controlling deployment manifest.
-  assert.equal(result.scannedArtifactCount, 33);
+  // Scan all 33 publication members, including the worker, plus the controlling deployment manifest.
+  assert.equal(result.scannedArtifactCount, 34);
   assertScanScope(path.join(root, "scan-report.json"));
   assert.equal(result.secretFindingCount, 0);
   assert.match(result.reportSha256, /^[0-9a-f]{64}$/);
@@ -73,7 +73,7 @@ test("web release scan CLI emits exact evidence and rejects invalid input withou
   assert.equal(passed.stderr, "");
   const summary = JSON.parse(passed.stdout);
   assert.equal(summary.status, "pass");
-  assert.equal(summary.scannedArtifactCount, 33);
+  assert.equal(summary.scannedArtifactCount, 34);
   assertScanScope(path.join(root, "scan.json"));
   assert.equal(summary.secretFindingCount, 0);
   assert.equal(fs.existsSync(path.join(root, "scan.json")), true);

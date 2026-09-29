@@ -186,6 +186,7 @@ function expectedStaticPaths(siteRoot) {
     ...appFiles,
     ...companionFiles,
     "index.html",
+    "offline-worker.js",
     ...browserRuntimeFiles,
     ...updateFiles
   ].filter((file) => !retiredPublicPaths.includes(file)).sort());
@@ -362,6 +363,7 @@ function validateWebDeploymentManifest(options = {}) {
     "app/browser-model-admission.js",
     "app/memory-endpoints-enrollment.js",
     "app/site-release.js",
+    "offline-worker.js",
     "browser-runtime/tinyrustlm-browser-runtime.wasm",
     "browser-runtime/tinyrustlm-browser-runtime.wasm.manifest.json",
     "updates/updates.css",
@@ -391,6 +393,7 @@ function validateWebDeploymentManifest(options = {}) {
   );
   for (const dependency of [
     ...shellAssetPaths,
+    "offline-worker.js",
     "browser-runtime/tinyrustlm-browser-runtime.wasm",
     "browser-runtime/tinyrustlm-browser-runtime.wasm.manifest.json",
     "updates/updates.css"

@@ -11672,5 +11672,10 @@ window.addEventListener("online", function () {
   installUiEventHandlers();
   observeCopyableFields();
   renderConversation();
+  // Cache only the verified public shell/runtime closure; model authority remains in OPFS admission.
+  if (window.isSecureContext && "serviceWorker" in navigator) {
+    navigator.serviceWorker.register("/offline-worker.js", { scope: "/", updateViaCache: "none" })
+      .catch(() => appendConsole("Offline application assets could not be saved for a later visit."));
+  }
   boot();
 }());

@@ -1,0 +1,29 @@
+✔ canonical app shell deterministically generates the public root shell (35.2216ms)
+✔ public and loopback release hosts require the sole six-member worker admission path (1.4192ms)
+✔ narrow desktop reserves a fixed empty-state composer (0.7199ms)
+✔ shell writer repairs stale paths and content identities (117.4492ms)
+✔ shell verification rejects an asset reached through a directory junction (5.2028ms)
+✔ offline static worker serves only the complete exact public closure without network (32.4539ms)
+✔ failed or incomplete offline installation cannot retain a partial cache or remove its predecessor (4.4084ms)
+✔ offline reads recheck cached bytes and missing entries admit only pinned network bytes (3.2331ms)
+✔ normal worker activation retires only its own previous static asset cache (2.2947ms)
+ℹ Warning: Could not clean up code coverage. Error: ENOENT: no such file or directory, mkdir ''
+ℹ tests 9
+ℹ suites 0
+ℹ pass 9
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 285.5088
+ℹ start of coverage report
+ℹ --------------------------------------------------------------------------------------------------------
+ℹ file                     | line % | branch % | funcs % | uncovered lines
+ℹ --------------------------------------------------------------------------------------------------------
+ℹ tinyrustlm               |        |          |         | 
+ℹ  tools                   |        |          |         | 
+ℹ   static-shell-parity.js |  55.19 |    88.57 |   85.00 | 18-134 166-167 275-279 298-310 312-318 321-327
+ℹ --------------------------------------------------------------------------------------------------------
+ℹ all files                |  55.19 |    88.57 |   85.00 | 
+ℹ --------------------------------------------------------------------------------------------------------
+ℹ end of coverage report

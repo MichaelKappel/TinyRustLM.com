@@ -47,7 +47,7 @@ test("CLI binds and re-verifies canonical publication inputs without copied payl
   assert.equal(input.schema, "tinyrustlm.web_deployment_input.v1");
   assert.equal(input.status, "pass");
   // Current publication: 30 canonical source files and two generated release records.
-  assert.equal(input.fileCount, 32);
+  assert.equal(input.fileCount, 33);
   assert.equal(input.files.length, input.fileCount);
   const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
   assert.deepEqual(input.files.map(({ source, local, remote }) => ({ source, local, remote })),
