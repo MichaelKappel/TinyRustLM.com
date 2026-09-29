@@ -110,6 +110,25 @@
       }
     },
     {
+      "filename": "tokenizer.json",
+      "requestedUrl": "https://huggingface.co/Pluto-AI-Labs/Pluto-Genesis-0.6B/resolve/a52e0229b7611bd96dac8594ab2f6924c89249c2/tokenizer.json",
+      "bytes": 11422654,
+      "sha256": "aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4",
+      "gitBlobId": null,
+      "cacheSource": {
+        "path": "D:/LLMs/TinyRustLM/sources/Qwen/Qwen3-0.6B/c1899de289a04d12100db370d81485cdf75e47ca/tokenizer.json",
+        "bytes": 11422654,
+        "sha256": "aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4",
+        "selector": "entire regular file",
+        "origin": "Existing canonical tokenizer bytes independently rehashed against Pluto's pinned LFS identity before this still-unrun plan amendment. Reusing identical tokenizer bytes does not reopen the rejected base model or substitute its weights.",
+        "receipt": {
+          "path": "artifacts/ecosystem-cleanup-20260912/canonical-training-source-review.json",
+          "bytes": 2944,
+          "sha256": "4eed22be24a3541670bf899033b6c1d76676406c4779e981af86e33940312f5c"
+        }
+      }
+    },
+    {
       "filename": "LICENSE",
       "requestedUrl": "https://www.apache.org/licenses/LICENSE-2.0.txt",
       "bytes": 11358,
@@ -129,14 +148,8 @@
       }
     }
   ],
-  "cacheRules": "Before acquisition validate each regular cache source's bound bytes/SHA, extract the exact retained UTF-8 body or whole license file, and verify the resulting byte count/SHA and Git blob where present. Record requested URL, cache source and verified content identity before passing a200 Response of those exact bytes to the unchanged helper. Mark each such response as a cache hit, not a network download. No metadata/license HTTP requests or fallback are allowed.",
+  "cacheRules": "Before acquisition validate each regular cache source's bound bytes/SHA, extract the exact retained UTF-8 body or whole license/tokenizer file, and verify the resulting byte count/SHA and Git blob where present. Record requested URL, cache source and verified content identity before passing a200 Response of those exact bytes to the unchanged helper. Mark each such response as a cache hit, not a network download. No metadata/tokenizer/license HTTP requests or fallback are allowed.",
   "networkEntries": [
-    {
-      "filename": "tokenizer.json",
-      "url": "https://huggingface.co/Pluto-AI-Labs/Pluto-Genesis-0.6B/resolve/a52e0229b7611bd96dac8594ab2f6924c89249c2/tokenizer.json",
-      "bytes": 11422654,
-      "sha256": "aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4"
-    },
     {
       "filename": "model.safetensors",
       "url": "https://huggingface.co/Pluto-AI-Labs/Pluto-Genesis-0.6B/resolve/a52e0229b7611bd96dac8594ab2f6924c89249c2/model.safetensors",
@@ -144,7 +157,7 @@
       "sha256": "3c3fed56cd33189d386b9b690ada71f55daee5a158afda69486efc6fe57a8ad9"
     }
   ],
-  "networkRules": "Only these two remaining LFS URLs may be fetched; one request per URL, no transport retries or fallback. Preserve normal redirect behavior and helper streaming/bounds/checksum admission. HTTP429 or any other failure closes this attempt before generation and establishes an external-access block; do not try another transport variation in this task.",
+  "networkRules": "Only the one remaining model.safetensors LFS URL may be fetched, once, with no transport retries or fallback. Preserve normal redirect behavior and helper streaming/bounds/checksum admission. HTTP429 or any other failure closes this attempt before generation and establishes an external-access block; do not try another transport variation in this task.",
   "canonicalSourceDirectory": {
     "path": "D:/LLMs/TinyRustLM/sources/source-bd2ce82e254af7040110ad6ff3b4285d2f2a652610bbc78fafeb3327999af36f",
     "isDirectory": true,
@@ -169,7 +182,7 @@
     "stderr": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-v3-development-stderr-20260929.txt"
   },
   "executionRule": "One third acquisition -> exact seven-file/receipt verification -> unchanged config/tokenizer-only preflight -> first one-shot six-case screen. Preserve600/120/600-second stages and1800-second total. Only raw output destination changes in source-runner arguments. No receipt commit or second GO inside the combined operation.",
-  "identityClosure": "Bind this amendment, original basePlan, prior transport plan, both failed start/execution artifacts, all basePlan input/helper/runtime captures and the license cache/receipt before and after. Run fresh source-authority/remote-exact gate; reviewed GO commit must remain ancestor. Allow only basePlan's known independent parallel work. Never claim all-tree cleanliness.",
+  "identityClosure": "Bind this amendment, original basePlan, prior transport plan, both failed start/execution artifacts, all basePlan input/helper/runtime captures and the license/tokenizer caches with their custody receipts before and after. Run fresh source-authority/remote-exact gate; reviewed GO commit must remain ancestor. Allow only basePlan's known independent parallel work. Never claim all-tree cleanliness.",
   "launchConditions": [
     "Root reviews, commits/pushes and gives one GO for this cache-bound operation.",
     "The three exact new raw/preflight/stderr paths must be Git -text; no new operation output exists.",
