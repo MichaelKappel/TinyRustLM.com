@@ -1,0 +1,167 @@
+{
+  "schema": "tinyrustlm.source_development_screen_plan.v2",
+  "status": "prospective-bound-awaiting-commit-acquisition-and-explicit-execution-go",
+  "purpose": "One new distinct source-reference screen of the remaining metadata-admitted candidate, keeping the six-case product-path inputs and criteria unchanged.",
+  "source": {
+    "modelId": "reaperdoesntknow/Qwen3-0.6B-Distilled-30B-A3B-Thinking-SFT",
+    "revision": "a79e8686ac71e1bde2e4097a8fae923bd3d37f2b",
+    "weightSha256": "c1d2b15ffb4239c2d83a24ca59e35b8cb427a03dcdc3c667bba985e64907b258",
+    "weightIdentity": "a0e0106e4255e27524cf1b3d749639c72e0f2a33834e7ad554b20009a550cdad",
+    "sourceWeightBytes": 1503300328,
+    "totalParameters": 751632384,
+    "profile": "qwen3-0.6b-untied-bpe",
+    "checkpointDirectory": "D:\\LLMs\\TinyRustLM\\sources\\source-3eb7c51652379cdbfe6851668ef2e870decc17678d98e4e599229b09207a93c2"
+  },
+  "metadata": {
+    "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-thinking-sft-metadata-20260929.json",
+    "bytes": 26540,
+    "sha256": "d816cb7060e50e67fbb6d6cf481b299f7656aba7e591559463551892b178f6e2",
+    "verification": "Pinned API revision/model identity and README, config and generation-config Git blob identities verified. No payload acquired."
+  },
+  "inventory": {
+    "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-untied-inventory-20260929.json",
+    "bytes": 4516,
+    "sha256": "be3f23b7688f09fcbc44c810c619ff8dc58b124673def991203b3cf0c279fd6a",
+    "selectionStart": 0,
+    "selectionCount": 1,
+    "schema": "tinyrustlm.huggingface_supported_candidate_inventory.v4"
+  },
+  "exclusionsAtSelection": {
+    "path": "contracts/vnext/source-candidate-exclusions.v1.json",
+    "entryCount": 46,
+    "sha256": "a100ff8125cb8a7b02bf0ced02a539894f28b307b92af2ac88d7bbeccf9ca58b",
+    "exactRevisionOrWeightMatch": false,
+    "allPriorFailuresPreserved": true,
+    "nonmatchIsNotQualification": true
+  },
+  "selectionReason": "The pinned bytes are distinct and its publisher describes an additional instruction SFT stage. It uses an already admitted source acquisition shape. This is a narrow low-cost falsifier, not evidence of useful general chat: the SFT is legal-domain and documents Instruction/Response rather than ChatML training.",
+  "verifiedMetadata": {
+    "architecture": "Qwen3 dense GQA; hidden1024, FF3072, layers28, queryHeads16, KVHeads8, headDimension128, vocab151936, untied output, BF16 source, default RoPE theta1000000, RMS epsilon0.000001, max context40960.",
+    "useCache": false,
+    "template": "Same pinned external ChatML Jinja bytes as the prior untied source; enable_thinking=false is supported.",
+    "tokenizer": "Same tokenizer SHA256 and tokenizer_config Git blob as the prior untied source. Actual tokenizer-only verification of those identical bytes is retained, but does not establish this source model's quality.",
+    "publisherLicense": "Apache-2.0, declared by pinned card and API. Official Apache license text may be acquired under the existing metadata-plus-authority convention.",
+    "uncertainty": "Exact training revisions and training data rights are not independently verified. No conflicting publisher license restriction was found in this bounded review."
+  },
+  "cases": {
+    "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-untied-development-screen-20260929.eval",
+    "bytes": 1308,
+    "sha256": "946e6bdda7512bde3db4dac5a4f66e66eb5353141e7d19b8a0ca3735fd2903c9",
+    "count": 6,
+    "maximumTotalGeneratedTokens": 352,
+    "kind": "public-development-not-holdout",
+    "changedCases": []
+  },
+  "criteria": [
+    {
+      "index": 0,
+      "expected": "Exact READY, allowing surrounding whitespace only."
+    },
+    {
+      "index": 1,
+      "expected": "A single JSON object exactly {name: Mira, day: Tuesday}; no extra text, including Markdown fences."
+    },
+    {
+      "index": 2,
+      "expected": "Friday only, allowing surrounding whitespace and final punctuation."
+    },
+    {
+      "index": 3,
+      "expected": "Exactly two actionable steps yielding a handwritten packing checklist covering coat, bottle and keys, either named explicitly or referred to unambiguously as all three stated items. Using the checklist is optional. No invented tools, added packing items, unavailable resources or falsely claimed real-world actions. Judge exactly two steps semantically, not by arbitrary punctuation."
+    },
+    {
+      "index": 4,
+      "expected": "Red only, allowing surrounding whitespace and final punctuation; preserve the prior review's treatment of lowercase red as the same color-only answer."
+    },
+    {
+      "index": 5,
+      "expected": "One sentence preserving weekday hours and Sunday closure with no invented facts."
+    }
+  ],
+  "criterionAuthority": {
+    "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-untied-development-binding-20260929.json",
+    "bytes": 5733,
+    "sha256": "980ee3d8628cecb46692f44ed3a88ec65755226b8251f62bd4432ec68b411335",
+    "reviewer": "Root agent, separately from the execution agent",
+    "review": "Root reviewed the preceding raw answers, recorded cases0/2/4/5 pass and cases1/3 fail, and explicitly directed the next distinct candidate to preserve all six cases, system prompt and generation path. No new source answers have been seen."
+  },
+  "tool": {
+    "path": "tinyrustlm/tools/reference-raw-quality.py",
+    "bytes": 34527,
+    "sha256": "30dd01e388433dfe926f5990ab778817167fd50a6c81a55a19e10870ebb289fb"
+  },
+  "acquisitionHelpers": [
+    {
+      "path": "tinyrustlm/tools/huggingface-supported-candidates.js",
+      "bytes": 25099,
+      "sha256": "97105f1a45df1c7ba9682e3d5a4e211b3a57dab1e01ee65ad36f52862b3a8b61"
+    },
+    {
+      "path": "tinyrustlm/tools/huggingface-candidate-acquire.js",
+      "bytes": 33531,
+      "sha256": "c179d2d343689ef930ee765b64447589a84a2c6efac4b59ceba83271fadcd1de"
+    }
+  ],
+  "execution": {
+    "python": "D:\\LLMs\\TinyRustLM\\training-env-py312\\Scripts\\python.exe",
+    "pythonFlags": [
+      "-I",
+      "-B"
+    ],
+    "torch": "2.13.0+cpu",
+    "transformers": "5.13.1",
+    "device": "cpu",
+    "dtype": "float32",
+    "generation": "greedy",
+    "systemPrompt": "You are TinyRustLM, a browser-local AI assistant. You do not have personal experiences. Answer directly and helpfully.",
+    "callsPerCase": 1,
+    "adapter": null,
+    "policyExamples": null,
+    "promptSuffix": null,
+    "remoteCode": false,
+    "localFilesOnly": true,
+    "retries": 0,
+    "timeoutSeconds": 600,
+    "threadLimit": 4,
+    "rawOutputTransform": "none",
+    "thinkingTemplateOptions": {
+      "enable_thinking": false
+    },
+    "publisherUseCache": false,
+    "publisherUseCacheHandling": "Preserve the original config unchanged. The raw owner does not pass a use_cache override; allow the installed source framework to honor its effective publisher configuration. Do not enable caching for speed or adjust other generation settings.",
+    "runtimeBindings": [
+      {
+        "path": "D:\\LLMs\\TinyRustLM\\training-env-py312\\Scripts\\python.exe",
+        "bytes": 274424,
+        "sha256": "0b471133e110cfb53a061cad528ce8e517d7b9ac41a0a396c39ad795a487fc14"
+      },
+      {
+        "path": "D:\\LLMs\\TinyRustLM\\training-env-py312\\Lib\\site-packages\\transformers\\tokenization_utils_base.py",
+        "bytes": 183764,
+        "sha256": "f86fc8ce6ad86bcbb4bad93b84b3cde9f7b93b516703b5d220889c66bbdd7b5a"
+      }
+    ]
+  },
+  "resourceEstimate": {
+    "sourceWeightBytes": 1503300328,
+    "fp32ParameterBytes": 3006529536,
+    "estimatedSixMemberQ8Bytes": 762654557,
+    "maximumSixMemberBytes": 805306368,
+    "estimateOnly": true,
+    "uncertainty": "Exact converted member sizes, peak memory and browser speed remain unmeasured."
+  },
+  "conversionBoundary": "The current Rust converter/config and Template2 original-source identity bindings require a coherent reviewed update if this source passes. Tokenizer2 already supports NFC. No architecture rewrite or conversion is authorized by a source screen.",
+  "decisionRule": "Record all six raw outputs and the unchanged criteria separately. Any case failure is a terminal development rejection of these exact source bytes. No output repair, sampler change or replay. Even six passes only justify conversion and further qualification, never default/catalog admission.",
+  "output": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-thinking-sft-development-raw-20260929.json",
+  "launchConditions": [
+    "Root commits/pushes this exact prospective plan and metadata; clean remote-exact source admission passes at the coordinated checkpoint.",
+    "Acquisition requires explicit root GO and selects only inventory index0/count1 with the bound v4 helper.",
+    "Acquired seven-file receipt and actual source hashes are reviewed and committed before a separate explicit root execution GO.",
+    "Fresh clean remote-exact registered-root gate, runtime/input/source hash verification, output absence and exclusive start record precede execution.",
+    "Run the unchanged raw owner exactly once for all six cases with its fixed bounds; preserve raw output and every failure. Do not retry a failed or interrupted operation.",
+    "Preserve every prior assessment and the 46 exclusions. No model acquisition or execution is claimed by this prospective plan."
+  ],
+  "modelPayloadAcquired": false,
+  "modelExecutionStarted": false,
+  "productionDefaultChanged": false
+}

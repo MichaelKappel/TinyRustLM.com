@@ -1,0 +1,64 @@
+{
+  "schema": "tinyrustlm.source_model_screen_assessment.v1",
+  "sourceModelId": "reaperdoesntknow/Qwen3-0.6B-Distilled-30B-A3B",
+  "sourceRevision": "7bd368dce6747cd9647a4e05300f3294bc2e9108",
+  "sourceModelArtifactSha256": "cb003b4471fd18fac80b98dce7e3310bb77f8af463d395db7a33ec3c16651bd2",
+  "sourceScreenSha256": "f0aaa11deefaf65b08790902c6489cf067e082aa4811897822167c45e33c741e",
+  "sourceScreenPath": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-untied-development-raw-20260929.json",
+  "executionReceiptPath": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-untied-development-execution-20260929.json",
+  "executionReceiptSha256": "66e63920aa17cefa999d73add7387867e7dd0defcf158cbe3f65a126c35b9c42",
+  "prospectiveBindingPath": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-untied-development-binding-20260929.json",
+  "prospectiveBindingSha256": "980ee3d8628cecb46692f44ed3a88ec65755226b8251f62bd4432ec68b411335",
+  "decision": "rejected",
+  "decisionAuthority": "engineering-source-screen-v1",
+  "independentAssessment": "Root agent inspected all six exact raw outputs separately from the execution agent and applied the previously frozen binding without rubric changes.",
+  "architectureFamily": "qwen3-dense-gqa",
+  "runtimeAdmission": "not-admitted-current-slm2",
+  "licenseDisposition": "apache-2.0-publisher-metadata-plus-official-license-text-verified",
+  "blockerCode": "model_quality_rejected",
+  "passedCaseCount": 4,
+  "caseCount": 6,
+  "criticalFailureCodes": [
+    "answer-format-violated",
+    "task-fidelity-violated"
+  ],
+  "caseDispositions": [
+    {
+      "index": 0,
+      "status": "pass",
+      "failureCodes": []
+    },
+    {
+      "index": 1,
+      "status": "fail",
+      "failureCodes": ["answer-format-violated"],
+      "reason": "Markdown code fences surround the JSON object despite the explicit no-other-text requirement. The raw answer was not stripped or repaired."
+    },
+    {
+      "index": 2,
+      "status": "pass",
+      "failureCodes": []
+    },
+    {
+      "index": 3,
+      "status": "fail",
+      "failureCodes": ["task-fidelity-violated"],
+      "reason": "Listing the contents of the coat, bottle and keys and marking items to keep or discard does not yield the requested packing checklist for the three stated items. Two numbered steps alone do not satisfy task fidelity."
+    },
+    {
+      "index": 4,
+      "status": "pass",
+      "failureCodes": []
+    },
+    {
+      "index": 5,
+      "status": "pass",
+      "failureCodes": []
+    }
+  ],
+  "executionBoundary": "Exactly one generation call per case, greedy source-reference execution, no retry, answer repair or prompt/sampling adjustment. This public development failure is not conversion, numerical parity, browser or final holdout evidence.",
+  "officialReferences": [
+    "https://huggingface.co/reaperdoesntknow/Qwen3-0.6B-Distilled-30B-A3B/tree/7bd368dce6747cd9647a4e05300f3294bc2e9108",
+    "https://www.apache.org/licenses/LICENSE-2.0.txt"
+  ]
+}

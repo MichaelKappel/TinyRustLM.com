@@ -1,0 +1,163 @@
+{
+  "schema": "tinyrustlm.source_development_screen_start.v1",
+  "startedAtUtc": "2026-09-29T20:56:29.719Z",
+  "authorizedSourceHead": "8d20df4b77730097bff68408c2feb75e6e3b7407",
+  "sourceGate": {
+    "schema": "tinyrustlm.source_screen_launch_gate.v1",
+    "startedAtUtc": "2026-09-29T20:54:18.213Z",
+    "finishedAtUtc": "2026-09-29T20:54:57.110Z",
+    "head": "8d20df4b77730097bff68408c2feb75e6e3b7407",
+    "tracking": "8d20df4b77730097bff68408c2feb75e6e3b7407",
+    "remote": "8d20df4b77730097bff68408c2feb75e6e3b7407",
+    "arguments": [
+      "--require-clean",
+      "--require-remote-exact"
+    ],
+    "exitCode": 0,
+    "signal": null,
+    "error": null,
+    "stdout": "{\"canonicalLayoutAvailable\":true,\"coverageClass\":\"registered-governed-roots-only\",\"localScanPerformed\":true,\"verdict\":\"pass\",\"wholeVolumeInventoryPerformed\":false}\n",
+    "stderr": "",
+    "stdoutIdentity": {
+      "bytes": 164,
+      "sha256": "23bf73a83fe1c67061b85372209405f9748df2315d3dac1122d5cc2a4eae7999"
+    },
+    "stderrIdentity": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "binding": {
+    "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-untied-development-binding-20260929.json",
+    "bytes": 5733,
+    "sha256": "980ee3d8628cecb46692f44ed3a88ec65755226b8251f62bd4432ec68b411335"
+  },
+  "boundInputs": [
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-untied-development-binding-20260929.json",
+      "bytes": 5733,
+      "sha256": "980ee3d8628cecb46692f44ed3a88ec65755226b8251f62bd4432ec68b411335"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-untied-development-plan-20260929.json",
+      "bytes": 7860,
+      "sha256": "daff6b5b0e1a15c0290139d32bb6d9a2ddb5445273607eacf96a240191c7bc13"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-untied-acquisition-support-review-20260929.json",
+      "bytes": 6597,
+      "sha256": "997dd657f51d6553560a13bd1dd0681e809bd473cd233e3f4affc0e7bb749ea5"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-untied-inventory-20260929.json",
+      "bytes": 4516,
+      "sha256": "be3f23b7688f09fcbc44c810c619ff8dc58b124673def991203b3cf0c279fd6a"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-untied-development-screen-20260929.eval",
+      "bytes": 1308,
+      "sha256": "946e6bdda7512bde3db4dac5a4f66e66eb5353141e7d19b8a0ca3735fd2903c9"
+    },
+    {
+      "path": "tinyrustlm/tools/reference-raw-quality.py",
+      "bytes": 34527,
+      "sha256": "30dd01e388433dfe926f5990ab778817167fd50a6c81a55a19e10870ebb289fb"
+    },
+    {
+      "path": "D:\\LLMs\\TinyRustLM\\training-env-py312\\Scripts\\python.exe",
+      "bytes": 274424,
+      "sha256": "0b471133e110cfb53a061cad528ce8e517d7b9ac41a0a396c39ad795a487fc14"
+    },
+    {
+      "path": "D:\\LLMs\\TinyRustLM\\training-env-py312\\Lib\\site-packages\\transformers\\tokenization_utils_base.py",
+      "bytes": 183764,
+      "sha256": "f86fc8ce6ad86bcbb4bad93b84b3cde9f7b93b516703b5d220889c66bbdd7b5a"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-untied-metadata-20260929.json",
+      "bytes": 125570,
+      "sha256": "78c573ee16bf868fd3ffe02a9b0f57c565b57a7be2b60b80ec8fa9de7bca464e"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-untied-source-review-20260929.json",
+      "bytes": 10236,
+      "sha256": "a1be8cedf98c379d2b064577b0d1494c53511fe5935283078d2b3385e731b4f6"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-untied-runtime-license-review-20260929.json",
+      "bytes": 11743,
+      "sha256": "353d055a9429cc37b7578b24d318e199284b78dd118b427fe1220b4e6f42f687"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-untied-source-acquisition-20260929.json",
+      "bytes": 2153,
+      "sha256": "229ef39dcfaa1d15c73dcb4ce61a64db54999307185d1001f1a5cc7fd6ae1246"
+    }
+  ],
+  "sourceFiles": [
+    {
+      "path": "D:\\LLMs\\TinyRustLM\\sources\\source-af23eee80be2742c8438caea5c2a0aa0ba1e8137cc528c900e8dcb65e40e53cc\\config.json",
+      "bytes": 1417,
+      "sha256": "65b3dc0ec1d71fb6a71457aea9d05385e507e09a0fb27ce2d15e1ebe681929bf"
+    },
+    {
+      "path": "D:\\LLMs\\TinyRustLM\\sources\\source-af23eee80be2742c8438caea5c2a0aa0ba1e8137cc528c900e8dcb65e40e53cc\\tokenizer.json",
+      "bytes": 11422650,
+      "sha256": "be75606093db2094d7cd20f3c2f385c212750648bd6ea4fb2bf507a6a4c55506"
+    },
+    {
+      "path": "D:\\LLMs\\TinyRustLM\\sources\\source-af23eee80be2742c8438caea5c2a0aa0ba1e8137cc528c900e8dcb65e40e53cc\\tokenizer_config.json",
+      "bytes": 665,
+      "sha256": "47bfa3e7727312946b29ac10d6dd0672d63cf7815b2a160b9523872040d2e536"
+    },
+    {
+      "path": "D:\\LLMs\\TinyRustLM\\sources\\source-af23eee80be2742c8438caea5c2a0aa0ba1e8137cc528c900e8dcb65e40e53cc\\chat_template.jinja",
+      "bytes": 4168,
+      "sha256": "a55ee1b1660128b7098723e0abcd92caa0788061051c62d51cbe87d9cf1974d8"
+    },
+    {
+      "path": "D:\\LLMs\\TinyRustLM\\sources\\source-af23eee80be2742c8438caea5c2a0aa0ba1e8137cc528c900e8dcb65e40e53cc\\generation_config.json",
+      "bytes": 213,
+      "sha256": "1aba9f92f54121f603aaf2e56eb07261db91415e6be8e036202e0900f780dfda"
+    },
+    {
+      "path": "D:\\LLMs\\TinyRustLM\\sources\\source-af23eee80be2742c8438caea5c2a0aa0ba1e8137cc528c900e8dcb65e40e53cc\\LICENSE",
+      "bytes": 11358,
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    },
+    {
+      "path": "D:\\LLMs\\TinyRustLM\\sources\\source-af23eee80be2742c8438caea5c2a0aa0ba1e8137cc528c900e8dcb65e40e53cc\\model.safetensors",
+      "bytes": 1503300328,
+      "sha256": "cb003b4471fd18fac80b98dce7e3310bb77f8af463d395db7a33ec3c16651bd2"
+    }
+  ],
+  "python": "D:\\LLMs\\TinyRustLM\\training-env-py312\\Scripts\\python.exe",
+  "args": [
+    "-I",
+    "-B",
+    "tinyrustlm/tools/reference-raw-quality.py",
+    "D:\\LLMs\\TinyRustLM\\sources\\source-af23eee80be2742c8438caea5c2a0aa0ba1e8137cc528c900e8dcb65e40e53cc",
+    "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-untied-development-screen-20260929.eval",
+    "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-untied-development-raw-20260929.json",
+    "--source-model-id",
+    "reaperdoesntknow/Qwen3-0.6B-Distilled-30B-A3B",
+    "--source-revision",
+    "7bd368dce6747cd9647a4e05300f3294bc2e9108",
+    "--generation-profile",
+    "greedy",
+    "--disable-thinking",
+    "--thinking-template-argument",
+    "enable_thinking"
+  ],
+  "timeoutSeconds": 600,
+  "threadLimit": 4,
+  "callsPerCase": 1,
+  "retries": 0,
+  "outputTransform": "none",
+  "output": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-untied-development-raw-20260929.json",
+  "scratch": {
+    "root": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\untied-source-screen\\tinyrustlm-operation-9sb29Y",
+    "marker": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\untied-source-screen\\tinyrustlm-operation-9sb29Y.owner.v2"
+  },
+  "limits": "This is a six-case public development screen, not product qualification."
+}

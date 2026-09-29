@@ -1,0 +1,40 @@
+{
+  "schema": "tinyrustlm.source_development_screen_execution.v1",
+  "startedAtUtc": "2026-09-29T20:56:29.719Z",
+  "finishedAtUtc": "2026-09-29T20:56:52.220Z",
+  "sourceHead": "8d20df4b77730097bff68408c2feb75e6e3b7407",
+  "startReceipt": {
+    "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-untied-development-start-20260929.json",
+    "bytes": 7143,
+    "sha256": "309a2e4e3ae11bcee8c72da1c9eec85ed9f3e36a9d2cee386866bb356addcb34"
+  },
+  "status": "capture-completed-awaiting-independent-rubric-assessment",
+  "exitCode": 0,
+  "signal": null,
+  "processError": null,
+  "supervisorError": null,
+  "stdout": {
+    "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-untied-development-stdout-20260929.txt",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "stderr": {
+    "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-untied-development-stderr-20260929.txt",
+    "bytes": 262,
+    "sha256": "fd7b81c61bad738eae9db005df6b04072f7c389cbc3e9ca4e1ee1dff17c89226"
+  },
+  "raw": {
+    "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-untied-development-raw-20260929.json",
+    "bytes": 24408,
+    "sha256": "f0aaa11deefaf65b08790902c6489cf067e082aa4811897822167c45e33c741e"
+  },
+  "cleanup": {
+    "status": "removed-with-original-helper-ownership",
+    "root": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\untied-source-screen\\tinyrustlm-operation-9sb29Y",
+    "marker": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\untied-source-screen\\tinyrustlm-operation-9sb29Y.owner.v2",
+    "rootAbsent": true,
+    "markerAbsent": true
+  },
+  "retries": 0,
+  "productQualification": false
+}
