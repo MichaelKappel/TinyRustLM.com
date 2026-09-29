@@ -1,0 +1,135 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<coverage line-rate="1" branch-rate="1" complexity="16" version="1.9" timestamp="1790719020" lines-covered="30" lines-valid="30" branches-covered="16" branches-valid="16">
+  <packages>
+    <package line-rate="1" branch-rate="1" complexity="16" name="TinyRustLM.Core.Tests">
+      <classes>
+        <class line-rate="1" branch-rate="1" complexity="10" name="TinyRustLM.ConsoleSample.SampleRuntimePolicy" filename="E:\Source\Rust\TinyRustLM.com\dotnet\samples\TinyRustLM.ConsoleSample\SampleRuntimePolicy.cs">
+          <methods>
+            <method line-rate="1" branch-rate="1" complexity="10" name="Create" signature="(TinyRustLM.Slm2ModelSpec, TinyRustLM.TinyRustLmNativeLimits)">
+              <lines>
+                <line number="12" hits="1" branch="False" />
+                <line number="13" hits="1" branch="False" />
+                <line number="14" hits="1" branch="True" condition-coverage="100% (8/8)">
+                  <conditions>
+                    <condition number="0" type="jump" coverage="100%" />
+                    <condition number="1" type="jump" coverage="100%" />
+                    <condition number="2" type="jump" coverage="100%" />
+                    <condition number="3" type="jump" coverage="100%" />
+                  </conditions>
+                </line>
+                <line number="15" hits="1" branch="False" />
+                <line number="17" hits="1" branch="False" />
+                <line number="21" hits="1" branch="False" />
+                <line number="22" hits="1" branch="False" />
+                <line number="23" hits="1" branch="False" />
+                <line number="24" hits="1" branch="False" />
+                <line number="25" hits="1" branch="False" />
+                <line number="26" hits="1" branch="False" />
+                <line number="27" hits="1" branch="True" condition-coverage="100% (2/2)">
+                  <conditions>
+                    <condition number="0" type="jump" coverage="100%" />
+                  </conditions>
+                </line>
+                <line number="29" hits="1" branch="False" />
+                <line number="32" hits="1" branch="False" />
+                <line number="33" hits="1" branch="False" />
+                <line number="34" hits="1" branch="False" />
+                <line number="35" hits="1" branch="False" />
+                <line number="36" hits="1" branch="False" />
+                <line number="37" hits="1" branch="False" />
+                <line number="38" hits="1" branch="False" />
+                <line number="39" hits="1" branch="False" />
+              </lines>
+            </method>
+          </methods>
+          <lines>
+            <line number="12" hits="1" branch="False" />
+            <line number="13" hits="1" branch="False" />
+            <line number="14" hits="1" branch="True" condition-coverage="100% (8/8)">
+              <conditions>
+                <condition number="0" type="jump" coverage="100%" />
+                <condition number="1" type="jump" coverage="100%" />
+                <condition number="2" type="jump" coverage="100%" />
+                <condition number="3" type="jump" coverage="100%" />
+              </conditions>
+            </line>
+            <line number="15" hits="1" branch="False" />
+            <line number="17" hits="1" branch="False" />
+            <line number="21" hits="1" branch="False" />
+            <line number="22" hits="1" branch="False" />
+            <line number="23" hits="1" branch="False" />
+            <line number="24" hits="1" branch="False" />
+            <line number="25" hits="1" branch="False" />
+            <line number="26" hits="1" branch="False" />
+            <line number="27" hits="1" branch="True" condition-coverage="100% (2/2)">
+              <conditions>
+                <condition number="0" type="jump" coverage="100%" />
+              </conditions>
+            </line>
+            <line number="29" hits="1" branch="False" />
+            <line number="32" hits="1" branch="False" />
+            <line number="33" hits="1" branch="False" />
+            <line number="34" hits="1" branch="False" />
+            <line number="35" hits="1" branch="False" />
+            <line number="36" hits="1" branch="False" />
+            <line number="37" hits="1" branch="False" />
+            <line number="38" hits="1" branch="False" />
+            <line number="39" hits="1" branch="False" />
+          </lines>
+        </class>
+        <class line-rate="1" branch-rate="1" complexity="6" name="TinyRustLM.ConsoleSample.SampleConversation" filename="E:\Source\Rust\TinyRustLM.com\dotnet\samples\TinyRustLM.ConsoleSample\SampleConversation.cs">
+          <methods>
+            <method line-rate="1" branch-rate="1" complexity="6" name="FinishGeneration" signature="(TinyRustLM.ITinyRustLmRuntime, TinyRustLM.TinyRustLmRuntimeState, uint)">
+              <lines>
+                <line number="10" hits="1" branch="False" />
+                <line number="11" hits="1" branch="False" />
+                <line number="12" hits="1" branch="False" />
+                <line number="13" hits="1" branch="True" condition-coverage="100% (2/2)">
+                  <conditions>
+                    <condition number="0" type="jump" coverage="100%" />
+                  </conditions>
+                </line>
+                <line number="15" hits="1" branch="False" />
+                <line number="18" hits="1" branch="True" condition-coverage="100% (2/2)">
+                  <conditions>
+                    <condition number="0" type="jump" coverage="100%" />
+                  </conditions>
+                </line>
+                <line number="20" hits="1" branch="True" condition-coverage="100% (2/2)">
+                  <conditions>
+                    <condition number="0" type="jump" coverage="100%" />
+                  </conditions>
+                </line>
+                <line number="22" hits="1" branch="False" />
+                <line number="26" hits="1" branch="False" />
+              </lines>
+            </method>
+          </methods>
+          <lines>
+            <line number="10" hits="1" branch="False" />
+            <line number="11" hits="1" branch="False" />
+            <line number="12" hits="1" branch="False" />
+            <line number="13" hits="1" branch="True" condition-coverage="100% (2/2)">
+              <conditions>
+                <condition number="0" type="jump" coverage="100%" />
+              </conditions>
+            </line>
+            <line number="15" hits="1" branch="False" />
+            <line number="18" hits="1" branch="True" condition-coverage="100% (2/2)">
+              <conditions>
+                <condition number="0" type="jump" coverage="100%" />
+              </conditions>
+            </line>
+            <line number="20" hits="1" branch="True" condition-coverage="100% (2/2)">
+              <conditions>
+                <condition number="0" type="jump" coverage="100%" />
+              </conditions>
+            </line>
+            <line number="22" hits="1" branch="False" />
+            <line number="26" hits="1" branch="False" />
+          </lines>
+        </class>
+      </classes>
+    </package>
+  </packages>
+</coverage>

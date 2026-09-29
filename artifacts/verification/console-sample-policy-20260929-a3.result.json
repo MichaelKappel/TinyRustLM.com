@@ -1,0 +1,221 @@
+{
+  "startedUtc": "2026-09-29T21:56:35.376Z",
+  "ownedRoot": "artifacts/verification/console-sample-policy/tinyrustlm-operation-5PppyW",
+  "sdk": "10.0.401",
+  "packageCache": "C:\\Users\\Michael\\.nuget\\packages\\",
+  "additionalEnvironmentKeys": [
+    "ALLUSERSPROFILE",
+    "COMMONPROGRAMFILES",
+    "COMMONPROGRAMFILES(X86)",
+    "COMMONPROGRAMW6432",
+    "COMSPEC",
+    "NUMBER_OF_PROCESSORS",
+    "OS",
+    "PATHEXT",
+    "PROCESSOR_ARCHITECTURE",
+    "PROGRAMDATA",
+    "PROGRAMFILES",
+    "PROGRAMFILES(X86)",
+    "PROGRAMW6432"
+  ],
+  "steps": [
+    {
+      "name": "restore-sample",
+      "command": [
+        "C:\\Program Files\\dotnet\\dotnet.exe",
+        "restore",
+        "dotnet/samples/TinyRustLM.ConsoleSample/TinyRustLM.ConsoleSample.csproj",
+        "--configfile",
+        "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\verification\\console-sample-policy\\tinyrustlm-operation-5PppyW\\NuGet.Config",
+        "-p:ArtifactsPath=E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\verification\\console-sample-policy\\tinyrustlm-operation-5PppyW\\build",
+        "-p:NuGetAudit=false",
+        "-p:UseSharedCompilation=false"
+      ],
+      "startedUtc": "2026-09-29T21:56:35.377Z",
+      "completedUtc": "2026-09-29T21:56:36.408Z",
+      "exitCode": 0,
+      "signal": null,
+      "stdout": {
+        "path": "artifacts/verification/console-sample-policy-20260929-a3.restore-sample.stdout.log",
+        "byteLength": 390,
+        "sha256": "5bcbb9ad3081040d5c783e8adbc3a6c3d5c6508a555c55fc0f0927a055dff7f8"
+      },
+      "stderr": {
+        "path": "artifacts/verification/console-sample-policy-20260929-a3.restore-sample.stderr.log",
+        "byteLength": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "build-sample",
+      "command": [
+        "C:\\Program Files\\dotnet\\dotnet.exe",
+        "build",
+        "dotnet/samples/TinyRustLM.ConsoleSample/TinyRustLM.ConsoleSample.csproj",
+        "--no-restore",
+        "--configuration",
+        "Release",
+        "-p:ArtifactsPath=E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\verification\\console-sample-policy\\tinyrustlm-operation-5PppyW\\build",
+        "-p:UseSharedCompilation=false"
+      ],
+      "startedUtc": "2026-09-29T21:56:36.410Z",
+      "completedUtc": "2026-09-29T21:56:43.385Z",
+      "exitCode": 0,
+      "signal": null,
+      "stdout": {
+        "path": "artifacts/verification/console-sample-policy-20260929-a3.build-sample.stdout.log",
+        "byteLength": 670,
+        "sha256": "7e4770efff710717682170611e4922e1b4e8526e06e93348adb7846c21956170"
+      },
+      "stderr": {
+        "path": "artifacts/verification/console-sample-policy-20260929-a3.build-sample.stderr.log",
+        "byteLength": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "restore-core-tests",
+      "command": [
+        "C:\\Program Files\\dotnet\\dotnet.exe",
+        "restore",
+        "dotnet/tests/TinyRustLM.Core.Tests/TinyRustLM.Core.Tests.csproj",
+        "--configfile",
+        "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\verification\\console-sample-policy\\tinyrustlm-operation-5PppyW\\NuGet.Config",
+        "-p:ArtifactsPath=E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\verification\\console-sample-policy\\tinyrustlm-operation-5PppyW\\build",
+        "-p:NuGetAudit=false",
+        "-p:UseSharedCompilation=false"
+      ],
+      "startedUtc": "2026-09-29T21:56:43.387Z",
+      "completedUtc": "2026-09-29T21:56:44.884Z",
+      "exitCode": 0,
+      "signal": null,
+      "stdout": {
+        "path": "artifacts/verification/console-sample-policy-20260929-a3.restore-core-tests.stdout.log",
+        "byteLength": 688,
+        "sha256": "b318881e7efd78bb8de4df7e129de69a454e751be7aeb3b7ad5264789b933fa4"
+      },
+      "stderr": {
+        "path": "artifacts/verification/console-sample-policy-20260929-a3.restore-core-tests.stderr.log",
+        "byteLength": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "test-policy",
+      "command": [
+        "C:\\Program Files\\dotnet\\dotnet.exe",
+        "test",
+        "dotnet/tests/TinyRustLM.Core.Tests/TinyRustLM.Core.Tests.csproj",
+        "--no-restore",
+        "--configuration",
+        "Release",
+        "-p:ArtifactsPath=E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\verification\\console-sample-policy\\tinyrustlm-operation-5PppyW\\build",
+        "--filter",
+        "FullyQualifiedName~SampleRuntimePolicyTests|FullyQualifiedName~SampleConversationTests",
+        "--settings",
+        "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\verification\\console-sample-policy\\tinyrustlm-operation-5PppyW\\coverage.runsettings",
+        "--collect",
+        "Code Coverage",
+        "--results-directory",
+        "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\verification\\console-sample-policy\\tinyrustlm-operation-5PppyW\\reports",
+        "--logger",
+        "trx;LogFileName=sample-policy.trx",
+        "-p:UseSharedCompilation=false"
+      ],
+      "startedUtc": "2026-09-29T21:56:44.885Z",
+      "completedUtc": "2026-09-29T21:57:00.414Z",
+      "exitCode": 0,
+      "signal": null,
+      "stdout": {
+        "path": "artifacts/verification/console-sample-policy-20260929-a3.test-policy.stdout.log",
+        "byteLength": 2154,
+        "sha256": "485e6b023faa8d5933a0418aa7b5915b9df3b684582e0b343edf0bf33a4d2ed2"
+      },
+      "stderr": {
+        "path": "artifacts/verification/console-sample-policy-20260929-a3.test-policy.stderr.log",
+        "byteLength": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "restore-package-tests",
+      "command": [
+        "C:\\Program Files\\dotnet\\dotnet.exe",
+        "restore",
+        "dotnet/tests/TinyRustLM.Package.Tests/TinyRustLM.Package.Tests.csproj",
+        "--configfile",
+        "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\verification\\console-sample-policy\\tinyrustlm-operation-5PppyW\\NuGet.Config",
+        "-p:ArtifactsPath=E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\verification\\console-sample-policy\\tinyrustlm-operation-5PppyW\\build",
+        "-p:NuGetAudit=false",
+        "-p:UseSharedCompilation=false"
+      ],
+      "startedUtc": "2026-09-29T21:57:00.420Z",
+      "completedUtc": "2026-09-29T21:57:01.333Z",
+      "exitCode": 0,
+      "signal": null,
+      "stdout": {
+        "path": "artifacts/verification/console-sample-policy-20260929-a3.restore-package-tests.stdout.log",
+        "byteLength": 301,
+        "sha256": "37206e712007040c9e0c8c08b592f6f7c74af57fbac3c62c25c1bdf1c3a5658e"
+      },
+      "stderr": {
+        "path": "artifacts/verification/console-sample-policy-20260929-a3.restore-package-tests.stderr.log",
+        "byteLength": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "test-package-boundary",
+      "command": [
+        "C:\\Program Files\\dotnet\\dotnet.exe",
+        "test",
+        "dotnet/tests/TinyRustLM.Package.Tests/TinyRustLM.Package.Tests.csproj",
+        "--no-restore",
+        "--configuration",
+        "Release",
+        "-p:ArtifactsPath=E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\verification\\console-sample-policy\\tinyrustlm-operation-5PppyW\\build",
+        "--filter",
+        "FullyQualifiedName~PackageBoundaryTests",
+        "--results-directory",
+        "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\verification\\console-sample-policy\\tinyrustlm-operation-5PppyW\\reports",
+        "--logger",
+        "trx;LogFileName=package-boundary.trx",
+        "-p:UseSharedCompilation=false"
+      ],
+      "startedUtc": "2026-09-29T21:57:01.335Z",
+      "completedUtc": "2026-09-29T21:57:09.026Z",
+      "exitCode": 0,
+      "signal": null,
+      "stdout": {
+        "path": "artifacts/verification/console-sample-policy-20260929-a3.test-package-boundary.stdout.log",
+        "byteLength": 984,
+        "sha256": "f0448c7bb9eec7330321da2f8ecf0c401284896e91070686fbfcc6083d21fd40"
+      },
+      "stderr": {
+        "path": "artifacts/verification/console-sample-policy-20260929-a3.test-package-boundary.stderr.log",
+        "byteLength": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "status": "pass",
+  "validationArtifacts": [
+    {
+      "path": "artifacts/verification/console-sample-policy-20260929-a3.isolated-build_PLUTO_2026-09-29.14_57_00.cobertura.xml",
+      "byteLength": 7403,
+      "sha256": "5cee5872a41b1a09b3ca7063a6eb8c67a9f87efc1a0a2cfd90b06cc2b128e788"
+    },
+    {
+      "path": "artifacts/verification/console-sample-policy-20260929-a3.package-boundary.trx",
+      "byteLength": 27797,
+      "sha256": "a1a5d8ddaafc0f6182bb55613ff3795dc8005689f32f6f48539873284f943901"
+    },
+    {
+      "path": "artifacts/verification/console-sample-policy-20260929-a3.sample-policy.trx",
+      "byteLength": 35564,
+      "sha256": "3298a6efc98b36073297a113c3251bc5868c540c18249b6ee4d55b1ef2a5746f"
+    }
+  ],
+  "ownedRootRemoved": true,
+  "completedUtc": "2026-09-29T21:57:09.598Z"
+}

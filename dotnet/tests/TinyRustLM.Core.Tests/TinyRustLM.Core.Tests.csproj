@@ -31,6 +31,13 @@
     </ItemGroup>
   </Target>
   <ItemGroup>
+    <!-- Exercise the sample's actual internal policy implementation without an SDK API. -->
+    <Compile Include="..\..\samples\TinyRustLM.ConsoleSample\SampleRuntimePolicy.cs"
+             Link="Samples\SampleRuntimePolicy.cs" />
+    <Compile Include="..\..\samples\TinyRustLM.ConsoleSample\SampleConversation.cs"
+             Link="Samples\SampleConversation.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <None Include="..\..\..\docs\nuget\memoryendpoints-distributed-sync-capabilities-v1.example.json"
           Link="fixtures\memoryendpoints-distributed-sync-capabilities-v1.example.json"
           CopyToOutputDirectory="PreserveNewest" />

@@ -1,0 +1,344 @@
+{
+  "schema": "tinyrustlm.console_sample_context_policy_review.v1",
+  "recordedAtUtc": "2026-09-29T22:01:17.539Z",
+  "observedHeadAtFinalReadback": "5ae28ae79f44e3bc1f2aac2eef035527ee61a057",
+  "sourceBasis": "Six exact working-file identities below; concurrent unrelated work means this is not a clean all-tree test claim.",
+  "decision": "The existing eight-argument console sample now admits a context and F32 KV allocation that fit the inspected model, and consumes immediate terminal output without calling Step.",
+  "defects": [
+    "The prior sample passed the native 131072-token ceiling directly even when the inspected model context was40960. Scalar admission rejects that policy before activation.",
+    "BeginRequest can return terminal-output-ready when the prompt exactly fills the admitted context. The prior unconditional Step then rejected runtime-not-generating."
+  ],
+  "sourceFiles": [
+    {
+      "path": "dotnet/samples/TinyRustLM.ConsoleSample/Program.cs",
+      "byteLength": 1507,
+      "sha256": "a0141809a73b97bd379da4d0055bcf0f63121a9a8fd6483260548a17675d098b"
+    },
+    {
+      "path": "dotnet/samples/TinyRustLM.ConsoleSample/SampleRuntimePolicy.cs",
+      "byteLength": 2027,
+      "sha256": "0d54ceebc9f84bd42c109fb5cfb2db00b2792132ef69dffdd7baf6a56101617c"
+    },
+    {
+      "path": "dotnet/samples/TinyRustLM.ConsoleSample/SampleConversation.cs",
+      "byteLength": 1004,
+      "sha256": "797138558cf291bb63358e7b5dd47a8d05abc730a6043cd5481085e28f95c2ca"
+    },
+    {
+      "path": "dotnet/tests/TinyRustLM.Core.Tests/TinyRustLM.Core.Tests.csproj",
+      "byteLength": 2662,
+      "sha256": "94e05ca2a897d30ce8970cba445d1d5d706bcac03fc31d1bfe2750d0132375b4"
+    },
+    {
+      "path": "dotnet/tests/TinyRustLM.Core.Tests/SampleRuntimePolicy_test.cs",
+      "byteLength": 5512,
+      "sha256": "b92a3f8fb099f042bc0faf954fd96d11ed0b1229fad37b2fc902c6544572afc0"
+    },
+    {
+      "path": "dotnet/tests/TinyRustLM.Core.Tests/SampleConversation_test.cs",
+      "byteLength": 5361,
+      "sha256": "4954cfeefa3c1ac4b7851b6d7fa97f2f15e1f0db679cfff569b3f5b5ec2815e9"
+    }
+  ],
+  "behavior": {
+    "argumentCount": 8,
+    "inspectorPreserved": true,
+    "maximumSampleSequenceTokens": 1024,
+    "maximumSampleKvBytes": 268435456,
+    "bytesPerToken": "checked(2 * model.LayerCount * model.KvHeadCount * model.HeadDimension * sizeof(float))",
+    "sequenceBound": "min(model.ContextLength, native.MaximumSequenceTokens,1024,floor(min(native.MaximumKvBytes,268435456)/bytesPerToken))",
+    "kvAllocationBound": "sequenceBound * bytesPerToken; no fractional-token reservation",
+    "zeroOrOverflow": "Zero dimensions, zero admitted tokens and arithmetic overflow fail before runtime allocation.",
+    "generation": "Use BeginRequest's actual state; Finish immediately when terminal-output-ready, otherwise Step at most the selected context bound and Finish once on terminal status.",
+    "rawOutputPreserved": true,
+    "sdkApiOrDependencyChanged": false,
+    "policyReference": "rust/crates/tinyrustlm-runtime/src/scalar.rs memory_plan and validate_runtime_spec",
+    "terminalReference": "rust/crates/tinyrustlm-runtime/src/conversation.rs begin_request and step"
+  },
+  "validation": {
+    "sdk": "10.0.401",
+    "sampleBuild": {
+      "configuration": "Release",
+      "exitCode": 0,
+      "warnings": 0,
+      "errors": 0
+    },
+    "focused": {
+      "tests": 22,
+      "passed": 22,
+      "failed": 0,
+      "skipped": 0,
+      "filter": "FullyQualifiedName~SampleRuntimePolicyTests|FullyQualifiedName~SampleConversationTests"
+    },
+    "packageBoundary": {
+      "tests": 17,
+      "passed": 17,
+      "failed": 0,
+      "skipped": 0,
+      "filter": "FullyQualifiedName~PackageBoundaryTests"
+    },
+    "coverage": {
+      "collector": "Microsoft.CodeCoverage17.11.1 already present in the existing test dependency graph",
+      "format": "Cobertura",
+      "lineRate": 1,
+      "branchRate": 1,
+      "linesCovered": 30,
+      "linesValid": 30,
+      "branchesCovered": 16,
+      "branchesValid": 16,
+      "scope": [
+        "SampleRuntimePolicy",
+        "SampleConversation"
+      ],
+      "programEntrypointCoverageMeasured": false
+    },
+    "helpersCompiledFromCanonicalSourceWithoutCopies": true,
+    "existingPackageVersionsUnchanged": true,
+    "invocation": "dotnet restore <existing-project> --configfile <owned-empty-sources-config> -p:ArtifactsPath=<owned-build> -p:NuGetAudit=false; dotnet build/test --no-restore --configuration Release -p:ArtifactsPath=<owned-build> -p:UseSharedCompilation=false; test filters and Code Coverage settings as retained in a3.result.json.",
+    "environment": "Canonical owned CLI home, AppData, TEMP/TMP and build/report paths; existing NuGet package cache; required non-secret Windows installation-directory variables retained. Final run disables shared compilation and workload advertising notifications.",
+    "networkLimit": "Package sources were cleared and cached dependencies used. No dependency installation/update was requested. The second isolated SDK home nevertheless acquired advertising/signature-cache metadata; no independently observed offline/network-isolation claim is made.",
+    "finalStartedAtUtc": "2026-09-29T21:56:35.376Z",
+    "finalCompletedAtUtc": "2026-09-29T21:57:09.598Z",
+    "finalRunStatus": "pass",
+    "diffCheck": "pass for owned sample/test paths"
+  },
+  "preservedHistory": [
+    {
+      "attempt": "a1",
+      "status": "environment-failure-before-build",
+      "reason": "Isolated environment omitted Windows installation-directory variables needed by NuGet.ConfigurationDefaults; path1 was null.",
+      "sourceFailure": false,
+      "testsExecuted": 0,
+      "originalOwnedRootRemoved": true
+    },
+    {
+      "attempt": "a2",
+      "status": "build-and-tests-pass-finalization-error",
+      "buildWarnings": 0,
+      "buildErrors": 0,
+      "policyTestsPassed": 18,
+      "packageBoundaryTestsPassed": 17,
+      "coverageLines": "21/21",
+      "coverageBranches": "10/10",
+      "reason": "VSTest emitted two equal-basename coverage reports. Exclusive flattened capture copied the first report then failed EEXIST. Original cleanup then failed OS EPERM on compiler-held analyzer DLL.",
+      "priorOutcomeOverwritten": false
+    },
+    {
+      "attempt": "a3",
+      "status": "pass",
+      "change": "Added the immediate-terminal regression and sample branch; capture deduplicates only byte-identical reports, shared compilation disabled.",
+      "policyAndConversationTestsPassed": 22,
+      "packageBoundaryTestsPassed": 17,
+      "originalOwnedRootRemoved": true
+    }
+  ],
+  "cleanup": {
+    "finalRoot": "artifacts/verification/console-sample-policy/tinyrustlm-operation-5PppyW",
+    "finalRootAbsent": true,
+    "finalMarkerAbsent": true,
+    "retainedBlockedRoot": "artifacts/verification/console-sample-policy/tinyrustlm-operation-I4Mxf3",
+    "retainedMarker": "artifacts/verification/console-sample-policy/tinyrustlm-operation-I4Mxf3.owner.v2",
+    "retainedFileCount": 496,
+    "retainedFileBytes": 41142166,
+    "retainedMarkerBytes": 65,
+    "retainedMarkerSha256": "6a0a3d758e7deed718351f2141d8aaa6ba6784072f0826b7c31504974c6cc0d7",
+    "processClosure": "Stopped only VBCSCompiler.exe PID41188 after checking executable path, parent40020 and exact creation2026-09-29T21:49:15.3013960Z within the sample build. Initial timestamp check safely refused a sub-millisecond mismatch; no process was stopped by that refused check.",
+    "rejection": "Automatic approval review rejected the subsequent exact-reviewed native PowerShell removal command before execution: blocked by policy.",
+    "historicalPathsTouched": false,
+    "retryOrAlternateDeletionAfterPolicyRejection": false,
+    "ownershipReconstructed": false,
+    "note": "The entire rejected command was unexecuted, including its planned TRX copies. The earlier raw logs and first coverage report remain preserved outside the retained root."
+  },
+  "privacyReview": {
+    "reviewedArtifacts": 34,
+    "reviewedBytes": 221804,
+    "method": "Existing public-evidence-secret-scan.js eight generic credential patterns over UTF8/Latin1/aligned and shifted UTF16LE views plus bounded content review; not a full campaign secret-scan receipt.",
+    "patternFindings": 0,
+    "credentialFilesRead": false,
+    "modelPayloadsRead": false,
+    "observations": "Evidence contains build/test diagnostics, canonical paths, test reports and a generated-file inventory. No credentials or real inference text observed.",
+    "gitRetention": "Preserve exact raw evidence bytes, including CRLF logs/XML/TRX, using scoped -text entries if force-added."
+  },
+  "artifacts": [
+    {
+      "path": "artifacts/verification/console-sample-policy-20260929-a1.restore-sample.stderr.log",
+      "byteLength": 99,
+      "sha256": "04dde9e46b902240a204acfb0cd5283be410828f0b3e1dc7b8e5f2d40e97272b"
+    },
+    {
+      "path": "artifacts/verification/console-sample-policy-20260929-a1.restore-sample.stdout.log",
+      "byteLength": 1413,
+      "sha256": "4d09b29f35401fc8677b44742a66184595870d30ab4dc344dc7a12e7fc891a20"
+    },
+    {
+      "path": "artifacts/verification/console-sample-policy-20260929-a1.result.json",
+      "byteLength": 1539,
+      "sha256": "1b22b9fffbeb53ca233bc33c1662848b214b935ec948a590586958f1d92f28eb"
+    },
+    {
+      "path": "artifacts/verification/console-sample-policy-20260929-a2.build-sample.stderr.log",
+      "byteLength": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifacts/verification/console-sample-policy-20260929-a2.build-sample.stdout.log",
+      "byteLength": 670,
+      "sha256": "70d43f19fd5e558c1368e0742e1673f45bf5d8d6112e2ca06b3c00afea5686ec"
+    },
+    {
+      "path": "artifacts/verification/console-sample-policy-20260929-a2.isolated-build_PLUTO_2026-09-29.14_49_28.cobertura.xml",
+      "byteLength": 4651,
+      "sha256": "b846af2e238353f43d61ef1de19ae8a7217189cfd7e1fd6e95fc2140bcee4179"
+    },
+    {
+      "path": "artifacts/verification/console-sample-policy-20260929-a2.restore-core-tests.stderr.log",
+      "byteLength": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifacts/verification/console-sample-policy-20260929-a2.restore-core-tests.stdout.log",
+      "byteLength": 688,
+      "sha256": "9b727b76fcf5e1cf7452dfba6194296d0bd125313dc38252b330c8fc60ec56c7"
+    },
+    {
+      "path": "artifacts/verification/console-sample-policy-20260929-a2.restore-package-tests.stderr.log",
+      "byteLength": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifacts/verification/console-sample-policy-20260929-a2.restore-package-tests.stdout.log",
+      "byteLength": 301,
+      "sha256": "f6d213a336fad9bad44597c44935724b6acabd72c9a174277f3675de46f1827e"
+    },
+    {
+      "path": "artifacts/verification/console-sample-policy-20260929-a2.restore-sample.stderr.log",
+      "byteLength": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifacts/verification/console-sample-policy-20260929-a2.restore-sample.stdout.log",
+      "byteLength": 391,
+      "sha256": "8dee81160d115847e0cd7ec1a8a832a85594169fa58488e8b76f100efd62fec4"
+    },
+    {
+      "path": "artifacts/verification/console-sample-policy-20260929-a2.result.json",
+      "byteLength": 8488,
+      "sha256": "28d420a12f9f396db6118ed60071ef6b48fb0847ec72e47be4515d99f839e213"
+    },
+    {
+      "path": "artifacts/verification/console-sample-policy-20260929-a2.retirement-inventory.json",
+      "byteLength": 115284,
+      "sha256": "8e0ff027ca7706c7f862ac16c83226835a42fbfd7f12c9b33ee186c756493cf3"
+    },
+    {
+      "path": "artifacts/verification/console-sample-policy-20260929-a2.test-package-boundary.stderr.log",
+      "byteLength": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifacts/verification/console-sample-policy-20260929-a2.test-package-boundary.stdout.log",
+      "byteLength": 984,
+      "sha256": "3687bce9e1bbfe66fa6d9283b9b2e0036aa1cedd5958573b6d1f62187b4d99c3"
+    },
+    {
+      "path": "artifacts/verification/console-sample-policy-20260929-a2.test-policy.stderr.log",
+      "byteLength": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifacts/verification/console-sample-policy-20260929-a2.test-policy.stdout.log",
+      "byteLength": 2154,
+      "sha256": "0ae157ee02e8dc3e9bb69b0664a1233b58b5f896775ff88989d97056225594ef"
+    },
+    {
+      "path": "artifacts/verification/console-sample-policy-20260929-a3.build-sample.stderr.log",
+      "byteLength": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifacts/verification/console-sample-policy-20260929-a3.build-sample.stdout.log",
+      "byteLength": 670,
+      "sha256": "7e4770efff710717682170611e4922e1b4e8526e06e93348adb7846c21956170"
+    },
+    {
+      "path": "artifacts/verification/console-sample-policy-20260929-a3.isolated-build_PLUTO_2026-09-29.14_57_00.cobertura.xml",
+      "byteLength": 7403,
+      "sha256": "5cee5872a41b1a09b3ca7063a6eb8c67a9f87efc1a0a2cfd90b06cc2b128e788"
+    },
+    {
+      "path": "artifacts/verification/console-sample-policy-20260929-a3.package-boundary.trx",
+      "byteLength": 27797,
+      "sha256": "a1a5d8ddaafc0f6182bb55613ff3795dc8005689f32f6f48539873284f943901"
+    },
+    {
+      "path": "artifacts/verification/console-sample-policy-20260929-a3.restore-core-tests.stderr.log",
+      "byteLength": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifacts/verification/console-sample-policy-20260929-a3.restore-core-tests.stdout.log",
+      "byteLength": 688,
+      "sha256": "b318881e7efd78bb8de4df7e129de69a454e751be7aeb3b7ad5264789b933fa4"
+    },
+    {
+      "path": "artifacts/verification/console-sample-policy-20260929-a3.restore-package-tests.stderr.log",
+      "byteLength": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifacts/verification/console-sample-policy-20260929-a3.restore-package-tests.stdout.log",
+      "byteLength": 301,
+      "sha256": "37206e712007040c9e0c8c08b592f6f7c74af57fbac3c62c25c1bdf1c3a5658e"
+    },
+    {
+      "path": "artifacts/verification/console-sample-policy-20260929-a3.restore-sample.stderr.log",
+      "byteLength": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifacts/verification/console-sample-policy-20260929-a3.restore-sample.stdout.log",
+      "byteLength": 390,
+      "sha256": "5bcbb9ad3081040d5c783e8adbc3a6c3d5c6508a555c55fc0f0927a055dff7f8"
+    },
+    {
+      "path": "artifacts/verification/console-sample-policy-20260929-a3.result.json",
+      "byteLength": 9191,
+      "sha256": "e180cf825f21e7046596599afab9cac4e4bca01eaf89c3bedbc7ae21db80f03e"
+    },
+    {
+      "path": "artifacts/verification/console-sample-policy-20260929-a3.sample-policy.trx",
+      "byteLength": 35564,
+      "sha256": "3298a6efc98b36073297a113c3251bc5868c540c18249b6ee4d55b1ef2a5746f"
+    },
+    {
+      "path": "artifacts/verification/console-sample-policy-20260929-a3.test-package-boundary.stderr.log",
+      "byteLength": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifacts/verification/console-sample-policy-20260929-a3.test-package-boundary.stdout.log",
+      "byteLength": 984,
+      "sha256": "f0448c7bb9eec7330321da2f8ecf0c401284896e91070686fbfcc6083d21fd40"
+    },
+    {
+      "path": "artifacts/verification/console-sample-policy-20260929-a3.test-policy.stderr.log",
+      "byteLength": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifacts/verification/console-sample-policy-20260929-a3.test-policy.stdout.log",
+      "byteLength": 2154,
+      "sha256": "485e6b023faa8d5933a0418aa7b5915b9df3b684582e0b343edf0bf33a4d2ed2"
+    }
+  ],
+  "limits": {
+    "realModelExecution": false,
+    "realNativeCandidateConversation": false,
+    "browserQualification": false,
+    "packagePublication": false,
+    "websitePublication": false,
+    "nugetVersionChange": false,
+    "allRepositoryTestsReplayed": false
+  },
+  "lesson": "Derive sample resource limits from inspected architecture; a native ceiling is not a model context. Check BeginRequest's returned state before stepping. Preserve failed test setup/capture/cleanup outcomes separately from test results; disable shared compilation in disposable isolated builds."
+}

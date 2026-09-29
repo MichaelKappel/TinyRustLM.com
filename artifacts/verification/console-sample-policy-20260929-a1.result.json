@@ -1,0 +1,38 @@
+{
+  "startedUtc": "2026-09-29T21:47:33.215Z",
+  "ownedRoot": "artifacts/verification/console-sample-policy/tinyrustlm-operation-NTizpE",
+  "sdk": "10.0.401",
+  "packageCache": "C:\\Users\\Michael\\.nuget\\packages\\",
+  "steps": [
+    {
+      "name": "restore-sample",
+      "command": [
+        "C:\\Program Files\\dotnet\\dotnet.exe",
+        "restore",
+        "dotnet/samples/TinyRustLM.ConsoleSample/TinyRustLM.ConsoleSample.csproj",
+        "--configfile",
+        "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\verification\\console-sample-policy\\tinyrustlm-operation-NTizpE\\NuGet.Config",
+        "-p:ArtifactsPath=E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\verification\\console-sample-policy\\tinyrustlm-operation-NTizpE\\build",
+        "-p:NuGetAudit=false"
+      ],
+      "startedUtc": "2026-09-29T21:47:33.216Z",
+      "completedUtc": "2026-09-29T21:47:34.074Z",
+      "exitCode": 1,
+      "signal": null,
+      "stdout": {
+        "path": "artifacts/verification/console-sample-policy-20260929-a1.restore-sample.stdout.log",
+        "byteLength": 1413,
+        "sha256": "4d09b29f35401fc8677b44742a66184595870d30ab4dc344dc7a12e7fc891a20"
+      },
+      "stderr": {
+        "path": "artifacts/verification/console-sample-policy-20260929-a1.restore-sample.stderr.log",
+        "byteLength": 99,
+        "sha256": "04dde9e46b902240a204acfb0cd5283be410828f0b3e1dc7b8e5f2d40e97272b"
+      }
+    }
+  ],
+  "status": "fail",
+  "validationArtifacts": [],
+  "ownedRootRemoved": true,
+  "completedUtc": "2026-09-29T21:47:34.134Z"
+}

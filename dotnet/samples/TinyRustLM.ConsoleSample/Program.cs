@@ -1,4 +1,5 @@
 using TinyRustLM;
+using TinyRustLM.ConsoleSample;
 
 if (args.Length != 8)
 {
@@ -18,16 +19,8 @@ var inspection = new TinyRustLmSlm2Inspector().Inspect(
     new Slm2InspectionPolicy(modelLength, 262_144));
 Console.WriteLine($"SLM2 {inspection.ArtifactSha256} ({inspection.ArtifactBytes} bytes)");
 
-using var runtime = factory.CreateRuntime(
-    new TinyRustLmRuntimePolicy(
-        contract.Limits.MaximumModelBytes,
-        contract.Limits.MaximumSequenceTokens,
-        contract.Limits.MaximumKvBytes,
-        contract.Limits.MaximumScratchBytes,
-        contract.Limits.MaximumResolvedMemberBytes,
-        contract.Limits.MaximumResidentDependencyBytes,
-        contract.Limits.MaximumPrompt2RequestBytes),
-    operation);
+var policy = SampleRuntimePolicy.Create(inspection.Model, contract.Limits);
+using var runtime = factory.CreateRuntime(policy, operation);
 runtime.ActivateComposition(
     new TinyRustLmActivationRequest(
         args[5],
@@ -36,16 +29,12 @@ runtime.ActivateComposition(
 
 var requestWire = File.ReadAllBytes(args[6]);
 runtime.SetTranscriptRevision(0);
-runtime.BeginRequest(requestWire, operation);
-for (uint stepCount = 0; stepCount < contract.Limits.MaximumSequenceTokens; stepCount++)
+var state = runtime.BeginRequest(requestWire, operation);
+var output = SampleConversation.FinishGeneration(runtime, state, policy.MaximumSequenceTokens);
+if (output is not null)
 {
-    var step = runtime.Step();
-    if (step.Status.Kind != "active")
-    {
-        var output = runtime.Finish();
-        Console.Write(output.Text);
-        return 0;
-    }
+    Console.Write(output.Text);
+    return 0;
 }
 
 Console.Error.WriteLine("The runtime exceeded its advertised sequence bound without a terminal state.");

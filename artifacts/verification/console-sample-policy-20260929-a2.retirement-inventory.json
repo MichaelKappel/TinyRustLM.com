@@ -1,0 +1,2495 @@
+{
+  "schema": "tinyrustlm.sample_scratch_retirement_inventory.v1",
+  "reviewedAtUtc": "2026-09-29T21:53:23.661Z",
+  "root": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\verification\\console-sample-policy\\tinyrustlm-operation-I4Mxf3",
+  "marker": {
+    "path": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\verification\\console-sample-policy\\tinyrustlm-operation-I4Mxf3.owner.v2",
+    "byteLength": 65,
+    "sha256": "6a0a3d758e7deed718351f2141d8aaa6ba6784072f0826b7c31504974c6cc0d7"
+  },
+  "reason": "Completed sample tests; original cleanup failed with OS EPERM from the compiler started during this run. Compiler identity was rechecked and stopped. Original helper ownership is not reconstructed.",
+  "fileCount": 496,
+  "byteLength": 41142166,
+  "files": [
+    {
+      "relativePath": "build/bin/TinyRustLM.Abstractions/release/TinyRustLM.Abstractions.deps.json",
+      "byteLength": 461,
+      "sha256": "9ffeec93b221a69830f8bd99661292a2fd4aa636703c623a3064008aa5cfe89b"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Abstractions/release/TinyRustLM.Abstractions.dll",
+      "byteLength": 69120,
+      "sha256": "dd61f69de680494b9a640dac83afd3d8393040b3f5d3ce8163dc49df7118b32a"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Abstractions/release/TinyRustLM.Abstractions.pdb",
+      "byteLength": 20744,
+      "sha256": "eb4be155823f94e99cb4828351d90f87cd41d62e4e9e683df257e2cecfb1409c"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Abstractions/release/TinyRustLM.Abstractions.xml",
+      "byteLength": 16548,
+      "sha256": "7680de02cac700c587a3dc4fa5e8ba58eacc561217e574cf69b3bd1c282a18fb"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.ConsoleSample/release/TinyRustLM.Abstractions.dll",
+      "byteLength": 69120,
+      "sha256": "dd61f69de680494b9a640dac83afd3d8393040b3f5d3ce8163dc49df7118b32a"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.ConsoleSample/release/TinyRustLM.Abstractions.pdb",
+      "byteLength": 20744,
+      "sha256": "eb4be155823f94e99cb4828351d90f87cd41d62e4e9e683df257e2cecfb1409c"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.ConsoleSample/release/TinyRustLM.Abstractions.xml",
+      "byteLength": 16548,
+      "sha256": "7680de02cac700c587a3dc4fa5e8ba58eacc561217e574cf69b3bd1c282a18fb"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.ConsoleSample/release/TinyRustLM.ConsoleSample.deps.json",
+      "byteLength": 1294,
+      "sha256": "4b32e8c9fed5195abcec2873b77c73814b796c8624be49e628f648caea387641"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.ConsoleSample/release/TinyRustLM.ConsoleSample.dll",
+      "byteLength": 9216,
+      "sha256": "46e1c07917353863c631f62aded0720f7a1ef8b7cdf5b67dcc0397a73c0e023b"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.ConsoleSample/release/TinyRustLM.ConsoleSample.exe",
+      "byteLength": 152064,
+      "sha256": "45e9bb9b598da929aa55afc8c8f6ba0643ebe0ce8a9135bb8ca22d6acdffb555"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.ConsoleSample/release/TinyRustLM.ConsoleSample.pdb",
+      "byteLength": 11644,
+      "sha256": "24a0b14a1ee1e8278878937229e7a48e3312ea724f69a80a69e028df5109f01f"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.ConsoleSample/release/TinyRustLM.ConsoleSample.runtimeconfig.json",
+      "byteLength": 340,
+      "sha256": "28329cf08f6505e73806b17558b187c02f0c1c516fe47ebfb7a013d082aaa306"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.ConsoleSample/release/TinyRustLM.Core.dll",
+      "byteLength": 45056,
+      "sha256": "46130c08093e9e644bb95e79762aca94c7284cd1f682dd45f39d0512bd10e73d"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.ConsoleSample/release/TinyRustLM.Core.pdb",
+      "byteLength": 17684,
+      "sha256": "011c3587253091162d3cb17281e985607cba24c3c53c4bbb37a95fffd589e4b6"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.ConsoleSample/release/TinyRustLM.Core.xml",
+      "byteLength": 2840,
+      "sha256": "5c13330a9746b4e91952e4ec394996e5ba5fc4dc0605eeda2b05936fc1fe559a"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.ConsoleSample/release/libtinyrustlm_native.so",
+      "byteLength": 2297616,
+      "sha256": "feb5253988305deeca5b7beaf0d54f0490c490a4fdcb0b660fc4efbf6ba24cc5"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.ConsoleSample/release/tinyrustlm_native.dll",
+      "byteLength": 1283072,
+      "sha256": "98d4b68ca355eacfba568b9b9e6c6d69f6b796d2496ffb1f8d9a632b98b54c09"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Conversion/release/TinyRustLM.Abstractions.dll",
+      "byteLength": 69120,
+      "sha256": "dd61f69de680494b9a640dac83afd3d8393040b3f5d3ce8163dc49df7118b32a"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Conversion/release/TinyRustLM.Abstractions.pdb",
+      "byteLength": 20744,
+      "sha256": "eb4be155823f94e99cb4828351d90f87cd41d62e4e9e683df257e2cecfb1409c"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Conversion/release/TinyRustLM.Abstractions.xml",
+      "byteLength": 16548,
+      "sha256": "7680de02cac700c587a3dc4fa5e8ba58eacc561217e574cf69b3bd1c282a18fb"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Conversion/release/TinyRustLM.Conversion.deps.json",
+      "byteLength": 1285,
+      "sha256": "5914fe01f20359b434c55495f6c2f63a7dddfebdf4cf0bd75f91e039ecd21efa"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Conversion/release/TinyRustLM.Conversion.dll",
+      "byteLength": 111104,
+      "sha256": "98800178a099fcd774542044434315bb3175e33a3cb7a5ffa329aff24d03f8aa"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Conversion/release/TinyRustLM.Conversion.pdb",
+      "byteLength": 31136,
+      "sha256": "eeaffc871b3ddc1753cbf621428b8fd44ce6426d33612ea62fe6aa50039731c7"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Conversion/release/TinyRustLM.Conversion.xml",
+      "byteLength": 17171,
+      "sha256": "a8a5b9ab188e995c804140ecc6f07d48ac0b187e59bcdea809e78f5dd7b66f87"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Conversion/release/TinyRustLM.Core.dll",
+      "byteLength": 45056,
+      "sha256": "46130c08093e9e644bb95e79762aca94c7284cd1f682dd45f39d0512bd10e73d"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Conversion/release/TinyRustLM.Core.pdb",
+      "byteLength": 17684,
+      "sha256": "011c3587253091162d3cb17281e985607cba24c3c53c4bbb37a95fffd589e4b6"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Conversion/release/TinyRustLM.Core.xml",
+      "byteLength": 2840,
+      "sha256": "5c13330a9746b4e91952e4ec394996e5ba5fc4dc0605eeda2b05936fc1fe559a"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Conversion/release/libtinyrustlm_native.so",
+      "byteLength": 2297616,
+      "sha256": "feb5253988305deeca5b7beaf0d54f0490c490a4fdcb0b660fc4efbf6ba24cc5"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Conversion/release/tinyrustlm-convert.exe",
+      "byteLength": 3568640,
+      "sha256": "d9eb4eba3164f3c9e22536285707bc3546c5f041d08fb222401875b0a1752b94"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Conversion/release/tinyrustlm_native.dll",
+      "byteLength": 1283072,
+      "sha256": "98d4b68ca355eacfba568b9b9e6c6d69f6b796d2496ffb1f8d9a632b98b54c09"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.ConversionFixtureTool/release/TinyRustLM.ConversionFixtureTool.deps.json",
+      "byteLength": 488,
+      "sha256": "384750fa19336aa28b374f639da9ee8c89d8005f9f4118a81adcc9c76e90700c"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.ConversionFixtureTool/release/TinyRustLM.ConversionFixtureTool.dll",
+      "byteLength": 56320,
+      "sha256": "9d447c57710f2c31fea2c11cdc029f5005abb104476493d39dd68cc6c3e119bd"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.ConversionFixtureTool/release/TinyRustLM.ConversionFixtureTool.exe",
+      "byteLength": 152064,
+      "sha256": "f8178361b3650774bb0079718b0fd3d816b87af22588b15d78b9406daca62602"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.ConversionFixtureTool/release/TinyRustLM.ConversionFixtureTool.pdb",
+      "byteLength": 15504,
+      "sha256": "eb84216432bb169ceb7022f7a67d0ec1115c5298a40eaef8cbe43c6d05600c88"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.ConversionFixtureTool/release/TinyRustLM.ConversionFixtureTool.runtimeconfig.json",
+      "byteLength": 340,
+      "sha256": "28329cf08f6505e73806b17558b187c02f0c1c516fe47ebfb7a013d082aaa306"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core/release/TinyRustLM.Abstractions.dll",
+      "byteLength": 69120,
+      "sha256": "dd61f69de680494b9a640dac83afd3d8393040b3f5d3ce8163dc49df7118b32a"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core/release/TinyRustLM.Abstractions.pdb",
+      "byteLength": 20744,
+      "sha256": "eb4be155823f94e99cb4828351d90f87cd41d62e4e9e683df257e2cecfb1409c"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core/release/TinyRustLM.Abstractions.xml",
+      "byteLength": 16548,
+      "sha256": "7680de02cac700c587a3dc4fa5e8ba58eacc561217e574cf69b3bd1c282a18fb"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core/release/TinyRustLM.Core.deps.json",
+      "byteLength": 868,
+      "sha256": "c606ff1e2209e24604e48528e36c46cf5717435dceb9195130442f52246b9745"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core/release/TinyRustLM.Core.dll",
+      "byteLength": 45056,
+      "sha256": "46130c08093e9e644bb95e79762aca94c7284cd1f682dd45f39d0512bd10e73d"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core/release/TinyRustLM.Core.pdb",
+      "byteLength": 17684,
+      "sha256": "011c3587253091162d3cb17281e985607cba24c3c53c4bbb37a95fffd589e4b6"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core/release/TinyRustLM.Core.xml",
+      "byteLength": 2840,
+      "sha256": "5c13330a9746b4e91952e4ec394996e5ba5fc4dc0605eeda2b05936fc1fe559a"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core/release/libtinyrustlm_native.so",
+      "byteLength": 2297616,
+      "sha256": "feb5253988305deeca5b7beaf0d54f0490c490a4fdcb0b660fc4efbf6ba24cc5"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core/release/tinyrustlm_native.dll",
+      "byteLength": 1283072,
+      "sha256": "98d4b68ca355eacfba568b9b9e6c6d69f6b796d2496ffb1f8d9a632b98b54c09"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/.msCoverageSourceRootsMapping_TinyRustLM.Core.Tests",
+      "byteLength": 3842,
+      "sha256": "8f745e29e6e9f1204f46226a333fe27a78e1f3f050395cec05f3a540ab24f740"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/Microsoft.TestPlatform.CommunicationUtilities.dll",
+      "byteLength": 137248,
+      "sha256": "4af79cd0ad77cee8821a19bb27126be6d60ff7e6ddfce75f33036a02945c7214"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/Microsoft.TestPlatform.CoreUtilities.dll",
+      "byteLength": 97824,
+      "sha256": "24c64fa3c37d613f91ff5d700144b718292e926e70dfed71aa8d2f7455d2d38a"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/Microsoft.TestPlatform.CrossPlatEngine.dll",
+      "byteLength": 315424,
+      "sha256": "5d82805edda54ff20990f0b875566d4b667b6b3287152fda3c9c1630f373d56a"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/Microsoft.TestPlatform.PlatformAbstractions.dll",
+      "byteLength": 53296,
+      "sha256": "dc94115de32657885b7d2e719cf0c1396be76268842e49118fe544632973ae05"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/Microsoft.TestPlatform.Utilities.dll",
+      "byteLength": 67120,
+      "sha256": "a4d547b17a1caa7f447968b048c7e81219ab7cca1f51b2c70c0bf89df3ece194"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/Microsoft.VisualStudio.CodeCoverage.Shim.dll",
+      "byteLength": 17344,
+      "sha256": "6aac89994cb9e4a7d528191fdd5b679a2fc8de05bfe61175c9f869c9cf7753ab"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/Microsoft.VisualStudio.TestPlatform.Common.dll",
+      "byteLength": 247856,
+      "sha256": "dd0a26502c57b1f889173dbbdf9d256ab085a92477f6b51845f075058e33f192"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/Microsoft.VisualStudio.TestPlatform.ObjectModel.dll",
+      "byteLength": 334896,
+      "sha256": "35c38d49f9f1535550507eea8e3499b549a8dd8fbd757f8a2335a1b430001937"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/Newtonsoft.Json.dll",
+      "byteLength": 695336,
+      "sha256": "72cf291d4bab0edd08a9b07c6173e1e7ad1abb7ab727fd7044bf6305d7515661"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/TinyRustLM.Abstractions.dll",
+      "byteLength": 69120,
+      "sha256": "dd61f69de680494b9a640dac83afd3d8393040b3f5d3ce8163dc49df7118b32a"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/TinyRustLM.Abstractions.pdb",
+      "byteLength": 20744,
+      "sha256": "eb4be155823f94e99cb4828351d90f87cd41d62e4e9e683df257e2cecfb1409c"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/TinyRustLM.Abstractions.xml",
+      "byteLength": 16548,
+      "sha256": "7680de02cac700c587a3dc4fa5e8ba58eacc561217e574cf69b3bd1c282a18fb"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/TinyRustLM.Conversion.dll",
+      "byteLength": 111104,
+      "sha256": "98800178a099fcd774542044434315bb3175e33a3cb7a5ffa329aff24d03f8aa"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/TinyRustLM.Conversion.pdb",
+      "byteLength": 31136,
+      "sha256": "eeaffc871b3ddc1753cbf621428b8fd44ce6426d33612ea62fe6aa50039731c7"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/TinyRustLM.Conversion.xml",
+      "byteLength": 17171,
+      "sha256": "a8a5b9ab188e995c804140ecc6f07d48ac0b187e59bcdea809e78f5dd7b66f87"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/TinyRustLM.ConversionFixtureTool.deps.json",
+      "byteLength": 488,
+      "sha256": "384750fa19336aa28b374f639da9ee8c89d8005f9f4118a81adcc9c76e90700c"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/TinyRustLM.ConversionFixtureTool.exe",
+      "byteLength": 152064,
+      "sha256": "f8178361b3650774bb0079718b0fd3d816b87af22588b15d78b9406daca62602"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/TinyRustLM.ConversionFixtureTool.runtimeconfig.json",
+      "byteLength": 340,
+      "sha256": "28329cf08f6505e73806b17558b187c02f0c1c516fe47ebfb7a013d082aaa306"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/TinyRustLM.Core.Tests.deps.json",
+      "byteLength": 19256,
+      "sha256": "bda68250748105c792046c52b616616c9aba88357e847cc83d32fb7e32480efd"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/TinyRustLM.Core.Tests.dll",
+      "byteLength": 210432,
+      "sha256": "086b023337c879662ad5bc0e4b7e8965f840d97e3bfb1c457b8b952a5ae7d91b"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/TinyRustLM.Core.Tests.pdb",
+      "byteLength": 37304,
+      "sha256": "6d1f740e2bd898fe4cc938ea395cb4fbd8470da58b58b9566fb780354d8402ac"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/TinyRustLM.Core.Tests.runtimeconfig.json",
+      "byteLength": 340,
+      "sha256": "28329cf08f6505e73806b17558b187c02f0c1c516fe47ebfb7a013d082aaa306"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/TinyRustLM.Core.dll",
+      "byteLength": 45056,
+      "sha256": "46130c08093e9e644bb95e79762aca94c7284cd1f682dd45f39d0512bd10e73d"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/TinyRustLM.Core.pdb",
+      "byteLength": 17684,
+      "sha256": "011c3587253091162d3cb17281e985607cba24c3c53c4bbb37a95fffd589e4b6"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/TinyRustLM.Core.xml",
+      "byteLength": 2840,
+      "sha256": "5c13330a9746b4e91952e4ec394996e5ba5fc4dc0605eeda2b05936fc1fe559a"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/TinyRustLM.MemoryEndpoints.dll",
+      "byteLength": 306176,
+      "sha256": "06b458d251cc756521d766cff578c1db411ac99f831321a69bfcdaf49d72b3ce"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/TinyRustLM.MemoryEndpoints.pdb",
+      "byteLength": 58120,
+      "sha256": "cfc167276366ba57d6db3889eb6b7ee0100c9cd2d22f3665529c624ee7a47e9e"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/TinyRustLM.MemoryEndpoints.xml",
+      "byteLength": 71107,
+      "sha256": "aac05ed5bff73e62fde8d8bb89a52ffec42969da1b2939fb67516eb89cc3fd8f"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/TinyRustLM.P2P.dll",
+      "byteLength": 21504,
+      "sha256": "f9db2e01038c0c293af6787cff66be61d2a956f1d15e5480efbebc56b4cc3cbd"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/TinyRustLM.P2P.pdb",
+      "byteLength": 13224,
+      "sha256": "2208006a09546b0e580842a798763048e6248de2350dca32f032d1986196426f"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/TinyRustLM.P2P.xml",
+      "byteLength": 816,
+      "sha256": "924c0552e3716f0ebf01947cd8941db9cbd81e7bc64ec805ce967e2852c55d0a"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/cs/Microsoft.TestPlatform.CommunicationUtilities.resources.dll",
+      "byteLength": 16416,
+      "sha256": "d4f2292f58d94621c002378cf60314961569f1c6748feb65eec723dbc0bb3fa4"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/cs/Microsoft.TestPlatform.CoreUtilities.resources.dll",
+      "byteLength": 16928,
+      "sha256": "8dc2961d7d1b35013ae72eca243ac5489728630bdfad05de1da97130bbea3a73"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/cs/Microsoft.TestPlatform.CrossPlatEngine.resources.dll",
+      "byteLength": 21032,
+      "sha256": "81ec7935dd7a03cb5ad8c77070afe536063a4727371c5af70d8cc4d53cebf69c"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/cs/Microsoft.VisualStudio.TestPlatform.Common.resources.dll",
+      "byteLength": 20512,
+      "sha256": "6aed1a94417c8637a92e731c3f5aef59fee71f15dee3cf3c3cccf739237bea98"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/cs/Microsoft.VisualStudio.TestPlatform.ObjectModel.resources.dll",
+      "byteLength": 23584,
+      "sha256": "84d18427d6d6208019e69e8fbdaeac4c3bcb24bbc640eb12cd1268078968b7bb"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/de/Microsoft.TestPlatform.CommunicationUtilities.resources.dll",
+      "byteLength": 16928,
+      "sha256": "c857799c4fc2220a58ed30f2cd7e8531a145ca1b074437be94202bf8601a849a"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/de/Microsoft.TestPlatform.CoreUtilities.resources.dll",
+      "byteLength": 16928,
+      "sha256": "e3d64b483c298eff3057f5e27bf185f95894e126b766af818341348e04103609"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/de/Microsoft.TestPlatform.CrossPlatEngine.resources.dll",
+      "byteLength": 21024,
+      "sha256": "147a1aae64a232ce9de3c908deb7a24d0865c79011af9ff23866bb5e7919cf69"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/de/Microsoft.VisualStudio.TestPlatform.Common.resources.dll",
+      "byteLength": 21024,
+      "sha256": "871c957707ea65ca68674001da69c76cf120368f484425725ecd9d97cf18f8cf"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/de/Microsoft.VisualStudio.TestPlatform.ObjectModel.resources.dll",
+      "byteLength": 24112,
+      "sha256": "fbb6fb0702fc660f495a032cbe5e6ca06725c2e0c21ef5c14c4b983eee38710d"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/es/Microsoft.TestPlatform.CommunicationUtilities.resources.dll",
+      "byteLength": 16928,
+      "sha256": "4a74a9c83dfcad73fc81769368f39d453f77fcaf4b92514a0b3aaa397112767e"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/es/Microsoft.TestPlatform.CoreUtilities.resources.dll",
+      "byteLength": 16928,
+      "sha256": "9a92fbb178190798e2887964d78e814771891a791f7cfaa30e9f7c46d4089978"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/es/Microsoft.TestPlatform.CrossPlatEngine.resources.dll",
+      "byteLength": 21024,
+      "sha256": "b3485c92240a69d3e8b5ebdb4fd702a9173e0c0c8b110f86b690130ad091d5ae"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/es/Microsoft.VisualStudio.TestPlatform.Common.resources.dll",
+      "byteLength": 21024,
+      "sha256": "2c8b17e3fbb8387c0d10addb9c3c779c02526c214b5e5abae1d438e4d8cb3893"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/es/Microsoft.VisualStudio.TestPlatform.ObjectModel.resources.dll",
+      "byteLength": 24096,
+      "sha256": "3162c15f53814ca99db585a6f7af4da3c03e56c5fbcd57f9f3124cec1d06957a"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/fixtures/memoryendpoints-distributed-sync-capabilities-v1.example.json",
+      "byteLength": 2414,
+      "sha256": "619bfe02c76e4ca84de07fe297ddc91d99abc3fa2ce7ea9cde491cdb3a1afcac"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/fixtures/memoryendpoints-outbox-v3.example.json",
+      "byteLength": 1944,
+      "sha256": "0418f90fb8aa54769ef369698ae3702c40c220fe9ed2dd9a2f2b1e984979a138"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/fr/Microsoft.TestPlatform.CommunicationUtilities.resources.dll",
+      "byteLength": 16928,
+      "sha256": "9e3b02fb8d7832f7ea76f6265d96b1bfef13a9150c3154521a1268cbdc783034"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/fr/Microsoft.TestPlatform.CoreUtilities.resources.dll",
+      "byteLength": 16928,
+      "sha256": "cd9c7cac39f6819a918a547ba0c1012cae0de358a76cdaffb1c7fed284e5559d"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/fr/Microsoft.TestPlatform.CrossPlatEngine.resources.dll",
+      "byteLength": 21040,
+      "sha256": "16a6580904908810fb31e0c08c8ba0522bb1e9b589ebc29178fde80309294e2b"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/fr/Microsoft.VisualStudio.TestPlatform.Common.resources.dll",
+      "byteLength": 21032,
+      "sha256": "cdc4b16f1e873e64cdc2eca2c06d35a7215a6646a776a165974e234cfe2965d4"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/fr/Microsoft.VisualStudio.TestPlatform.ObjectModel.resources.dll",
+      "byteLength": 24096,
+      "sha256": "c164d3204b5563dcd8a9c9750cb77cbe9ae4702d69bb3431743c80e7338800b9"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/it/Microsoft.TestPlatform.CommunicationUtilities.resources.dll",
+      "byteLength": 16928,
+      "sha256": "bfc5b99eb61b3c639cedc9d2ddd85419437eb2aa630c501d0f303840663ebaad"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/it/Microsoft.TestPlatform.CoreUtilities.resources.dll",
+      "byteLength": 16928,
+      "sha256": "842af45d08c86cecc5a0760e51b78ed31d89a2e86efa9b61ab956d176a7a2cc8"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/it/Microsoft.TestPlatform.CrossPlatEngine.resources.dll",
+      "byteLength": 21024,
+      "sha256": "6aaf6cb3c42d42842cac7c8e0da98f418c3dad13d29951aed9e22195079fb451"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/it/Microsoft.VisualStudio.TestPlatform.Common.resources.dll",
+      "byteLength": 21040,
+      "sha256": "a1ecf9ec22f9a16ed3d53d16f67a961a7090e05cdb0b9f6087ba1a1681a49a5d"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/it/Microsoft.VisualStudio.TestPlatform.ObjectModel.resources.dll",
+      "byteLength": 24096,
+      "sha256": "bb2fefc420dbec897e0c58ed7592411305c1d3f2b41e59b7c5b827df4b930151"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/ja/Microsoft.TestPlatform.CommunicationUtilities.resources.dll",
+      "byteLength": 16928,
+      "sha256": "f65695ce935f1941afc88a2c6046dd8ede33840c6a8e0614d7d9de7d1982e0a9"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/ja/Microsoft.TestPlatform.CoreUtilities.resources.dll",
+      "byteLength": 17440,
+      "sha256": "898fff59e603ef80d17d9618aa1dc4ae21aaa809c35632a5dc265a184b3439fc"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/ja/Microsoft.TestPlatform.CrossPlatEngine.resources.dll",
+      "byteLength": 22040,
+      "sha256": "795802998b0784f14f90b6d01aab38299e0faab2e4d60290ae534921a523dab9"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/ja/Microsoft.VisualStudio.TestPlatform.Common.resources.dll",
+      "byteLength": 21544,
+      "sha256": "b6e003f2a0fd8c5cdab2065ef65afcdc43cd9dcbbdf6356bf5cdfe27ade6c395"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/ja/Microsoft.VisualStudio.TestPlatform.ObjectModel.resources.dll",
+      "byteLength": 24608,
+      "sha256": "3494cad84460f9b3cf82d6a9f49c91e16353f9f24b8b8e4cc3827b752a52f6d6"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/ko/Microsoft.TestPlatform.CommunicationUtilities.resources.dll",
+      "byteLength": 16928,
+      "sha256": "ec8a8e1b688fda7c7ad331013123d5a34207c6fcb3581f71ba27a34abb745e6f"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/ko/Microsoft.TestPlatform.CoreUtilities.resources.dll",
+      "byteLength": 16928,
+      "sha256": "3cfdb1574c7f16ac766cabd32c0c6080635fcc9ec63da6860bd3f98ed788e9b9"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/ko/Microsoft.TestPlatform.CrossPlatEngine.resources.dll",
+      "byteLength": 21536,
+      "sha256": "2113b81232f308e212977e686acc20f97ef728f1787adef6a41569577474335c"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/ko/Microsoft.VisualStudio.TestPlatform.Common.resources.dll",
+      "byteLength": 21024,
+      "sha256": "abd591378d6b2db0decece3cc94318c046d078a481104c852f1a712ef7f7b8a1"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/ko/Microsoft.VisualStudio.TestPlatform.ObjectModel.resources.dll",
+      "byteLength": 24096,
+      "sha256": "510ad16f474a1d14f670662b4595d44c25f540ed27110c73d59fc55d365c6f26"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/libtinyrustlm_native.so",
+      "byteLength": 2297616,
+      "sha256": "feb5253988305deeca5b7beaf0d54f0490c490a4fdcb0b660fc4efbf6ba24cc5"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/pl/Microsoft.TestPlatform.CommunicationUtilities.resources.dll",
+      "byteLength": 16928,
+      "sha256": "f530ff64799fcc679c7b68b61066a6ada87635c83da3cc9a7c6f5d663bdd397e"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/pl/Microsoft.TestPlatform.CoreUtilities.resources.dll",
+      "byteLength": 16920,
+      "sha256": "9d02a74ef047e1f9f70b2bdf8ff874b27c1570e66837ff5ca6ced3993d7e1399"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/pl/Microsoft.TestPlatform.CrossPlatEngine.resources.dll",
+      "byteLength": 21552,
+      "sha256": "dc441ecac9d8ea1c9eb9969b8edcca33e13ecf880b83938923864e54fc16bf7f"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/pl/Microsoft.VisualStudio.TestPlatform.Common.resources.dll",
+      "byteLength": 21024,
+      "sha256": "70470705976073d0fae94b89a5729223aad977b9f5491dba0aac180b9bf3d4df"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/pl/Microsoft.VisualStudio.TestPlatform.ObjectModel.resources.dll",
+      "byteLength": 24112,
+      "sha256": "aa492571ff64357cda010ec10a54d29938d13cdec7fd385ce14c01780dc443c7"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/pt-BR/Microsoft.TestPlatform.CommunicationUtilities.resources.dll",
+      "byteLength": 16416,
+      "sha256": "94dcb8754a43be2b490b917d6a1ab0e5f4bbee748fa33512b9a82e0a75e4d2bc"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/pt-BR/Microsoft.TestPlatform.CoreUtilities.resources.dll",
+      "byteLength": 16928,
+      "sha256": "be63bd40dd8c93b8de849cf8814d8ac64a5b2845c1ea831c87d9600419140a88"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/pt-BR/Microsoft.TestPlatform.CrossPlatEngine.resources.dll",
+      "byteLength": 21024,
+      "sha256": "234158d16c78ded247b070d2476fad3f3300d92202a98bd14e75b972135cffce"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/pt-BR/Microsoft.VisualStudio.TestPlatform.Common.resources.dll",
+      "byteLength": 21032,
+      "sha256": "da441c5437bf119856a5d7de0b10984200693a6b8e19d0818bb3bb34a450cef8"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/pt-BR/Microsoft.VisualStudio.TestPlatform.ObjectModel.resources.dll",
+      "byteLength": 24096,
+      "sha256": "aef9e9f490e6535c648cf8abefe6e5d1ce488f8af9f14e5f3da389c88540b186"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/ru/Microsoft.TestPlatform.CommunicationUtilities.resources.dll",
+      "byteLength": 17440,
+      "sha256": "e297a5b77246e2ce10d0a8a51164e4d3b216f07bad340de74a521ad2889e03c6"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/ru/Microsoft.TestPlatform.CoreUtilities.resources.dll",
+      "byteLength": 17448,
+      "sha256": "caa9ddbbc1af5c9643c6a6b942f04942020183f3d0424cf37d7492a5a273b08f"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/ru/Microsoft.TestPlatform.CrossPlatEngine.resources.dll",
+      "byteLength": 23072,
+      "sha256": "f837a497e83508d98d0364709971cfbbe4f42d335d65a791366a1f6c8de6aefe"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/ru/Microsoft.VisualStudio.TestPlatform.Common.resources.dll",
+      "byteLength": 23072,
+      "sha256": "43ca5331f395c841af45b172414b658700aee483b01e670a32b83cff01ed0e79"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/ru/Microsoft.VisualStudio.TestPlatform.ObjectModel.resources.dll",
+      "byteLength": 26144,
+      "sha256": "38fe372c30ab1c62685f996075151c7357fc97826fbf34e2f0b35cb5d69e966c"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/testhost.dll",
+      "byteLength": 48672,
+      "sha256": "d3817a1f17e00b7f7b1040ab01e7aae73378f80c32aa4f62cb99c2aeed3cd5ad"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/testhost.exe",
+      "byteLength": 169496,
+      "sha256": "d2eb1420117e8096f505ed0786c47e32e2e2e16cb80f90c4c308b1ef61a8e24e"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/tinyrustlm-convert.exe",
+      "byteLength": 3568640,
+      "sha256": "d9eb4eba3164f3c9e22536285707bc3546c5f041d08fb222401875b0a1752b94"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/tinyrustlm_native.dll",
+      "byteLength": 1283072,
+      "sha256": "98d4b68ca355eacfba568b9b9e6c6d69f6b796d2496ffb1f8d9a632b98b54c09"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/tr/Microsoft.TestPlatform.CommunicationUtilities.resources.dll",
+      "byteLength": 16928,
+      "sha256": "2ae060291b5f84460a43aa48569a7292d75318eba3bfa0160ec2d2db53b1f9f7"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/tr/Microsoft.TestPlatform.CoreUtilities.resources.dll",
+      "byteLength": 16936,
+      "sha256": "a698e9b94bdad001bebea2107f01741b8b3b18792397040aebef2a7d047d893d"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/tr/Microsoft.TestPlatform.CrossPlatEngine.resources.dll",
+      "byteLength": 21024,
+      "sha256": "d26d2882572eddec4f2f064252994a2dbb5a41a9ef0e699e1d90c51a49e50b48"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/tr/Microsoft.VisualStudio.TestPlatform.Common.resources.dll",
+      "byteLength": 20512,
+      "sha256": "97734925b97bb7cb459fed10d3fa4f9bdb66a87b31ea88589437b7745fed2c32"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/tr/Microsoft.VisualStudio.TestPlatform.ObjectModel.resources.dll",
+      "byteLength": 23584,
+      "sha256": "e698426c200b0b9e91b887de7fe28e6047bae2dab83d46054945e4e01ad76bc2"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/xunit.abstractions.dll",
+      "byteLength": 21928,
+      "sha256": "3166dc70323fb30ccf1cedb0fe86f2ad122c46d254542342d90386efc4c9285c"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/xunit.assert.dll",
+      "byteLength": 185552,
+      "sha256": "50694822851cd81c29adcd0f33e4041d1605befcdc9384c02eadd62218b643b1"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/xunit.core.dll",
+      "byteLength": 70352,
+      "sha256": "0ed5297c796b0225aab35564319ebb6600738e14e868fddb21c317e35b99513b"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/xunit.execution.dotnet.dll",
+      "byteLength": 279760,
+      "sha256": "d112327a738f816894cdd314b27b141a07d5550bc2a747c08d9cab0659a76887"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/xunit.runner.reporters.netcoreapp10.dll",
+      "byteLength": 84176,
+      "sha256": "194458c816e0ea9ff0c5eac8896c52133fe9205661833b3d0f57e85a4e66936b"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/xunit.runner.utility.netcoreapp10.dll",
+      "byteLength": 255184,
+      "sha256": "ec705ad62e33f31fc46ad5800c9b1694c02d0ec4e1ee704712da9f24ebbea22e"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/xunit.runner.visualstudio.testadapter.dll",
+      "byteLength": 180944,
+      "sha256": "c5ac41b36fac0fcef9714fb80fea0175913530fb53dd7bb8e5e1470339667100"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/zh-Hans/Microsoft.TestPlatform.CommunicationUtilities.resources.dll",
+      "byteLength": 16416,
+      "sha256": "0dfda0aec925eefab4ee6e901bb13f993ca18beea607dc4a990d5e49f6388aa1"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/zh-Hans/Microsoft.TestPlatform.CoreUtilities.resources.dll",
+      "byteLength": 16928,
+      "sha256": "56ca7ba918ce468daa8c46010f4b4a2cb99dc611dc2b74ca2828d071bdaadfe6"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/zh-Hans/Microsoft.TestPlatform.CrossPlatEngine.resources.dll",
+      "byteLength": 20000,
+      "sha256": "15c887a38d91fee1c8c31ec0ced4e5a5b82b2d5b6618def0efe411ec5f8e249f"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/zh-Hans/Microsoft.VisualStudio.TestPlatform.Common.resources.dll",
+      "byteLength": 20000,
+      "sha256": "b9433e3ae2518608e04b5277f27797fca04a32b212cb382dfddf98a1c3d7ef42"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/zh-Hans/Microsoft.VisualStudio.TestPlatform.ObjectModel.resources.dll",
+      "byteLength": 23072,
+      "sha256": "3b53e8ca1476998896098e38601c6d81c333e4901a5f8f07df442518317c35ec"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/zh-Hant/Microsoft.TestPlatform.CommunicationUtilities.resources.dll",
+      "byteLength": 16424,
+      "sha256": "535576e03793bdedf60347d9ae4e9323bcf664944424ae1096be0bb8458e7d7e"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/zh-Hant/Microsoft.TestPlatform.CoreUtilities.resources.dll",
+      "byteLength": 16936,
+      "sha256": "cb88fe318d4e351f0fe9e896591199c169c43df82c8a0578308c0278f0e9a9cc"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/zh-Hant/Microsoft.TestPlatform.CrossPlatEngine.resources.dll",
+      "byteLength": 20512,
+      "sha256": "2b311289cc8f50409c6608a45d7ef523139a98f28d25f9cdabf31b1a67cd81b7"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/zh-Hant/Microsoft.VisualStudio.TestPlatform.Common.resources.dll",
+      "byteLength": 20000,
+      "sha256": "5295c55ad50cfbeaac7feeaa55f560947868342969bbbe2bc5dd6d9c3edf9c8c"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Core.Tests/release/zh-Hant/Microsoft.VisualStudio.TestPlatform.ObjectModel.resources.dll",
+      "byteLength": 23072,
+      "sha256": "33534dac170f6b86e09a9a2cd358afcf62d6e123b52de69fd939a4b4b1e8568b"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.MemoryEndpoints/release/TinyRustLM.Abstractions.dll",
+      "byteLength": 69120,
+      "sha256": "dd61f69de680494b9a640dac83afd3d8393040b3f5d3ce8163dc49df7118b32a"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.MemoryEndpoints/release/TinyRustLM.Abstractions.pdb",
+      "byteLength": 20744,
+      "sha256": "eb4be155823f94e99cb4828351d90f87cd41d62e4e9e683df257e2cecfb1409c"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.MemoryEndpoints/release/TinyRustLM.Abstractions.xml",
+      "byteLength": 16548,
+      "sha256": "7680de02cac700c587a3dc4fa5e8ba58eacc561217e574cf69b3bd1c282a18fb"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.MemoryEndpoints/release/TinyRustLM.MemoryEndpoints.deps.json",
+      "byteLength": 901,
+      "sha256": "98ecded85f26069a17ecc1fe79d78aaa1dde12a15fbea94ed41756e0b5967f94"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.MemoryEndpoints/release/TinyRustLM.MemoryEndpoints.dll",
+      "byteLength": 306176,
+      "sha256": "06b458d251cc756521d766cff578c1db411ac99f831321a69bfcdaf49d72b3ce"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.MemoryEndpoints/release/TinyRustLM.MemoryEndpoints.pdb",
+      "byteLength": 58120,
+      "sha256": "cfc167276366ba57d6db3889eb6b7ee0100c9cd2d22f3665529c624ee7a47e9e"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.MemoryEndpoints/release/TinyRustLM.MemoryEndpoints.xml",
+      "byteLength": 71107,
+      "sha256": "aac05ed5bff73e62fde8d8bb89a52ffec42969da1b2939fb67516eb89cc3fd8f"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.P2P/release/TinyRustLM.Abstractions.dll",
+      "byteLength": 69120,
+      "sha256": "dd61f69de680494b9a640dac83afd3d8393040b3f5d3ce8163dc49df7118b32a"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.P2P/release/TinyRustLM.Abstractions.pdb",
+      "byteLength": 20744,
+      "sha256": "eb4be155823f94e99cb4828351d90f87cd41d62e4e9e683df257e2cecfb1409c"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.P2P/release/TinyRustLM.Abstractions.xml",
+      "byteLength": 16548,
+      "sha256": "7680de02cac700c587a3dc4fa5e8ba58eacc561217e574cf69b3bd1c282a18fb"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.P2P/release/TinyRustLM.Core.dll",
+      "byteLength": 45056,
+      "sha256": "46130c08093e9e644bb95e79762aca94c7284cd1f682dd45f39d0512bd10e73d"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.P2P/release/TinyRustLM.Core.pdb",
+      "byteLength": 17684,
+      "sha256": "011c3587253091162d3cb17281e985607cba24c3c53c4bbb37a95fffd589e4b6"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.P2P/release/TinyRustLM.Core.xml",
+      "byteLength": 2840,
+      "sha256": "5c13330a9746b4e91952e4ec394996e5ba5fc4dc0605eeda2b05936fc1fe559a"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.P2P/release/TinyRustLM.P2P.deps.json",
+      "byteLength": 1311,
+      "sha256": "c4d3153d04a0284769c4adb9941239ff4596c14754976ec31f6aff9608e4a023"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.P2P/release/TinyRustLM.P2P.dll",
+      "byteLength": 21504,
+      "sha256": "f9db2e01038c0c293af6787cff66be61d2a956f1d15e5480efbebc56b4cc3cbd"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.P2P/release/TinyRustLM.P2P.pdb",
+      "byteLength": 13224,
+      "sha256": "2208006a09546b0e580842a798763048e6248de2350dca32f032d1986196426f"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.P2P/release/TinyRustLM.P2P.xml",
+      "byteLength": 816,
+      "sha256": "924c0552e3716f0ebf01947cd8941db9cbd81e7bc64ec805ce967e2852c55d0a"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.P2P/release/libtinyrustlm_native.so",
+      "byteLength": 2297616,
+      "sha256": "feb5253988305deeca5b7beaf0d54f0490c490a4fdcb0b660fc4efbf6ba24cc5"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.P2P/release/tinyrustlm_native.dll",
+      "byteLength": 1283072,
+      "sha256": "98d4b68ca355eacfba568b9b9e6c6d69f6b796d2496ffb1f8d9a632b98b54c09"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/.msCoverageSourceRootsMapping_TinyRustLM.Package.Tests",
+      "byteLength": 722,
+      "sha256": "f71e84b09f534466e3ab71b8a2ed1e2cb6768689503b07183ba56a9db1d900d1"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/Microsoft.TestPlatform.CommunicationUtilities.dll",
+      "byteLength": 137248,
+      "sha256": "4af79cd0ad77cee8821a19bb27126be6d60ff7e6ddfce75f33036a02945c7214"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/Microsoft.TestPlatform.CoreUtilities.dll",
+      "byteLength": 97824,
+      "sha256": "24c64fa3c37d613f91ff5d700144b718292e926e70dfed71aa8d2f7455d2d38a"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/Microsoft.TestPlatform.CrossPlatEngine.dll",
+      "byteLength": 315424,
+      "sha256": "5d82805edda54ff20990f0b875566d4b667b6b3287152fda3c9c1630f373d56a"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/Microsoft.TestPlatform.PlatformAbstractions.dll",
+      "byteLength": 53296,
+      "sha256": "dc94115de32657885b7d2e719cf0c1396be76268842e49118fe544632973ae05"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/Microsoft.TestPlatform.Utilities.dll",
+      "byteLength": 67120,
+      "sha256": "a4d547b17a1caa7f447968b048c7e81219ab7cca1f51b2c70c0bf89df3ece194"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/Microsoft.VisualStudio.CodeCoverage.Shim.dll",
+      "byteLength": 17344,
+      "sha256": "6aac89994cb9e4a7d528191fdd5b679a2fc8de05bfe61175c9f869c9cf7753ab"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/Microsoft.VisualStudio.TestPlatform.Common.dll",
+      "byteLength": 247856,
+      "sha256": "dd0a26502c57b1f889173dbbdf9d256ab085a92477f6b51845f075058e33f192"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/Microsoft.VisualStudio.TestPlatform.ObjectModel.dll",
+      "byteLength": 334896,
+      "sha256": "35c38d49f9f1535550507eea8e3499b549a8dd8fbd757f8a2335a1b430001937"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/Newtonsoft.Json.dll",
+      "byteLength": 695336,
+      "sha256": "72cf291d4bab0edd08a9b07c6173e1e7ad1abb7ab727fd7044bf6305d7515661"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/TinyRustLM.Package.Tests.deps.json",
+      "byteLength": 17893,
+      "sha256": "b9271f84060be32838813bbfffcd9fcfd68d55569f79575c530e3a429004faf0"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/TinyRustLM.Package.Tests.dll",
+      "byteLength": 69120,
+      "sha256": "420bb7a92006255e938e2f1525cc02c3fe972f715a0c2ff5688241739429fe37"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/TinyRustLM.Package.Tests.pdb",
+      "byteLength": 32092,
+      "sha256": "1c115c8a60d3d5be6de1376406766484bada6c75dc82b5ee09b28f0057992b51"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/TinyRustLM.Package.Tests.runtimeconfig.json",
+      "byteLength": 340,
+      "sha256": "28329cf08f6505e73806b17558b187c02f0c1c516fe47ebfb7a013d082aaa306"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/cs/Microsoft.TestPlatform.CommunicationUtilities.resources.dll",
+      "byteLength": 16416,
+      "sha256": "d4f2292f58d94621c002378cf60314961569f1c6748feb65eec723dbc0bb3fa4"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/cs/Microsoft.TestPlatform.CoreUtilities.resources.dll",
+      "byteLength": 16928,
+      "sha256": "8dc2961d7d1b35013ae72eca243ac5489728630bdfad05de1da97130bbea3a73"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/cs/Microsoft.TestPlatform.CrossPlatEngine.resources.dll",
+      "byteLength": 21032,
+      "sha256": "81ec7935dd7a03cb5ad8c77070afe536063a4727371c5af70d8cc4d53cebf69c"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/cs/Microsoft.VisualStudio.TestPlatform.Common.resources.dll",
+      "byteLength": 20512,
+      "sha256": "6aed1a94417c8637a92e731c3f5aef59fee71f15dee3cf3c3cccf739237bea98"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/cs/Microsoft.VisualStudio.TestPlatform.ObjectModel.resources.dll",
+      "byteLength": 23584,
+      "sha256": "84d18427d6d6208019e69e8fbdaeac4c3bcb24bbc640eb12cd1268078968b7bb"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/de/Microsoft.TestPlatform.CommunicationUtilities.resources.dll",
+      "byteLength": 16928,
+      "sha256": "c857799c4fc2220a58ed30f2cd7e8531a145ca1b074437be94202bf8601a849a"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/de/Microsoft.TestPlatform.CoreUtilities.resources.dll",
+      "byteLength": 16928,
+      "sha256": "e3d64b483c298eff3057f5e27bf185f95894e126b766af818341348e04103609"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/de/Microsoft.TestPlatform.CrossPlatEngine.resources.dll",
+      "byteLength": 21024,
+      "sha256": "147a1aae64a232ce9de3c908deb7a24d0865c79011af9ff23866bb5e7919cf69"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/de/Microsoft.VisualStudio.TestPlatform.Common.resources.dll",
+      "byteLength": 21024,
+      "sha256": "871c957707ea65ca68674001da69c76cf120368f484425725ecd9d97cf18f8cf"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/de/Microsoft.VisualStudio.TestPlatform.ObjectModel.resources.dll",
+      "byteLength": 24112,
+      "sha256": "fbb6fb0702fc660f495a032cbe5e6ca06725c2e0c21ef5c14c4b983eee38710d"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/es/Microsoft.TestPlatform.CommunicationUtilities.resources.dll",
+      "byteLength": 16928,
+      "sha256": "4a74a9c83dfcad73fc81769368f39d453f77fcaf4b92514a0b3aaa397112767e"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/es/Microsoft.TestPlatform.CoreUtilities.resources.dll",
+      "byteLength": 16928,
+      "sha256": "9a92fbb178190798e2887964d78e814771891a791f7cfaa30e9f7c46d4089978"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/es/Microsoft.TestPlatform.CrossPlatEngine.resources.dll",
+      "byteLength": 21024,
+      "sha256": "b3485c92240a69d3e8b5ebdb4fd702a9173e0c0c8b110f86b690130ad091d5ae"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/es/Microsoft.VisualStudio.TestPlatform.Common.resources.dll",
+      "byteLength": 21024,
+      "sha256": "2c8b17e3fbb8387c0d10addb9c3c779c02526c214b5e5abae1d438e4d8cb3893"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/es/Microsoft.VisualStudio.TestPlatform.ObjectModel.resources.dll",
+      "byteLength": 24096,
+      "sha256": "3162c15f53814ca99db585a6f7af4da3c03e56c5fbcd57f9f3124cec1d06957a"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/fr/Microsoft.TestPlatform.CommunicationUtilities.resources.dll",
+      "byteLength": 16928,
+      "sha256": "9e3b02fb8d7832f7ea76f6265d96b1bfef13a9150c3154521a1268cbdc783034"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/fr/Microsoft.TestPlatform.CoreUtilities.resources.dll",
+      "byteLength": 16928,
+      "sha256": "cd9c7cac39f6819a918a547ba0c1012cae0de358a76cdaffb1c7fed284e5559d"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/fr/Microsoft.TestPlatform.CrossPlatEngine.resources.dll",
+      "byteLength": 21040,
+      "sha256": "16a6580904908810fb31e0c08c8ba0522bb1e9b589ebc29178fde80309294e2b"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/fr/Microsoft.VisualStudio.TestPlatform.Common.resources.dll",
+      "byteLength": 21032,
+      "sha256": "cdc4b16f1e873e64cdc2eca2c06d35a7215a6646a776a165974e234cfe2965d4"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/fr/Microsoft.VisualStudio.TestPlatform.ObjectModel.resources.dll",
+      "byteLength": 24096,
+      "sha256": "c164d3204b5563dcd8a9c9750cb77cbe9ae4702d69bb3431743c80e7338800b9"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/it/Microsoft.TestPlatform.CommunicationUtilities.resources.dll",
+      "byteLength": 16928,
+      "sha256": "bfc5b99eb61b3c639cedc9d2ddd85419437eb2aa630c501d0f303840663ebaad"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/it/Microsoft.TestPlatform.CoreUtilities.resources.dll",
+      "byteLength": 16928,
+      "sha256": "842af45d08c86cecc5a0760e51b78ed31d89a2e86efa9b61ab956d176a7a2cc8"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/it/Microsoft.TestPlatform.CrossPlatEngine.resources.dll",
+      "byteLength": 21024,
+      "sha256": "6aaf6cb3c42d42842cac7c8e0da98f418c3dad13d29951aed9e22195079fb451"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/it/Microsoft.VisualStudio.TestPlatform.Common.resources.dll",
+      "byteLength": 21040,
+      "sha256": "a1ecf9ec22f9a16ed3d53d16f67a961a7090e05cdb0b9f6087ba1a1681a49a5d"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/it/Microsoft.VisualStudio.TestPlatform.ObjectModel.resources.dll",
+      "byteLength": 24096,
+      "sha256": "bb2fefc420dbec897e0c58ed7592411305c1d3f2b41e59b7c5b827df4b930151"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/ja/Microsoft.TestPlatform.CommunicationUtilities.resources.dll",
+      "byteLength": 16928,
+      "sha256": "f65695ce935f1941afc88a2c6046dd8ede33840c6a8e0614d7d9de7d1982e0a9"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/ja/Microsoft.TestPlatform.CoreUtilities.resources.dll",
+      "byteLength": 17440,
+      "sha256": "898fff59e603ef80d17d9618aa1dc4ae21aaa809c35632a5dc265a184b3439fc"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/ja/Microsoft.TestPlatform.CrossPlatEngine.resources.dll",
+      "byteLength": 22040,
+      "sha256": "795802998b0784f14f90b6d01aab38299e0faab2e4d60290ae534921a523dab9"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/ja/Microsoft.VisualStudio.TestPlatform.Common.resources.dll",
+      "byteLength": 21544,
+      "sha256": "b6e003f2a0fd8c5cdab2065ef65afcdc43cd9dcbbdf6356bf5cdfe27ade6c395"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/ja/Microsoft.VisualStudio.TestPlatform.ObjectModel.resources.dll",
+      "byteLength": 24608,
+      "sha256": "3494cad84460f9b3cf82d6a9f49c91e16353f9f24b8b8e4cc3827b752a52f6d6"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/ko/Microsoft.TestPlatform.CommunicationUtilities.resources.dll",
+      "byteLength": 16928,
+      "sha256": "ec8a8e1b688fda7c7ad331013123d5a34207c6fcb3581f71ba27a34abb745e6f"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/ko/Microsoft.TestPlatform.CoreUtilities.resources.dll",
+      "byteLength": 16928,
+      "sha256": "3cfdb1574c7f16ac766cabd32c0c6080635fcc9ec63da6860bd3f98ed788e9b9"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/ko/Microsoft.TestPlatform.CrossPlatEngine.resources.dll",
+      "byteLength": 21536,
+      "sha256": "2113b81232f308e212977e686acc20f97ef728f1787adef6a41569577474335c"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/ko/Microsoft.VisualStudio.TestPlatform.Common.resources.dll",
+      "byteLength": 21024,
+      "sha256": "abd591378d6b2db0decece3cc94318c046d078a481104c852f1a712ef7f7b8a1"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/ko/Microsoft.VisualStudio.TestPlatform.ObjectModel.resources.dll",
+      "byteLength": 24096,
+      "sha256": "510ad16f474a1d14f670662b4595d44c25f540ed27110c73d59fc55d365c6f26"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/pl/Microsoft.TestPlatform.CommunicationUtilities.resources.dll",
+      "byteLength": 16928,
+      "sha256": "f530ff64799fcc679c7b68b61066a6ada87635c83da3cc9a7c6f5d663bdd397e"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/pl/Microsoft.TestPlatform.CoreUtilities.resources.dll",
+      "byteLength": 16920,
+      "sha256": "9d02a74ef047e1f9f70b2bdf8ff874b27c1570e66837ff5ca6ced3993d7e1399"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/pl/Microsoft.TestPlatform.CrossPlatEngine.resources.dll",
+      "byteLength": 21552,
+      "sha256": "dc441ecac9d8ea1c9eb9969b8edcca33e13ecf880b83938923864e54fc16bf7f"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/pl/Microsoft.VisualStudio.TestPlatform.Common.resources.dll",
+      "byteLength": 21024,
+      "sha256": "70470705976073d0fae94b89a5729223aad977b9f5491dba0aac180b9bf3d4df"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/pl/Microsoft.VisualStudio.TestPlatform.ObjectModel.resources.dll",
+      "byteLength": 24112,
+      "sha256": "aa492571ff64357cda010ec10a54d29938d13cdec7fd385ce14c01780dc443c7"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/pt-BR/Microsoft.TestPlatform.CommunicationUtilities.resources.dll",
+      "byteLength": 16416,
+      "sha256": "94dcb8754a43be2b490b917d6a1ab0e5f4bbee748fa33512b9a82e0a75e4d2bc"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/pt-BR/Microsoft.TestPlatform.CoreUtilities.resources.dll",
+      "byteLength": 16928,
+      "sha256": "be63bd40dd8c93b8de849cf8814d8ac64a5b2845c1ea831c87d9600419140a88"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/pt-BR/Microsoft.TestPlatform.CrossPlatEngine.resources.dll",
+      "byteLength": 21024,
+      "sha256": "234158d16c78ded247b070d2476fad3f3300d92202a98bd14e75b972135cffce"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/pt-BR/Microsoft.VisualStudio.TestPlatform.Common.resources.dll",
+      "byteLength": 21032,
+      "sha256": "da441c5437bf119856a5d7de0b10984200693a6b8e19d0818bb3bb34a450cef8"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/pt-BR/Microsoft.VisualStudio.TestPlatform.ObjectModel.resources.dll",
+      "byteLength": 24096,
+      "sha256": "aef9e9f490e6535c648cf8abefe6e5d1ce488f8af9f14e5f3da389c88540b186"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/ru/Microsoft.TestPlatform.CommunicationUtilities.resources.dll",
+      "byteLength": 17440,
+      "sha256": "e297a5b77246e2ce10d0a8a51164e4d3b216f07bad340de74a521ad2889e03c6"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/ru/Microsoft.TestPlatform.CoreUtilities.resources.dll",
+      "byteLength": 17448,
+      "sha256": "caa9ddbbc1af5c9643c6a6b942f04942020183f3d0424cf37d7492a5a273b08f"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/ru/Microsoft.TestPlatform.CrossPlatEngine.resources.dll",
+      "byteLength": 23072,
+      "sha256": "f837a497e83508d98d0364709971cfbbe4f42d335d65a791366a1f6c8de6aefe"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/ru/Microsoft.VisualStudio.TestPlatform.Common.resources.dll",
+      "byteLength": 23072,
+      "sha256": "43ca5331f395c841af45b172414b658700aee483b01e670a32b83cff01ed0e79"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/ru/Microsoft.VisualStudio.TestPlatform.ObjectModel.resources.dll",
+      "byteLength": 26144,
+      "sha256": "38fe372c30ab1c62685f996075151c7357fc97826fbf34e2f0b35cb5d69e966c"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/testhost.dll",
+      "byteLength": 48672,
+      "sha256": "d3817a1f17e00b7f7b1040ab01e7aae73378f80c32aa4f62cb99c2aeed3cd5ad"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/testhost.exe",
+      "byteLength": 169496,
+      "sha256": "d2eb1420117e8096f505ed0786c47e32e2e2e16cb80f90c4c308b1ef61a8e24e"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/tinyrustlm-package-canonicalizer.deps.json",
+      "byteLength": 488,
+      "sha256": "f1a41ec7e863c36e5597b028274b4361d91907e53a63bac51756a1b2b2e7f0c8"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/tinyrustlm-package-canonicalizer.dll",
+      "byteLength": 28672,
+      "sha256": "af94ce5417093c967cc68b49c89b6a4da47a61ac834b13bf7aeed524a3fde4d7"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/tinyrustlm-package-canonicalizer.exe",
+      "byteLength": 152064,
+      "sha256": "9a183763b291df9e4b5a43f36d30ecf28b3581c2065464bf28b91be92cea7e7a"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/tinyrustlm-package-canonicalizer.pdb",
+      "byteLength": 14964,
+      "sha256": "a9789469302a462eeb614e0c3b4b7b13a2f1c191f3c970ada594da657dbdeb33"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/tinyrustlm-package-canonicalizer.runtimeconfig.json",
+      "byteLength": 340,
+      "sha256": "28329cf08f6505e73806b17558b187c02f0c1c516fe47ebfb7a013d082aaa306"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/tr/Microsoft.TestPlatform.CommunicationUtilities.resources.dll",
+      "byteLength": 16928,
+      "sha256": "2ae060291b5f84460a43aa48569a7292d75318eba3bfa0160ec2d2db53b1f9f7"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/tr/Microsoft.TestPlatform.CoreUtilities.resources.dll",
+      "byteLength": 16936,
+      "sha256": "a698e9b94bdad001bebea2107f01741b8b3b18792397040aebef2a7d047d893d"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/tr/Microsoft.TestPlatform.CrossPlatEngine.resources.dll",
+      "byteLength": 21024,
+      "sha256": "d26d2882572eddec4f2f064252994a2dbb5a41a9ef0e699e1d90c51a49e50b48"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/tr/Microsoft.VisualStudio.TestPlatform.Common.resources.dll",
+      "byteLength": 20512,
+      "sha256": "97734925b97bb7cb459fed10d3fa4f9bdb66a87b31ea88589437b7745fed2c32"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/tr/Microsoft.VisualStudio.TestPlatform.ObjectModel.resources.dll",
+      "byteLength": 23584,
+      "sha256": "e698426c200b0b9e91b887de7fe28e6047bae2dab83d46054945e4e01ad76bc2"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/xunit.abstractions.dll",
+      "byteLength": 21928,
+      "sha256": "3166dc70323fb30ccf1cedb0fe86f2ad122c46d254542342d90386efc4c9285c"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/xunit.assert.dll",
+      "byteLength": 185552,
+      "sha256": "50694822851cd81c29adcd0f33e4041d1605befcdc9384c02eadd62218b643b1"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/xunit.core.dll",
+      "byteLength": 70352,
+      "sha256": "0ed5297c796b0225aab35564319ebb6600738e14e868fddb21c317e35b99513b"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/xunit.execution.dotnet.dll",
+      "byteLength": 279760,
+      "sha256": "d112327a738f816894cdd314b27b141a07d5550bc2a747c08d9cab0659a76887"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/xunit.runner.reporters.netcoreapp10.dll",
+      "byteLength": 84176,
+      "sha256": "194458c816e0ea9ff0c5eac8896c52133fe9205661833b3d0f57e85a4e66936b"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/xunit.runner.utility.netcoreapp10.dll",
+      "byteLength": 255184,
+      "sha256": "ec705ad62e33f31fc46ad5800c9b1694c02d0ec4e1ee704712da9f24ebbea22e"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/xunit.runner.visualstudio.testadapter.dll",
+      "byteLength": 180944,
+      "sha256": "c5ac41b36fac0fcef9714fb80fea0175913530fb53dd7bb8e5e1470339667100"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/zh-Hans/Microsoft.TestPlatform.CommunicationUtilities.resources.dll",
+      "byteLength": 16416,
+      "sha256": "0dfda0aec925eefab4ee6e901bb13f993ca18beea607dc4a990d5e49f6388aa1"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/zh-Hans/Microsoft.TestPlatform.CoreUtilities.resources.dll",
+      "byteLength": 16928,
+      "sha256": "56ca7ba918ce468daa8c46010f4b4a2cb99dc611dc2b74ca2828d071bdaadfe6"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/zh-Hans/Microsoft.TestPlatform.CrossPlatEngine.resources.dll",
+      "byteLength": 20000,
+      "sha256": "15c887a38d91fee1c8c31ec0ced4e5a5b82b2d5b6618def0efe411ec5f8e249f"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/zh-Hans/Microsoft.VisualStudio.TestPlatform.Common.resources.dll",
+      "byteLength": 20000,
+      "sha256": "b9433e3ae2518608e04b5277f27797fca04a32b212cb382dfddf98a1c3d7ef42"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/zh-Hans/Microsoft.VisualStudio.TestPlatform.ObjectModel.resources.dll",
+      "byteLength": 23072,
+      "sha256": "3b53e8ca1476998896098e38601c6d81c333e4901a5f8f07df442518317c35ec"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/zh-Hant/Microsoft.TestPlatform.CommunicationUtilities.resources.dll",
+      "byteLength": 16424,
+      "sha256": "535576e03793bdedf60347d9ae4e9323bcf664944424ae1096be0bb8458e7d7e"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/zh-Hant/Microsoft.TestPlatform.CoreUtilities.resources.dll",
+      "byteLength": 16936,
+      "sha256": "cb88fe318d4e351f0fe9e896591199c169c43df82c8a0578308c0278f0e9a9cc"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/zh-Hant/Microsoft.TestPlatform.CrossPlatEngine.resources.dll",
+      "byteLength": 20512,
+      "sha256": "2b311289cc8f50409c6608a45d7ef523139a98f28d25f9cdabf31b1a67cd81b7"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/zh-Hant/Microsoft.VisualStudio.TestPlatform.Common.resources.dll",
+      "byteLength": 20000,
+      "sha256": "5295c55ad50cfbeaac7feeaa55f560947868342969bbbe2bc5dd6d9c3edf9c8c"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.Package.Tests/release/zh-Hant/Microsoft.VisualStudio.TestPlatform.ObjectModel.resources.dll",
+      "byteLength": 23072,
+      "sha256": "33534dac170f6b86e09a9a2cd358afcf62d6e123b52de69fd939a4b4b1e8568b"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.PackageCanonicalizer/release/tinyrustlm-package-canonicalizer.deps.json",
+      "byteLength": 488,
+      "sha256": "f1a41ec7e863c36e5597b028274b4361d91907e53a63bac51756a1b2b2e7f0c8"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.PackageCanonicalizer/release/tinyrustlm-package-canonicalizer.dll",
+      "byteLength": 28672,
+      "sha256": "af94ce5417093c967cc68b49c89b6a4da47a61ac834b13bf7aeed524a3fde4d7"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.PackageCanonicalizer/release/tinyrustlm-package-canonicalizer.exe",
+      "byteLength": 152064,
+      "sha256": "9a183763b291df9e4b5a43f36d30ecf28b3581c2065464bf28b91be92cea7e7a"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.PackageCanonicalizer/release/tinyrustlm-package-canonicalizer.pdb",
+      "byteLength": 14964,
+      "sha256": "a9789469302a462eeb614e0c3b4b7b13a2f1c191f3c970ada594da657dbdeb33"
+    },
+    {
+      "relativePath": "build/bin/TinyRustLM.PackageCanonicalizer/release/tinyrustlm-package-canonicalizer.runtimeconfig.json",
+      "byteLength": 340,
+      "sha256": "28329cf08f6505e73806b17558b187c02f0c1c516fe47ebfb7a013d082aaa306"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Abstractions/TinyRustLM.Abstractions.csproj.nuget.dgspec.json",
+      "byteLength": 2479,
+      "sha256": "1c8dfc0a26c67d59ed0424472dcc901bb04cd75e2105d022d5e548eda11499a6"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Abstractions/TinyRustLM.Abstractions.csproj.nuget.g.props",
+      "byteLength": 1141,
+      "sha256": "c0f2827082d4074b144908a5113ffdd71cdaa839f4b575388b10eb1fb9d9c1a8"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Abstractions/TinyRustLM.Abstractions.csproj.nuget.g.targets",
+      "byteLength": 150,
+      "sha256": "971cc9b535384849b5c661d776cd7a80833a416265e32e8968e06c367368b8b5"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Abstractions/project.assets.json",
+      "byteLength": 2302,
+      "sha256": "00d1cba6cfed3cec5ed4f8a905b59534aa8c94ef33194affbe9393a54e2aa684"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Abstractions/project.nuget.cache",
+      "byteLength": 247,
+      "sha256": "fcd709112f24a5c417d815af66226fc54fb700b6177c8b597ceecdf2b0a66a77"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Abstractions/release/.NETCoreApp,Version=v8.0.AssemblyAttributes.cs",
+      "byteLength": 198,
+      "sha256": "f7a5d9789c863625e139ff99e1113a503830f6b85a88f6129916df83ac76b49e"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Abstractions/release/TinyRustLM.Abstractions.AssemblyInfo.cs",
+      "byteLength": 1741,
+      "sha256": "fdba1f9df70ebeed52701c92bfeee4ab53fe3e16da4b9f51b584a8c651636942"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Abstractions/release/TinyRustLM.Abstractions.AssemblyInfoInputs.cache",
+      "byteLength": 66,
+      "sha256": "4a12e2f5cbbaf0939821a7efa704dab2d7fde8e9750b8cc41b2190d08819095e"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Abstractions/release/TinyRustLM.Abstractions.GeneratedMSBuildEditorConfig.editorconfig",
+      "byteLength": 859,
+      "sha256": "95cac8e1c9ed46047fefb64ef1083ac149d4e1dfdcd60e3c320a3dbc27135c37"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Abstractions/release/TinyRustLM.Abstractions.GlobalUsings.g.cs",
+      "byteLength": 239,
+      "sha256": "a3c6048bb4d922b1799a9977f84362a3787b68810cac67aa86ac3aa23295f227"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Abstractions/release/TinyRustLM.Abstractions.assets.cache",
+      "byteLength": 154,
+      "sha256": "c8d655ce9584a5c6944b6f7b05badaf1d5e401c8b30d5d1f9010b731348b3139"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Abstractions/release/TinyRustLM.Abstractions.csproj.CoreCompileInputs.cache",
+      "byteLength": 66,
+      "sha256": "9992e9b2ef77e3388bc386b6eb88a159dabf028e977f8a4bab13c6f264302361"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Abstractions/release/TinyRustLM.Abstractions.csproj.FileListAbsolute.txt",
+      "byteLength": 2563,
+      "sha256": "7164fd1774f0264ca71daffa6b5f8da3c283906caddc9533db40289c78ee115e"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Abstractions/release/TinyRustLM.Abstractions.dll",
+      "byteLength": 69120,
+      "sha256": "dd61f69de680494b9a640dac83afd3d8393040b3f5d3ce8163dc49df7118b32a"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Abstractions/release/TinyRustLM.Abstractions.pdb",
+      "byteLength": 20744,
+      "sha256": "eb4be155823f94e99cb4828351d90f87cd41d62e4e9e683df257e2cecfb1409c"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Abstractions/release/TinyRustLM.Abstractions.sourcelink.json",
+      "byteLength": 161,
+      "sha256": "044485e75cccc46d6ab8e1805e15393d528a68df8aefcb04db29b36f9e9f6608"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Abstractions/release/TinyRustLM.Abstractions.xml",
+      "byteLength": 16548,
+      "sha256": "7680de02cac700c587a3dc4fa5e8ba58eacc561217e574cf69b3bd1c282a18fb"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Abstractions/release/ref/TinyRustLM.Abstractions.dll",
+      "byteLength": 31232,
+      "sha256": "48da3dce2dc6c90ac03f78880760f7bb48a2095d4391fdeb15aeb6c4c40c5c2e"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Abstractions/release/refint/TinyRustLM.Abstractions.dll",
+      "byteLength": 31232,
+      "sha256": "48da3dce2dc6c90ac03f78880760f7bb48a2095d4391fdeb15aeb6c4c40c5c2e"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.ConsoleSample/TinyRustLM.ConsoleSample.csproj.nuget.dgspec.json",
+      "byteLength": 7595,
+      "sha256": "0a565e112e87837484d1921bceded9bd3455542491b7eb9e721711ac982b36a5"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.ConsoleSample/TinyRustLM.ConsoleSample.csproj.nuget.g.props",
+      "byteLength": 1141,
+      "sha256": "c0f2827082d4074b144908a5113ffdd71cdaa839f4b575388b10eb1fb9d9c1a8"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.ConsoleSample/TinyRustLM.ConsoleSample.csproj.nuget.g.targets",
+      "byteLength": 150,
+      "sha256": "971cc9b535384849b5c661d776cd7a80833a416265e32e8968e06c367368b8b5"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.ConsoleSample/project.assets.json",
+      "byteLength": 3772,
+      "sha256": "dd5b9b21240cd4fdceb1f102d10ce56d2ec9b19a7603a37243f83cec279285e0"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.ConsoleSample/project.nuget.cache",
+      "byteLength": 253,
+      "sha256": "9d78928d130b719e9e1adae218aa1ffee91c0d4e6f23e680c661edc3889a7b2c"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.ConsoleSample/release/.NETCoreApp,Version=v8.0.AssemblyAttributes.cs",
+      "byteLength": 198,
+      "sha256": "f7a5d9789c863625e139ff99e1113a503830f6b85a88f6129916df83ac76b49e"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.ConsoleSample/release/TinyRust.C07941FB.Up2Date",
+      "byteLength": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.ConsoleSample/release/TinyRustLM.ConsoleSample.AssemblyInfo.cs",
+      "byteLength": 1257,
+      "sha256": "a04bfff799e3a0cdd32d03fcca8659cd5dd6d7f4affa614777c3886bd6ba1ef9"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.ConsoleSample/release/TinyRustLM.ConsoleSample.AssemblyInfoInputs.cache",
+      "byteLength": 66,
+      "sha256": "141604fdee2a020fc309f1487ac8ca7c3ba8d3b0cc27a504c133d6e22c616038"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.ConsoleSample/release/TinyRustLM.ConsoleSample.GeneratedMSBuildEditorConfig.editorconfig",
+      "byteLength": 865,
+      "sha256": "7bb82969d86bac2f3852bec0e28fc4ef5849f190dbebc9c503b0f67cd39ebdd0"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.ConsoleSample/release/TinyRustLM.ConsoleSample.GlobalUsings.g.cs",
+      "byteLength": 239,
+      "sha256": "a3c6048bb4d922b1799a9977f84362a3787b68810cac67aa86ac3aa23295f227"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.ConsoleSample/release/TinyRustLM.ConsoleSample.assets.cache",
+      "byteLength": 304,
+      "sha256": "d2cbc67f12cdfad8bb8c9aa36860cff59915dfd1ae9ec65745f3f8c20fc44e7f"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.ConsoleSample/release/TinyRustLM.ConsoleSample.csproj.AssemblyReference.cache",
+      "byteLength": 1835,
+      "sha256": "2ad4b8d5803fc21254d507d8bbed159c4982d06c3a7d4594d7930d9c97548b02"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.ConsoleSample/release/TinyRustLM.ConsoleSample.csproj.CoreCompileInputs.cache",
+      "byteLength": 66,
+      "sha256": "b6736e230c18be1878a0524881f947006667482179e9e0abf5af11901333fb6a"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.ConsoleSample/release/TinyRustLM.ConsoleSample.csproj.FileListAbsolute.txt",
+      "byteLength": 4543,
+      "sha256": "e6ad93fa271d33f9612b73319efb1fd16d8303a7bd74873eb35f5eef25455c3a"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.ConsoleSample/release/TinyRustLM.ConsoleSample.dll",
+      "byteLength": 9216,
+      "sha256": "46e1c07917353863c631f62aded0720f7a1ef8b7cdf5b67dcc0397a73c0e023b"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.ConsoleSample/release/TinyRustLM.ConsoleSample.genruntimeconfig.cache",
+      "byteLength": 66,
+      "sha256": "c477ee35870af052b5ddd70173bc42bdae0375c087fb0d301a9c8edf5b8ec9c3"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.ConsoleSample/release/TinyRustLM.ConsoleSample.pdb",
+      "byteLength": 11644,
+      "sha256": "24a0b14a1ee1e8278878937229e7a48e3312ea724f69a80a69e028df5109f01f"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.ConsoleSample/release/TinyRustLM.ConsoleSample.sourcelink.json",
+      "byteLength": 161,
+      "sha256": "044485e75cccc46d6ab8e1805e15393d528a68df8aefcb04db29b36f9e9f6608"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.ConsoleSample/release/apphost.exe",
+      "byteLength": 152064,
+      "sha256": "45e9bb9b598da929aa55afc8c8f6ba0643ebe0ce8a9135bb8ca22d6acdffb555"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.ConsoleSample/release/ref/TinyRustLM.ConsoleSample.dll",
+      "byteLength": 6144,
+      "sha256": "eaf82f06fdcd7913a7dcbb7622ee95d0959e10b6f132c21478153d6291e0ae0c"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.ConsoleSample/release/refint/TinyRustLM.ConsoleSample.dll",
+      "byteLength": 6144,
+      "sha256": "eaf82f06fdcd7913a7dcbb7622ee95d0959e10b6f132c21478153d6291e0ae0c"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Conversion/TinyRustLM.Conversion.csproj.nuget.dgspec.json",
+      "byteLength": 7549,
+      "sha256": "d6c617a40fdb176e04714700f6a44d9f4c4b6320862172009bdafbf0e8d22d75"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Conversion/TinyRustLM.Conversion.csproj.nuget.g.props",
+      "byteLength": 1141,
+      "sha256": "c0f2827082d4074b144908a5113ffdd71cdaa839f4b575388b10eb1fb9d9c1a8"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Conversion/TinyRustLM.Conversion.csproj.nuget.g.targets",
+      "byteLength": 150,
+      "sha256": "971cc9b535384849b5c661d776cd7a80833a416265e32e8968e06c367368b8b5"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Conversion/project.assets.json",
+      "byteLength": 3718,
+      "sha256": "3fd896952771f79f01e1077a4e40b268e02a48184cb3678809c6ce2c08045dae"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Conversion/project.nuget.cache",
+      "byteLength": 243,
+      "sha256": "159ea6ccd557923f6eb8f4be162bbe7a3649abaaa7a7b646199dcb448838e121"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Conversion/release/.NETCoreApp,Version=v8.0.AssemblyAttributes.cs",
+      "byteLength": 198,
+      "sha256": "f7a5d9789c863625e139ff99e1113a503830f6b85a88f6129916df83ac76b49e"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Conversion/release/TinyRust.06EC3BED.Up2Date",
+      "byteLength": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Conversion/release/TinyRustLM.Conversion.AssemblyInfo.cs",
+      "byteLength": 1961,
+      "sha256": "8188600ac271addde1160ddf33bdb4b8f73b747385c6b66c8fa317e5275140a5"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Conversion/release/TinyRustLM.Conversion.AssemblyInfoInputs.cache",
+      "byteLength": 66,
+      "sha256": "f74e1a47de9b93adb5bc5489244eb0ccf5a863d4c2d1efc7c5c6663dd1dd829c"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Conversion/release/TinyRustLM.Conversion.GeneratedMSBuildEditorConfig.editorconfig",
+      "byteLength": 855,
+      "sha256": "78f3661f527cf40c4900f7293287d755c911674e763d76b0535485c2c0e26f3e"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Conversion/release/TinyRustLM.Conversion.GlobalUsings.g.cs",
+      "byteLength": 239,
+      "sha256": "a3c6048bb4d922b1799a9977f84362a3787b68810cac67aa86ac3aa23295f227"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Conversion/release/TinyRustLM.Conversion.assets.cache",
+      "byteLength": 297,
+      "sha256": "f12d18c2c26cf83c35f3e8f30e3a61ee59434ab803a8c81214ec663bef777092"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Conversion/release/TinyRustLM.Conversion.csproj.AssemblyReference.cache",
+      "byteLength": 1835,
+      "sha256": "2ad4b8d5803fc21254d507d8bbed159c4982d06c3a7d4594d7930d9c97548b02"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Conversion/release/TinyRustLM.Conversion.csproj.CoreCompileInputs.cache",
+      "byteLength": 66,
+      "sha256": "462ddca9f8e7e028b20f21ce1dec7ba70bf204d675872a68d0c769b01dddbfea"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Conversion/release/TinyRustLM.Conversion.csproj.FileListAbsolute.txt",
+      "byteLength": 4383,
+      "sha256": "fa482aeeaa8a5d0ea308f6d201be95a9e0e4f31888db54ce42fbb8519519924d"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Conversion/release/TinyRustLM.Conversion.dll",
+      "byteLength": 111104,
+      "sha256": "98800178a099fcd774542044434315bb3175e33a3cb7a5ffa329aff24d03f8aa"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Conversion/release/TinyRustLM.Conversion.pdb",
+      "byteLength": 31136,
+      "sha256": "eeaffc871b3ddc1753cbf621428b8fd44ce6426d33612ea62fe6aa50039731c7"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Conversion/release/TinyRustLM.Conversion.sourcelink.json",
+      "byteLength": 161,
+      "sha256": "044485e75cccc46d6ab8e1805e15393d528a68df8aefcb04db29b36f9e9f6608"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Conversion/release/TinyRustLM.Conversion.xml",
+      "byteLength": 17171,
+      "sha256": "a8a5b9ab188e995c804140ecc6f07d48ac0b187e59bcdea809e78f5dd7b66f87"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Conversion/release/ref/TinyRustLM.Conversion.dll",
+      "byteLength": 41984,
+      "sha256": "e16c83621e0654cca68f2febf403fb455d993a2a052856abd7c10c4ec421d866"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Conversion/release/refint/TinyRustLM.Conversion.dll",
+      "byteLength": 41984,
+      "sha256": "e16c83621e0654cca68f2febf403fb455d993a2a052856abd7c10c4ec421d866"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.ConversionFixtureTool/TinyRustLM.ConversionFixtureTool.csproj.nuget.dgspec.json",
+      "byteLength": 2577,
+      "sha256": "cf1a4346f36ffd954c29a99a8c597a01cd747698df29f46e8551de20e3106cf9"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.ConversionFixtureTool/TinyRustLM.ConversionFixtureTool.csproj.nuget.g.props",
+      "byteLength": 1141,
+      "sha256": "c0f2827082d4074b144908a5113ffdd71cdaa839f4b575388b10eb1fb9d9c1a8"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.ConversionFixtureTool/TinyRustLM.ConversionFixtureTool.csproj.nuget.g.targets",
+      "byteLength": 150,
+      "sha256": "971cc9b535384849b5c661d776cd7a80833a416265e32e8968e06c367368b8b5"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.ConversionFixtureTool/project.assets.json",
+      "byteLength": 2360,
+      "sha256": "0726fcc0fb2eef49d556f72ff9fcde4ff7ab8d71e6db4db51fd8813cf9b9d6fb"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.ConversionFixtureTool/project.nuget.cache",
+      "byteLength": 267,
+      "sha256": "38701a5bc079de71c38194f2a1521942a506c8906d11b2112f08fabbb26062cd"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.ConversionFixtureTool/release/.NETCoreApp,Version=v8.0.AssemblyAttributes.cs",
+      "byteLength": 198,
+      "sha256": "f7a5d9789c863625e139ff99e1113a503830f6b85a88f6129916df83ac76b49e"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.ConversionFixtureTool/release/TinyRustLM.ConversionFixtureTool.AssemblyInfo.cs",
+      "byteLength": 1273,
+      "sha256": "e20b67b3ff159dba7dec410fb6a987841119dd4dfc744cfb59e9debd70badfef"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.ConversionFixtureTool/release/TinyRustLM.ConversionFixtureTool.AssemblyInfoInputs.cache",
+      "byteLength": 66,
+      "sha256": "9cbffe9e08caaaa41fa28cb401ea1d870e1a1d940fbd29f02b1027fdd41bdd62"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.ConversionFixtureTool/release/TinyRustLM.ConversionFixtureTool.GeneratedMSBuildEditorConfig.editorconfig",
+      "byteLength": 879,
+      "sha256": "092476f28be8ada3c5311473ef408ef64c513bcdfb4d03089a481963043a0340"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.ConversionFixtureTool/release/TinyRustLM.ConversionFixtureTool.GlobalUsings.g.cs",
+      "byteLength": 239,
+      "sha256": "a3c6048bb4d922b1799a9977f84362a3787b68810cac67aa86ac3aa23295f227"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.ConversionFixtureTool/release/TinyRustLM.ConversionFixtureTool.assets.cache",
+      "byteLength": 154,
+      "sha256": "71110cca8172933849dc1e7892e9d6ff59989cb37c4b3ceff474db254ffc4505"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.ConversionFixtureTool/release/TinyRustLM.ConversionFixtureTool.csproj.CoreCompileInputs.cache",
+      "byteLength": 66,
+      "sha256": "ab50966d8bd034e82d66ef996239bd705af9bcdac4d81536cfdf84dad6179924"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.ConversionFixtureTool/release/TinyRustLM.ConversionFixtureTool.csproj.FileListAbsolute.txt",
+      "byteLength": 3041,
+      "sha256": "4958e6fed3c47bc34c99eba40d199c65ca495608decb2f1367a7d3609727bb5e"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.ConversionFixtureTool/release/TinyRustLM.ConversionFixtureTool.dll",
+      "byteLength": 56320,
+      "sha256": "9d447c57710f2c31fea2c11cdc029f5005abb104476493d39dd68cc6c3e119bd"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.ConversionFixtureTool/release/TinyRustLM.ConversionFixtureTool.genruntimeconfig.cache",
+      "byteLength": 66,
+      "sha256": "7bf51e5314277e93c02e8a064fa56e6a7256d1077cedecbd27ac489e33245db0"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.ConversionFixtureTool/release/TinyRustLM.ConversionFixtureTool.pdb",
+      "byteLength": 15504,
+      "sha256": "eb84216432bb169ceb7022f7a67d0ec1115c5298a40eaef8cbe43c6d05600c88"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.ConversionFixtureTool/release/TinyRustLM.ConversionFixtureTool.sourcelink.json",
+      "byteLength": 161,
+      "sha256": "044485e75cccc46d6ab8e1805e15393d528a68df8aefcb04db29b36f9e9f6608"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.ConversionFixtureTool/release/apphost.exe",
+      "byteLength": 152064,
+      "sha256": "f8178361b3650774bb0079718b0fd3d816b87af22588b15d78b9406daca62602"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.ConversionFixtureTool/release/ref/TinyRustLM.ConversionFixtureTool.dll",
+      "byteLength": 10240,
+      "sha256": "ecbf2d66c98776ce1238593876ccd7ad17945c419eb94d6ec0c6961ce7983d14"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.ConversionFixtureTool/release/refint/TinyRustLM.ConversionFixtureTool.dll",
+      "byteLength": 10240,
+      "sha256": "ecbf2d66c98776ce1238593876ccd7ad17945c419eb94d6ec0c6961ce7983d14"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Core/TinyRustLM.Core.csproj.nuget.dgspec.json",
+      "byteLength": 4992,
+      "sha256": "cdd10eb54cf984488e692e1805e518244424f145b1719b7f53acbfdaff3dcc96"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Core/TinyRustLM.Core.csproj.nuget.g.props",
+      "byteLength": 1141,
+      "sha256": "c0f2827082d4074b144908a5113ffdd71cdaa839f4b575388b10eb1fb9d9c1a8"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Core/TinyRustLM.Core.csproj.nuget.g.targets",
+      "byteLength": 150,
+      "sha256": "971cc9b535384849b5c661d776cd7a80833a416265e32e8968e06c367368b8b5"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Core/project.assets.json",
+      "byteLength": 3147,
+      "sha256": "a7523d920f22a5afa0d2a21c87100b68ff44c85496ed5178f7b66b1fbc92c16e"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Core/project.nuget.cache",
+      "byteLength": 231,
+      "sha256": "fc24ef2a09fec237fd6d2ab53db77929a1a139fa970d97b8fc64a7c598fc6fa0"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Core/release/.NETCoreApp,Version=v8.0.AssemblyAttributes.cs",
+      "byteLength": 198,
+      "sha256": "f7a5d9789c863625e139ff99e1113a503830f6b85a88f6129916df83ac76b49e"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Core/release/TinyRust.5B4D23CB.Up2Date",
+      "byteLength": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Core/release/TinyRustLM.Core.AssemblyInfo.cs",
+      "byteLength": 1794,
+      "sha256": "477026f6a45069cfa895978edaed624cf60d6eae113f1895f466b8798ac3a949"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Core/release/TinyRustLM.Core.AssemblyInfoInputs.cache",
+      "byteLength": 66,
+      "sha256": "13e0693a3aa846f707397f5a77556203d3be51adb022f7d3fc775ba92a964c14"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Core/release/TinyRustLM.Core.GeneratedMSBuildEditorConfig.editorconfig",
+      "byteLength": 843,
+      "sha256": "005a728221c920f64865a67969e2fbb6eb645d6bbe6a282a930debc5c7cf06c9"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Core/release/TinyRustLM.Core.GlobalUsings.g.cs",
+      "byteLength": 239,
+      "sha256": "a3c6048bb4d922b1799a9977f84362a3787b68810cac67aa86ac3aa23295f227"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Core/release/TinyRustLM.Core.assets.cache",
+      "byteLength": 154,
+      "sha256": "8b0a55a3e1979912538022010ac755aa8fb10fc4f1fa266f98252a4ebcd9fc8d"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Core/release/TinyRustLM.Core.csproj.AssemblyReference.cache",
+      "byteLength": 807,
+      "sha256": "ea69e54ab7e6c6c26af78e898be6e66424784400dd4ad6320973fc4a5d70ea1e"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Core/release/TinyRustLM.Core.csproj.CoreCompileInputs.cache",
+      "byteLength": 66,
+      "sha256": "2f644a4aa269e700069fdac002b01d50f401de8cc14154c50d8db04e1287fa54"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Core/release/TinyRustLM.Core.csproj.FileListAbsolute.txt",
+      "byteLength": 3508,
+      "sha256": "db14abbdeec0235656aa1df82fe32f581751d2f55671648e90d5cd86f8165a97"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Core/release/TinyRustLM.Core.dll",
+      "byteLength": 45056,
+      "sha256": "46130c08093e9e644bb95e79762aca94c7284cd1f682dd45f39d0512bd10e73d"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Core/release/TinyRustLM.Core.pdb",
+      "byteLength": 17684,
+      "sha256": "011c3587253091162d3cb17281e985607cba24c3c53c4bbb37a95fffd589e4b6"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Core/release/TinyRustLM.Core.sourcelink.json",
+      "byteLength": 161,
+      "sha256": "044485e75cccc46d6ab8e1805e15393d528a68df8aefcb04db29b36f9e9f6608"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Core/release/TinyRustLM.Core.xml",
+      "byteLength": 2840,
+      "sha256": "5c13330a9746b4e91952e4ec394996e5ba5fc4dc0605eeda2b05936fc1fe559a"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Core/release/ref/TinyRustLM.Core.dll",
+      "byteLength": 19968,
+      "sha256": "1d64ed78b2f8f5169920c3b425983aad9ebb983ef0d60a612d2f7b4a97d572a2"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Core/release/refint/TinyRustLM.Core.dll",
+      "byteLength": 19968,
+      "sha256": "1d64ed78b2f8f5169920c3b425983aad9ebb983ef0d60a612d2f7b4a97d572a2"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Core.Tests/TinyRustLM.Core.Tests.csproj.nuget.dgspec.json",
+      "byteLength": 16845,
+      "sha256": "e26a5b8deaf8cdc8126669f1f4ebac74a00f6a369730a73919555452b58cb7fd"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Core.Tests/TinyRustLM.Core.Tests.csproj.nuget.g.props",
+      "byteLength": 2659,
+      "sha256": "b500119f4b41cad0e3332352c26e702c783e9c784954b0e07f060dcb4f31a04e"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Core.Tests/TinyRustLM.Core.Tests.csproj.nuget.g.targets",
+      "byteLength": 925,
+      "sha256": "f216971b14698f1dc8d23a9ebb097b79aded0c28846fd83fb75171f74640fc01"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Core.Tests/project.assets.json",
+      "byteLength": 49742,
+      "sha256": "15dae94b0543e1d5440e154633158996780e0934a5d4e112a18cdbd83f72e6f8"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Core.Tests/project.nuget.cache",
+      "byteLength": 1894,
+      "sha256": "dd074fbc45bf38df184b713e001cb5be3fceabcfc92711a8a3961d701cecf0b0"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Core.Tests/release/.NETCoreApp,Version=v8.0.AssemblyAttributes.cs",
+      "byteLength": 198,
+      "sha256": "f7a5d9789c863625e139ff99e1113a503830f6b85a88f6129916df83ac76b49e"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Core.Tests/release/TinyRust.D57B264E.Up2Date",
+      "byteLength": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Core.Tests/release/TinyRustLM.Core.Tests.AssemblyInfo.cs",
+      "byteLength": 1582,
+      "sha256": "4a0e043fc14b2e329bf299e424d7b9f94e6240b35bea20a8a054c029e8b7cc41"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Core.Tests/release/TinyRustLM.Core.Tests.AssemblyInfoInputs.cache",
+      "byteLength": 66,
+      "sha256": "2e33172fc1354d9e0e292c838d5769129a881665208cec0c2cf04384c87dd297"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Core.Tests/release/TinyRustLM.Core.Tests.GeneratedMSBuildEditorConfig.editorconfig",
+      "byteLength": 857,
+      "sha256": "141bb7eca03994d77375cf4838c5b06eed02ed79b6a35e1e5080049e741ebcd3"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Core.Tests/release/TinyRustLM.Core.Tests.GlobalUsings.g.cs",
+      "byteLength": 239,
+      "sha256": "a3c6048bb4d922b1799a9977f84362a3787b68810cac67aa86ac3aa23295f227"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Core.Tests/release/TinyRustLM.Core.Tests.assets.cache",
+      "byteLength": 33260,
+      "sha256": "93f77d9443dd908fef180fc0dbc020766b757a73828b36f4a7dd2c2599984b92"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Core.Tests/release/TinyRustLM.Core.Tests.csproj.AssemblyReference.cache",
+      "byteLength": 13798,
+      "sha256": "86b77126ad151536aab69552a3584763a81e300d38e7b06bc04b165cd97dc115"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Core.Tests/release/TinyRustLM.Core.Tests.csproj.CoreCompileInputs.cache",
+      "byteLength": 66,
+      "sha256": "91af2961aa5184515072664b8d46123f7736f9c978d4fcd9525f3a3d6e95d494"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Core.Tests/release/TinyRustLM.Core.Tests.csproj.FileListAbsolute.txt",
+      "byteLength": 23610,
+      "sha256": "7d022d64428ff553bd0248f16df89042f3a2ccdb584d081357a066b147f22c95"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Core.Tests/release/TinyRustLM.Core.Tests.dll",
+      "byteLength": 210432,
+      "sha256": "086b023337c879662ad5bc0e4b7e8965f840d97e3bfb1c457b8b952a5ae7d91b"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Core.Tests/release/TinyRustLM.Core.Tests.genruntimeconfig.cache",
+      "byteLength": 66,
+      "sha256": "2fd52e65d267c3e104cb809415d4aa63e25a627d3fe234cc6df30222370bdb22"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Core.Tests/release/TinyRustLM.Core.Tests.pdb",
+      "byteLength": 37304,
+      "sha256": "6d1f740e2bd898fe4cc938ea395cb4fbd8470da58b58b9566fb780354d8402ac"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Core.Tests/release/TinyRustLM.Core.Tests.sourcelink.json",
+      "byteLength": 161,
+      "sha256": "044485e75cccc46d6ab8e1805e15393d528a68df8aefcb04db29b36f9e9f6608"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Core.Tests/release/ref/TinyRustLM.Core.Tests.dll",
+      "byteLength": 44544,
+      "sha256": "bb85b251d24e1ba3a4408da290c81de1734611f0bd2fec229d1ca00d897a0f65"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Core.Tests/release/refint/TinyRustLM.Core.Tests.dll",
+      "byteLength": 44544,
+      "sha256": "bb85b251d24e1ba3a4408da290c81de1734611f0bd2fec229d1ca00d897a0f65"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.MemoryEndpoints/TinyRustLM.MemoryEndpoints.csproj.nuget.dgspec.json",
+      "byteLength": 5102,
+      "sha256": "3298d8427de9a3fdd59012c1a592f8c8b526b847e784a4b0bb79e15127daa6fe"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.MemoryEndpoints/TinyRustLM.MemoryEndpoints.csproj.nuget.g.props",
+      "byteLength": 1141,
+      "sha256": "c0f2827082d4074b144908a5113ffdd71cdaa839f4b575388b10eb1fb9d9c1a8"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.MemoryEndpoints/TinyRustLM.MemoryEndpoints.csproj.nuget.g.targets",
+      "byteLength": 150,
+      "sha256": "971cc9b535384849b5c661d776cd7a80833a416265e32e8968e06c367368b8b5"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.MemoryEndpoints/project.assets.json",
+      "byteLength": 3213,
+      "sha256": "3859bef97e295ea8dd70b50c2c537b62e983e5873cd2f832323121aad6949e46"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.MemoryEndpoints/project.nuget.cache",
+      "byteLength": 253,
+      "sha256": "7058715461da1271886bdac867d203c961c1798da90f844a74344ceb83011227"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.MemoryEndpoints/release/.NETCoreApp,Version=v8.0.AssemblyAttributes.cs",
+      "byteLength": 198,
+      "sha256": "f7a5d9789c863625e139ff99e1113a503830f6b85a88f6129916df83ac76b49e"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.MemoryEndpoints/release/TinyRust.0CF67426.Up2Date",
+      "byteLength": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.MemoryEndpoints/release/TinyRustLM.MemoryEndpoints.AssemblyInfo.cs",
+      "byteLength": 2648,
+      "sha256": "891af71b50fdd38efcbdab618da61db7c15ec269aee258a167b18c86bae0d872"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.MemoryEndpoints/release/TinyRustLM.MemoryEndpoints.AssemblyInfoInputs.cache",
+      "byteLength": 66,
+      "sha256": "4ff03e169868f73c60342716c2d243b0ea9de31b22a0904aab489c94bcaa1545"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.MemoryEndpoints/release/TinyRustLM.MemoryEndpoints.GeneratedMSBuildEditorConfig.editorconfig",
+      "byteLength": 865,
+      "sha256": "6aeb441109fa570fba542c74c3f5261259cf036f75c8c6073eec910225f287f9"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.MemoryEndpoints/release/TinyRustLM.MemoryEndpoints.GlobalUsings.g.cs",
+      "byteLength": 239,
+      "sha256": "a3c6048bb4d922b1799a9977f84362a3787b68810cac67aa86ac3aa23295f227"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.MemoryEndpoints/release/TinyRustLM.MemoryEndpoints.assets.cache",
+      "byteLength": 154,
+      "sha256": "3922761dba9621ed82ade1625434210bf5d11f938c99d1485ee1023b79d77ec1"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.MemoryEndpoints/release/TinyRustLM.MemoryEndpoints.csproj.AssemblyReference.cache",
+      "byteLength": 807,
+      "sha256": "ea69e54ab7e6c6c26af78e898be6e66424784400dd4ad6320973fc4a5d70ea1e"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.MemoryEndpoints/release/TinyRustLM.MemoryEndpoints.csproj.CoreCompileInputs.cache",
+      "byteLength": 66,
+      "sha256": "2f3013a6c20170b08fe0023ecbb50f10827d4e30593528e4a6068b632b4261a8"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.MemoryEndpoints/release/TinyRustLM.MemoryEndpoints.csproj.FileListAbsolute.txt",
+      "byteLength": 3560,
+      "sha256": "bd772cf563dbe2b9cc5b7922e24182ba7abb7ad88c77c866e6e095c8d1448eab"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.MemoryEndpoints/release/TinyRustLM.MemoryEndpoints.dll",
+      "byteLength": 306176,
+      "sha256": "06b458d251cc756521d766cff578c1db411ac99f831321a69bfcdaf49d72b3ce"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.MemoryEndpoints/release/TinyRustLM.MemoryEndpoints.pdb",
+      "byteLength": 58120,
+      "sha256": "cfc167276366ba57d6db3889eb6b7ee0100c9cd2d22f3665529c624ee7a47e9e"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.MemoryEndpoints/release/TinyRustLM.MemoryEndpoints.sourcelink.json",
+      "byteLength": 161,
+      "sha256": "044485e75cccc46d6ab8e1805e15393d528a68df8aefcb04db29b36f9e9f6608"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.MemoryEndpoints/release/TinyRustLM.MemoryEndpoints.xml",
+      "byteLength": 71107,
+      "sha256": "aac05ed5bff73e62fde8d8bb89a52ffec42969da1b2939fb67516eb89cc3fd8f"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.MemoryEndpoints/release/ref/TinyRustLM.MemoryEndpoints.dll",
+      "byteLength": 97792,
+      "sha256": "c2704b3038fa15a838cf634370744ad94f50148b753f4122be1d7e8a6167fd7d"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.MemoryEndpoints/release/refint/TinyRustLM.MemoryEndpoints.dll",
+      "byteLength": 97792,
+      "sha256": "c2704b3038fa15a838cf634370744ad94f50148b753f4122be1d7e8a6167fd7d"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.P2P/TinyRustLM.P2P.csproj.nuget.dgspec.json",
+      "byteLength": 7757,
+      "sha256": "ec47cd8828b958305aca9f11085ea3d615bebb8987fcaba00e83367a8f2adeea"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.P2P/TinyRustLM.P2P.csproj.nuget.g.props",
+      "byteLength": 1141,
+      "sha256": "c0f2827082d4074b144908a5113ffdd71cdaa839f4b575388b10eb1fb9d9c1a8"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.P2P/TinyRustLM.P2P.csproj.nuget.g.targets",
+      "byteLength": 150,
+      "sha256": "971cc9b535384849b5c661d776cd7a80833a416265e32e8968e06c367368b8b5"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.P2P/project.assets.json",
+      "byteLength": 3991,
+      "sha256": "c9434093616427830ab6a06f2eff5b6d2def06c5a41c8fb010509a264d1bdf87"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.P2P/project.nuget.cache",
+      "byteLength": 229,
+      "sha256": "dc1393c6f968695ac399576e23e55c03c51684111f42be1a83a788042901f6ba"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.P2P/release/.NETCoreApp,Version=v8.0.AssemblyAttributes.cs",
+      "byteLength": 198,
+      "sha256": "f7a5d9789c863625e139ff99e1113a503830f6b85a88f6129916df83ac76b49e"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.P2P/release/TinyRust.B76BF618.Up2Date",
+      "byteLength": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.P2P/release/TinyRustLM.P2P.AssemblyInfo.cs",
+      "byteLength": 1708,
+      "sha256": "2f6ebbb0af7024c24c28830ccf6afbed13e45410e53304b16ca833307452f2ef"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.P2P/release/TinyRustLM.P2P.AssemblyInfoInputs.cache",
+      "byteLength": 66,
+      "sha256": "4c7edc699b194a4a71994dc0e65dab31bb3a2933e6d122582b64f361dfb5c8b2"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.P2P/release/TinyRustLM.P2P.GeneratedMSBuildEditorConfig.editorconfig",
+      "byteLength": 841,
+      "sha256": "0d23822cc337e155a7e1acdd8b65c76460ebc8adbdb79277c2d55034be225a0e"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.P2P/release/TinyRustLM.P2P.GlobalUsings.g.cs",
+      "byteLength": 239,
+      "sha256": "a3c6048bb4d922b1799a9977f84362a3787b68810cac67aa86ac3aa23295f227"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.P2P/release/TinyRustLM.P2P.assets.cache",
+      "byteLength": 154,
+      "sha256": "885bb7057491b5b0216b3df84131b146381dd624a47449cd62c180a1a795dddc"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.P2P/release/TinyRustLM.P2P.csproj.AssemblyReference.cache",
+      "byteLength": 1835,
+      "sha256": "0cb2d356883912d428fe9bbe2bf71d312a4f681cda61973ce3a27cce8367fee9"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.P2P/release/TinyRustLM.P2P.csproj.CoreCompileInputs.cache",
+      "byteLength": 66,
+      "sha256": "a8db01b0f3411102897e967172ce3e50feaab990daca660480ecfa8365b5e881"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.P2P/release/TinyRustLM.P2P.csproj.FileListAbsolute.txt",
+      "byteLength": 3943,
+      "sha256": "30bb977b2d2fc4f6d45e61e56e60142ab7b0f3733f7433028c08bb73c0d2b720"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.P2P/release/TinyRustLM.P2P.dll",
+      "byteLength": 21504,
+      "sha256": "f9db2e01038c0c293af6787cff66be61d2a956f1d15e5480efbebc56b4cc3cbd"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.P2P/release/TinyRustLM.P2P.pdb",
+      "byteLength": 13224,
+      "sha256": "2208006a09546b0e580842a798763048e6248de2350dca32f032d1986196426f"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.P2P/release/TinyRustLM.P2P.sourcelink.json",
+      "byteLength": 161,
+      "sha256": "044485e75cccc46d6ab8e1805e15393d528a68df8aefcb04db29b36f9e9f6608"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.P2P/release/TinyRustLM.P2P.xml",
+      "byteLength": 816,
+      "sha256": "924c0552e3716f0ebf01947cd8941db9cbd81e7bc64ec805ce967e2852c55d0a"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.P2P/release/ref/TinyRustLM.P2P.dll",
+      "byteLength": 11264,
+      "sha256": "5a858ede80289279acc45d29ba2736c81e26d3741a74f05ae2cc56afce15d02b"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.P2P/release/refint/TinyRustLM.P2P.dll",
+      "byteLength": 11264,
+      "sha256": "5a858ede80289279acc45d29ba2736c81e26d3741a74f05ae2cc56afce15d02b"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Package.Tests/TinyRustLM.Package.Tests.csproj.nuget.dgspec.json",
+      "byteLength": 5754,
+      "sha256": "e64f927a1b8deb45d15e3c615d268d6e30fe1a7c1ae86d9883e9c8271e827f2b"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Package.Tests/TinyRustLM.Package.Tests.csproj.nuget.g.props",
+      "byteLength": 2659,
+      "sha256": "b500119f4b41cad0e3332352c26e702c783e9c784954b0e07f060dcb4f31a04e"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Package.Tests/TinyRustLM.Package.Tests.csproj.nuget.g.targets",
+      "byteLength": 925,
+      "sha256": "f216971b14698f1dc8d23a9ebb097b79aded0c28846fd83fb75171f74640fc01"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Package.Tests/project.assets.json",
+      "byteLength": 46497,
+      "sha256": "8776a632f843a5bf45371d57f033e3f0e4411926d0f1dfaca4d3dab68b1c9f47"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Package.Tests/project.nuget.cache",
+      "byteLength": 1900,
+      "sha256": "3b651bfc8c18aba2841c1a6004b022424709bfcaadad04b0961f6b0355f434f8"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Package.Tests/release/.NETCoreApp,Version=v8.0.AssemblyAttributes.cs",
+      "byteLength": 198,
+      "sha256": "f7a5d9789c863625e139ff99e1113a503830f6b85a88f6129916df83ac76b49e"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Package.Tests/release/TinyRust.199B11CC.Up2Date",
+      "byteLength": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Package.Tests/release/TinyRustLM.Package.Tests.AssemblyInfo.cs",
+      "byteLength": 1257,
+      "sha256": "fd91c015ce499370511f556659530395b43d4d0b27d0dbc8210ba02537e11d3d"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Package.Tests/release/TinyRustLM.Package.Tests.AssemblyInfoInputs.cache",
+      "byteLength": 66,
+      "sha256": "ae1d01950862b1faab156f8b2b6d7b6927b72b2a7393676de9a4ad43223bffe3"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Package.Tests/release/TinyRustLM.Package.Tests.GeneratedMSBuildEditorConfig.editorconfig",
+      "byteLength": 863,
+      "sha256": "c94cbaf5361797c1caa2d923b6e937c3d2fef5bab64d1839ad6e9b37529cc20e"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Package.Tests/release/TinyRustLM.Package.Tests.GlobalUsings.g.cs",
+      "byteLength": 239,
+      "sha256": "a3c6048bb4d922b1799a9977f84362a3787b68810cac67aa86ac3aa23295f227"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Package.Tests/release/TinyRustLM.Package.Tests.assets.cache",
+      "byteLength": 33145,
+      "sha256": "a35f504c7d60d739c93d3c644aa6ed9c149c552f595b0c7abb93962b4d400306"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Package.Tests/release/TinyRustLM.Package.Tests.csproj.AssemblyReference.cache",
+      "byteLength": 9448,
+      "sha256": "e05b28aa1049024b81d7ac920eacaee7f6cc1ff2acb279869c73818c7e5756fe"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Package.Tests/release/TinyRustLM.Package.Tests.csproj.CoreCompileInputs.cache",
+      "byteLength": 66,
+      "sha256": "7e01c050cd42f7f7eb819e65658f52c175375a7a2b28cd6ebe27ab685d75e11f"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Package.Tests/release/TinyRustLM.Package.Tests.csproj.FileListAbsolute.txt",
+      "byteLength": 20895,
+      "sha256": "96a5e9e244597e3e541e420a08dcd1916ff7b9ac05bc5280ccbe547013333e71"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Package.Tests/release/TinyRustLM.Package.Tests.dll",
+      "byteLength": 69120,
+      "sha256": "420bb7a92006255e938e2f1525cc02c3fe972f715a0c2ff5688241739429fe37"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Package.Tests/release/TinyRustLM.Package.Tests.genruntimeconfig.cache",
+      "byteLength": 66,
+      "sha256": "e647e02959ed94d101ad7a7d32684d41ab7bbb92278da136912e14d02b62a125"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Package.Tests/release/TinyRustLM.Package.Tests.pdb",
+      "byteLength": 32092,
+      "sha256": "1c115c8a60d3d5be6de1376406766484bada6c75dc82b5ee09b28f0057992b51"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Package.Tests/release/TinyRustLM.Package.Tests.sourcelink.json",
+      "byteLength": 161,
+      "sha256": "044485e75cccc46d6ab8e1805e15393d528a68df8aefcb04db29b36f9e9f6608"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Package.Tests/release/ref/TinyRustLM.Package.Tests.dll",
+      "byteLength": 14848,
+      "sha256": "4c942eca161a182b69324beececf58ddaab3a6519b87aa742dc867b1c9b6c650"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.Package.Tests/release/refint/TinyRustLM.Package.Tests.dll",
+      "byteLength": 14848,
+      "sha256": "4c942eca161a182b69324beececf58ddaab3a6519b87aa742dc867b1c9b6c650"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.PackageCanonicalizer/TinyRustLM.PackageCanonicalizer.csproj.nuget.dgspec.json",
+      "byteLength": 2568,
+      "sha256": "23fda5519c716ba314b6f84bea52e9d6b474177277260166e096b88335015c10"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.PackageCanonicalizer/TinyRustLM.PackageCanonicalizer.csproj.nuget.g.props",
+      "byteLength": 1141,
+      "sha256": "c0f2827082d4074b144908a5113ffdd71cdaa839f4b575388b10eb1fb9d9c1a8"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.PackageCanonicalizer/TinyRustLM.PackageCanonicalizer.csproj.nuget.g.targets",
+      "byteLength": 150,
+      "sha256": "971cc9b535384849b5c661d776cd7a80833a416265e32e8968e06c367368b8b5"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.PackageCanonicalizer/project.assets.json",
+      "byteLength": 2355,
+      "sha256": "a253ef245fd4d8d5b889a9478e738aa9199d743c0b565b5c79a0d54a0480c850"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.PackageCanonicalizer/project.nuget.cache",
+      "byteLength": 265,
+      "sha256": "095183bb3a986bba60c332178aed61e3ac1b518660dcbcec114fc700a4d8ef31"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.PackageCanonicalizer/release/.NETCoreApp,Version=v8.0.AssemblyAttributes.cs",
+      "byteLength": 198,
+      "sha256": "f7a5d9789c863625e139ff99e1113a503830f6b85a88f6129916df83ac76b49e"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.PackageCanonicalizer/release/TinyRustLM.PackageCanonicalizer.AssemblyInfo.cs",
+      "byteLength": 1273,
+      "sha256": "01eb8bc01917a26c6998f5d92c623a3f90e958a566587cb4c2de1972bbf307a2"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.PackageCanonicalizer/release/TinyRustLM.PackageCanonicalizer.AssemblyInfoInputs.cache",
+      "byteLength": 66,
+      "sha256": "7275b86cc9510b4bbd78a4b2fd6cced794b6c4691cdccee82584f81a0d1109de"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.PackageCanonicalizer/release/TinyRustLM.PackageCanonicalizer.GeneratedMSBuildEditorConfig.editorconfig",
+      "byteLength": 877,
+      "sha256": "3f833d275ab328281ac16b62bc3429fef35d15c43c59bc1a63148ee481edb436"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.PackageCanonicalizer/release/TinyRustLM.PackageCanonicalizer.GlobalUsings.g.cs",
+      "byteLength": 239,
+      "sha256": "a3c6048bb4d922b1799a9977f84362a3787b68810cac67aa86ac3aa23295f227"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.PackageCanonicalizer/release/TinyRustLM.PackageCanonicalizer.assets.cache",
+      "byteLength": 154,
+      "sha256": "630f71e0858a56d12e67698295f911a6627ec1106134ad2f750d31cfe0171960"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.PackageCanonicalizer/release/TinyRustLM.PackageCanonicalizer.csproj.CoreCompileInputs.cache",
+      "byteLength": 66,
+      "sha256": "d5e12ce0952a84a847d1145792045e6e0926ba71aa75e56296c6d37bcddb8fe4"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.PackageCanonicalizer/release/TinyRustLM.PackageCanonicalizer.csproj.FileListAbsolute.txt",
+      "byteLength": 3020,
+      "sha256": "6ce199fab63125304669c20a60d821cc65b8696b7b075d19c01134e12bba2c83"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.PackageCanonicalizer/release/TinyRustLM.PackageCanonicalizer.genruntimeconfig.cache",
+      "byteLength": 66,
+      "sha256": "177a43ee80e3d2aaf4589a3aaa7f74ccd3768aaf1c1ee1e5438e76f7eb6a95ca"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.PackageCanonicalizer/release/TinyRustLM.PackageCanonicalizer.sourcelink.json",
+      "byteLength": 161,
+      "sha256": "044485e75cccc46d6ab8e1805e15393d528a68df8aefcb04db29b36f9e9f6608"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.PackageCanonicalizer/release/apphost.exe",
+      "byteLength": 152064,
+      "sha256": "9a183763b291df9e4b5a43f36d30ecf28b3581c2065464bf28b91be92cea7e7a"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.PackageCanonicalizer/release/ref/tinyrustlm-package-canonicalizer.dll",
+      "byteLength": 10240,
+      "sha256": "67bd883222d6463b14204ca76942dea2b7ee18d8191133caac0de7acaecfe854"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.PackageCanonicalizer/release/refint/tinyrustlm-package-canonicalizer.dll",
+      "byteLength": 10240,
+      "sha256": "67bd883222d6463b14204ca76942dea2b7ee18d8191133caac0de7acaecfe854"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.PackageCanonicalizer/release/tinyrustlm-package-canonicalizer.dll",
+      "byteLength": 28672,
+      "sha256": "af94ce5417093c967cc68b49c89b6a4da47a61ac834b13bf7aeed524a3fde4d7"
+    },
+    {
+      "relativePath": "build/obj/TinyRustLM.PackageCanonicalizer/release/tinyrustlm-package-canonicalizer.pdb",
+      "byteLength": 14964,
+      "sha256": "a9789469302a462eeb614e0c3b4b7b13a2f1c191f3c970ada594da657dbdeb33"
+    },
+    {
+      "relativePath": "cli-home/.dotnet/.workloadAdvertisingManifestSentinel10.0.400",
+      "byteLength": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "relativePath": "cli-home/.dotnet/10.0.401.aspNetCertificateSentinel",
+      "byteLength": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "relativePath": "cli-home/.dotnet/10.0.401.dotnetFirstUseSentinel",
+      "byteLength": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "relativePath": "cli-home/.dotnet/10.0.401.toolpath.sentinel",
+      "byteLength": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "relativePath": "cli-home/.dotnet/sdk-advertising/10.0.400/microsoft.net.workloads/10.0.401.1/microsoft.net.workloads.workloadset.json",
+      "byteLength": 1008,
+      "sha256": "527bb3b7da7b154384253e769319820b3e1b925976f169b7275cf28c32ef5956"
+    },
+    {
+      "relativePath": "cli-home/.dotnet/sdk-advertising/10.0.400/microsoft.net.workloads/AdvertisedManifestFeatureBand.txt",
+      "byteLength": 8,
+      "sha256": "37c503199b0c0a4a8068bafbabaa8290c2f9e012e2eb97a4470ed79f4d74ffba"
+    },
+    {
+      "relativePath": "cli-home/.dotnet/sdk-advertising/10.0.400/microsoft.net.workloads/workloadVersion.txt",
+      "byteLength": 10,
+      "sha256": "88f9197710535d515e97630aadea6a2dcd1bbeaf9f0131325017921bcbf169c7"
+    },
+    {
+      "relativePath": "cli-home/AppData/Local/NuGet/Migrations/1",
+      "byteLength": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "relativePath": "cli-home/AppData/Local/NuGet/v3-cache/670c1461c29885f9aa22c281d8b7da90845b38e4$ps_api.nuget.org_v3_index.json/repository_signatures_5.0.0.dat",
+      "byteLength": 2007,
+      "sha256": "5f45cbf2d7f8a4b57fea6e43bb603d29a0682058a71eb61d900db74860d210b0"
+    },
+    {
+      "relativePath": "cli-home/AppData/Local/NuGet/v3-cache/670c1461c29885f9aa22c281d8b7da90845b38e4$ps_api.nuget.org_v3_index.json/service_index.dat",
+      "byteLength": 9272,
+      "sha256": "cea4d74624be767e0569c891597c0e6f5329f19f6c9b7fcf8b8c9e9f4933a4bb"
+    },
+    {
+      "relativePath": "cli-home/AppData/Roaming/NuGet/NuGet.Config",
+      "byteLength": 210,
+      "sha256": "3bdb050540ecdd6fe717cbb9028c0ff9e2af5e1544afa71b6bade80140c7a236"
+    },
+    {
+      "relativePath": "reports/f75dc195-b1c6-4a3e-95b8-926dad6b96e0/isolated-build_PLUTO_2026-09-29.14_49_28.cobertura.xml",
+      "byteLength": 4651,
+      "sha256": "b846af2e238353f43d61ef1de19ae8a7217189cfd7e1fd6e95fc2140bcee4179"
+    },
+    {
+      "relativePath": "reports/isolated-build_PLUTO_2026-09-29_14_49_28/In/PLUTO/isolated-build_PLUTO_2026-09-29.14_49_28.cobertura.xml",
+      "byteLength": 4651,
+      "sha256": "b846af2e238353f43d61ef1de19ae8a7217189cfd7e1fd6e95fc2140bcee4179"
+    },
+    {
+      "relativePath": "reports/package-boundary.trx",
+      "byteLength": 27797,
+      "sha256": "2afe4ac457a2e08f2b1aa9720855c8250e3dd083e26ec492f349222a445a715f"
+    },
+    {
+      "relativePath": "reports/sample-policy.trx",
+      "byteLength": 29621,
+      "sha256": "f78a0ef960aa8aef4e19c02d65961364a8a2c54cbb62713d71efb1c69e0e4e12"
+    },
+    {
+      "relativePath": "temp/VBCSCompiler/AnalyzerAssemblyLoader/31ea814066c743cf85a0858426c557d9/1/xunit.analyzers.dll",
+      "byteLength": 265728,
+      "sha256": "7dfd3240e6a23abfbc2e2c5101bd4f515d64fcf813365680bfefa3f17f1c2450"
+    },
+    {
+      "relativePath": "temp/VBCSCompiler/AnalyzerAssemblyLoader/31ea814066c743cf85a0858426c557d9/1/xunit.analyzers.fixes.dll",
+      "byteLength": 218112,
+      "sha256": "d6785116fcf0924a12e998bb517b721bc8d09a792f06dc62839889f7209e9e0d"
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+  Determining projects to restore...
+  Restored E:\Source\Rust\TinyRustLM.com\dotnet\src\TinyRustLM.MemoryEndpoints\TinyRustLM.MemoryEndpoints.csproj (in 73 ms).
+  Restored E:\Source\Rust\TinyRustLM.com\dotnet\src\TinyRustLM.Conversion\TinyRustLM.Conversion.csproj (in 73 ms).
+  Restored E:\Source\Rust\TinyRustLM.com\dotnet\src\TinyRustLM.P2P\TinyRustLM.P2P.csproj (in 73 ms).
+  Restored E:\Source\Rust\TinyRustLM.com\dotnet\tools\TinyRustLM.ConversionFixtureTool\TinyRustLM.ConversionFixtureTool.csproj (in 71 ms).
+  Restored E:\Source\Rust\TinyRustLM.com\dotnet\tests\TinyRustLM.Core.Tests\TinyRustLM.Core.Tests.csproj (in 114 ms).
+  2 of 7 projects are up-to-date for restore.

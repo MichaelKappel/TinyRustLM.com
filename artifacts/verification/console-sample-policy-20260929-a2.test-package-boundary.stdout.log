@@ -1,0 +1,7 @@
+  TinyRustLM.PackageCanonicalizer -> E:\Source\Rust\TinyRustLM.com\artifacts\verification\console-sample-policy\tinyrustlm-operation-I4Mxf3\build\bin\TinyRustLM.PackageCanonicalizer\release\tinyrustlm-package-canonicalizer.dll
+  TinyRustLM.Package.Tests -> E:\Source\Rust\TinyRustLM.com\artifacts\verification\console-sample-policy\tinyrustlm-operation-I4Mxf3\build\bin\TinyRustLM.Package.Tests\release\TinyRustLM.Package.Tests.dll
+Test run for E:\Source\Rust\TinyRustLM.com\artifacts\verification\console-sample-policy\tinyrustlm-operation-I4Mxf3\build\bin\TinyRustLM.Package.Tests\release\TinyRustLM.Package.Tests.dll (.NETCoreApp,Version=v8.0)
+A total of 1 test files matched the specified pattern.
+Results File: E:\Source\Rust\TinyRustLM.com\artifacts\verification\console-sample-policy\tinyrustlm-operation-I4Mxf3\reports\package-boundary.trx
+
+Passed!  - Failed:     0, Passed:    17, Skipped:     0, Total:    17, Duration: 186 ms - TinyRustLM.Package.Tests.dll (net8.0)

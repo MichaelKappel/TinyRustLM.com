@@ -1,0 +1,7 @@
+  Determining projects to restore...
+C:\Program Files\dotnet\sdk\10.0.401\NuGet.targets(782,5): error : The type initializer for 'NuGet.Configuration.ConfigurationDefaults' threw an exception. [E:\Source\Rust\TinyRustLM.com\dotnet\src\TinyRustLM.Core\TinyRustLM.Core.csproj]
+C:\Program Files\dotnet\sdk\10.0.401\NuGet.targets(782,5): error :   Value cannot be null. (Parameter 'path1') [E:\Source\Rust\TinyRustLM.com\dotnet\src\TinyRustLM.Core\TinyRustLM.Core.csproj]
+C:\Program Files\dotnet\sdk\10.0.401\NuGet.targets(782,5): error : The type initializer for 'NuGet.Configuration.ConfigurationDefaults' threw an exception. [E:\Source\Rust\TinyRustLM.com\dotnet\src\TinyRustLM.Abstractions\TinyRustLM.Abstractions.csproj]
+C:\Program Files\dotnet\sdk\10.0.401\NuGet.targets(782,5): error :   Value cannot be null. (Parameter 'path1') [E:\Source\Rust\TinyRustLM.com\dotnet\src\TinyRustLM.Abstractions\TinyRustLM.Abstractions.csproj]
+C:\Program Files\dotnet\sdk\10.0.401\NuGet.targets(782,5): error : The type initializer for 'NuGet.Configuration.ConfigurationDefaults' threw an exception. [E:\Source\Rust\TinyRustLM.com\dotnet\samples\TinyRustLM.ConsoleSample\TinyRustLM.ConsoleSample.csproj]
+C:\Program Files\dotnet\sdk\10.0.401\NuGet.targets(782,5): error :   Value cannot be null. (Parameter 'path1') [E:\Source\Rust\TinyRustLM.com\dotnet\samples\TinyRustLM.ConsoleSample\TinyRustLM.ConsoleSample.csproj]
