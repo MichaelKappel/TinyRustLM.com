@@ -1,0 +1,168 @@
+{
+  "schema": "tinyrustlm.numerical_v6_failure_review.v1",
+  "status": "closed-failure-no-numerical-pass",
+  "operationId": "qwen3-numerical-c1899de-98feb4b-20260929-v6",
+  "registration": {
+    "byteLength": 25274,
+    "sha256": "bf2a38d2585d8177f4dc954ed5ab1ce55801b8df1ef34cb0fc6774700b9ba62b"
+  },
+  "registrationSource": {
+    "branch": "codex/model-acquisition-v2",
+    "commit": "2364eef319869097c26d7631d3889f27096284ce",
+    "fetchHeadExpected": true,
+    "remoteRef": "refs/remotes/origin/codex/model-acquisition-v2",
+    "trackingRef": "origin/codex/model-acquisition-v2",
+    "tree": "bdaaa55b82322f0a223df88f37ca87ec66e015bd"
+  },
+  "launchCounts": {
+    "reconstructed": 1,
+    "scalar": 1,
+    "source": 1,
+    "verifier": 0
+  },
+  "terminal": {
+    "path": "artifacts/verification/qwen3-numerical-c1899de-98feb4b-20260929-v6-owner-evidence/owner-terminal.json",
+    "byteLength": 3830,
+    "sha256": "7f3cf7d3ff4d1d121c2d77c3085b9d3af08749e4135ce7f37621a38618b40cbf"
+  },
+  "preservedEvidence": [
+    {
+      "path": "artifacts/verification/qwen3-numerical-c1899de-98feb4b-20260929-v6-owner-evidence/binding.json",
+      "byteLength": 2367,
+      "sha256": "29f2450d494ae44b4fc59a882816e10283cc880b295f4f4bf20a3fed0d98a916"
+    },
+    {
+      "path": "artifacts/verification/qwen3-numerical-c1899de-98feb4b-20260929-v6-owner-evidence/owner-terminal.json",
+      "byteLength": 3830,
+      "sha256": "7f3cf7d3ff4d1d121c2d77c3085b9d3af08749e4135ce7f37621a38618b40cbf"
+    },
+    {
+      "path": "artifacts/verification/qwen3-numerical-c1899de-98feb4b-20260929-v6-owner-evidence/reconstructed.process-terminal.json",
+      "byteLength": 1421,
+      "sha256": "ffc1001ba9485242fbf1a7db738810fd2712672a47459b569fab485f4ecb0051"
+    },
+    {
+      "path": "artifacts/verification/qwen3-numerical-c1899de-98feb4b-20260929-v6-owner-evidence/reconstructed.request.json",
+      "byteLength": 2504,
+      "sha256": "7dd2f96493eb7d7391181415dfd2a9738c16414b31c8dd7cba7902975ac3da6a"
+    },
+    {
+      "path": "artifacts/verification/qwen3-numerical-c1899de-98feb4b-20260929-v6-owner-evidence/reconstructed.stderr.bin",
+      "byteLength": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifacts/verification/qwen3-numerical-c1899de-98feb4b-20260929-v6-owner-evidence/reconstructed.stdout.bin",
+      "byteLength": 174,
+      "sha256": "fe69e58fb8ec4c9e294f80ef50e4c070a389d0113149d0c4a87dfd8f2006512d"
+    },
+    {
+      "path": "artifacts/verification/qwen3-numerical-c1899de-98feb4b-20260929-v6-owner-evidence/scalar.process-terminal.json",
+      "byteLength": 1402,
+      "sha256": "d62c602f1f3ac4cdeed92c69667524f8a76ef21d29d736d4d5c2b1115bbfd62c"
+    },
+    {
+      "path": "artifacts/verification/qwen3-numerical-c1899de-98feb4b-20260929-v6-owner-evidence/scalar.request.json",
+      "byteLength": 1375,
+      "sha256": "90aa4726d20fba6e000bc2ffb0f35368d4d9c1b5d6b308af98ca723344daa9e3"
+    },
+    {
+      "path": "artifacts/verification/qwen3-numerical-c1899de-98feb4b-20260929-v6-owner-evidence/scalar.stderr.bin",
+      "byteLength": 50,
+      "sha256": "1e8f3a6fd9d65449b78f65876217231f33429518d0039946d7de71204f04751c"
+    },
+    {
+      "path": "artifacts/verification/qwen3-numerical-c1899de-98feb4b-20260929-v6-owner-evidence/scalar.stdout.bin",
+      "byteLength": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifacts/verification/qwen3-numerical-c1899de-98feb4b-20260929-v6-owner-evidence/source.process-terminal.json",
+      "byteLength": 1407,
+      "sha256": "0da265ae818dbfae862052dcca3df1a933c5bc51a8a674c43e680973a733a8c4"
+    },
+    {
+      "path": "artifacts/verification/qwen3-numerical-c1899de-98feb4b-20260929-v6-owner-evidence/source.request.json",
+      "byteLength": 2546,
+      "sha256": "24cda88c6f76dafa7cd6b91b4380a022b896a637f6456828f1774cba9629a5a3"
+    },
+    {
+      "path": "artifacts/verification/qwen3-numerical-c1899de-98feb4b-20260929-v6-owner-evidence/source.stderr.bin",
+      "byteLength": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifacts/verification/qwen3-numerical-c1899de-98feb4b-20260929-v6-owner-evidence/source.stdout.bin",
+      "byteLength": 174,
+      "sha256": "fe69e58fb8ec4c9e294f80ef50e4c070a389d0113149d0c4a87dfd8f2006512d"
+    },
+    {
+      "path": "artifacts/verification/qwen3-numerical-c1899de-98feb4b-20260929-v6-owner-evidence/start.json",
+      "byteLength": 354,
+      "sha256": "6450b20693f407f9e7a069133ecf571e3a3f3dcff582a730b02f70afecbc3715"
+    }
+  ],
+  "observation": {
+    "source": "completed, 3 cases, 7 trace files, zero stderr",
+    "reconstructed": "completed, 3 cases, 7 trace files, zero stderr",
+    "scalar": "request rejected before model inference or trace creation",
+    "scalarStderr": "scalar-probe-error:scalar-probe-request-canonical\n",
+    "verifier": "not launched",
+    "numericalThresholdResult": "none"
+  },
+  "cause": {
+    "producer": "execution owner writeCanonicalNew recursively sorted scalar request fields",
+    "consumer": "unchanged native probe strictly requires serde struct field order",
+    "authority": "contracts/vnext/scalar-numerical-probe-profile.v1.json input.fieldsInOrder and nested model/policy; rust/crates/tinyrustlm-numerical-probe/src/main.rs read_request/canonical_json",
+    "defect": "producer request encoding differs from existing consumer contract; numerical arithmetic is not implicated"
+  },
+  "correction": {
+    "scope": "explicit scalar request serializer at top/model/policy/case levels; preserve sorted serialization for Python and verification requests",
+    "nativeProbeChanged": false,
+    "thresholdsChanged": false,
+    "modelChanged": false,
+    "failedEvidenceAdopted": false,
+    "closedVersion": 6,
+    "prospectiveOwnerVersion": 7
+  },
+  "verification": {
+    "actualNativeFixture": {
+      "tests": 2,
+      "passed": 2,
+      "tool": "a34e73",
+      "oldSortedRequestRejected": "scalar-probe-request-canonical",
+      "correctedRequest": "completed, two token traces with verified hashes",
+      "realModelInference": false
+    },
+    "initialFullSuite": {
+      "tool": "160e44",
+      "tests": 40,
+      "pass": 37,
+      "fail": 2,
+      "skip": 1,
+      "cause": "required TINYRUSTLM_QWEN3_NUMERICAL_ORACLE_PYTHON omitted by launcher; assertions failed before Python interoperability checks",
+      "correction": "set existing pinned interpreter; no test logic changed"
+    },
+    "correctedFullSuite": {
+      "tests": 40,
+      "pass": 40,
+      "fail": 0,
+      "skip": 0,
+      "tool": "dea98d",
+      "durationMilliseconds": 12001.0315,
+      "pinnedPython": "artifacts/external/qwen3-numerical-oracle/environment/Scripts/python.exe",
+      "realModelInference": false
+    },
+    "independentReview": {
+      "reviewer": "runtime_state_review",
+      "finding": "No material defect; explicit ordering agrees with unchanged Rust structs and scalar profile; only scalar request serialization changed; framing fix is not parity evidence"
+    }
+  },
+  "boundaries": {
+    "retryAllowed": false,
+    "outputOverwriteAllowed": false,
+    "failedTraceAdoptionAllowed": false,
+    "productionDefaultQualified": false,
+    "productionDeployed": false
+  }
+}

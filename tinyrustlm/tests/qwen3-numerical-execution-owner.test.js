@@ -108,7 +108,7 @@ function registeredComparison() {
 
 /** Synthetic current contract values exercise validation without registering or launching a model. */
 function ownerContract() {
-  const operationId = "qwen3-numerical-c1899de-1111111-20260913-v6";
+  const operationId = "qwen3-numerical-c1899de-1111111-20260913-v7";
   return {
     schema: owner.OWNER_CONTRACT_SCHEMA,
     operationId,
@@ -329,7 +329,7 @@ function registration() {
   const contract = ownerContract();
   return {
     schema: owner.REGISTRATION_SCHEMA,
-    profileId: "tinyrustlm.qwen3-numerical-differential-execution/6",
+    profileId: "tinyrustlm.qwen3-numerical-differential-execution/7",
     status: "registered-before-private-request-roots-and-real-traces",
     registeredAtUtc: "2026-09-13T12:00:00Z",
     registrationParentCommit: "1".repeat(40),
@@ -356,7 +356,7 @@ function registration() {
       parentCommit: "1".repeat(40),
       parentTree: "2".repeat(40),
       allowedRegistrationCommitPaths: [
-        "contracts/vnext/qwen3-numerical-differential-execution-preregistration.v6.json"
+        "contracts/vnext/qwen3-numerical-differential-execution-preregistration.v7.json"
       ],
       cleanAtRegistration: true,
       trackingFetchHeadAndRemoteExactAtRegistration: true
@@ -671,8 +671,8 @@ test("rejects operation, trace, implementation-role, and executable drift", () =
 
 test("rejects closed owner, registration, request, and source-template semantics", () => {
   assert.equal(owner.REGISTRATION_RELATIVE_PATH,
-    "contracts/vnext/qwen3-numerical-differential-execution-preregistration.v6.json");
-  assert.equal(owner.REQUEST_SCHEMA, "tinyrustlm.qwen3_numerical_execution_request.v6");
+    "contracts/vnext/qwen3-numerical-differential-execution-preregistration.v7.json");
+  assert.equal(owner.REQUEST_SCHEMA, "tinyrustlm.qwen3_numerical_execution_request.v7");
 
   const formerOwner = ownerContract();
   formerOwner.schema = "tinyrustlm.qwen3_numerical_execution_owner_contract.v1";
@@ -715,7 +715,7 @@ test("requires the exact corrected source-framework closure", () => {
 
 test("current contracts reject every closed schema and superseded lock path", async (t) => {
   const root = temporaryRoot(t);
-  for (const version of [1, 2, 3, 4, 5]) {
+  for (const version of [1, 2, 3, 4, 5, 6]) {
     const contract = ownerContract();
     contract.schema = `tinyrustlm.qwen3_numerical_execution_owner_contract.v${version}`;
     assert.throws(() => owner.validateOwnerContract(contract), /owner-contract/u);
@@ -985,7 +985,7 @@ test("execute rejects a misplaced request before inspecting registration or crea
   const root = temporaryRoot(t);
   const requestPath = path.join(root, "request.json");
   fs.writeFileSync(requestPath, owner.canonicalJsonBytes({ schema: owner.REQUEST_SCHEMA,
-    operationId: "qwen3-numerical-c1899de-1111111-20260913-v6", registration: null,
+    operationId: "qwen3-numerical-c1899de-1111111-20260913-v7", registration: null,
     registrationSource: null, repositoryRoot: path.dirname(repositoryRoot), gitPath: null,
     evidenceParent: root, sourceDirectory: "D:\\LLMs\\TinyRustLM\\source",
     compositionRoot: "D:\\LLMs\\TinyRustLM\\composition", executables: null }), { flag: "wx" });
@@ -1148,4 +1148,89 @@ test("JavaScript reconstructed request satisfies the real Python pre-load contra
     assert.equal(rejected.stdout.trim(), "reconstructed-trace-request-identity");
   }
   assert.equal(fs.existsSync(paths.reconstructedOutputRoot), false);
+});
+
+
+test("scalar producer preserves the native contract order and rejects unknown fields", () => {
+  const contract = ownerContract();
+  const state = { registration: { ownerContract: contract },
+    registrationIdentity: { sha256: ZERO_SHA }, compositionRoot: "E:\\composition",
+    evidenceParent: "E:\\evidence", sourceDirectory: "E:\\source" };
+  const request = owner.childRequests(state, { sourceOutputRoot: "E:\\evidence\\source",
+    reconstructedOutputRoot: "E:\\evidence\\reconstructed",
+    scalarOutputRoot: "E:\\evidence\\scalar" }).scalar;
+  // Registrations are recursively sorted, including nested model and policy fields.
+  const sorted = JSON.parse(owner.canonicalJsonBytes(request));
+  const actual = owner.scalarRequestBytes(sorted);
+  const profile = JSON.parse(fs.readFileSync(path.join(repositoryRoot,
+    "contracts/vnext/scalar-numerical-probe-profile.v1.json")));
+  const decoded = JSON.parse(actual);
+  assert.deepEqual(Object.keys(decoded), profile.input.fieldsInOrder);
+  assert.deepEqual(Object.keys(decoded.model), profile.input.model.fieldsInOrder);
+  assert.deepEqual(Object.keys(decoded.policy), profile.input.policy.fieldsInOrder);
+  assert.deepEqual(Object.keys(decoded.cases[0]), ["id", "tokenIds"]);
+  assert.deepEqual(decoded, request);
+  assert.equal(actual.at(-1), 10);
+  for (const field of [null, "model", "policy", "case"]) {
+    const invalid = deepClone(sorted);
+    const target = field === null ? invalid : field === "case" ? invalid.cases[0] : invalid[field];
+    target.unregistered = true;
+    assert.throws(() => owner.scalarRequestBytes(invalid), /scalar-request-fields/u);
+  }
+  sorted.cases = null;
+  assert.throws(() => owner.scalarRequestBytes(sorted), /scalar-request-cases/u);
+});
+
+test("actual native probe accepts the JS scalar producer and rejects sorted request bytes", (t) => {
+  const root = temporaryRoot(t);
+  const scalar = path.join(repositoryRoot,
+    "artifacts/verification/numerical-build-20260928/release/tinyrustlm-numerical-probe.exe");
+  // This is the already validated unchanged native probe, never a replacement stub.
+  assert.equal(crypto.createHash("sha256").update(fs.readFileSync(scalar)).digest("hex"),
+    "eae7adc4ef73d7fb155416319424bc948ce5bf4a14ec424c0a39755a10d61ae5");
+  const vectors = JSON.parse(fs.readFileSync(path.join(repositoryRoot,
+    "contracts/vnext/slm2-q8-weight-vectors.v1.json")));
+  const model = Buffer.from(vectors.canonical.artifactHex, "hex");
+  const composition = path.join(root, "composition");
+  const evidence = path.join(root, "evidence");
+  fs.mkdirSync(composition); fs.mkdirSync(evidence);
+  fs.writeFileSync(path.join(composition, "model.slm2"), model, { flag: "wx" });
+  const contract = ownerContract();
+  contract.operationId = "fixture-js-scalar-interop";
+  contract.cases = [{ id: "two-token-fixture", tokenIds: [1, 2] }];
+  contract.requests.scalar.model = { fileName: "model.slm2", byteLength: model.length,
+    sha256: crypto.createHash("sha256").update(model).digest("hex") };
+  contract.requests.scalar.policy = { maximumModelBytes: 1048576, maximumSequenceTokens: 4,
+    maximumKvBytes: 1048576, maximumScratchBytes: 1048576, maximumTraceBytes: 16777216,
+    maximumCases: 4, maximumTokensPerCase: 4 };
+  const state = { registration: JSON.parse(owner.canonicalJsonBytes({ ownerContract: contract })),
+    registrationIdentity: { sha256: ZERO_SHA }, compositionRoot: composition,
+    evidenceParent: evidence, sourceDirectory: composition };
+  const output = path.join(evidence, contract.operationId + "-scalar");
+  const request = owner.childRequests(state, { sourceOutputRoot: path.join(evidence, "source"),
+    reconstructedOutputRoot: path.join(evidence, "reconstructed"), scalarOutputRoot: output }).scalar;
+  const bad = path.join(root, "sorted-request.json");
+  fs.writeFileSync(bad, owner.canonicalJsonBytes(request), { flag: "wx" });
+  const spawn = require("node:child_process").spawnSync;
+  const rejected = spawn(scalar, [bad], { encoding: "utf8", timeout: 10000, windowsHide: true });
+  assert.equal(rejected.error, undefined);
+  assert.equal(rejected.status, 1);
+  assert.equal(rejected.stderr, "scalar-probe-error:scalar-probe-request-canonical\n");
+  assert.equal(fs.existsSync(output), false);
+  const good = path.join(root, "native-ordered-request.json");
+  fs.writeFileSync(good, owner.scalarRequestBytes(request), { flag: "wx" });
+  const accepted = spawn(scalar, [good], { encoding: "utf8", timeout: 10000, windowsHide: true });
+  assert.equal(accepted.error, undefined);
+  assert.equal(accepted.status, 0, accepted.stderr);
+  assert.equal(accepted.stderr, "");
+  const result = JSON.parse(fs.readFileSync(path.join(output, "probe.json")));
+  assert.equal(result.status, "completed");
+  assert.equal(result.caseCount, 1);
+  assert.equal(result.traceFileCount, 2);
+  assert.equal(result.model.sha256, contract.requests.scalar.model.sha256);
+  for (const step of result.cases[0].steps) {
+    const trace = fs.readFileSync(path.join(output, step.traceFile));
+    assert.equal(trace.length, step.traceByteLength);
+    assert.equal(crypto.createHash("sha256").update(trace).digest("hex"), step.traceSha256);
+  }
 });
