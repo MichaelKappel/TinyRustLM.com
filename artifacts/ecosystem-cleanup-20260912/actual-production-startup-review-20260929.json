@@ -1,0 +1,90 @@
+{
+  "schema": "tinyrustlm.actual_production_startup_review.v1",
+  "observedAtUtc": "2026-09-29T19:17:36.634Z",
+  "syntheticCatalog": false,
+  "modelRequestsMocked": false,
+  "observations": [
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "version": "0.5.0",
+      "sendDisabled": true,
+      "statuses": [
+        {
+          "id": "runtimeStatus",
+          "text": "Choose a qualified composition"
+        },
+        {
+          "id": "simpleModelPickerTitle",
+          "text": "Choose a model"
+        },
+        {
+          "id": "simpleModelPickerDescription",
+          "text": "Your starter model downloads from MiniModel.org and runs privately in this browser. You can choose another model here."
+        },
+        {
+          "id": "simpleModelPickerStatus",
+          "text": "Models are unavailable right now. A saved model will not open until its qualification can be reconciled."
+        },
+        {
+          "id": "simpleModelPickerAnnouncement",
+          "text": "Models are unavailable right now. A saved model will not open until its qualification can be reconciled."
+        }
+      ],
+      "errors": [],
+      "catalogResponses": [
+        {
+          "url": "https://minimodel.org/catalog/compositions.v1.json",
+          "status": 200
+        },
+        {
+          "url": "https://minimodel.org/catalog/peer-announcements.v1.json",
+          "status": 200
+        }
+      ],
+      "screenshotSha256": "c4af88e089de330d448b58bbe068be0c6a8ccef32b7d20682386e4eb79fd65d1"
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "version": "0.5.0",
+      "sendDisabled": true,
+      "statuses": [
+        {
+          "id": "simpleModelPickerTitle",
+          "text": "Choose a model"
+        },
+        {
+          "id": "simpleModelPickerDescription",
+          "text": "Your starter model downloads from MiniModel.org and runs privately in this browser. You can choose another model here."
+        },
+        {
+          "id": "simpleModelPickerStatus",
+          "text": "Models are unavailable right now. A saved model will not open until its qualification can be reconciled."
+        },
+        {
+          "id": "simpleModelPickerAnnouncement",
+          "text": "Models are unavailable right now. A saved model will not open until its qualification can be reconciled."
+        }
+      ],
+      "errors": [],
+      "catalogResponses": [
+        {
+          "url": "https://minimodel.org/catalog/peer-announcements.v1.json",
+          "status": 200
+        },
+        {
+          "url": "https://minimodel.org/catalog/compositions.v1.json",
+          "status": 200
+        }
+      ],
+      "screenshotSha256": "b6e8a8148529fa306c2aae9879fadb48aa66a4f6833ee1dfb32291e49c4ca35b"
+    }
+  ],
+  "browser": "154.0.4258.37",
+  "ownedBrowserScratchRemoved": true
+}

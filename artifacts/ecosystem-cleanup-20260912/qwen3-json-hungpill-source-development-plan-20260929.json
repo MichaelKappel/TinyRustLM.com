@@ -1,0 +1,95 @@
+{
+  "schema": "tinyrustlm.source_development_screen_plan.v1",
+  "purpose": "Screen the next distinct JSON-specialist checkpoint with the unchanged six public development cases before conversion or default selection. Related lineage and specialized training do not establish general usefulness.",
+  "source": {
+    "modelId": "hungpill/Qwen3-0.6B-JSON-SFT-GRPO",
+    "revision": "c4e2ccc285d6b798af1447773aa63bfcac1b01a3",
+    "weightSha256": "8d848a0ea1f3a24b52fc9f2b9a703b88795e0862841f322e5ab19e6b9199be2a",
+    "inventory": "qwen3-next-candidate-inventory-20260928.json",
+    "inventorySha256": "44e51fb57c4ee49c33157e364ace9b989db6b3710107e983dc175f395b301c8a",
+    "inventorySelectionStart": 1,
+    "review": "candidate-output-preflight-review-20260928.json"
+  },
+  "tool": {
+    "path": "tinyrustlm/tools/reference-raw-quality.py",
+    "sha256": "30dd01e388433dfe926f5990ab778817167fd50a6c81a55a19e10870ebb289fb",
+    "sourceRevision": "70b48ccbaba64cd4b0ef640778d70d3e46580757"
+  },
+  "cases": {
+    "path": "artifacts/ecosystem-cleanup-20260912/smollm2-source-development-screen-20260927.eval",
+    "sha256": "fbd04add28b5e1eb76e711d86c38e09e89b3ff11d1823de932b4674609c5d8c6",
+    "count": 6,
+    "maximumTotalGeneratedTokens": 352,
+    "kind": "reused-public-development-not-holdout"
+  },
+  "execution": {
+    "python": "D:\\LLMs\\TinyRustLM\\training-env-py312\\Scripts\\python.exe",
+    "pythonFlags": [
+      "-I",
+      "-B"
+    ],
+    "torch": "2.13.0+cpu",
+    "transformers": "5.13.1",
+    "device": "cpu",
+    "dtype": "float32",
+    "generation": "greedy",
+    "systemPrompt": "You are TinyRustLM, a browser-local AI assistant. You do not have personal experiences. Answer directly and helpfully.",
+    "callsPerCase": 1,
+    "adapter": null,
+    "policyExamples": null,
+    "promptSuffix": null,
+    "remoteCode": false,
+    "localFilesOnly": true,
+    "retries": 0,
+    "timeoutSeconds": 600,
+    "threadLimit": 4,
+    "rawOutputTransform": "none",
+    "thinkingTemplateOptions": {
+      "enable_thinking": false
+    },
+    "runtimeBindings": [
+      {
+        "path": "D:\\LLMs\\TinyRustLM\\training-env-py312\\Scripts\\python.exe",
+        "bytes": 274424,
+        "sha256": "0b471133e110cfb53a061cad528ce8e517d7b9ac41a0a396c39ad795a487fc14"
+      },
+      {
+        "path": "D:\\LLMs\\TinyRustLM\\training-env-py312\\Lib\\site-packages\\transformers\\tokenization_utils_base.py",
+        "bytes": 183764,
+        "sha256": "f86fc8ce6ad86bcbb4bad93b84b3cde9f7b93b516703b5d220889c66bbdd7b5a"
+      }
+    ]
+  },
+  "criteria": [
+    {
+      "index": 0,
+      "expected": "Exact READY, allowing surrounding whitespace only."
+    },
+    {
+      "index": 1,
+      "expected": "A single JSON object exactly {name: Mira, day: Tuesday}; no extra text."
+    },
+    {
+      "index": 2,
+      "expected": "Friday only, allowing surrounding whitespace and final punctuation."
+    },
+    {
+      "index": 3,
+      "expected": "Two actionable pen-and-paper steps within the stated resources, no printer/internet dependency or claimed action."
+    },
+    {
+      "index": 4,
+      "expected": "Red only, allowing surrounding whitespace and final punctuation."
+    },
+    {
+      "index": 5,
+      "expected": "One sentence preserving weekday hours and Sunday closure with no invented facts."
+    }
+  ],
+  "decisionRule": "Record all raw outputs and each criterion separately. Any failure is a development failure and cannot be repaired, sampled again, or hidden. Even six passes only justify further source investigation and do not qualify the model.",
+  "output": "artifacts/ecosystem-cleanup-20260912/qwen3-json-hungpill-source-development-raw-20260929.json",
+  "externalSource": "https://huggingface.co/hungpill/Qwen3-0.6B-JSON-SFT-GRPO/raw/c4e2ccc285d6b798af1447773aa63bfcac1b01a3/README.md",
+  "executionStarted": false,
+  "runtimeReview": "qwen3-json-source-runtime-review-20260927.json",
+  "launchGate": "Commit and push this plan, require clean remote-exact canonical source, verify every bound input and absent output, acquire only inventory selection 1 with actual hash verification, then execute once."
+}
