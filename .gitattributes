@@ -173,3 +173,5 @@ artifacts/ecosystem-cleanup-20260912/qwen3-json-hutgaecha-source-development-raw
 # Preserve these captured raw evidence bytes exactly, including their original line endings.
 artifacts/ecosystem-cleanup-20260912/qwen3-reaper-untied-development-raw-20260929.json -text
 artifacts/ecosystem-cleanup-20260912/qwen3-reaper-thinking-sft-development-raw-20260929.json -text
+artifacts/ecosystem-cleanup-20260912/qwen3-reaper-thinking-sft-preflight-20260929.json -text
+artifacts/ecosystem-cleanup-20260912/qwen3-reaper-thinking-sft-development-stderr-20260929.txt -text

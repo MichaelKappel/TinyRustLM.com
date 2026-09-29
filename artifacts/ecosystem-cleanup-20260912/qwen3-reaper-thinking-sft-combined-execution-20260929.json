@@ -1,0 +1,232 @@
+{
+  "schema": "tinyrustlm.source_combined_operation_execution.v1",
+  "startedAtUtc": "2026-09-29T21:27:17.803Z",
+  "finishedAtUtc": "2026-09-29T21:29:22.380Z",
+  "sourceHead": "c7d0f05f93913d65bbc19a0cc5859c886a4fae4a",
+  "startReceipt": {
+    "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-thinking-sft-combined-start-20260929.json",
+    "bytes": 4647,
+    "sha256": "1f246668dc233ea8745c6ac5e8c5f4d5eedcecc9a21c4a6cef9ee1f26c65d17b"
+  },
+  "gate": {
+    "startedAtUtc": "2026-09-29T21:27:20.092Z",
+    "finishedAtUtc": "2026-09-29T21:27:59.982Z",
+    "arguments": [
+      "--require-remote-exact"
+    ],
+    "exitCode": 0,
+    "signal": null,
+    "error": null,
+    "stdout": "{\"canonicalLayoutAvailable\":true,\"coverageClass\":\"registered-governed-roots-only\",\"localScanPerformed\":true,\"verdict\":\"pass\",\"wholeVolumeInventoryPerformed\":false}\n",
+    "stderr": "",
+    "allTreeCleanClaim": false
+  },
+  "allTreeCleanClaim": false,
+  "status": "capture-completed-awaiting-independent-rubric-assessment",
+  "failure": null,
+  "stages": [
+    {
+      "name": "acquisition",
+      "status": "pass",
+      "elapsedMilliseconds": 48697
+    },
+    {
+      "name": "source-verification",
+      "status": "pass",
+      "sourceFiles": 7,
+      "sourceBytes": 1514740774,
+      "receipt": {
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-thinking-sft-source-acquisition-20260929.json",
+        "bytes": 2166,
+        "sha256": "77be00c4298f598bb5de19a0d33212deb6d7992e766cadea4ca34f4fbeb3b205"
+      }
+    },
+    {
+      "name": "config-tokenizer-preflight",
+      "status": "pass",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "elapsedMilliseconds": 6988,
+      "inlineProcedureSha256": "88cfdaa32039de6d09225dc98468f96e45200c07b44fa1a9e686dc9423990184",
+      "output": {
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-thinking-sft-preflight-20260929.json",
+        "bytes": 1617,
+        "sha256": "b6726832fd35550de85b0ae78c72585f68056a47c51d00ee00bdb5735dbb7df5"
+      }
+    },
+    {
+      "name": "source-screen",
+      "status": "captured",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "elapsedMilliseconds": 22877,
+      "args": [
+        "-I",
+        "-B",
+        "tinyrustlm/tools/reference-raw-quality.py",
+        "D:\\LLMs\\TinyRustLM\\sources\\source-3eb7c51652379cdbfe6851668ef2e870decc17678d98e4e599229b09207a93c2",
+        "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-untied-development-screen-20260929.eval",
+        "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-thinking-sft-development-raw-20260929.json",
+        "--source-model-id",
+        "reaperdoesntknow/Qwen3-0.6B-Distilled-30B-A3B-Thinking-SFT",
+        "--source-revision",
+        "a79e8686ac71e1bde2e4097a8fae923bd3d37f2b",
+        "--generation-profile",
+        "greedy",
+        "--disable-thinking",
+        "--thinking-template-argument",
+        "enable_thinking"
+      ]
+    },
+    {
+      "name": "identity-closure",
+      "status": "pass",
+      "trackedFileCount": 2836,
+      "trackedBytes": 101742316,
+      "trackedSourceUnchanged": true,
+      "sourceFilesReverified": 7
+    }
+  ],
+  "downloads": [
+    {
+      "url": "https://huggingface.co/reaperdoesntknow/Qwen3-0.6B-Distilled-30B-A3B-Thinking-SFT/resolve/a79e8686ac71e1bde2e4097a8fae923bd3d37f2b/config.json",
+      "startedAtUtc": "2026-09-29T21:28:00.875Z",
+      "status": 200
+    },
+    {
+      "url": "https://huggingface.co/reaperdoesntknow/Qwen3-0.6B-Distilled-30B-A3B-Thinking-SFT/resolve/a79e8686ac71e1bde2e4097a8fae923bd3d37f2b/tokenizer.json",
+      "startedAtUtc": "2026-09-29T21:28:01.126Z",
+      "status": 200
+    },
+    {
+      "url": "https://huggingface.co/reaperdoesntknow/Qwen3-0.6B-Distilled-30B-A3B-Thinking-SFT/resolve/a79e8686ac71e1bde2e4097a8fae923bd3d37f2b/tokenizer_config.json",
+      "startedAtUtc": "2026-09-29T21:28:02.196Z",
+      "status": 200
+    },
+    {
+      "url": "https://huggingface.co/reaperdoesntknow/Qwen3-0.6B-Distilled-30B-A3B-Thinking-SFT/resolve/a79e8686ac71e1bde2e4097a8fae923bd3d37f2b/chat_template.jinja",
+      "startedAtUtc": "2026-09-29T21:28:02.309Z",
+      "status": 200
+    },
+    {
+      "url": "https://huggingface.co/reaperdoesntknow/Qwen3-0.6B-Distilled-30B-A3B-Thinking-SFT/resolve/a79e8686ac71e1bde2e4097a8fae923bd3d37f2b/generation_config.json",
+      "startedAtUtc": "2026-09-29T21:28:02.407Z",
+      "status": 200
+    },
+    {
+      "url": "https://www.apache.org/licenses/LICENSE-2.0.txt",
+      "startedAtUtc": "2026-09-29T21:28:02.515Z",
+      "status": 200
+    },
+    {
+      "url": "https://huggingface.co/reaperdoesntknow/Qwen3-0.6B-Distilled-30B-A3B-Thinking-SFT/resolve/a79e8686ac71e1bde2e4097a8fae923bd3d37f2b/model.safetensors",
+      "startedAtUtc": "2026-09-29T21:28:02.627Z",
+      "status": 200
+    }
+  ],
+  "sourceFiles": [
+    {
+      "path": "D:\\LLMs\\TinyRustLM\\sources\\source-3eb7c51652379cdbfe6851668ef2e870decc17678d98e4e599229b09207a93c2\\config.json",
+      "bytes": 1418,
+      "sha256": "f8b365cde4485e8b3440a909945710642cfe75012ae6dc5ed2821f4466f4802d"
+    },
+    {
+      "path": "D:\\LLMs\\TinyRustLM\\sources\\source-3eb7c51652379cdbfe6851668ef2e870decc17678d98e4e599229b09207a93c2\\tokenizer.json",
+      "bytes": 11422650,
+      "sha256": "be75606093db2094d7cd20f3c2f385c212750648bd6ea4fb2bf507a6a4c55506"
+    },
+    {
+      "path": "D:\\LLMs\\TinyRustLM\\sources\\source-3eb7c51652379cdbfe6851668ef2e870decc17678d98e4e599229b09207a93c2\\tokenizer_config.json",
+      "bytes": 665,
+      "sha256": "47bfa3e7727312946b29ac10d6dd0672d63cf7815b2a160b9523872040d2e536"
+    },
+    {
+      "path": "D:\\LLMs\\TinyRustLM\\sources\\source-3eb7c51652379cdbfe6851668ef2e870decc17678d98e4e599229b09207a93c2\\chat_template.jinja",
+      "bytes": 4168,
+      "sha256": "a55ee1b1660128b7098723e0abcd92caa0788061051c62d51cbe87d9cf1974d8"
+    },
+    {
+      "path": "D:\\LLMs\\TinyRustLM\\sources\\source-3eb7c51652379cdbfe6851668ef2e870decc17678d98e4e599229b09207a93c2\\generation_config.json",
+      "bytes": 187,
+      "sha256": "864ba8f93c55172f1a005db0385fb2e33e9104cd9b3191769cd62ad58111973a"
+    },
+    {
+      "path": "D:\\LLMs\\TinyRustLM\\sources\\source-3eb7c51652379cdbfe6851668ef2e870decc17678d98e4e599229b09207a93c2\\LICENSE",
+      "bytes": 11358,
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    },
+    {
+      "path": "D:\\LLMs\\TinyRustLM\\sources\\source-3eb7c51652379cdbfe6851668ef2e870decc17678d98e4e599229b09207a93c2\\model.safetensors",
+      "bytes": 1503300328,
+      "sha256": "c1d2b15ffb4239c2d83a24ca59e35b8cb427a03dcdc3c667bba985e64907b258"
+    }
+  ],
+  "sourceReceipt": {
+    "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-thinking-sft-source-acquisition-20260929.json",
+    "bytes": 2166,
+    "sha256": "77be00c4298f598bb5de19a0d33212deb6d7992e766cadea4ca34f4fbeb3b205"
+  },
+  "preflight": {
+    "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-thinking-sft-preflight-20260929.json",
+    "bytes": 1617,
+    "sha256": "b6726832fd35550de85b0ae78c72585f68056a47c51d00ee00bdb5735dbb7df5"
+  },
+  "raw": {
+    "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-thinking-sft-development-raw-20260929.json",
+    "bytes": 24336,
+    "sha256": "ae4b9bb415a0a4b42c8d57e98b68970cf47ba9b7a8f651a176c2882c4f9f7d37"
+  },
+  "sourceBefore": {
+    "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-thinking-sft-tracked-source-before-20260929.json",
+    "bytes": 603002,
+    "sha256": "2772018d9692bb485bef42da62b678d043fc6149274bc8347c29c23cc76c72f1"
+  },
+  "sourceAfter": {
+    "head": "c7d0f05f93913d65bbc19a0cc5859c886a4fae4a",
+    "tree": "25f8da406d81ebdcb546e0415a90649bc29b866e",
+    "count": 2836,
+    "totalBytes": 101742316,
+    "manifestSha256": "fd6e65b8fd2f8e0839173f9fbd0fce836a82266226f6fb8a239513f5bb29a870",
+    "unchanged": true,
+    "error": null
+  },
+  "statusesBefore": {
+    "LMComposer.com": [],
+    "MiniModel.MiRust.com": [],
+    "MiniModel.org": [],
+    "MiRust.com": [],
+    "Runtime.MiRust.com": [],
+    "TinyRustLM.com": [],
+    "TinyRustLM.MiRust.com": []
+  },
+  "statusesAfter": {
+    "LMComposer.com": [],
+    "MiniModel.MiRust.com": [],
+    "MiniModel.org": [],
+    "MiRust.com": [],
+    "Runtime.MiRust.com": [],
+    "TinyRustLM.com": [
+      "?? artifacts/ecosystem-cleanup-20260912/qwen3-reaper-thinking-sft-combined-start-20260929.json",
+      "?? artifacts/ecosystem-cleanup-20260912/qwen3-reaper-thinking-sft-development-raw-20260929.json",
+      "?? artifacts/ecosystem-cleanup-20260912/qwen3-reaper-thinking-sft-development-stderr-20260929.txt",
+      "?? artifacts/ecosystem-cleanup-20260912/qwen3-reaper-thinking-sft-development-stdout-20260929.txt",
+      "?? artifacts/ecosystem-cleanup-20260912/qwen3-reaper-thinking-sft-preflight-20260929.json",
+      "?? artifacts/ecosystem-cleanup-20260912/qwen3-reaper-thinking-sft-preflight-stderr-20260929.txt",
+      "?? artifacts/ecosystem-cleanup-20260912/qwen3-reaper-thinking-sft-source-acquisition-20260929.json",
+      "?? artifacts/ecosystem-cleanup-20260912/qwen3-reaper-thinking-sft-tracked-source-before-20260929.json",
+      "?? artifacts/tests/thinking-sft-combined/tinyrustlm-operation-7CANnD.owner.v2"
+    ],
+    "TinyRustLM.MiRust.com": []
+  },
+  "cleanup": {
+    "status": "removed-with-original-helper-ownership",
+    "root": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\thinking-sft-combined\\tinyrustlm-operation-7CANnD",
+    "marker": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\thinking-sft-combined\\tinyrustlm-operation-7CANnD.owner.v2",
+    "rootAbsent": true,
+    "markerAbsent": true
+  },
+  "retries": 0,
+  "productQualification": false
+}

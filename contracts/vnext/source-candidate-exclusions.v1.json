@@ -5,6 +5,16 @@
   "weightLimit": "SHA-256 matches exact known weight files, including renamed files. It cannot establish tensor identity after resharding or reserialization.",
   "entries": [
     {
+      "modelId": "reaperdoesntknow/Qwen3-0.6B-Distilled-30B-A3B-Thinking-SFT",
+      "revision": "a79e8686ac71e1bde2e4097a8fae923bd3d37f2b",
+      "kind": "quality",
+      "weightSha256": "c1d2b15ffb4239c2d83a24ca59e35b8cb427a03dcdc3c667bba985e64907b258",
+      "evidence": {
+        "path": "tinyrustlm/training/qwen3-reaper-thinking-sft-source-development-screen-v1/assessment-control-v1.json",
+        "sha256": "981302e2197562c91d91965cc8b88c5fdd62f4283fe3bba0c8c14fb381b9d1a8"
+      }
+    },
+    {
       "modelId": "reaperdoesntknow/Qwen3-0.6B-Distilled-30B-A3B",
       "revision": "7bd368dce6747cd9647a4e05300f3294bc2e9108",
       "kind": "quality",

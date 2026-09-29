@@ -1,0 +1,45 @@
+{
+  "schema": "tinyrustlm.source_model_screen_assessment.v1",
+  "sourceModelId": "reaperdoesntknow/Qwen3-0.6B-Distilled-30B-A3B-Thinking-SFT",
+  "sourceRevision": "a79e8686ac71e1bde2e4097a8fae923bd3d37f2b",
+  "sourceModelArtifactSha256": "c1d2b15ffb4239c2d83a24ca59e35b8cb427a03dcdc3c667bba985e64907b258",
+  "sourceScreenSha256": "ae4b9bb415a0a4b42c8d57e98b68970cf47ba9b7a8f651a176c2882c4f9f7d37",
+  "sourceScreenPath": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-thinking-sft-development-raw-20260929.json",
+  "executionReceiptPath": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-thinking-sft-combined-execution-20260929.json",
+  "executionReceiptSha256": "dad48530888ae259d332a0ec16b72f82c6701cd2d04c15c5901b49e97333dc55",
+  "prospectivePlanPath": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-thinking-sft-development-plan-20260929.json",
+  "prospectivePlanSha256": "23d3f4442f5ec6016e0fd3a7c64a5344161a0c5ccf6f3bbf04287333fee89f5c",
+  "decision": "rejected",
+  "decisionAuthority": "engineering-source-screen-v1",
+  "independentAssessment": "Root agent independently read all six exact raw answers after the execution agent completed source-identity closure. Cases0,2,4,5 pass and cases1,3 fail under the unchanged prospective criteria.",
+  "architectureFamily": "qwen3-dense-gqa",
+  "runtimeAdmission": "not-admitted-current-slm2",
+  "licenseDisposition": "apache-2.0-publisher-metadata-plus-official-license-text-verified",
+  "blockerCode": "model_quality_rejected",
+  "passedCaseCount": 4,
+  "caseCount": 6,
+  "criticalFailureCodes": ["answer-format-violated", "task-fidelity-violated"],
+  "caseDispositions": [
+    {"index": 0, "status": "pass", "failureCodes": []},
+    {
+      "index": 1,
+      "status": "fail",
+      "failureCodes": ["answer-format-violated"],
+      "reason": "Markdown code fences violate the requirement for a single JSON object with no other text. The raw answer was not stripped or repaired."
+    },
+    {"index": 2, "status": "pass", "failureCodes": []},
+    {
+      "index": 3,
+      "status": "fail",
+      "failureCodes": ["task-fidelity-violated"],
+      "reason": "Writing the contents of the coat, bottle and keys and annotating their purposes does not produce the requested handwritten packing checklist for those three items. Two numbered steps alone do not satisfy the stated task."
+    },
+    {"index": 4, "status": "pass", "failureCodes": []},
+    {"index": 5, "status": "pass", "failureCodes": []}
+  ],
+  "executionBoundary": "One authorized combined acquisition, exact seven-file verification, config/tokenizer-only preflight and six-case source-reference screen. Exactly one greedy generation call per case, no retries, answer repair or prompt/sampling adjustment. All2836 tracked Tiny files and seven source files were unchanged at final identity closure. No all-tree-clean, conversion, numerical, browser, final holdout or default qualification claim.",
+  "officialReferences": [
+    "https://huggingface.co/reaperdoesntknow/Qwen3-0.6B-Distilled-30B-A3B-Thinking-SFT/tree/a79e8686ac71e1bde2e4097a8fae923bd3d37f2b",
+    "https://www.apache.org/licenses/LICENSE-2.0.txt"
+  ]
+}

@@ -1,0 +1,111 @@
+{
+  "schema": "tinyrustlm.source_combined_operation_start.v1",
+  "startedAtUtc": "2026-09-29T21:28:00.866Z",
+  "sourceHead": "c7d0f05f93913d65bbc19a0cc5859c886a4fae4a",
+  "gate": {
+    "startedAtUtc": "2026-09-29T21:27:20.092Z",
+    "finishedAtUtc": "2026-09-29T21:27:59.982Z",
+    "arguments": [
+      "--require-remote-exact"
+    ],
+    "exitCode": 0,
+    "signal": null,
+    "error": null,
+    "stdout": "{\"canonicalLayoutAvailable\":true,\"coverageClass\":\"registered-governed-roots-only\",\"localScanPerformed\":true,\"verdict\":\"pass\",\"wholeVolumeInventoryPerformed\":false}\n",
+    "stderr": "",
+    "allTreeCleanClaim": false
+  },
+  "boundInputs": [
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-thinking-sft-development-plan-20260929.json",
+      "bytes": 14294,
+      "sha256": "23d3f4442f5ec6016e0fd3a7c64a5344161a0c5ccf6f3bbf04287333fee89f5c"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-thinking-sft-metadata-20260929.json",
+      "bytes": 26540,
+      "sha256": "d816cb7060e50e67fbb6d6cf481b299f7656aba7e591559463551892b178f6e2"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-untied-inventory-20260929.json",
+      "bytes": 4516,
+      "sha256": "be3f23b7688f09fcbc44c810c619ff8dc58b124673def991203b3cf0c279fd6a"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-untied-development-screen-20260929.eval",
+      "bytes": 1308,
+      "sha256": "946e6bdda7512bde3db4dac5a4f66e66eb5353141e7d19b8a0ca3735fd2903c9"
+    },
+    {
+      "path": "tinyrustlm/tools/reference-raw-quality.py",
+      "bytes": 34527,
+      "sha256": "30dd01e388433dfe926f5990ab778817167fd50a6c81a55a19e10870ebb289fb"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-untied-development-binding-20260929.json",
+      "bytes": 5733,
+      "sha256": "980ee3d8628cecb46692f44ed3a88ec65755226b8251f62bd4432ec68b411335"
+    },
+    {
+      "path": "tinyrustlm/tools/huggingface-supported-candidates.js",
+      "bytes": 25099,
+      "sha256": "97105f1a45df1c7ba9682e3d5a4e211b3a57dab1e01ee65ad36f52862b3a8b61"
+    },
+    {
+      "path": "tinyrustlm/tools/huggingface-candidate-acquire.js",
+      "bytes": 33531,
+      "sha256": "c179d2d343689ef930ee765b64447589a84a2c6efac4b59ceba83271fadcd1de"
+    },
+    {
+      "path": "D:\\LLMs\\TinyRustLM\\training-env-py312\\Scripts\\python.exe",
+      "bytes": 274424,
+      "sha256": "0b471133e110cfb53a061cad528ce8e517d7b9ac41a0a396c39ad795a487fc14"
+    },
+    {
+      "path": "D:\\LLMs\\TinyRustLM\\training-env-py312\\Lib\\site-packages\\transformers\\tokenization_utils_base.py",
+      "bytes": 183764,
+      "sha256": "f86fc8ce6ad86bcbb4bad93b84b3cde9f7b93b516703b5d220889c66bbdd7b5a"
+    }
+  ],
+  "exclusionPolicySha256": "a100ff8125cb8a7b02bf0ced02a539894f28b307b92af2ac88d7bbeccf9ca58b",
+  "sourceSnapshot": {
+    "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-thinking-sft-tracked-source-before-20260929.json",
+    "bytes": 603002,
+    "sha256": "2772018d9692bb485bef42da62b678d043fc6149274bc8347c29c23cc76c72f1"
+  },
+  "statusesBefore": {
+    "LMComposer.com": [],
+    "MiniModel.MiRust.com": [],
+    "MiniModel.org": [],
+    "MiRust.com": [],
+    "Runtime.MiRust.com": [],
+    "TinyRustLM.com": [],
+    "TinyRustLM.MiRust.com": []
+  },
+  "allTreeCleanClaim": false,
+  "source": {
+    "modelId": "reaperdoesntknow/Qwen3-0.6B-Distilled-30B-A3B-Thinking-SFT",
+    "revision": "a79e8686ac71e1bde2e4097a8fae923bd3d37f2b",
+    "weightSha256": "c1d2b15ffb4239c2d83a24ca59e35b8cb427a03dcdc3c667bba985e64907b258",
+    "weightIdentity": "a0e0106e4255e27524cf1b3d749639c72e0f2a33834e7ad554b20009a550cdad",
+    "sourceWeightBytes": 1503300328,
+    "totalParameters": 751632384,
+    "profile": "qwen3-0.6b-untied-bpe",
+    "checkpointDirectory": "D:\\LLMs\\TinyRustLM\\sources\\source-3eb7c51652379cdbfe6851668ef2e870decc17678d98e4e599229b09207a93c2"
+  },
+  "inventorySelection": {
+    "start": 0,
+    "count": 1
+  },
+  "maximumWallClockSeconds": 1800,
+  "acquisitionMaximumSeconds": 600,
+  "preflightMaximumSeconds": 120,
+  "screenMaximumSeconds": 600,
+  "retries": 0,
+  "callsPerCase": 1,
+  "scratch": {
+    "root": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\thinking-sft-combined\\tinyrustlm-operation-7CANnD",
+    "marker": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\thinking-sft-combined\\tinyrustlm-operation-7CANnD.owner.v2"
+  },
+  "prelaunchNote": "An earlier orchestration tool input had a JavaScript parsing error before any OS process, file write or network request. Quoting was corrected; no model attempt or acquisition was repeated."
+}
