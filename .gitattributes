@@ -230,3 +230,6 @@ artifacts/ecosystem-cleanup-20260912/qwen2.5-coder-0.5b-development-stderr-20260
 /artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-development-raw-20260929.json -text
 /artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-preflight-20260929.json -text
 /artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-development-stderr-20260929.txt -text
+/artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-v2-development-raw-20260929.json -text
+/artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-v2-preflight-20260929.json -text
+/artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-v2-development-stderr-20260929.txt -text

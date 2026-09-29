@@ -1,0 +1,288 @@
+{
+  "schema": "tinyrustlm.source_development_combined_execution.v1",
+  "status": "failed",
+  "plan": {
+    "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-development-plan-20260929.json",
+    "bytes": 18562,
+    "sha256": "aa1b98278b74d4ca7c555d7039193264c24adc2c8b787f236366fabe581dc753"
+  },
+  "source": {
+    "modelId": "Pluto-AI-Labs/Pluto-Genesis-0.6B",
+    "revision": "a52e0229b7611bd96dac8594ab2f6924c89249c2",
+    "weightSha256": "3c3fed56cd33189d386b9b690ada71f55daee5a158afda69486efc6fe57a8ad9",
+    "weightIdentity": "638452e95a0c6f5235dd65a2e2df9bb7f81e16f74caa0912b7eabcbdd41a6634",
+    "sourceWeightBytes": 1192134784,
+    "totalParameters": 596049920,
+    "profile": "qwen3-0.6b-bpe",
+    "checkpointDirectory": "D:\\LLMs\\TinyRustLM\\sources\\source-bd2ce82e254af7040110ad6ff3b4285d2f2a652610bbc78fafeb3327999af36f"
+  },
+  "stageOrder": [
+    "registered-root-source-authority-and-remote-exact",
+    "bound-input-code-and-runtime-identity",
+    "exclusive-start-record",
+    "one-acquisition",
+    "exact-seven-source-files-plus-receipt-verification",
+    "config-tokenizer-only-preflight",
+    "one-six-case-source-screen",
+    "post-operation-bound-identity-and-evidence-closure"
+  ],
+  "knownParallelChanges": [
+    "Parent-coordinated root numerical owner/profile/registration/tests, scalar.rs runtime correction and rebuilt native/browser WASM artifacts, independent dotnet/tools/TinyRustLM.ConversationProbe and tinyrustlm/tools/real-composition-execution.js with their focused tests, hosting/catalog/installer/preflight source/tests, and corresponding docs/review/test output may change in their owning agents. They are outside this experiment bound input closure. Record actual status and ownership. No bound helper/input, unknown source copy, failed authority scan or model mutation is exempt."
+  ],
+  "requireAllRepositoryWorktreesClean": false,
+  "stages": [
+    {
+      "stage": "acquisition",
+      "elapsedMs": 1160,
+      "receiptVerified": false
+    }
+  ],
+  "downloadRequests": [
+    {
+      "requestedUrl": "https://huggingface.co/Pluto-AI-Labs/Pluto-Genesis-0.6B/resolve/a52e0229b7611bd96dac8594ab2f6924c89249c2/config.json",
+      "actualUrl": "https://huggingface.co/Pluto-AI-Labs/Pluto-Genesis-0.6B/resolve/a52e0229b7611bd96dac8594ab2f6924c89249c2/config.json",
+      "startedUtc": "2026-09-29T22:33:30.437Z"
+    }
+  ],
+  "metadataTransport": {
+    "requestedUrl": "https://huggingface.co/Pluto-AI-Labs/Pluto-Genesis-0.6B/resolve/a52e0229b7611bd96dac8594ab2f6924c89249c2/tokenizer_config.json",
+    "actualUrl": "https://huggingface.co/Pluto-AI-Labs/Pluto-Genesis-0.6B/raw/a52e0229b7611bd96dac8594ab2f6924c89249c2/tokenizer_config.json",
+    "filename": "tokenizer_config.json",
+    "byteCount": 5404,
+    "sha256": "443bfa629eb16387a12edbf92a76f6a6f10b2af3b53d87ba1550adfcf45f7fa0",
+    "gitBlobId": "ddaf69808214a44fdd26d3785b66c1367c78277a",
+    "authorization": "Root approved one exact pinned resolve-to-official-raw transport mapping before any acquisition fetch. No fallback retry; all other URLs unchanged."
+  },
+  "before": {
+    "head": "b65d5d2ba0ce05fc06a7aa93cada4cce9be8f27e",
+    "tree": "0591c2aa685ca320e5c53ca5c1eb380adb1ea260",
+    "status": "M dotnet/tests/TinyRustLM.Core.Tests/TinyRustLM.Core.Tests.csproj\n M tinyrustlm/browser-runtime/tinyrustlm-browser-runtime.wasm\n M tinyrustlm/browser-runtime/tinyrustlm-browser-runtime.wasm.manifest.json\n M tinyrustlm/tests/browser-runtime-web-artifact.test.js\n?? artifacts/ecosystem-cleanup-20260912/scalar-silu-browser-build-20260929.stderr.txt\n?? artifacts/ecosystem-cleanup-20260912/scalar-silu-browser-build-20260929.stdout.txt\n?? artifacts/ecosystem-cleanup-20260912/scalar-silu-browser-build-review-20260929.json\n?? artifacts/ecosystem-cleanup-20260912/scalar-silu-browser-tests-20260929.stderr.txt\n?? artifacts/ecosystem-cleanup-20260912/scalar-silu-browser-tests-20260929.stdout.txt\n?? dotnet/tests/TinyRustLM.Core.Tests/ConversationProbe_test.cs\n?? dotnet/tools/TinyRustLM.ConversationProbe/\n?? tinyrustlm/tests/helpers/real-composition-probe-protocol-fixture.js\n?? tinyrustlm/tests/real-composition-execution_test.js\n?? tinyrustlm/tools/real-composition-execution.js",
+    "boundInputs": [
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-development-plan-20260929.json",
+        "bytes": 18562,
+        "sha256": "aa1b98278b74d4ca7c555d7039193264c24adc2c8b787f236366fabe581dc753"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-metadata-closure-20260929.json",
+        "bytes": 10935,
+        "sha256": "b91643e9739b43be735d211f8beb17969ceeff105e234eeaf56a9c8ebf10db52"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-metadata-review-20260929.json",
+        "bytes": 31028,
+        "sha256": "7572eaf3aa6218b33154c13a7ed168eccb729862dfdfd4e1d6d8ad6f6bb03556"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-metadata-followup-20260929.json",
+        "bytes": 3771,
+        "sha256": "0b04edd7be4d7959481ebde5fcf2c80a1e8d3ebdb59fd7f9cb1be079f86eb914"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-inventory-20260929.json",
+        "bytes": 2338,
+        "sha256": "635d875f3e8b946908836007a63f297b8c0199f00893d6108a3648056ff196fc"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-untied-development-binding-20260929.json",
+        "bytes": 5733,
+        "sha256": "980ee3d8628cecb46692f44ed3a88ec65755226b8251f62bd4432ec68b411335"
+      },
+      {
+        "path": "contracts/vnext/source-candidate-exclusions.v1.json",
+        "bytes": 22048,
+        "sha256": "ac618797998007053d3012f87fcda806b5c1f7449be8af3d59bbbdee922ddc82"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-untied-development-screen-20260929.eval",
+        "bytes": 1308,
+        "sha256": "946e6bdda7512bde3db4dac5a4f66e66eb5353141e7d19b8a0ca3735fd2903c9"
+      },
+      {
+        "path": "tinyrustlm/tools/reference-raw-quality.py",
+        "bytes": 34527,
+        "sha256": "30dd01e388433dfe926f5990ab778817167fd50a6c81a55a19e10870ebb289fb"
+      },
+      {
+        "path": "tinyrustlm/tools/huggingface-supported-candidates.js",
+        "bytes": 26025,
+        "sha256": "0b8509d1d7a330923520e64efd462a72d8dc2f042f86d422890e3f2420597906"
+      },
+      {
+        "path": "tinyrustlm/tools/huggingface-candidate-acquire.js",
+        "bytes": 33531,
+        "sha256": "c179d2d343689ef930ee765b64447589a84a2c6efac4b59ceba83271fadcd1de"
+      },
+      {
+        "path": "tinyrustlm/tools/huggingface-candidate-storage.js",
+        "bytes": 7471,
+        "sha256": "d94c9e90df4b110523d5238d361b348b565b7a2dd9f3840103cb20652b6a9a33"
+      },
+      {
+        "path": "tinyrustlm/tools/huggingface-metadata.js",
+        "bytes": 4158,
+        "sha256": "f6e26c0255a7eec38d35c116d4e1983fab42f33955e04074cb413f45ea97a341"
+      },
+      {
+        "path": "tinyrustlm/tools/huggingface-weight-layout.js",
+        "bytes": 3690,
+        "sha256": "002b9cbe9111a89a01a6c36ff63def0d18e9c5e7060a798636eac440dd6f2911"
+      },
+      {
+        "path": "tinyrustlm/tools/source-candidate-exclusions.js",
+        "bytes": 1885,
+        "sha256": "43a71f9760a2d1038f9b3b017c61a445577a68bcd285098ab915ba5b0df4b836"
+      },
+      {
+        "path": "tinyrustlm/tools/strict-json.js",
+        "bytes": 11529,
+        "sha256": "8935f3918c9a12722404ad120c73dae80965c723301a00c7e60767c45a78790e"
+      },
+      {
+        "path": "tinyrustlm/tools/canonical-operation-scratch.js",
+        "bytes": 9276,
+        "sha256": "52b6024d121479d20a634ee639d641cb1ff4896bce99b1110a3e26720bf5a7f9"
+      },
+      {
+        "path": "tinyrustlm/tools/verify-single-source-authority.js",
+        "bytes": 144521,
+        "sha256": "e8867b01d00399f319852449ff80c249edab30a8bcee4c09fd3789300f65aaf7"
+      },
+      {
+        "path": "D:\\LLMs\\TinyRustLM\\training-env-py312\\Scripts\\python.exe",
+        "bytes": 274424,
+        "sha256": "0b471133e110cfb53a061cad528ce8e517d7b9ac41a0a396c39ad795a487fc14"
+      },
+      {
+        "path": "D:\\LLMs\\TinyRustLM\\training-env-py312\\Lib\\site-packages\\transformers\\tokenization_utils_base.py",
+        "bytes": 183764,
+        "sha256": "f86fc8ce6ad86bcbb4bad93b84b3cde9f7b93b516703b5d220889c66bbdd7b5a"
+      }
+    ]
+  },
+  "sourceGate": {
+    "status": 0,
+    "signal": null,
+    "error": null,
+    "durationMs": 38298,
+    "stdoutBytes": 164,
+    "stdoutSha256": "23bf73a83fe1c67061b85372209405f9748df2315d3dac1122d5cc2a4eae7999",
+    "stdout": "{\"canonicalLayoutAvailable\":true,\"coverageClass\":\"registered-governed-roots-only\",\"localScanPerformed\":true,\"verdict\":\"pass\",\"wholeVolumeInventoryPerformed\":false}\n",
+    "stderr": ""
+  },
+  "scratch": {
+    "root": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\pluto-genesis-combined\\tinyrustlm-operation-se2NP7",
+    "marker": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\pluto-genesis-combined\\tinyrustlm-operation-se2NP7.owner.v2",
+    "removedRoot": true,
+    "removedMarker": true
+  },
+  "error": {
+    "name": "Error",
+    "message": "config.json returned HTTP 429",
+    "stack": "Error: config.json returned HTTP 429\n    at invariant (E:\\Source\\Rust\\TinyRustLM.com\\tinyrustlm\\tools\\huggingface-candidate-acquire.js:24:25)\n    at downloadSmallFile (E:\\Source\\Rust\\TinyRustLM.com\\tinyrustlm\\tools\\huggingface-candidate-acquire.js:456:5)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at async E:\\Source\\Rust\\TinyRustLM.com\\tinyrustlm\\tools\\huggingface-candidate-acquire.js:595:16\n    at async withCandidateDirectory (E:\\Source\\Rust\\TinyRustLM.com\\tinyrustlm\\tools\\huggingface-candidate-storage.js:117:12)\n    at async Object.acquireInventory (E:\\Source\\Rust\\TinyRustLM.com\\tinyrustlm\\tools\\huggingface-candidate-acquire.js:669:21)\n    at async [stdin]:40:21"
+  },
+  "finalBoundInputs": [
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-development-plan-20260929.json",
+      "bytes": 18562,
+      "sha256": "aa1b98278b74d4ca7c555d7039193264c24adc2c8b787f236366fabe581dc753"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-metadata-closure-20260929.json",
+      "bytes": 10935,
+      "sha256": "b91643e9739b43be735d211f8beb17969ceeff105e234eeaf56a9c8ebf10db52"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-metadata-review-20260929.json",
+      "bytes": 31028,
+      "sha256": "7572eaf3aa6218b33154c13a7ed168eccb729862dfdfd4e1d6d8ad6f6bb03556"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-metadata-followup-20260929.json",
+      "bytes": 3771,
+      "sha256": "0b04edd7be4d7959481ebde5fcf2c80a1e8d3ebdb59fd7f9cb1be079f86eb914"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-inventory-20260929.json",
+      "bytes": 2338,
+      "sha256": "635d875f3e8b946908836007a63f297b8c0199f00893d6108a3648056ff196fc"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-untied-development-binding-20260929.json",
+      "bytes": 5733,
+      "sha256": "980ee3d8628cecb46692f44ed3a88ec65755226b8251f62bd4432ec68b411335"
+    },
+    {
+      "path": "contracts/vnext/source-candidate-exclusions.v1.json",
+      "bytes": 22048,
+      "sha256": "ac618797998007053d3012f87fcda806b5c1f7449be8af3d59bbbdee922ddc82"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-untied-development-screen-20260929.eval",
+      "bytes": 1308,
+      "sha256": "946e6bdda7512bde3db4dac5a4f66e66eb5353141e7d19b8a0ca3735fd2903c9"
+    },
+    {
+      "path": "tinyrustlm/tools/reference-raw-quality.py",
+      "bytes": 34527,
+      "sha256": "30dd01e388433dfe926f5990ab778817167fd50a6c81a55a19e10870ebb289fb"
+    },
+    {
+      "path": "tinyrustlm/tools/huggingface-supported-candidates.js",
+      "bytes": 26025,
+      "sha256": "0b8509d1d7a330923520e64efd462a72d8dc2f042f86d422890e3f2420597906"
+    },
+    {
+      "path": "tinyrustlm/tools/huggingface-candidate-acquire.js",
+      "bytes": 33531,
+      "sha256": "c179d2d343689ef930ee765b64447589a84a2c6efac4b59ceba83271fadcd1de"
+    },
+    {
+      "path": "tinyrustlm/tools/huggingface-candidate-storage.js",
+      "bytes": 7471,
+      "sha256": "d94c9e90df4b110523d5238d361b348b565b7a2dd9f3840103cb20652b6a9a33"
+    },
+    {
+      "path": "tinyrustlm/tools/huggingface-metadata.js",
+      "bytes": 4158,
+      "sha256": "f6e26c0255a7eec38d35c116d4e1983fab42f33955e04074cb413f45ea97a341"
+    },
+    {
+      "path": "tinyrustlm/tools/huggingface-weight-layout.js",
+      "bytes": 3690,
+      "sha256": "002b9cbe9111a89a01a6c36ff63def0d18e9c5e7060a798636eac440dd6f2911"
+    },
+    {
+      "path": "tinyrustlm/tools/source-candidate-exclusions.js",
+      "bytes": 1885,
+      "sha256": "43a71f9760a2d1038f9b3b017c61a445577a68bcd285098ab915ba5b0df4b836"
+    },
+    {
+      "path": "tinyrustlm/tools/strict-json.js",
+      "bytes": 11529,
+      "sha256": "8935f3918c9a12722404ad120c73dae80965c723301a00c7e60767c45a78790e"
+    },
+    {
+      "path": "tinyrustlm/tools/canonical-operation-scratch.js",
+      "bytes": 9276,
+      "sha256": "52b6024d121479d20a634ee639d641cb1ff4896bce99b1110a3e26720bf5a7f9"
+    },
+    {
+      "path": "tinyrustlm/tools/verify-single-source-authority.js",
+      "bytes": 144521,
+      "sha256": "e8867b01d00399f319852449ff80c249edab30a8bcee4c09fd3789300f65aaf7"
+    },
+    {
+      "path": "D:\\LLMs\\TinyRustLM\\training-env-py312\\Scripts\\python.exe",
+      "bytes": 274424,
+      "sha256": "0b471133e110cfb53a061cad528ce8e517d7b9ac41a0a396c39ad795a487fc14"
+    },
+    {
+      "path": "D:\\LLMs\\TinyRustLM\\training-env-py312\\Lib\\site-packages\\transformers\\tokenization_utils_base.py",
+      "bytes": 183764,
+      "sha256": "f86fc8ce6ad86bcbb4bad93b84b3cde9f7b93b516703b5d220889c66bbdd7b5a"
+    }
+  ],
+  "finishedUtc": "2026-09-29T22:33:31.598Z",
+  "elapsedMs": 39642
+}

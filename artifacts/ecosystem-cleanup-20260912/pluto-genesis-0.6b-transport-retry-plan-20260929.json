@@ -1,0 +1,98 @@
+{
+  "schema": "tinyrustlm.source_development_transport_retry_plan.v1",
+  "status": "prospective-awaiting-commit-and-root-go",
+  "basePlan": {
+    "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-development-plan-20260929.json",
+    "bytes": 18562,
+    "sha256": "aa1b98278b74d4ca7c555d7039193264c24adc2c8b787f236366fabe581dc753"
+  },
+  "reason": "A transparent second acquisition attempt after the first acquisition returned HTTP429 for config.json. This is an acquisition retry after a demonstrated transport failure, not a model retry: no weights, tokenizer preflight or generation occurred in the first attempt.",
+  "closedFirstAttempt": {
+    "start": {
+      "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-combined-start-20260929.json",
+      "bytes": 8241,
+      "sha256": "57177a0e10196c08ec3e6483b25fb9a69f3d14b35752a663c68c0266451faa84"
+    },
+    "execution": {
+      "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-combined-execution-20260929.json",
+      "bytes": 14105,
+      "sha256": "a52f0fed6d3e1cef13b4e5ec2ad78b198e9019a9fd590fa0e0fdb63172227348"
+    },
+    "requests": 1,
+    "requestFile": "config.json",
+    "httpStatus": 429,
+    "preflightStarted": false,
+    "modelGenerationStarted": false,
+    "preserveUnchanged": true
+  },
+  "unchanged": "Exact candidate revision/weights, seven source-file identities, all metadata and helper/runtime bindings, six cases and criteria, system prompt, native template, greedy controls, resource bounds and no answer repair remain exactly those of basePlan. No excluded source is reopened, no gate is weakened and no default qualification is implied.",
+  "transportMappings": [
+    {
+      "filename": "config.json",
+      "bytes": 726,
+      "sha256": "17b1b9e1263d1a3892a628760a928ccd8eeb980b5f7a59b4e9da62b6c675c709",
+      "gitBlobId": "0cb1a6152d11dd2c4d20a8d4deadb478e9b0f72e",
+      "requestedUrl": "https://huggingface.co/Pluto-AI-Labs/Pluto-Genesis-0.6B/resolve/a52e0229b7611bd96dac8594ab2f6924c89249c2/config.json",
+      "actualUrl": "https://huggingface.co/Pluto-AI-Labs/Pluto-Genesis-0.6B/raw/a52e0229b7611bd96dac8594ab2f6924c89249c2/config.json"
+    },
+    {
+      "filename": "tokenizer_config.json",
+      "bytes": 5404,
+      "sha256": "443bfa629eb16387a12edbf92a76f6a6f10b2af3b53d87ba1550adfcf45f7fa0",
+      "gitBlobId": "ddaf69808214a44fdd26d3785b66c1367c78277a",
+      "requestedUrl": "https://huggingface.co/Pluto-AI-Labs/Pluto-Genesis-0.6B/resolve/a52e0229b7611bd96dac8594ab2f6924c89249c2/tokenizer_config.json",
+      "actualUrl": "https://huggingface.co/Pluto-AI-Labs/Pluto-Genesis-0.6B/raw/a52e0229b7611bd96dac8594ab2f6924c89249c2/tokenizer_config.json"
+    },
+    {
+      "filename": "generation_config.json",
+      "bytes": 214,
+      "sha256": "787409d8b23543ca6a24affbca01de9251ec48e5b0f268911ca92daabde329bf",
+      "gitBlobId": "6b204b47b535ecceeec0cd8ca14b8f8c4d8ebc9e",
+      "requestedUrl": "https://huggingface.co/Pluto-AI-Labs/Pluto-Genesis-0.6B/resolve/a52e0229b7611bd96dac8594ab2f6924c89249c2/generation_config.json",
+      "actualUrl": "https://huggingface.co/Pluto-AI-Labs/Pluto-Genesis-0.6B/raw/a52e0229b7611bd96dac8594ab2f6924c89249c2/generation_config.json"
+    },
+    {
+      "filename": "chat_template.jinja",
+      "bytes": 785,
+      "sha256": "48ee2be15a49d5ebae42b2db3183aa58747605c99af00a5f77a5003e77cdf3fc",
+      "gitBlobId": "15253c5b00bc821eb3e42cbab6f9a414d9319b0a",
+      "requestedUrl": "https://huggingface.co/Pluto-AI-Labs/Pluto-Genesis-0.6B/resolve/a52e0229b7611bd96dac8594ab2f6924c89249c2/chat_template.jinja",
+      "actualUrl": "https://huggingface.co/Pluto-AI-Labs/Pluto-Genesis-0.6B/raw/a52e0229b7611bd96dac8594ab2f6924c89249c2/chat_template.jinja"
+    }
+  ],
+  "transportRules": "Predeclare these four exact requested-to-actual URL mappings in the exclusive start before fetching. Apply once, with no fallback or request retry; preserve byte/SHA/Git-blob verification. All other URLs, specifically the LFS tokenizer.json and model.safetensors URLs plus official Apache license authority, are unchanged. A failed mapped request closes this second acquisition attempt without generation.",
+  "canonicalSourceDirectory": {
+    "path": "D:/LLMs/TinyRustLM/sources/source-bd2ce82e254af7040110ad6ff3b4285d2f2a652610bbc78fafeb3327999af36f",
+    "isDirectory": true,
+    "isSymbolicLink": false,
+    "dev": "347899467",
+    "ino": "562949953425475",
+    "birthtimeNs": "1790721210431785800",
+    "mtimeNs": "1790721211597641100",
+    "entries": [],
+    "observedAtUtc": "2026-09-29T22:35:09.189Z",
+    "rule": "Before acquisition revalidate this same ordinary nonlink directory identity and require zero entries. Reuse it through the existing canonical acquisition helper; no deletion, renamed directory or ownership reconstruction is required. Abort on drift."
+  },
+  "outputPrefix": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-v2-",
+  "outputPaths": {
+    "start": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-v2-combined-start-20260929.json",
+    "execution": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-v2-combined-execution-20260929.json",
+    "acquisitionReceipt": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-v2-source-acquisition-20260929.json",
+    "preflight": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-v2-preflight-20260929.json",
+    "preflightStderr": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-v2-preflight-stderr-20260929.txt",
+    "raw": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-v2-development-raw-20260929.json",
+    "stdout": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-v2-development-stdout-20260929.txt",
+    "stderr": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-v2-development-stderr-20260929.txt"
+  },
+  "executionRule": "One combined second acquisition -> exact seven-file/receipt verification -> tokenizer/config-only preflight -> first single six-case model screen, subject to basePlan's600/120/600-second stage bounds and1800-second whole-operation bound. Update only the raw output path in source-runner commandArguments to this operation's raw path. The preflight reads basePlan unchanged. No intermediate receipt commit or further GO after the combined GO.",
+  "identityClosure": "Fresh source-authority/remote-exact gate; reviewed GO commit ancestor; current HEAD recorded; exact amendment, basePlan, first-attempt evidence and every basePlan-bound file verified before/after. Known independent work remains allowed only as described in basePlan. No all-tree-clean claim.",
+  "launchConditions": [
+    "Root reviews, commits and pushes this amendment with the preserved first-attempt evidence, then gives one GO.",
+    "The three exact new raw/preflight/stderr paths must be Git -text before execution.",
+    "New output paths must not exist; the existing canonical source directory must still be the bound empty ordinary directory.",
+    "Retain exact failed/successful output and scratch retirement evidence; no exclusion or quality assessment if acquisition/preflight fails."
+  ],
+  "modelPayloadAcquired": false,
+  "modelExecutionStarted": false,
+  "productionDefaultChanged": false
+}
