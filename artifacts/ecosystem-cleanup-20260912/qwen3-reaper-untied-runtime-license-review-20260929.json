@@ -1,0 +1,264 @@
+{
+  "schema": "tinyrustlm.source_reference_preflight_review.v1",
+  "recordedAtUtc": "2026-09-29T20:41:47.748Z",
+  "purpose": "Bounded config/tokenizer/API and license-evidence review before the prospective one-shot source screen; not model execution or qualification.",
+  "source": {
+    "modelId": "reaperdoesntknow/Qwen3-0.6B-Distilled-30B-A3B",
+    "revision": "7bd368dce6747cd9647a4e05300f3294bc2e9108",
+    "directory": "D:/LLMs/TinyRustLM/sources/source-af23eee80be2742c8438caea5c2a0aa0ba1e8137cc528c900e8dcb65e40e53cc",
+    "acquisitionReceipt": {
+      "path": "D:\\LLMs\\TinyRustLM\\sources\\source-af23eee80be2742c8438caea5c2a0aa0ba1e8137cc528c900e8dcb65e40e53cc\\source-acquisition.json",
+      "bytes": 2153,
+      "sha256": "229ef39dcfaa1d15c73dcb4ce61a64db54999307185d1001f1a5cc7fd6ae1246"
+    },
+    "files": [
+      {
+        "filename": "config.json",
+        "byteCount": 1417,
+        "sha256": "65b3dc0ec1d71fb6a71457aea9d05385e507e09a0fb27ce2d15e1ebe681929bf"
+      },
+      {
+        "filename": "tokenizer.json",
+        "byteCount": 11422650,
+        "sha256": "be75606093db2094d7cd20f3c2f385c212750648bd6ea4fb2bf507a6a4c55506"
+      },
+      {
+        "filename": "tokenizer_config.json",
+        "byteCount": 665,
+        "sha256": "47bfa3e7727312946b29ac10d6dd0672d63cf7815b2a160b9523872040d2e536"
+      },
+      {
+        "filename": "chat_template.jinja",
+        "byteCount": 4168,
+        "sha256": "a55ee1b1660128b7098723e0abcd92caa0788061051c62d51cbe87d9cf1974d8"
+      },
+      {
+        "filename": "generation_config.json",
+        "byteCount": 213,
+        "sha256": "1aba9f92f54121f603aaf2e56eb07261db91415e6be8e036202e0900f780dfda"
+      },
+      {
+        "filename": "LICENSE",
+        "byteCount": 11358,
+        "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      },
+      {
+        "filename": "model.safetensors",
+        "byteCount": 1503300328,
+        "sha256": "cb003b4471fd18fac80b98dce7e3310bb77f8af463d395db7a33ec3c16651bd2"
+      }
+    ],
+    "weightDigestEvidence": "Prior verified acquisition receipt; this review read only the bounded safetensors metadata header, not weight values."
+  },
+  "inputs": {
+    "captureOwner": {
+      "path": "tinyrustlm/tools/reference-raw-quality.py",
+      "bytes": 34527,
+      "sha256": "30dd01e388433dfe926f5990ab778817167fd50a6c81a55a19e10870ebb289fb"
+    },
+    "cases": {
+      "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-untied-development-screen-20260929.eval",
+      "bytes": 1308,
+      "sha256": "946e6bdda7512bde3db4dac5a4f66e66eb5353141e7d19b8a0ca3735fd2903c9"
+    },
+    "prospectiveBinding": {
+      "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-untied-development-binding-20260929.json",
+      "bytes": 5733,
+      "sha256": "980ee3d8628cecb46692f44ed3a88ec65755226b8251f62bd4432ec68b411335"
+    },
+    "metadataCapture": {
+      "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-untied-metadata-20260929.json",
+      "bytes": 125570,
+      "sha256": "78c573ee16bf868fd3ffe02a9b0f57c565b57a7be2b60b80ec8fa9de7bca464e"
+    }
+  },
+  "runtime": {
+    "python": "3.12.10",
+    "transformers": "5.13.1",
+    "files": [
+      {
+        "path": "D:/LLMs/TinyRustLM/training-env-py312/Scripts/python.exe",
+        "bytes": 274424,
+        "sha256": "0b471133e110cfb53a061cad528ce8e517d7b9ac41a0a396c39ad795a487fc14"
+      },
+      {
+        "path": "D:/LLMs/TinyRustLM/training-env-py312/Lib/site-packages/transformers/__init__.py",
+        "bytes": 41736,
+        "sha256": "ff6828faeea7d6644b136fbdc818c7300a36e4cd0cc10de2edc6e5dd50d7c586"
+      },
+      {
+        "path": "D:/LLMs/TinyRustLM/training-env-py312/Lib/site-packages/transformers/tokenization_utils_base.py",
+        "bytes": 183764,
+        "sha256": "f86fc8ce6ad86bcbb4bad93b84b3cde9f7b93b516703b5d220889c66bbdd7b5a"
+      },
+      {
+        "path": "D:/LLMs/TinyRustLM/training-env-py312/Lib/site-packages/transformers/models/qwen3/configuration_qwen3.py",
+        "bytes": 3624,
+        "sha256": "49d9ccd0f29ccd977b93dba2004f84b867891b3d0509b71fd8ba3ed01054e64d"
+      },
+      {
+        "path": "D:/LLMs/TinyRustLM/training-env-py312/Lib/site-packages/transformers/models/qwen3/modeling_qwen3.py",
+        "bytes": 23353,
+        "sha256": "fbdcfeeb1b54135ca67ba7df924da92f4b264e1252b517eea2de989289ebaeab"
+      }
+    ],
+    "bindingObservation": "File identities measured after the successful preflight; the capture-owner hash was also asserted before import. No package changes were made."
+  },
+  "metadataInspection": {
+    "safetensorsHeaderBytes": 35552,
+    "safetensorsHeaderSha256": "399d16f500e925c7e923fe05966c6df6862ab64da60916843119e802f1801bca",
+    "tensorCount": 311,
+    "dtypes": [
+      "BF16"
+    ],
+    "parameters": 751632384,
+    "embedding": {
+      "shape": [
+        151936,
+        1024
+      ],
+      "dataOffsets": [
+        311164928,
+        622329856
+      ]
+    },
+    "output": {
+      "shape": [
+        151936,
+        1024
+      ],
+      "dataOffsets": [
+        0,
+        311164928
+      ]
+    },
+    "untiedPhysicalEntries": true,
+    "tokenizer": {
+      "sha256": "be75606093db2094d7cd20f3c2f385c212750648bd6ea4fb2bf507a6a4c55506",
+      "modelType": "BPE",
+      "normalizer": "NFC",
+      "byteLevel": true,
+      "baseVocabularyEntries": 151643,
+      "merges": 151387,
+      "specialIds": {
+        "endOfText": 151643,
+        "imStart": 151644,
+        "imEnd": 151645,
+        "thinkOpen": 151667,
+        "thinkClose": 151668
+      }
+    }
+  },
+  "preflight": {
+    "status": "passed",
+    "exitCode": 0,
+    "stderr": "",
+    "method": "Existing isolated Python -I -B loaded local AutoConfig and AutoTokenizer with local_files_only=True, trust_remote_code=False and fix_mistral_regex=False. Imported the unchanged raw capture owner as a module; used its case parser, message builder, thinking options and greedy parameter function. Called tokenizer.apply_chat_template with both tokenize=False and tokenize=True, return_tensors=pt, for six frozen inputs.",
+    "modelLoad": false,
+    "generationCalls": 0,
+    "modelWeightBytesRead": 0,
+    "networkCalls": 0,
+    "defensiveAuditHooks": "Refused safetensors file opens and socket connect/getaddrinfo calls; offline environment also set.",
+    "configClass": "Qwen3Config",
+    "tokenizerClass": "Qwen2Tokenizer",
+    "externalTemplateExactlyMatchesAcquiredFile": true,
+    "nativeContext": 40960,
+    "tokenizerContext": 131072,
+    "tokenizerLength": 151669,
+    "allInputsAndMaximumOutputsFitNativeContext": true,
+    "nonThinkingPrefix": "<|im_start|>assistant\n<think>\n\n</think>\n\n",
+    "generation": {
+      "do_sample": false,
+      "repetition_penalty": 1,
+      "pad_token_id": 151645,
+      "eos_token_id": [
+        151645,
+        151643
+      ],
+      "temperature": null,
+      "top_k": null,
+      "top_p": null
+    },
+    "padNote": "Existing greedy owner selects tokenizer EOS151645 as pad; publisher generation config declares151643. No input padding occurs in these individual cases, and no setting was changed.",
+    "cases": [
+      {
+        "index": 0,
+        "inputTokenCount": 53,
+        "maximumGeneratedTokens": 32,
+        "renderedUtf8Sha256": "25b8853c4ea76e12db1027d45e42729639abf5801fe83195a2a585eba4c900a4",
+        "nonThinkingPrefix": true
+      },
+      {
+        "index": 1,
+        "inputTokenCount": 70,
+        "maximumGeneratedTokens": 64,
+        "renderedUtf8Sha256": "46b6783f45a9c902b7e9a9df5699f4cfc577f764259eb02672b2c182ce1bba48",
+        "nonThinkingPrefix": true
+      },
+      {
+        "index": 2,
+        "inputTokenCount": 90,
+        "maximumGeneratedTokens": 32,
+        "renderedUtf8Sha256": "223c9e4016a124b30d72a7b9e908a98ba1dbd92f7c3f94d10554667169fe4655",
+        "nonThinkingPrefix": true
+      },
+      {
+        "index": 3,
+        "inputTokenCount": 94,
+        "maximumGeneratedTokens": 96,
+        "renderedUtf8Sha256": "7744c6d0ff6f6754e01ca8a2b1db7536e48e9ae83e38c40bb483e6a3ad112664",
+        "nonThinkingPrefix": true
+      },
+      {
+        "index": 4,
+        "inputTokenCount": 79,
+        "maximumGeneratedTokens": 32,
+        "renderedUtf8Sha256": "33c7793867f7d9c42ce57bcecb27ab234f9e34a1fd4cbcc0f82c6a5613b16726",
+        "nonThinkingPrefix": true
+      },
+      {
+        "index": 5,
+        "inputTokenCount": 79,
+        "maximumGeneratedTokens": 96,
+        "renderedUtf8Sha256": "6c593cc2c93b31e611188ad4476898cf61d75cd0157556e67ffe6c2be5c48e07",
+        "nonThinkingPrefix": true
+      }
+    ],
+    "ownedRoot": "E:/Source/Rust/TinyRustLM.com/artifacts/tests/untied-source-preflight/tinyrustlm-operation-P0mKvx",
+    "ownedRootAndMarkerVerifiedAbsent": true
+  },
+  "licenseReview": {
+    "declaration": "Publisher-distributed under Apache-2.0",
+    "pinnedCardUrl": "https://huggingface.co/reaperdoesntknow/Qwen3-0.6B-Distilled-30B-A3B/blob/7bd368dce6747cd9647a4e05300f3294bc2e9108/README.md",
+    "cardSha256": "a256d06267caac7b1cc799f9d3345952cc014d6b4a6ae1e87797d72fd1ec5637",
+    "evidence": "Pinned model card declares Apache-2.0 in both frontmatter and its license table; pinned API agrees. Acquired LICENSE is the hash-verified official Apache text, matching the existing card-plus-authority admission convention.",
+    "officialLicenseUrl": "https://www.apache.org/licenses/LICENSE-2.0",
+    "licenseFile": {
+      "filename": "LICENSE",
+      "byteCount": 11358,
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    },
+    "baseAndTeacherDeclareApache2": true,
+    "conflictingLicenseRestrictionFound": false,
+    "scopeOfConflictCheck": "Candidate card and acquired metadata; no noncommercial, research-only or different-license restriction found.",
+    "provenanceUncertainty": "Exact training revisions and permissions for the named datasets were not independently verified. Missing dataset license declarations and an unavailable usage alias are recorded uncertainties, not contradictory license facts or an added training-proof gate.",
+    "redistributionWork": "Carry the Apache license and applicable notices/attribution; prominently identify conversion modifications. The eventual composition distribution notice presentation has not yet been implemented or tested.",
+    "independentTrainingRightsVerification": false,
+    "legalClearanceClaim": false
+  },
+  "numericalRequestRegressionReview": {
+    "reviewedCheckpoint": "e3e99b5",
+    "status": "read-only review passed; no rerun",
+    "producerAndConsumerModelSpecKeyCount": 13,
+    "removedDerivedKeys": [
+      "queryWidth",
+      "kvWidth",
+      "logicalTensorCount"
+    ],
+    "testPath": "tinyrustlm/tests/qwen3-numerical-execution-owner.test.js",
+    "testName": "JavaScript reconstructed request satisfies the real Python pre-load contract",
+    "method": "The test obtains the actual owner.childRequests output, writes JavaScript canonical bytes, calls the actual Python validate_request, and substitutes only digest_file with a sentinel exception at the first model-read boundary. Negative cases reinsert each removed field or alter embeddingSize/tiedEmbeddings and must fail identity validation. This exercises complete request admission before weight reads while preserving Python calculations and historical closed outcomes.",
+    "limit": "No model read, reconstructed arithmetic or numerical parity is proved by this regression."
+  },
+  "decision": "No concrete API/config/template incompatibility or conflicting publisher-license fact found that prevents the planned one-shot source-reference screen. Await root receipt/registration checkpoint and explicit screen GO. Runtime correctness, quality, conversion, browser resource admission and publishable default status remain unestablished."
+}
