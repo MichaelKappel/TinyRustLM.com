@@ -317,7 +317,13 @@ test("deployment orchestrator requires fresh readback and immutable attempt evid
       deploymentFinally > secretScanPreflight &&
       immutableReportWrite > deploymentFinally
   );
-  assert.match(source, /function Get-DeploymentCredentialProfile/);
+  const credentialModule = fs.readFileSync(path.join(__dirname, "../tools/Deployment.Credentials.psm1"), "utf8");
+  assert.match(credentialModule, /function Get-DeploymentCredentialProfile/);
+  assert.doesNotMatch(source, /function Get-DeploymentCredentialProfile/);
+  assert.match(source, /function Import-DeploymentCredentialModule/);
+  const credentialImport = source.indexOf("Import-DeploymentCredentialModule -RepositoryRoot $RepositoryRoot");
+  assert.ok(credentialImport > source.indexOf('if ([string]$sourceAuthorityResult.verdict -ne "pass"'));
+  assert.ok(credentialImport < source.indexOf("if ($ValidateCredentialProfileOnly)"));
   assert.match(
     source,
     /Get-DeploymentCredentialProfile[\s\S]*?-ExpectedProfileName \$TargetBinding\.profile/

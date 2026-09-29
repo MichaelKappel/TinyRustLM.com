@@ -124,6 +124,7 @@ function Import-DeploymentFunctions {
 $deploymentScript = [IO.Path]::GetFullPath(
     (Join-Path $PSScriptRoot "..\tools\deploy-tinyrustlm-web.ps1")
 )
+Import-Module (Join-Path $PSScriptRoot "..\tools\Deployment.Credentials.psm1") -Global -Force
 Import-DeploymentFunctions -ScriptPath $deploymentScript -Names @(
     "Get-DeploymentGitTopLevel"
     "Resolve-CanonicalDeploymentRepositoryRoot"
@@ -131,7 +132,6 @@ Import-DeploymentFunctions -ScriptPath $deploymentScript -Names @(
     "Assert-NoReparsePointAncestry"
     "Get-BoundedWorkspaceMemoryLines"
     "Get-WorkspaceDeploymentTargetBinding"
-    "Get-DeploymentCredentialProfile"
     "Get-WorkspaceDeploymentCredentialProfile"
     "Assert-DeploymentCredentialTarget"
     "Get-FileSha256"
@@ -157,6 +157,7 @@ Import-DeploymentFunctions -ScriptPath $deploymentScript -Names @(
     "Get-DeploymentNodeToolClosure"
     "New-DeploymentSourceCustody"
     "Assert-DeploymentSourceCustody"
+    "Import-DeploymentCredentialModule"
     "Invoke-CustodiedNodeTool"
     "Get-SafeExceptionIdentity"
     "Test-FtpFileUnavailable"
@@ -1075,6 +1076,32 @@ Password: test:password=value
             [string]$custodyPolicyRows[0].sha256 -ceq
                 (Get-FileSha256 -Path $custodyPolicyPath)
         ) "Source custody omitted the verifier's exact storage policy JSON dependency."
+        $credentialModuleRelative = "tinyrustlm/tools/Deployment.Credentials.psm1"
+        $credentialModuleRows = @($custody.files | Where-Object {
+            [string]$_.relative_path -ceq $credentialModuleRelative
+        })
+        $credentialModulePath = Join-Path $canonicalRepositoryRoot $credentialModuleRelative
+        Assert-True ($credentialModuleRows.Count -eq 1 -and
+            $credentialModuleRows[0].byte_count -eq (Get-Item -LiteralPath $credentialModulePath).Length -and
+            $credentialModuleRows[0].sha256 -ceq (Get-FileSha256 -Path $credentialModulePath)
+        ) "Source custody omitted the exact shared credential module."
+        Import-DeploymentCredentialModule -RepositoryRoot $custodyRepository -Custody $custody
+        Assert-True ((Get-Command Get-DeploymentCredentialProfile).ModuleName -ceq
+            "Deployment.Credentials") "Production import did not load the shared credential reader."
+        foreach ($field in @("byte_count", "sha256")) {
+            $changed = $custody | ConvertTo-Json -Depth 10 | ConvertFrom-Json
+            $row = @($changed.files | Where-Object { $_.relative_path -ceq $credentialModuleRelative })[0]
+            if ($field -ceq "byte_count") { $row.byte_count++ } else { $row.sha256 = "0" * 64 }
+            Assert-Throws { Import-DeploymentCredentialModule -RepositoryRoot $custodyRepository `
+                -Custody $changed } "tool hash changed"
+        }
+        $changed = $custody | ConvertTo-Json -Depth 10 | ConvertFrom-Json
+        $changed.files = @($changed.files | Where-Object { $_.relative_path -cne $credentialModuleRelative })
+        $changed.tool_file_count--
+        Assert-Throws { Import-DeploymentCredentialModule -RepositoryRoot $custodyRepository `
+            -Custody $changed } "custody identity is invalid"
+        Assert-Throws { Resolve-DeploymentCustodyFilePath -RepositoryRoot $custodyRepository `
+            -RelativePath "tinyrustlm/tools/Unrelated.psm1" } "custody path is invalid"
         Assert-Throws { Get-DeploymentNodeToolClosure -RepositoryRoot $custodyRepository `
             -EntryPaths @((Join-Path $custodyRepository `
                 "contracts\vnext\template2-format-profile.v1.json")) | Out-Null

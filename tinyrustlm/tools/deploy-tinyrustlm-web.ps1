@@ -187,143 +187,6 @@ function Resolve-CanonicalDeploymentRepositoryRoot {
     return (Assert-CanonicalDeploymentSourceRoot -RepositoryRoot $canonicalRoot)
 }
 
-# Reads one exact site from the owner's bounded external FTP account export; never logs fields.
-function Get-DeploymentCredentialProfile {
-    param(
-        [string]$ProfilePath,
-        [string]$SourceRoot,
-        [string]$ExpectedProfileName
-    )
-
-    if ([string]::IsNullOrWhiteSpace($ProfilePath) -or
-        -not [IO.Path]::IsPathRooted($ProfilePath) -or
-        [string]::IsNullOrWhiteSpace($ExpectedProfileName) -or
-        [Uri]::CheckHostName($ExpectedProfileName) -ne [UriHostNameType]::Dns) {
-        throw "The FTP credential path must be absolute and the site must be a DNS name."
-    }
-    try {
-        $fullPath = [IO.Path]::GetFullPath($ProfilePath)
-        $sourcePrefix = [IO.Path]::GetFullPath($SourceRoot).TrimEnd("\", "/") +
-            [IO.Path]::DirectorySeparatorChar
-    }
-    catch {
-        throw "The FTP credential path cannot be resolved."
-    }
-    if ($fullPath.StartsWith($sourcePrefix, [StringComparison]::OrdinalIgnoreCase)) {
-        throw "The FTP credentials must remain outside the source worktree."
-    }
-    try {
-        $profileAvailable = Test-Path -LiteralPath $fullPath -PathType Leaf
-    }
-    catch {
-        throw "The FTP credentials cannot be inspected."
-    }
-    if (-not $profileAvailable) {
-        throw "The FTP credentials are unavailable."
-    }
-    try {
-        $item = Get-Item -LiteralPath $fullPath
-    }
-    catch {
-        throw "The FTP credentials cannot be inspected."
-    }
-    if (($item.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0 -or
-        $item.Length -le 0 -or
-        $item.Length -gt 65536) {
-        throw "The FTP credentials are not a bounded regular file."
-    }
-    Assert-NoReparsePointAncestry `
-        -Path $item.FullName `
-        -FailureMessage "The FTP credential ancestry is unsafe."
-
-    $stream = $null
-    $bytes = [byte[]]::new(65537)
-    try {
-        $stream = [IO.File]::Open($fullPath, [IO.FileMode]::Open, [IO.FileAccess]::Read, [IO.FileShare]::Read)
-        $count = 0
-        while ($count -lt $bytes.Length) {
-            $read = $stream.Read($bytes, $count, $bytes.Length - $count)
-            if ($read -eq 0) { break }
-            $count += $read
-        }
-        if ($count -eq 0 -or $count -gt 65536) { throw "Invalid credential size." }
-        $text = [Text.UTF8Encoding]::new($false, $true).GetString($bytes, 0, $count)
-        if ($text.StartsWith([string][char]0xfeff, [StringComparison]::Ordinal)) {
-            $text = $text.Substring(1)
-        }
-    }
-    catch {
-        throw "The bounded FTP credentials cannot be read as UTF-8."
-    }
-    finally {
-        if ($stream) { $stream.Dispose() }
-        [Array]::Clear($bytes, 0, $bytes.Length)
-    }
-    $accounts = [Collections.Generic.List[object]]::new()
-    $account = $null
-    $keys = @("FTP Username", "FTP server", "FTP & explicit FTPS port", "Username", "Password")
-    foreach ($line in ($text -split "\r?\n")) {
-        if ([string]::IsNullOrWhiteSpace($line)) { continue }
-        $separator = $line.IndexOf(':')
-        if ($separator -lt 1) { throw "The FTP credential record is malformed." }
-        $key = $line.Substring(0, $separator).Trim()
-        $value = $line.Substring($separator + 1).Trim()
-        if ($keys -cnotcontains $key -or [string]::IsNullOrEmpty($value)) {
-            throw "The FTP credential record contains an unknown or empty field."
-        }
-        if ($key -ceq "FTP Username") {
-            if ($accounts.Count -ge 128) { throw "Too many FTP credential records." }
-            $account = @{}
-            $accounts.Add($account)
-        }
-        if ($null -eq $account -or $account.ContainsKey($key)) {
-            throw "The FTP credential record has missing or duplicate fields."
-        }
-        $account[$key] = $value
-    }
-    $text = $null
-    $matchingSites = @($accounts | Where-Object {
-        $identity = [string]$_['FTP Username']
-        $at = $identity.IndexOf('@')
-        $at -gt 0 -and $at -eq $identity.LastIndexOf('@') -and
-            [string]::Equals($identity.Substring($at + 1), $ExpectedProfileName, [StringComparison]::OrdinalIgnoreCase)
-    })
-    if ($matchingSites.Count -ne 1) {
-        throw "The FTP credentials must contain exactly one configured deployment site."
-    }
-    $site = $matchingSites[0]
-    if ($site.Count -ne $keys.Count) { throw "The FTP site is missing a required field." }
-    $hostName = [string]$site['FTP server']
-    $portText = [string]$site['FTP & explicit FTPS port']
-    $userName = [string]$site['FTP Username']
-    $password = [string]$site['Password']
-
-    $port = 0
-    $hostNameType = [Uri]::CheckHostName($hostName)
-    if ($hostNameType -eq [UriHostNameType]::Unknown -or
-        $hostNameType -eq [UriHostNameType]::IPv6 -or
-        $hostName.Length -gt 253 -or
-        $portText -notmatch "^[1-9][0-9]{0,4}$" -or
-        -not [int]::TryParse($portText, [ref]$port) -or
-        $port -lt 1 -or $port -gt 65535 -or
-        $userName.Length -gt 256 -or
-        $userName -match "[\x00-\x1f\x7f]" -or
-        -not [string]::Equals([string]$site['Username'], $userName.Split('@')[0], [StringComparison]::Ordinal) -or
-        [string]::IsNullOrEmpty($password) -or
-        $password.Length -gt 4096 -or
-        $password -match "[\x00-\x1f\x7f]") {
-        $password = $null
-        throw "The FTP site contains an invalid bounded field."
-    }
-    return [pscustomobject]@{
-        profile = $ExpectedProfileName
-        host = $hostName
-        port = $port
-        user = $userName
-        password = $password
-    }
-}
-
 # Reads the bounded external workspace configuration without exposing its contents.
 function Get-BoundedWorkspaceMemoryLines {
     param([string]$MemoryPath, [string]$SourceRoot)
@@ -1469,7 +1332,7 @@ function Resolve-DeploymentCustodyFilePath {
 
     $root = Assert-CanonicalDeploymentSourceRoot -RepositoryRoot $RepositoryRoot
     if ($RelativePath -cnotmatch
-        "^(?:tinyrustlm/tools/[A-Za-z0-9._/-]+\.js|tinyrustlm/tools/deploy-tinyrustlm-web\.ps1|contracts/storage/[A-Za-z0-9._/-]+\.json)$" -or
+        "^(?:tinyrustlm/tools/[A-Za-z0-9._/-]+\.js|tinyrustlm/tools/deploy-tinyrustlm-web\.ps1|tinyrustlm/tools/Deployment\.Credentials\.psm1|contracts/storage/[A-Za-z0-9._/-]+\.json)$" -or
         $RelativePath -match "(^|/)(\.{1,2}|)(/|$)") {
         throw "Deployment source custody path is invalid."
     }
@@ -1591,6 +1454,21 @@ function New-DeploymentSourceCustody {
     }) + @(Get-DeploymentNodeToolClosure `
         -RepositoryRoot $root `
         -EntryPaths $NodeToolPaths)
+    $credentialModuleRelative = "tinyrustlm/tools/Deployment.Credentials.psm1"
+    $credentialModulePath = Resolve-DeploymentCustodyFilePath `
+        -RepositoryRoot $root -RelativePath $credentialModuleRelative
+    Assert-NoReparsePointAncestry -Path $credentialModulePath `
+        -FailureMessage "Deployment credential module traverses a reparse point."
+    $credentialModuleItem = Get-Item -LiteralPath $credentialModulePath -Force
+    if ($credentialModuleItem -isnot [IO.FileInfo] -or
+        $credentialModuleItem.Length -le 0 -or $credentialModuleItem.Length -gt 65536) {
+        throw "Deployment credential module is not a bounded regular file."
+    }
+    $files += [pscustomobject]@{
+        relative_path = $credentialModuleRelative
+        byte_count = [int64]$credentialModuleItem.Length
+        sha256 = Get-FileSha256 -Path $credentialModulePath
+    }
     $relativePaths = [Collections.Generic.HashSet[string]]::new(
         [StringComparer]::Ordinal
     )
@@ -1636,7 +1514,10 @@ function Assert-DeploymentSourceCustody {
         [string]$Custody.source_commit -notmatch "^[0-9a-f]{40}$" -or
         [string]$Custody.tool_closure_sha256 -notmatch "^[0-9a-f]{64}$" -or
         [int]$Custody.tool_file_count -le 0 -or
-        @($Custody.files).Count -ne [int]$Custody.tool_file_count) {
+        @($Custody.files).Count -ne [int]$Custody.tool_file_count -or
+        @($Custody.files | Where-Object {
+            [string]$_.relative_path -ceq "tinyrustlm/tools/Deployment.Credentials.psm1"
+        }).Count -ne 1) {
         throw "Deployment source custody identity is invalid."
     }
     $root = Assert-CanonicalDeploymentSourceRoot -RepositoryRoot $RepositoryRoot
@@ -1692,6 +1573,30 @@ function Assert-DeploymentSourceCustody {
         source_tree_clean = $true
         tool_file_count = [int]$Custody.tool_file_count
         tool_closure_sha256 = [string]$Custody.tool_closure_sha256
+    }
+}
+
+# Imports only the credential module already bound in source custody, holding a read lease throughout import.
+function Import-DeploymentCredentialModule {
+    param([string]$RepositoryRoot, [object]$Custody)
+
+    Assert-DeploymentSourceCustody -RepositoryRoot $RepositoryRoot -Custody $Custody | Out-Null
+    $relative = "tinyrustlm/tools/Deployment.Credentials.psm1"
+    $row = @($Custody.files | Where-Object { [string]$_.relative_path -ceq $relative })[0]
+    $path = Resolve-DeploymentCustodyFilePath -RepositoryRoot $RepositoryRoot -RelativePath $relative
+    $lease = $null
+    $sha = [Security.Cryptography.SHA256]::Create()
+    try {
+        $lease = [IO.File]::Open($path, [IO.FileMode]::Open, [IO.FileAccess]::Read, [IO.FileShare]::Read)
+        $digest = ([BitConverter]::ToString($sha.ComputeHash($lease))).Replace('-', '').ToLowerInvariant()
+        if ($lease.Length -ne [int64]$row.byte_count -or $digest -cne [string]$row.sha256) {
+            throw "Deployment credential module identity changed before import."
+        }
+        Import-Module -Name $path -Global -Force -ErrorAction Stop
+    }
+    finally {
+        if ($lease) { $lease.Dispose() }
+        $sha.Dispose()
     }
 }
 
@@ -4262,6 +4167,7 @@ if ([string]$sourceAuthorityResult.verdict -ne "pass" -or
     $sourceAuthorityResult.localScanPerformed -ne $true) {
     throw "TinyRustLM deployment requires one clean remote-exact canonical source root."
 }
+Import-DeploymentCredentialModule -RepositoryRoot $RepositoryRoot -Custody $script:deploymentSourceCustody
 try {
     $deploymentManifest = Get-Content -Raw -LiteralPath $ManifestPath | ConvertFrom-Json
 }
