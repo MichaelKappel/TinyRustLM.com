@@ -1,0 +1,182 @@
+{
+  "schema": "tinyrustlm.source_development_cache_retry_plan.v1",
+  "status": "prospective-awaiting-commit-and-root-go",
+  "basePlan": {
+    "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-development-plan-20260929.json",
+    "bytes": 18562,
+    "sha256": "aa1b98278b74d4ca7c555d7039193264c24adc2c8b787f236366fabe581dc753"
+  },
+  "priorTransportPlan": {
+    "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-transport-retry-plan-20260929.json",
+    "bytes": 7210,
+    "sha256": "d5e2b5502d71ba4b64c394022bebdc29bea5c683daa8698baa73c308c28cfa8c"
+  },
+  "reason": "Transparent third acquisition attempt after two HTTP429 acquisition failures. It avoids equivalent metadata HTTP requests by admitting exact known bytes as declared cache hits through the unchanged acquisition helper. Neither prior attempt read weights, ran preflight or generated an answer; this is not a model retry.",
+  "closedAcquisitionFailures": [
+    {
+      "start": {
+        "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-combined-start-20260929.json",
+        "bytes": 8241,
+        "sha256": "57177a0e10196c08ec3e6483b25fb9a69f3d14b35752a663c68c0266451faa84"
+      },
+      "execution": {
+        "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-combined-execution-20260929.json",
+        "bytes": 14105,
+        "sha256": "a52f0fed6d3e1cef13b4e5ec2ad78b198e9019a9fd590fa0e0fdb63172227348"
+      },
+      "requests": 1,
+      "requestFile": "config.json",
+      "httpStatus": 429,
+      "preflightStarted": false,
+      "modelGenerationStarted": false,
+      "preserveUnchanged": true
+    },
+    {
+      "start": {
+        "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-v2-combined-start-20260929.json",
+        "bytes": 11438,
+        "sha256": "1699a3ea8fb8da4a14b06031880d472ba966f39648fe26b931b6e1890a2f1fdf"
+      },
+      "execution": {
+        "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-v2-combined-execution-20260929.json",
+        "bytes": 17965,
+        "sha256": "9fdc594fdb083d6e395810bc42fd89f6829b67072b3bbe8f2d6511163fe49925"
+      },
+      "requests": 1,
+      "requestFile": "config.json",
+      "actualEndpoint": "official pinned /raw",
+      "httpStatus": 429,
+      "preflightStarted": false,
+      "modelGenerationStarted": false,
+      "preserveUnchanged": true
+    }
+  ],
+  "unchanged": "Same exact candidate, source identities, all six cases and criteria, system prompt, native template, greedy controls, runtime/helper bindings and resource bounds as basePlan. No publisher metadata rewriting, source exclusion change, altered evaluation or default claim.",
+  "cacheEntries": [
+    {
+      "filename": "config.json",
+      "requestedUrl": "https://huggingface.co/Pluto-AI-Labs/Pluto-Genesis-0.6B/resolve/a52e0229b7611bd96dac8594ab2f6924c89249c2/config.json",
+      "bytes": 726,
+      "sha256": "17b1b9e1263d1a3892a628760a928ccd8eeb980b5f7a59b4e9da62b6c675c709",
+      "gitBlobId": "0cb1a6152d11dd2c4d20a8d4deadb478e9b0f72e",
+      "cacheSource": {
+        "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-metadata-review-20260929.json",
+        "bytes": 31028,
+        "sha256": "7572eaf3aa6218b33154c13a7ed168eccb729862dfdfd4e1d6d8ad6f6bb03556",
+        "selector": "responses: status200 and url ending /config.json -> utf8",
+        "origin": "Exact official pinned resolve-endpoint response."
+      }
+    },
+    {
+      "filename": "tokenizer_config.json",
+      "requestedUrl": "https://huggingface.co/Pluto-AI-Labs/Pluto-Genesis-0.6B/resolve/a52e0229b7611bd96dac8594ab2f6924c89249c2/tokenizer_config.json",
+      "bytes": 5404,
+      "sha256": "443bfa629eb16387a12edbf92a76f6a6f10b2af3b53d87ba1550adfcf45f7fa0",
+      "gitBlobId": "ddaf69808214a44fdd26d3785b66c1367c78277a",
+      "cacheSource": {
+        "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-metadata-closure-20260929.json",
+        "bytes": 10935,
+        "sha256": "b91643e9739b43be735d211f8beb17969ceeff105e234eeaf56a9c8ebf10db52",
+        "selector": "responses: filename=tokenizer_config.json -> utf8",
+        "origin": "Exact official pinned raw-endpoint response."
+      }
+    },
+    {
+      "filename": "generation_config.json",
+      "requestedUrl": "https://huggingface.co/Pluto-AI-Labs/Pluto-Genesis-0.6B/resolve/a52e0229b7611bd96dac8594ab2f6924c89249c2/generation_config.json",
+      "bytes": 214,
+      "sha256": "787409d8b23543ca6a24affbca01de9251ec48e5b0f268911ca92daabde329bf",
+      "gitBlobId": "6b204b47b535ecceeec0cd8ca14b8f8c4d8ebc9e",
+      "cacheSource": {
+        "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-metadata-closure-20260929.json",
+        "bytes": 10935,
+        "sha256": "b91643e9739b43be735d211f8beb17969ceeff105e234eeaf56a9c8ebf10db52",
+        "selector": "responses: filename=generation_config.json -> utf8",
+        "origin": "Exact official pinned resolve-endpoint response."
+      }
+    },
+    {
+      "filename": "chat_template.jinja",
+      "requestedUrl": "https://huggingface.co/Pluto-AI-Labs/Pluto-Genesis-0.6B/resolve/a52e0229b7611bd96dac8594ab2f6924c89249c2/chat_template.jinja",
+      "bytes": 785,
+      "sha256": "48ee2be15a49d5ebae42b2db3183aa58747605c99af00a5f77a5003e77cdf3fc",
+      "gitBlobId": "15253c5b00bc821eb3e42cbab6f9a414d9319b0a",
+      "cacheSource": {
+        "path": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-metadata-review-20260929.json",
+        "bytes": 31028,
+        "sha256": "7572eaf3aa6218b33154c13a7ed168eccb729862dfdfd4e1d6d8ad6f6bb03556",
+        "selector": "apiEmbeddedFile.utf8",
+        "origin": "Exact API-embedded Jinja text matching pinned sibling Git blob."
+      }
+    },
+    {
+      "filename": "LICENSE",
+      "requestedUrl": "https://www.apache.org/licenses/LICENSE-2.0.txt",
+      "bytes": 11358,
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+      "gitBlobId": null,
+      "cacheSource": {
+        "path": "D:/LLMs/TinyRustLM/sources/source-8334f8dcfe693b2a916f02ff16265fc55c0e34e332bb20f47eacf3b3217fda4a/LICENSE",
+        "bytes": 11358,
+        "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+        "selector": "entire regular file",
+        "origin": "Exact previously downloaded official Apache authority bytes; verified acquisition receipt below.",
+        "receipt": {
+          "path": "artifacts/ecosystem-cleanup-20260912/qwen2.5-coder-0.5b-source-acquisition-20260929.json",
+          "bytes": 1827,
+          "sha256": "cc296906f29df245ab6d0d74bff1130ed6bdae0a3ce657bdc312bc7b1b009506"
+        }
+      }
+    }
+  ],
+  "cacheRules": "Before acquisition validate each regular cache source's bound bytes/SHA, extract the exact retained UTF-8 body or whole license file, and verify the resulting byte count/SHA and Git blob where present. Record requested URL, cache source and verified content identity before passing a200 Response of those exact bytes to the unchanged helper. Mark each such response as a cache hit, not a network download. No metadata/license HTTP requests or fallback are allowed.",
+  "networkEntries": [
+    {
+      "filename": "tokenizer.json",
+      "url": "https://huggingface.co/Pluto-AI-Labs/Pluto-Genesis-0.6B/resolve/a52e0229b7611bd96dac8594ab2f6924c89249c2/tokenizer.json",
+      "bytes": 11422654,
+      "sha256": "aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4"
+    },
+    {
+      "filename": "model.safetensors",
+      "url": "https://huggingface.co/Pluto-AI-Labs/Pluto-Genesis-0.6B/resolve/a52e0229b7611bd96dac8594ab2f6924c89249c2/model.safetensors",
+      "bytes": 1192134784,
+      "sha256": "3c3fed56cd33189d386b9b690ada71f55daee5a158afda69486efc6fe57a8ad9"
+    }
+  ],
+  "networkRules": "Only these two remaining LFS URLs may be fetched; one request per URL, no transport retries or fallback. Preserve normal redirect behavior and helper streaming/bounds/checksum admission. HTTP429 or any other failure closes this attempt before generation and establishes an external-access block; do not try another transport variation in this task.",
+  "canonicalSourceDirectory": {
+    "path": "D:/LLMs/TinyRustLM/sources/source-bd2ce82e254af7040110ad6ff3b4285d2f2a652610bbc78fafeb3327999af36f",
+    "isDirectory": true,
+    "isSymbolicLink": false,
+    "dev": "347899467",
+    "ino": "562949953425475",
+    "birthtimeNs": "1790721210431785800",
+    "mtimeNs": "1790721511668791400",
+    "entries": [],
+    "observedAtUtc": "2026-09-29T22:40:44.346Z",
+    "rule": "Revalidate the same ordinary nonlink directory identity and zero entries before acquisition. Reuse through the canonical helper; do not delete or reconstruct ownership."
+  },
+  "outputPrefix": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-v3-",
+  "outputPaths": {
+    "start": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-v3-combined-start-20260929.json",
+    "execution": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-v3-combined-execution-20260929.json",
+    "acquisitionReceipt": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-v3-source-acquisition-20260929.json",
+    "preflight": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-v3-preflight-20260929.json",
+    "preflightStderr": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-v3-preflight-stderr-20260929.txt",
+    "raw": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-v3-development-raw-20260929.json",
+    "stdout": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-v3-development-stdout-20260929.txt",
+    "stderr": "artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-v3-development-stderr-20260929.txt"
+  },
+  "executionRule": "One third acquisition -> exact seven-file/receipt verification -> unchanged config/tokenizer-only preflight -> first one-shot six-case screen. Preserve600/120/600-second stages and1800-second total. Only raw output destination changes in source-runner arguments. No receipt commit or second GO inside the combined operation.",
+  "identityClosure": "Bind this amendment, original basePlan, prior transport plan, both failed start/execution artifacts, all basePlan input/helper/runtime captures and the license cache/receipt before and after. Run fresh source-authority/remote-exact gate; reviewed GO commit must remain ancestor. Allow only basePlan's known independent parallel work. Never claim all-tree cleanliness.",
+  "launchConditions": [
+    "Root reviews, commits/pushes and gives one GO for this cache-bound operation.",
+    "The three exact new raw/preflight/stderr paths must be Git -text; no new operation output exists.",
+    "No payload/generation occurs if cache identities, empty directory, source gate or bound input checks fail.",
+    "Preserve both prior failures and any third failure. Stop further transport variations if the remaining LFS request fails."
+  ],
+  "modelPayloadAcquired": false,
+  "modelExecutionStarted": false,
+  "productionDefaultChanged": false
+}

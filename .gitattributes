@@ -270,3 +270,6 @@ artifacts/ecosystem-cleanup-20260912/qwen2.5-coder-0.5b-development-stderr-20260
 /artifacts/verification/real-composition-probe-20260929-a2.sample-policy.trx -text
 /artifacts/verification/real-composition-probe-20260929-a2.test-policy.stderr.log -text
 /artifacts/verification/real-composition-probe-20260929-a2.test-policy.stdout.log -text
+/artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-v3-development-raw-20260929.json -text
+/artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-v3-preflight-20260929.json -text
+/artifacts/ecosystem-cleanup-20260912/pluto-genesis-0.6b-v3-development-stderr-20260929.txt -text
