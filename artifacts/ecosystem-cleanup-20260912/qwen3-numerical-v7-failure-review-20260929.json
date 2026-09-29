@@ -1,0 +1,226 @@
+{
+  "schema": "tinyrustlm.numerical_v7_failure_review.v1",
+  "status": "closed-failure-no-numerical-pass",
+  "operationId": "qwen3-numerical-c1899de-ce80441-20260929-v7",
+  "registration": {
+    "byteLength": 25274,
+    "sha256": "b06996d25f2ff28ef4928c730f7c711feb4fb7dd48a68fcbdb594bc0ef78e293"
+  },
+  "registrationSource": {
+    "branch": "codex/model-acquisition-v2",
+    "commit": "e46a684179b787207ac9275e254d1164182cfd06",
+    "fetchHeadExpected": true,
+    "remoteRef": "refs/remotes/origin/codex/model-acquisition-v2",
+    "trackingRef": "origin/codex/model-acquisition-v2",
+    "tree": "f4931bbaca4cef4f95541a43441cc7659cbfed8f"
+  },
+  "launchCounts": {
+    "reconstructed": 1,
+    "scalar": 1,
+    "source": 1,
+    "verifier": 0
+  },
+  "terminal": {
+    "path": "artifacts/verification/qwen3-numerical-c1899de-ce80441-20260929-v7-owner-evidence/owner-terminal.json",
+    "byteLength": 3830,
+    "sha256": "2c646ba68868f4add38a65312d885a5582506607b1b4f9ddced6faf805af6da0"
+  },
+  "reasonCode": "scalar-process-not-pass",
+  "scalarError": "scalar-probe-error:slm2-runtime-nonfinite\n",
+  "preservedEvidence": [
+    {
+      "path": "artifacts/verification/qwen3-numerical-c1899de-ce80441-20260929-v7-owner-evidence/binding.json",
+      "byteLength": 2367,
+      "sha256": "55582e6a1f34202fb75411665f950bb234e7c5a2f4522c84a4befd808ac7952f"
+    },
+    {
+      "path": "artifacts/verification/qwen3-numerical-c1899de-ce80441-20260929-v7-owner-evidence/owner-terminal.json",
+      "byteLength": 3830,
+      "sha256": "2c646ba68868f4add38a65312d885a5582506607b1b4f9ddced6faf805af6da0"
+    },
+    {
+      "path": "artifacts/verification/qwen3-numerical-c1899de-ce80441-20260929-v7-owner-evidence/reconstructed.process-terminal.json",
+      "byteLength": 1421,
+      "sha256": "c636c06201f1af1d900ba46d18aadfb3db85b872d26ba902e108da5bcdde3af1"
+    },
+    {
+      "path": "artifacts/verification/qwen3-numerical-c1899de-ce80441-20260929-v7-owner-evidence/reconstructed.request.json",
+      "byteLength": 2504,
+      "sha256": "f54cdd51febf3b65f42bb9311d747bed9b6b7fe5c41d923365377d9f893c4277"
+    },
+    {
+      "path": "artifacts/verification/qwen3-numerical-c1899de-ce80441-20260929-v7-owner-evidence/reconstructed.stderr.bin",
+      "byteLength": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifacts/verification/qwen3-numerical-c1899de-ce80441-20260929-v7-owner-evidence/reconstructed.stdout.bin",
+      "byteLength": 174,
+      "sha256": "0f8e19897c4b62f4b989e00618aa29344f43b681aebc4fe989814e82d58b75ec"
+    },
+    {
+      "path": "artifacts/verification/qwen3-numerical-c1899de-ce80441-20260929-v7-owner-evidence/scalar.process-terminal.json",
+      "byteLength": 1405,
+      "sha256": "1348fcced28e7934a98af5a2731dbfb2ca9f8407486adfcbd93b3bfb69c1ba52"
+    },
+    {
+      "path": "artifacts/verification/qwen3-numerical-c1899de-ce80441-20260929-v7-owner-evidence/scalar.request.json",
+      "byteLength": 1375,
+      "sha256": "3d197e9a2c80fabe7da7d3b1c1bbffb30790775000cf51e30632a231da9b4aea"
+    },
+    {
+      "path": "artifacts/verification/qwen3-numerical-c1899de-ce80441-20260929-v7-owner-evidence/scalar.stderr.bin",
+      "byteLength": 42,
+      "sha256": "ed46cf53a3b16eeb62e8adce57976e683807c8f2da0c6dd766e1eeb4aedc12c9"
+    },
+    {
+      "path": "artifacts/verification/qwen3-numerical-c1899de-ce80441-20260929-v7-owner-evidence/scalar.stdout.bin",
+      "byteLength": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifacts/verification/qwen3-numerical-c1899de-ce80441-20260929-v7-owner-evidence/source.process-terminal.json",
+      "byteLength": 1407,
+      "sha256": "b5618ef2a7f82454d0c4689dd50b0f68b69ba7396888a3eba94a98688a921b2c"
+    },
+    {
+      "path": "artifacts/verification/qwen3-numerical-c1899de-ce80441-20260929-v7-owner-evidence/source.request.json",
+      "byteLength": 2546,
+      "sha256": "b9a2e626e576690fe9cef35887342c521c2c96a432200907c580f5a2d37c5962"
+    },
+    {
+      "path": "artifacts/verification/qwen3-numerical-c1899de-ce80441-20260929-v7-owner-evidence/source.stderr.bin",
+      "byteLength": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifacts/verification/qwen3-numerical-c1899de-ce80441-20260929-v7-owner-evidence/source.stdout.bin",
+      "byteLength": 174,
+      "sha256": "0f8e19897c4b62f4b989e00618aa29344f43b681aebc4fe989814e82d58b75ec"
+    },
+    {
+      "path": "artifacts/verification/qwen3-numerical-c1899de-ce80441-20260929-v7-owner-evidence/start.json",
+      "byteLength": 354,
+      "sha256": "88da2eabef490e52bef12bf36d6bd981d1e0e8a34095d1f415ff7df431a5eab6"
+    },
+    {
+      "path": "artifacts/verification/qwen3-numerical-c1899de-ce80441-20260929-v7-source/case-000-step-000.f32le",
+      "byteLength": 2106880,
+      "sha256": "7d6ec56005cc9da26fbd361d318159b6cf4bcd5af8e03fcb149a93f8b74f675d"
+    },
+    {
+      "path": "artifacts/verification/qwen3-numerical-c1899de-ce80441-20260929-v7-source/case-001-step-000.f32le",
+      "byteLength": 2106880,
+      "sha256": "507fe7bb94bad67ee214459437d63c51f4b37a901035ccc61fe96dd4ff797275"
+    },
+    {
+      "path": "artifacts/verification/qwen3-numerical-c1899de-ce80441-20260929-v7-source/case-001-step-001.f32le",
+      "byteLength": 2106880,
+      "sha256": "e850f34835da480ab8628d569f5e0c6bfcdbdb3a878cbbd69136dde2ce105815"
+    },
+    {
+      "path": "artifacts/verification/qwen3-numerical-c1899de-ce80441-20260929-v7-source/case-002-step-000.f32le",
+      "byteLength": 2106880,
+      "sha256": "83e97ba8f53b1fc7256498f5a6c60243450654e38003a4a5bc19a8a6cf603a20"
+    },
+    {
+      "path": "artifacts/verification/qwen3-numerical-c1899de-ce80441-20260929-v7-source/case-002-step-001.f32le",
+      "byteLength": 2106880,
+      "sha256": "fb5b8c5c13d472f33f7de7ed45f476750bda5dbe834567e5b77ad335d41479b9"
+    },
+    {
+      "path": "artifacts/verification/qwen3-numerical-c1899de-ce80441-20260929-v7-source/case-002-step-002.f32le",
+      "byteLength": 2106880,
+      "sha256": "aad8edaf1018422c6d34caf7a673333e0bc4eb45c98a7fc1e7727ca1e86ddf38"
+    },
+    {
+      "path": "artifacts/verification/qwen3-numerical-c1899de-ce80441-20260929-v7-source/case-002-step-003.f32le",
+      "byteLength": 2106880,
+      "sha256": "4774525080f1e27ab0aa850eac73ecc7ceddb78ae443c3b45fe7c36487a385b9"
+    },
+    {
+      "path": "artifacts/verification/qwen3-numerical-c1899de-ce80441-20260929-v7-source/probe.json",
+      "byteLength": 547916,
+      "sha256": "d71ffd447bb728e9600234f26bbcd454585d601a2ee4b33fb4b4da7b30e978ff"
+    },
+    {
+      "path": "artifacts/verification/qwen3-numerical-c1899de-ce80441-20260929-v7-reconstructed/case-000-step-000.f32le",
+      "byteLength": 2106880,
+      "sha256": "b9bcf97b78770b2712f8448f2557eb1d8fc4b755281a1ca2398dabb1c97a1817"
+    },
+    {
+      "path": "artifacts/verification/qwen3-numerical-c1899de-ce80441-20260929-v7-reconstructed/case-001-step-000.f32le",
+      "byteLength": 2106880,
+      "sha256": "83a11393bd0b753f6a8eece858fe29678ff9009e4e1faee3c0d78346942411f0"
+    },
+    {
+      "path": "artifacts/verification/qwen3-numerical-c1899de-ce80441-20260929-v7-reconstructed/case-001-step-001.f32le",
+      "byteLength": 2106880,
+      "sha256": "83a9835641dcb3fd8f4d7d8334075fcfbab6e5686bb992a804f04a2f7c451b19"
+    },
+    {
+      "path": "artifacts/verification/qwen3-numerical-c1899de-ce80441-20260929-v7-reconstructed/case-002-step-000.f32le",
+      "byteLength": 2106880,
+      "sha256": "b7f7e352cba008a269b6656ae69fb7a7695788f3fdefb970a6ad335627a21307"
+    },
+    {
+      "path": "artifacts/verification/qwen3-numerical-c1899de-ce80441-20260929-v7-reconstructed/case-002-step-001.f32le",
+      "byteLength": 2106880,
+      "sha256": "0c9b5e6b32e966747c38a82115d08e6acca32105d041bb96444182788f12a386"
+    },
+    {
+      "path": "artifacts/verification/qwen3-numerical-c1899de-ce80441-20260929-v7-reconstructed/case-002-step-002.f32le",
+      "byteLength": 2106880,
+      "sha256": "99c8519ed4f24c8bb88135eff52656656fb99643bb98bc3917d7dee31e13aa62"
+    },
+    {
+      "path": "artifacts/verification/qwen3-numerical-c1899de-ce80441-20260929-v7-reconstructed/case-002-step-003.f32le",
+      "byteLength": 2106880,
+      "sha256": "7daccec00b6d8712417252bdf7213d33f2014497ac43f1c11dfdafb9731282db"
+    },
+    {
+      "path": "artifacts/verification/qwen3-numerical-c1899de-ce80441-20260929-v7-reconstructed/probe.json",
+      "byteLength": 547576,
+      "sha256": "9aa18bf6021669b24825015febbdbabf0b6e8796458912d865610a1fd7a6445e"
+    },
+    {
+      "path": "artifacts/verification/qwen3-numerical-c1899de-ce80441-20260929-v7-scalar/case-000-step-000.f32le",
+      "byteLength": 2106880,
+      "sha256": "fa831cc615cfc40ffdcde8154751604ddcec7971d62cba22d7df150a56df1cd3"
+    },
+    {
+      "path": "artifacts/verification/qwen3-numerical-c1899de-ce80441-20260929-v7-scalar/case-001-step-000.f32le",
+      "byteLength": 2106880,
+      "sha256": "511fe8125530cf60a6413204c63add0d2c4358d75581cc54056c25df2a194fd2"
+    },
+    {
+      "path": "artifacts/verification/qwen3-numerical-c1899de-ce80441-20260929-v7-scalar/case-001-step-001.f32le",
+      "byteLength": 2106880,
+      "sha256": "e98a95dacfa604c8f5fdb310250a6f31eeef8ec22eef85257640ecfade2c97c3"
+    },
+    {
+      "path": "artifacts/verification/qwen3-numerical-c1899de-ce80441-20260929-v7-scalar/case-002-step-000.f32le",
+      "byteLength": 2106880,
+      "sha256": "671b9f28484e40a6ab24397302855fcac6033c727ca29b26c749621bd7382e27"
+    },
+    {
+      "path": "artifacts/verification/qwen3-numerical-c1899de-ce80441-20260929-v7-scalar/case-002-step-001.f32le",
+      "byteLength": 1478656,
+      "sha256": "5dbb3ad2a08e010948ebe2e76f8b4a407292388f317131ce1e196c5427d2fb83"
+    }
+  ],
+  "diagnosis": {
+    "path": "artifacts/ecosystem-cleanup-20260912/scalar-silu-v7-failure-diagnosis-20260929.json",
+    "byteLength": 3463,
+    "sha256": "d02c66c6a4719d2be0195abb919c66f2763950329488d489fcd14f3318b236e3"
+  },
+  "closure": {
+    "failedOutputAdoptionAllowed": false,
+    "overwriteAllowed": false,
+    "partialOutputCleanupAllowed": false,
+    "repairAllowed": false,
+    "retryAllowed": false,
+    "thresholdChangeAllowed": false
+  },
+  "correctiveAction": "A separately tested stable SiLU implementation will require a fresh executable identity and prospective execution. This failed attempt remains a failure; its partial traces are diagnostic only."
+}

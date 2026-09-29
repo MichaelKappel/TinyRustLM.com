@@ -1,0 +1,5 @@
+   Compiling tinyrustlm-runtime v0.1.8 (E:\Source\Rust\TinyRustLM.com\rust\crates\tinyrustlm-runtime)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.83s
+     Running unittests src\lib.rs (artifacts\verification\scalar-silu-build-20260929\debug\deps\tinyrustlm_runtime-409790d489ae6c79.exe)
+     Running tests\scalar_vectors.rs (artifacts\verification\scalar-silu-build-20260929\debug\deps\scalar_vectors-7dd165b21ea2b6e6.exe)
+   Doc-tests tinyrustlm_runtime

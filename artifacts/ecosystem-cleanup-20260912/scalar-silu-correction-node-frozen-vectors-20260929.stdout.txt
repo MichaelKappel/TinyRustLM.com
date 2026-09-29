@@ -1,0 +1,12 @@
+✔ freezes independently generated mixed-Q8 SLM2 scalar runtime vectors (16.591ms)
+✔ binds vectors to the sole mixed-Q8 artifact and ordered f32 arithmetic (2.5194ms)
+✔ covers positions, exact KV growth, stages, logits, and generation state (1.4231ms)
+✔ keeps the reference oracle isolated from Rust, network, and process execution (0.5277ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 86.1183

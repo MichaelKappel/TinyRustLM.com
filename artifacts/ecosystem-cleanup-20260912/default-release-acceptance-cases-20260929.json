@@ -1,0 +1,183 @@
+{
+  "schema": "tinyrustlm.default_release_acceptance_cases.v1",
+  "status": "prospective-not-executed",
+  "createdAtUtc": "2026-09-29T22:13:01.520Z",
+  "authority": "Current user request for useful ordinary browser-local conversation, instruction following, multi-turn corrections and grounded answers.",
+  "purpose": "Public release checks for the one prospective default after source screening and correct conversion; separate from the six development cases and all historical campaigns.",
+  "boundary": {
+    "publicCases": true,
+    "holdoutClaim": false,
+    "previouslyRejectedSourcesRemainRejected": true,
+    "modelSelected": false,
+    "sourceRunStarted": false,
+    "nativeRunStarted": false,
+    "browserRunStarted": false,
+    "qualificationGranted": false
+  },
+  "generation": {
+    "systemPrompt": "You are TinyRustLM, a browser-local AI assistant. You do not have personal experiences. Answer directly and helpfully.",
+    "profile": "greedy",
+    "callsPerDeclaredTurn": 1,
+    "seed": 20260929,
+    "automaticRetries": 0,
+    "responseRepair": false,
+    "answerInjection": false,
+    "useOriginalApprovedTemplate": true,
+    "actualHistoryForMultiturn": true,
+    "maximumSequenceTokens": 1024
+  },
+  "cases": [
+    {
+      "id": "ordinary-help",
+      "turns": [
+        {
+          "user": "Hi! In one sentence, tell me how you can help with ordinary writing or planning.",
+          "maximumNewTokens": 96
+        }
+      ],
+      "criteria": [
+        "A coherent helpful sentence describing writing or planning assistance.",
+        "No claimed personal experiences, completed external actions, or unavailable browsing."
+      ]
+    },
+    {
+      "id": "polite-writing",
+      "turns": [
+        {
+          "user": "Write a polite message under 60 words asking Jamie to move our Tuesday meeting to Thursday. Do not invent a time or a reason.",
+          "maximumNewTokens": 128
+        }
+      ],
+      "criteria": [
+        "A usable polite request addressed to Jamie to move Tuesday to Thursday.",
+        "Under 60 whitespace-separated words; no invented meeting time or reason."
+      ]
+    },
+    {
+      "id": "grounded-summary",
+      "turns": [
+        {
+          "user": "Summarize this note in one sentence without adding facts: The workshop starts at 10 a.m. on Saturday. Bring a notebook. The room number has not been announced.",
+          "maximumNewTokens": 128
+        }
+      ],
+      "criteria": [
+        "One sentence preserves Saturday, 10 a.m., notebook and unannounced room.",
+        "No invented room or other facts."
+      ]
+    },
+    {
+      "id": "simple-count",
+      "turns": [
+        {
+          "user": "I had five envelopes and used two. How many are left? Reply with the number only.",
+          "maximumNewTokens": 32
+        }
+      ],
+      "criteria": [
+        "3 or three only, allowing surrounding whitespace and final punctuation."
+      ]
+    },
+    {
+      "id": "missing-fact",
+      "turns": [
+        {
+          "user": "Use only this note: The appointment is Tuesday at 10 a.m. What is the street address? If the address is absent, reply only Not provided.",
+          "maximumNewTokens": 32
+        }
+      ],
+      "criteria": [
+        "Not provided only, allowing surrounding whitespace and final punctuation."
+      ]
+    },
+    {
+      "id": "clarifying-choice",
+      "turns": [
+        {
+          "user": "Can you help me choose between two options?",
+          "maximumNewTokens": 128
+        }
+      ],
+      "criteria": [
+        "Asks the user to provide the two options or describe what they are choosing between.",
+        "Does not invent the options or recommend an unsupported choice."
+      ]
+    },
+    {
+      "id": "actual-multiturn-correction",
+      "turns": [
+        {
+          "user": "My name is Nora. Please acknowledge that briefly.",
+          "maximumNewTokens": 64
+        },
+        {
+          "user": "Correction: my name is Leila. What is my current name? Reply with the name only.",
+          "maximumNewTokens": 32
+        }
+      ],
+      "criteria": [
+        "First answer acknowledges Nora without inventing biographical facts.",
+        "Second answer is Leila only, allowing whitespace and final punctuation.",
+        "Second request uses the exact actual first response as assistant history; no canned response or repair."
+      ]
+    },
+    {
+      "id": "structured-facts",
+      "turns": [
+        {
+          "user": "Return one JSON object with exactly the keys place and time, and no other text. The place is Hall B and the time is 3 p.m.",
+          "maximumNewTokens": 96
+        }
+      ],
+      "criteria": [
+        "Exact parsed object {\"place\":\"Hall B\",\"time\":\"3 p.m.\"}.",
+        "No Markdown fences, extra keys or surrounding non-JSON text."
+      ]
+    }
+  ],
+  "assessment": {
+    "decisionBeforeExecution": "Every declared case must pass its semantic criteria on the actual native and browser paths. Record and retain exact raw outputs, token IDs, stop status and errors; no rewritten answers or changed criteria after observation.",
+    "review": "Root independently reads all raw outputs and verifies each verdict. A passing fixture or source-framework answer cannot stand in for actual native/browser execution.",
+    "claim": "A pass covers these bounded writing, instruction-following and grounded-conversation checks; it is not proof of unrestricted reliability or a benchmark ranking."
+  },
+  "interaction": {
+    "required": [
+      "Cancel a real generation through Stop; preserve partial output and terminal status.",
+      "Generate a subsequent turn in the same runtime after cancellation.",
+      "New Chat resets transcript/context, then accepts a new turn."
+    ],
+    "casePlan": "Bind exact cancellation prompt, token/step trigger, subsequent prompt and reset request in the final execution request before any selected-model run. No extra trial runs to choose them."
+  },
+  "performance": {
+    "measure": [
+      "Composition bytes and individual member hashes.",
+      "Initial transfer, verification, activation and cache restoration times.",
+      "First emitted token and decode rate for each case with enough emitted tokens.",
+      "Admitted memory plan and observed WASM linear-memory pages; report process peak as unmeasured unless actually measured.",
+      "Stop latency and browser responsiveness."
+    ],
+    "prospectiveExecutionLimits": {
+      "maximumFirstTokenMilliseconds": 30000,
+      "minimumSustainedDecodeTokensPerSecond": 1,
+      "maximumStopLatencyMilliseconds": 2000,
+      "maximumTurnMilliseconds": 180000
+    },
+    "scope": "Evaluate on the recorded available desktop hardware and actual browser with desktop and mobile viewports. Mobile viewport results do not establish physical-phone performance. Measure public network loading separately; never substitute fixture speed.",
+    "timingDefinitions": {
+      "activation": "Recorded separately; not included in first-token or generation wall time.",
+      "firstToken": "From actual begin-request submission through first emitted token; excludes owner-side request encoding.",
+      "decode": "(emittedTokens-1)/(lastTokenTime-firstTokenTime); unmeasured if fewer than two tokens.",
+      "stop": "From abort/Stop request to actual runtime cancellation acknowledgement. Harness AbortSignal does not prove the visible Stop control; public UI acceptance must exercise it."
+    }
+  },
+  "releaseBoundary": {
+    "sourceFrameworkScreenOnly": false,
+    "requiresActualConvertedModel": true,
+    "requiresValidRedistributionEvidence": true,
+    "requiresStructuralAndNumericalEvidence": true,
+    "requiresUnmockedPublicInstallAndChat": true,
+    "requiresReloadOfflineInterruptedInstallChecks": true,
+    "requiresDeployedByteVerification": true,
+    "requiresRollback": true
+  }
+}

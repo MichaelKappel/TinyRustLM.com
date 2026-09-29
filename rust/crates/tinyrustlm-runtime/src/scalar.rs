@@ -1207,13 +1207,18 @@ fn residual_add(values: &mut [f32], residual: &[f32]) -> Result<(), ScalarRuntim
     finite_slice(values)
 }
 
-/// Preserves ordered F32 SiLU while rejecting overflow before division hides it.
+/// Evaluates SiLU in ordered F32 without overflowing an exponential for finite gates.
 fn silu(value: f32) -> Result<f32, ScalarRuntimeError> {
-    let denominator = 1.0 + (-value).exp();
-    if !denominator.is_finite() {
+    if !value.is_finite() {
         return Err(ScalarRuntimeError::new("slm2-runtime-nonfinite"));
     }
-    let output = value / denominator;
+    let exponential = (-value.abs()).exp();
+    let denominator = 1.0 + exponential;
+    let output = if value >= 0.0 {
+        value / denominator
+    } else {
+        (value * exponential) / denominator
+    };
     if !output.is_finite() {
         return Err(ScalarRuntimeError::new("slm2-runtime-nonfinite"));
     }
@@ -1842,37 +1847,58 @@ mod tests {
         output.into_inner()
     }
 
-    /// Exponential overflow must reject rather than become finite signed zero after division.
+    /// Finite SiLU gates remain valid even when the naive positive exponent would overflow.
     #[test]
-    fn silu_exponential_overflow_rolls_back_public_forward_token() {
-        for gate_weight in [-89.0, -100.0] {
+    fn silu_finite_extremes_complete_public_forward_token() {
+        for gate_weight in [-89.0, -100.0, -139.57132, -165.76523] {
             let mut session =
                 ScalarSession::from_bytes(silu_gate_model(gate_weight), policy(4)).unwrap();
             session.forward_token(0).unwrap();
-            let previous_keys = session.caches[0].keys.clone();
-            let previous_values = session.caches[0].values.clone();
-            let previous_bytes = session.committed_kv_bytes().unwrap();
-            assert_eq!(
-                session.forward_token(1).unwrap_err().code(),
-                "slm2-runtime-nonfinite"
-            );
-            assert_eq!(session.position().unwrap(), 1);
-            assert_eq!(session.committed_kv_bytes().unwrap(), previous_bytes);
-            assert_eq!(session.caches[0].keys, previous_keys);
-            assert_eq!(session.caches[0].values, previous_values);
-
-            let resumed_logits = session.forward_token(0).unwrap().to_vec();
-            let mut control =
-                ScalarSession::from_bytes(silu_gate_model(gate_weight), policy(4)).unwrap();
-            control.forward_token(0).unwrap();
-            assert_eq!(resumed_logits, control.forward_token(0).unwrap());
+            let logits = session.forward_token(1).unwrap();
+            assert_eq!(logits.len(), 2);
+            assert!(logits.iter().all(|value| value.is_finite()));
             assert_eq!(session.position().unwrap(), 2);
-            assert_eq!(session.caches[0].keys, control.caches[0].keys);
-            assert_eq!(session.caches[0].values, control.caches[0].values);
-            assert_eq!(
-                session.committed_kv_bytes().unwrap(),
-                control.committed_kv_bytes().unwrap()
+            assert_eq!(session.committed_kv_bytes().unwrap(), 32);
+            assert!(session
+                .forward_token(0)
+                .unwrap()
+                .iter()
+                .all(|value| value.is_finite()));
+            assert_eq!(session.position().unwrap(), 3);
+        }
+    }
+
+    /// An independent F64 formula bounds rounding, including the F32 exponential's subnormal error.
+    #[test]
+    fn silu_matches_mathematical_boundaries_with_f32_rounding() {
+        for value in [
+            -104.0_f32, -100.0, -89.0, -88.0, -80.0, -20.0, -1.0, -0.0, 0.0, 1.0, 20.0, 89.0, 100.0,
+        ] {
+            let actual = silu(value).unwrap();
+            let expected = f64::from(value) / (1.0 + (-f64::from(value)).exp());
+            // One smallest-subnormal unit per unit of x covers exp rounding/underflow.
+            // Four F32 epsilons cover the remaining ordered arithmetic rounding.
+            let bound = f64::from(f32::from_bits(1)) * f64::from(value.abs())
+                + 4.0 * f64::from(f32::EPSILON) * expected.abs();
+            assert!(
+                (f64::from(actual) - expected).abs() <= bound,
+                "SiLU({value}) = {actual}, expected {expected}, bound {bound}"
             );
+            assert_eq!(actual.is_sign_negative(), value.is_sign_negative());
+        }
+        assert!(silu(-89.0).unwrap() < 0.0);
+        assert!(silu(-100.0).unwrap() < 0.0);
+        assert_eq!(silu(f32::MAX).unwrap(), f32::MAX);
+        for value in [-f32::MAX, -118.59795, -139.57132, -165.76523] {
+            assert_eq!(silu(value).unwrap().to_bits(), (-0.0_f32).to_bits());
+        }
+    }
+
+    /// Stable evaluation never legitimizes nonfinite model activations.
+    #[test]
+    fn silu_rejects_nonfinite_inputs() {
+        for value in [f32::NAN, f32::INFINITY, f32::NEG_INFINITY] {
+            assert_eq!(silu(value).unwrap_err().code(), "slm2-runtime-nonfinite");
         }
     }
 

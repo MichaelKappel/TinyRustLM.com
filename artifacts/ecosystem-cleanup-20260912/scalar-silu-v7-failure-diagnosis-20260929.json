@@ -1,0 +1,88 @@
+{
+  "schema": "tinyrustlm.scalar_silu_v7_failure_diagnosis.v1",
+  "purpose": "Read-only diagnosis of one retained partial failed trace; no model-forward rerun and no numerical-pass claim.",
+  "operationId": "qwen3-numerical-c1899de-ce80441-20260929-v7",
+  "trace": {
+    "path": "artifacts/verification/qwen3-numerical-c1899de-ce80441-20260929-v7-scalar/case-002-step-001.f32le",
+    "byteLength": 1478656,
+    "sha256": "5dbb3ad2a08e010948ebe2e76f8b4a407292388f317131ce1e196c5427d2fb83"
+  },
+  "lastCompletedStage": {
+    "name": "feed-forward-normalized",
+    "layer": 27,
+    "offsetBytes": 1474560,
+    "byteLength": 4096
+  },
+  "method": "Read exact scalar F32 normalized activation; use independently validated same-model Q8 rows; multiply then cumulative F32 sum in declared order for gate projection only. No hidden states or model outputs modified. Trace layout established by unchanged stage sequence and dimensions, not adoption of reconstructed stage values.",
+  "modelSha256": "a0e351cdba8a4567d703e0f77c73c77ed08f783bb5420a19dfeef733c97cb2e7",
+  "gateProjectionRows": 3072,
+  "allGateValuesFinite": true,
+  "finiteInputsWhoseOldPositiveExponentOverflows": [
+    {
+      "row": 107,
+      "gateF32": -139.57131958007812,
+      "gateF32Bits": "42920bc3",
+      "negativeGate": 139.57131958007812,
+      "stableF32": -0.0,
+      "stableF32Bits": "00000080",
+      "f64MathematicalValue": -3.3864312174454034e-59
+    },
+    {
+      "row": 1665,
+      "gateF32": -165.76522827148438,
+      "gateF32Bits": "e6c325c3",
+      "negativeGate": 165.76522827148438,
+      "stableF32": -0.0,
+      "stableF32Bits": "00000080",
+      "f64MathematicalValue": -1.6926591229272896e-70
+    },
+    {
+      "row": 1974,
+      "gateF32": -118.59795379638672,
+      "gateF32Bits": "2732edc2",
+      "negativeGate": 118.59795379638672,
+      "stableF32": -0.0,
+      "stableF32Bits": "00000080",
+      "f64MathematicalValue": -3.695219978576039e-50
+    },
+    {
+      "row": 1995,
+      "gateF32": -148.43968200683594,
+      "gateF32Bits": "8f7014c3",
+      "negativeGate": 148.43968200683594,
+      "stableF32": -0.0,
+      "stableF32Bits": "00000080",
+      "f64MathematicalValue": -5.070084812390805e-63
+    },
+    {
+      "row": 2116,
+      "gateF32": -119.6942367553711,
+      "gateF32Bits": "7363efc2",
+      "negativeGate": 119.6942367553711,
+      "stableF32": -0.0,
+      "stableF32Bits": "00000080",
+      "f64MathematicalValue": -1.2460248429503548e-50
+    },
+    {
+      "row": 2211,
+      "gateF32": -126.1673583984375,
+      "gateF32Bits": "b055fcc2",
+      "negativeGate": 126.1673583984375,
+      "stableF32": -0.0,
+      "stableF32Bits": "00000080",
+      "f64MathematicalValue": -2.0284273677327232e-53
+    },
+    {
+      "row": 2326,
+      "gateF32": -158.0687713623047,
+      "gateF32Bits": "9b111ec3",
+      "negativeGate": 158.0687713623047,
+      "stableF32": -0.0,
+      "stableF32Bits": "00000080",
+      "f64MathematicalValue": -3.551819716710233e-67
+    }
+  ],
+  "mathematicalDefect": "SiLU is finite for these finite negative gates; exp(-x) overflows F32 only because of unstable evaluation order. A sign-split exp(-abs(x)) formulation avoids the overflow while retaining finite-input/output checks.",
+  "proposedChange": "Correct native SiLU evaluation; preserve actual nonfinite rejection and transactional rollback. Validate standalone boundaries and full-forward fixtures before fresh real execution.",
+  "productionQualification": false
+}

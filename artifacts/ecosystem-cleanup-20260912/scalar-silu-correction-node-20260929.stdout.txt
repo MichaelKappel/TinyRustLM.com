@@ -1,0 +1,14 @@
+✔ freezes independently generated mixed-Q8 SLM2 scalar runtime vectors (19.0517ms)
+✔ binds vectors to the sole mixed-Q8 artifact and ordered f32 arithmetic (4.1058ms)
+✔ covers positions, exact KV growth, stages, logits, and generation state (1.999ms)
+✔ keeps the reference oracle isolated from Rust, network, and process execution (0.7711ms)
+✔ SiLU matches independent mathematical boundaries within ordered F32 rounding (0.2056ms)
+✔ SiLU rejects NaN infinity and values outside the finite F32 domain (0.3953ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 90.6728

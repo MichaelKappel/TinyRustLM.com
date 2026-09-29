@@ -1,0 +1,115 @@
+{
+  "schema": "tinyrustlm.scalar_silu_correction_review.v1",
+  "status": "native-fix-tested-browser-artifact-and-real-differential-pending",
+  "basis": {
+    "path": "artifacts/ecosystem-cleanup-20260912/scalar-silu-v7-failure-diagnosis-20260929.json",
+    "byteLength": 3463,
+    "sha256": "d02c66c6a4719d2be0195abb919c66f2763950329488d489fcd14f3318b236e3"
+  },
+  "source": {
+    "path": "rust/crates/tinyrustlm-runtime/src/scalar.rs",
+    "byteLength": 70569,
+    "sha256": "71b216e681a7a9f1f35bf87f352de478ae0a4e61d659c3b06efe7482862e009d"
+  },
+  "change": "Ordered F32 exp(-abs(x)); x/(1+exp) for nonnegative x, (x*exp)/(1+exp) for negative x. Explicit finite input/output rejection retained.",
+  "testCorrection": "Former test expected finite -89/-100 gates to fail. Independent F64 mathematical oracle and actual failed-trace values demonstrate that expectation was defective. Replaced it with public forward progress/finite-result checks, plus direct F64 rounding-bound and nonfinite-input checks.",
+  "independentReview": "runtime_state_review independently confirmed stable formula and F32 subnormal caveat; no payload forward rerun in that review.",
+  "baseline": {
+    "passed": 2,
+    "failed": 2
+  },
+  "finalRust": {
+    "passed": 35,
+    "failed": 0,
+    "skipped": 0,
+    "includesHistoricalUnchangedQ8Vectors": true
+  },
+  "finalNodeHistoricalVectors": {
+    "passed": 4,
+    "failed": 0
+  },
+  "clippy": {
+    "exitCode": 0,
+    "warningsDenied": true
+  },
+  "transientReferenceExperiment": "Initial development-only oracle/vector regeneration passed 35 Rust and 6 Node tests, but was restored because exact vector hashes are embedded in Prompt2/ACG. Those logs are retained, not claimed as final test configuration. No wire/container/profile changes remain.",
+  "preservedTests": "Normalization/attention/nonfinite/rollback and cache recovery tests all remain passing.",
+  "coverage": {
+    "measured": false,
+    "limitation": "No whole-Rust-runtime coverage percentage; direct branch/boundary tests and full runtime test suite passed."
+  },
+  "rawLogs": [
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/scalar-silu-correction-clippy-20260929.stderr.txt",
+      "byteLength": 1352,
+      "sha256": "b96c4b0c5f55935a9871fe59d708df08178c2f314d9de445c1844dc310cd4416"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/scalar-silu-correction-clippy-20260929.stdout.txt",
+      "byteLength": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/scalar-silu-correction-node-20260929.stderr.txt",
+      "byteLength": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/scalar-silu-correction-node-20260929.stdout.txt",
+      "byteLength": 636,
+      "sha256": "4010a8f544fee15837c177f3615099fb115a742d36e0d9fe5145f72474bf4008"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/scalar-silu-correction-node-frozen-vectors-20260929.stderr.txt",
+      "byteLength": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/scalar-silu-correction-node-frozen-vectors-20260929.stdout.txt",
+      "byteLength": 462,
+      "sha256": "1643f98fb4248e47576ded69fd22149b610eecdf07ed8941819ced6e31c25385"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/scalar-silu-correction-rust-20260929.stderr.txt",
+      "byteLength": 480,
+      "sha256": "dc2a5e1862f1cdd64d3f01dddbf2bd5d2afe8327fc8be34c52414c192d83de3f"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/scalar-silu-correction-rust-20260929.stdout.txt",
+      "byteLength": 3192,
+      "sha256": "e5c9dfb12bcf13fc9bb890b7f58e38bc51b383b629df8806376e871ef3d00aa3"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/scalar-silu-correction-rust-frozen-vectors-20260929.stderr.txt",
+      "byteLength": 480,
+      "sha256": "93d1c800cc87333befd4c54c43dee3eb7d8db15b0a98f6cf7a2a99642c2cbfd4"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/scalar-silu-correction-rust-frozen-vectors-20260929.stdout.txt",
+      "byteLength": 3192,
+      "sha256": "44856403aa90342a2f25f9b2130746304cdfcb8220654f703d247ce0744c3256"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/scalar-silu-correction-rustfmt-20260929.stderr.txt",
+      "byteLength": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/scalar-silu-correction-rustfmt-20260929.stdout.txt",
+      "byteLength": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/scalar-silu-regression-baseline-20260929.stderr.txt",
+      "byteLength": 2325,
+      "sha256": "d7dd1da2e23951052711c8faddca3f2fa4b72336d3ef4d39b9f3a86bc992d377"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/scalar-silu-regression-baseline-20260929.stdout.txt",
+      "byteLength": 588,
+      "sha256": "b33f3aac62bf090a7353be392d39b966632113059b1ff0c55bb3d77ab65e36b2"
+    }
+  ],
+  "publicDeployment": false,
+  "realModelParity": false
+}

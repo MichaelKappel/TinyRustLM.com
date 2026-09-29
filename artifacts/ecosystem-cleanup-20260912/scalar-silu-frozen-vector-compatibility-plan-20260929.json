@@ -1,0 +1,25 @@
+{
+  "schema": "tinyrustlm.scalar_silu_frozen_vector_compatibility_plan.v1",
+  "reason": "Prompt2 and ACG2 wire profiles bind the exact historical Q8 vector SHA; regenerating it would change composition artifacts. Preserve that frozen compatibility baseline and its original oracle bytes.",
+  "transientDevelopmentChangesRestored": [
+    {
+      "path": "tinyrustlm/tools/slm2-runtime-reference.js",
+      "byteLength": 20107,
+      "sha256": "237bbc721d43a26d4c990afc1bf1eca91e613cabebb780d5ba78083d12fb4929"
+    },
+    {
+      "path": "contracts/vnext/slm2-runtime-q8-vectors.v1.json",
+      "byteLength": 50799,
+      "sha256": "bf2fd8bac7f6f602099e807f02b2b57cb2aa9d3d9ceb9577c13aa2d8aa0992a2"
+    },
+    {
+      "path": "tinyrustlm/tests/slm2-runtime-vectors.test.js",
+      "byteLength": 5965,
+      "sha256": "73349cd4ac9322007284f707f8c32e5ffcf67284c39054c2394052e4c284ddd8"
+    }
+  ],
+  "mathematicalValidation": "Rust tests compare direct SiLU outputs against an independent F64 mathematical formula with an explicit F32 rounding/subnormal bound; the separate reconstructed NumPy oracle already uses a stable nonpositive exponent. Historical v1 vectors remain ordinary-input compatibility checks only, not authority for large-negative SiLU rejection.",
+  "runtimeChange": "Finite-input sign split with F32 exp(-abs(x)), positive x/(1+exp), negative (x*exp)/(1+exp), finite result check.",
+  "remainingGuards": "Actual NaN/Inf rejection and other intermediate overflow/transactional rollback guards remain unchanged.",
+  "nextValidation": "Run final Rust suite against untouched v1 vectors with unchanged tolerances; fresh actual numerical execution later. No historical failure becomes a pass."
+}
