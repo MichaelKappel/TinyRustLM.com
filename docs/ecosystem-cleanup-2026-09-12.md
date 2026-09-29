@@ -29,9 +29,12 @@ checks are the `qwen3-json-hungpill-*20260929.json` and
 `qwen3-json-hutgaecha-*20260929.json` artifacts. Their exact weight hashes join
 the 45-entry negative policy. All 35 discovery/acquisition/exclusion tests pass,
 including refusal of both frozen inventory selections before fetch or output.
-Execution scratch is removed. Model payload retirement is tracked separately
-in `json-candidate-cleanup-inventory-20260929.json`; an inventory alone does not
-claim deletion. No campaign counters advance.
+Execution scratch is removed. Automatic approval review rejected the exact
+two-folder payload removal before execution with "blocked by policy". Both
+directories and all 12 files remain; no alternate deletion was attempted.
+`json-candidate-cleanup-inventory-20260929.json` preserves the reviewed identities.
+This cleanup restriction does not block separate delivery work. No campaign
+counters advance.
 
 MiniModel publication testing also reproduces obsolete shared-verifier pins
 in its publisher and manifest builder. That repository owns the binding fix

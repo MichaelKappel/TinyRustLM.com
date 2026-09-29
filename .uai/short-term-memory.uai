@@ -1,9 +1,10 @@
 profile: tinyrustlm.short-term-memory.current.v1
-updated_utc: 2026-09-28T01:41:56Z
+updated_utc: 2026-09-29T19:35:07.019Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
 now:
+  production_priority: C126 verifies real public desktop/mobile startup without fixtures: version0.5.0, zero models/peers, Send disabled. Both remaining JSON candidates complete once and fail color-only output, with35 affected tests passing. Plans, raw results and exclusions are pushed. MiniModel verifier/manifest binding repair is separate delivery preparation. No qualified default or new deployment. New12-file candidate cleanup was policy-rejected before execution; leave those exact paths untouched.
   source_screen: C125 acquires and executes dsadd5018 once after pushed frozen plan178991a and byte receipt0520905. Five of six public development criteria pass; color-only output fails, so43-entry exclusion policy rejects those exact weights. All33 affected tests pass, raw output preserved, execution scratch removed. Bounded payload deletion was policy-rejected before execution;6 files/1203582212 logical bytes remain, owner helper selector Dsadd5018 added. Other two C122 leads remain unexecuted; no qualified default or live seed.
   branch_authority: C124 fixes false post-push refusal caused by incidental FETCH_HEAD. Exact local/tracking/direct-remote branch and clean-source checks remain;51 policy and58 consumer tests pass without skips. Current numerical profile helper binding and long-term pointer updated; closed evidence/cases/thresholds untouched. Read cleanup C124.
   discovery_destination: C122 fixes metadata requests occurring before an invalid inventory destination is rejected. All39 affected checks pass; the new validator's V8 ranges are covered and owned scratch is gone. C125 screens and rejects the first of three leads; freeze a new plan before another candidate. Read cleanup C122-C125.

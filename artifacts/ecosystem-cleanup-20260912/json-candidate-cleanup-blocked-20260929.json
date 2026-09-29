@@ -1,0 +1,21 @@
+{
+  "schema": "tinyrustlm.rejected_source_cleanup_blocked.v1",
+  "checkedAtUtc": "2026-09-29T19:33:44.409Z",
+  "status": "blocked-before-execution",
+  "reason": "Automatic approval review: blocked by policy",
+  "targets": [
+    {
+      "root": "D:/LLMs/TinyRustLM/sources/source-94210eb75a6a36461d8f10ce1ea3dc126d1652c2309145623a7642e4b17b2e42",
+      "exists": true,
+      "files": 6
+    },
+    {
+      "root": "D:/LLMs/TinyRustLM/sources/source-b23a73412c34e1dd4c4cfd37f6eea99502922e8b28ce0173dae41ffdc7b65732",
+      "exists": true,
+      "files": 6
+    }
+  ],
+  "retryAttempted": false,
+  "removedFiles": 0,
+  "measuredStorageRecoveryBytes": null
+}

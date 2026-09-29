@@ -1,5 +1,5 @@
 profile: tinyrustlm.startup-packet.current.v1
-updated_utc: 2026-09-28T01:41:56Z
+updated_utc: 2026-09-29T19:35:07.019Z
 canonical_memory: wiki/runtime-mirust/reports/tinyrustlm-working-product-memory-2026-09-19.md
 report_decision_index: wiki/runtime-mirust/reports/tinyrustlm-report-intake-decision-index-2026-09-19.md
 
@@ -20,7 +20,9 @@ current_truth:
   validation: All18 affected publisher tests pass. Local and live Edge smoke each pass12 observations; an earlier zero-argument local wrapper failure was not reproduced and remains unexplained. No before/after visual-parity or model-execution claim.
   cleanup_limit: Failed-attempt disposable files removed and useful evidence preserved.32 empty folders from failed/successful attempts remain after automatic policy review rejected removal; never retry via another API or parent deletion. Owner-only script is recorded in cleanup C114.
   product_limit: No qualified small working default, real MiniModel seed, native/WASM model qualification, outside-network P2P or live memory proof follows from code publication.
-  source_eligibility: C125 dsadd5018 runs once under its pushed frozen plan and passes5/6 public development cases; color-only format failure rejects the exact weights. Exclusions now cover43 entries. Raw output and provenance are preserved without repair/retry/conversion. Hungpill and Hutgaecha remain metadata-only leads needing separate frozen plans; no independent-lineage or qualification claim.
+  source_eligibility: C126 executes hungpill and Hutgaecha once under pushed frozen plans; both pass5/6 and fail color-only output. Exact raw outputs, provenance and negative decisions are preserved. Exclusions cover45 entries and35 affected tests pass. Their six response texts match; no independent-lineage, conversion or qualification claim.
+  actual_production: C126 fresh unmocked Edge desktop/mobile observes version0.5.0, empty live catalog/feed, Models are unavailable and disabled Send. No working automatic model is available. See actual-production-startup-review-20260929.json and screenshots. MiniModel's deployment binding repair is separate from serving a qualified seed.
+  new_cleanup_limit: C126 removal of the two newly screened candidate folders was rejected before execution with blocked by policy. All12 files remain; never retry through another method or parent. The exact inventory is json-candidate-cleanup-inventory-20260929.json.
   source_runtime: C117 used the existing5.13.1 source environment after a committed compatibility review. No dependencies, checkpoint metadata or numerical-reference locks changed; do not classify loader failures as model-quality failures.
   rejected_source_cleanup: C116-C118 and C125 source deletions were rejected before execution; six files each remain. Never retry via another API or parent. Owner-only Remove-ReviewedRejectedSource.ps1 selects CodeExpert, Biggiraffe, Ljh728 or Dsadd5018; previews pass, Apply unexecuted. These exact cleanup boundaries do not stop other safe work.
   numerical: C119 reference-runtime verification passes. C120 native build/probe tests and release gate23/23 pass. C123 full standard gate passes2758/2758 with zero skips at325f313 and owned scratch removed. Earlier failed and overlapping focused runs remain historical. Fresh v3 registration and real traces remain required.
