@@ -109,9 +109,9 @@
     "soleExecutionOwner": {
       "status": "implementation-prepared-registration-required",
       "path": "tinyrustlm/tools/qwen3-numerical-execution-owner.js",
-      "byteLength": 83054,
-      "sha256": "0087e4b752872ce0131dcc0be361d04d6568691a51ffbee265bf3c9d40431ace",
-      "profileId": "tinyrustlm.qwen3-numerical-execution-owner/4",
+      "byteLength": 82990,
+      "sha256": "4244154a73332e4efd0426dc6050f093144b74692b30122c8c123976cb30710f",
+      "profileId": "tinyrustlm.qwen3-numerical-execution-owner/5",
       "dependencies": [
         {
           "path": "tinyrustlm/tools/canonical-operation-scratch.js",
@@ -416,7 +416,7 @@
       "sole-owner-invokes-source-reconstructed-scalar-and-read-only-verifier-at-most-once-in-order",
       "preserve-terminal-result-without-retry-overwrite-repair-or-tolerance-change"
     ],
-    "soleOwnerStatus": "current-v4-implementation-requires-fresh-registration",
+    "soleOwnerStatus": "current-v5-implementation-requires-fresh-registration",
     "processCardinalityAuthority": "sole-execution-owner",
     "sourceOutput": "create-only-preserve-partial-on-failure",
     "reconstructedOutput": "create-only-preserve-partial-on-failure",

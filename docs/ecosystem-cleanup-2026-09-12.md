@@ -1,9 +1,33 @@
 # Ecosystem cleanup — active goal
 
-The owner's full objective is the cleanup and code-quality review of every
-project under `E:\Source\Rust`, including completion of current-only SLM2
-acquisition, a real small default model and MiniModel server seeding. An audit,
-fixture test or source-only change does not complete this goal.
+The current owner direction is one genuinely working production default on
+TinyRustLM.com and MiniModel.org. This file retains historical cleanup evidence,
+but optional campaigns, packages, memory and unrelated cleanup are separate.
+Source-only changes and an empty production catalog do not complete delivery.
+
+## C128: verified offline assets, exact source acquisition and numerical request correction
+
+Offline public-asset caching is pushed at3729594. Nine focused tests and a real
+browser test pass: the unchanged production worker/WASM initializes online with
+service workers blocked, online with the verified cache, and after a fresh
+browser process starts offline. The invalid test memory-policy failure is
+preserved. This verifies application assets, not real model chat or visual parity.
+
+The exact untied source reaperdoesntknow/Qwen3-0.6B-Distilled-30B-A3B at
+7bd368dce6747cd9647a4e05300f3294bc2e9108 has seven verified files under the
+canonical D model root. Its publisher template and generation settings remain
+unchanged. The pushed prospective six-case screen has not yet executed.
+
+Numerical registration17baa40 launches v4 once. Source again completes all seven
+traces; reconstructed validation rejects three unexpected scalar-derived request
+fields before model load. Independent review confirms that its thirteen-field
+Python contract already derives and validates those values. The JavaScript
+producer is corrected, and a complete JS-to-Python pre-load regression fails
+before the fix and passes after. All38 affected checks pass with zero skips. A
+separate read-only independent parser inspection validates the existing model's
+310 tensors. No arithmetic, thresholds or historical evidence changed. v4 stays
+closed; a new v5 registration is required. See qwen3-numerical-v4-failure-review-
+20260929.json and the qwen3-reaper-untied acquisition reviews in the artifact folder.
 
 ## C127: real numerical execution exposes a cross-language framing defect
 

@@ -1,0 +1,63 @@
+{
+  "schema": "tinyrustlm.huggingface_source_acquisition.v4",
+  "status": "verified",
+  "verifiedUtc": "2026-09-29T20:34:25.230Z",
+  "sourceTemplate": "qwen3-0.6b-untied-bpe",
+  "modelId": "reaperdoesntknow/Qwen3-0.6B-Distilled-30B-A3B",
+  "revision": "7bd368dce6747cd9647a4e05300f3294bc2e9108",
+  "weightIdentity": "416bbdde787b49106d9c1a20cbd9366a1fae8c95dc8bb64f5ac54a61673142a5",
+  "sourceWeightByteCount": 1503300328,
+  "chatTemplateKind": "revision-chatml-template-v1",
+  "chatTemplateSha256": "a55ee1b1660128b7098723e0abcd92caa0788061051c62d51cbe87d9cf1974d8",
+  "chatTemplateFile": {
+    "filename": "chat_template.jinja",
+    "byteCount": 4168,
+    "sha256": null,
+    "gitBlobId": "01be9b307daa2d425f7c168c9fb145a286e0afb4"
+  },
+  "generationConfig": {
+    "filename": "generation_config.json",
+    "byteCount": 213,
+    "sha256": null,
+    "gitBlobId": "6ef425299323759f048f746eceac42e880d689fd"
+  },
+  "licenseId": "apache-2.0",
+  "licenseEvidenceKind": "revision-metadata-plus-apache-authority-text",
+  "files": [
+    {
+      "filename": "config.json",
+      "byteCount": 1417,
+      "sha256": "65b3dc0ec1d71fb6a71457aea9d05385e507e09a0fb27ce2d15e1ebe681929bf"
+    },
+    {
+      "filename": "tokenizer.json",
+      "byteCount": 11422650,
+      "sha256": "be75606093db2094d7cd20f3c2f385c212750648bd6ea4fb2bf507a6a4c55506"
+    },
+    {
+      "filename": "tokenizer_config.json",
+      "byteCount": 665,
+      "sha256": "47bfa3e7727312946b29ac10d6dd0672d63cf7815b2a160b9523872040d2e536"
+    },
+    {
+      "filename": "chat_template.jinja",
+      "byteCount": 4168,
+      "sha256": "a55ee1b1660128b7098723e0abcd92caa0788061051c62d51cbe87d9cf1974d8"
+    },
+    {
+      "filename": "generation_config.json",
+      "byteCount": 213,
+      "sha256": "1aba9f92f54121f603aaf2e56eb07261db91415e6be8e036202e0900f780dfda"
+    },
+    {
+      "filename": "LICENSE",
+      "byteCount": 11358,
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    },
+    {
+      "filename": "model.safetensors",
+      "byteCount": 1503300328,
+      "sha256": "cb003b4471fd18fac80b98dce7e3310bb77f8af463d395db7a33ec3c16651bd2"
+    }
+  ]
+}

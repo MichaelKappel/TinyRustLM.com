@@ -467,9 +467,9 @@ test("preserves closed implementation history without adopting its execution aut
     "implementation-prepared-registration-required");
   assert.equal(profile.implementations.soleExecutionOwner.historicalOperationMayBeReplayed, false);
   assert.equal(profile.implementations.soleExecutionOwner.profileId,
-    "tinyrustlm.qwen3-numerical-execution-owner/4");
+    "tinyrustlm.qwen3-numerical-execution-owner/5");
   assert.equal(profile.execution.soleOwnerStatus,
-    "current-v4-implementation-requires-fresh-registration");
+    "current-v5-implementation-requires-fresh-registration");
   const dependencies = profile.implementations.soleExecutionOwner.dependencies;
   assert.deepEqual(dependencies.map((record) => record.path), [
     "tinyrustlm/tools/canonical-operation-scratch.js",

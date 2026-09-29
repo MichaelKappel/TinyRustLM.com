@@ -108,7 +108,7 @@ function registeredComparison() {
 
 /** Synthetic current contract values exercise validation without registering or launching a model. */
 function ownerContract() {
-  const operationId = "qwen3-numerical-c1899de-1111111-20260913-v4";
+  const operationId = "qwen3-numerical-c1899de-1111111-20260913-v5";
   return {
     schema: owner.OWNER_CONTRACT_SCHEMA,
     operationId,
@@ -219,13 +219,10 @@ function ownerContract() {
           headCount: 16,
           headDimension: 128,
           kvHeadCount: 8,
-          kvWidth: 1024,
           layerCount: 28,
-          logicalTensorCount: 310,
           normalizationEpsilon: 0.000001,
           qkNormalization: true,
           qkvBias: false,
-          queryWidth: 2048,
           ropeTheta: 1000000,
           tiedEmbeddings: true,
           vocabularySize: 151936
@@ -332,7 +329,7 @@ function registration() {
   const contract = ownerContract();
   return {
     schema: owner.REGISTRATION_SCHEMA,
-    profileId: "tinyrustlm.qwen3-numerical-differential-execution/4",
+    profileId: "tinyrustlm.qwen3-numerical-differential-execution/5",
     status: "registered-before-private-request-roots-and-real-traces",
     registeredAtUtc: "2026-09-13T12:00:00Z",
     registrationParentCommit: "1".repeat(40),
@@ -359,7 +356,7 @@ function registration() {
       parentCommit: "1".repeat(40),
       parentTree: "2".repeat(40),
       allowedRegistrationCommitPaths: [
-        "contracts/vnext/qwen3-numerical-differential-execution-preregistration.v4.json"
+        "contracts/vnext/qwen3-numerical-differential-execution-preregistration.v5.json"
       ],
       cleanAtRegistration: true,
       trackingFetchHeadAndRemoteExactAtRegistration: true
@@ -674,8 +671,8 @@ test("rejects operation, trace, implementation-role, and executable drift", () =
 
 test("rejects closed owner, registration, request, and source-template semantics", () => {
   assert.equal(owner.REGISTRATION_RELATIVE_PATH,
-    "contracts/vnext/qwen3-numerical-differential-execution-preregistration.v4.json");
-  assert.equal(owner.REQUEST_SCHEMA, "tinyrustlm.qwen3_numerical_execution_request.v4");
+    "contracts/vnext/qwen3-numerical-differential-execution-preregistration.v5.json");
+  assert.equal(owner.REQUEST_SCHEMA, "tinyrustlm.qwen3_numerical_execution_request.v5");
 
   const formerOwner = ownerContract();
   formerOwner.schema = "tinyrustlm.qwen3_numerical_execution_owner_contract.v1";
@@ -718,7 +715,7 @@ test("requires the exact corrected source-framework closure", () => {
 
 test("current contracts reject every closed schema and superseded lock path", async (t) => {
   const root = temporaryRoot(t);
-  for (const version of [1, 2, 3]) {
+  for (const version of [1, 2, 3, 4]) {
     const contract = ownerContract();
     contract.schema = `tinyrustlm.qwen3_numerical_execution_owner_contract.v${version}`;
     assert.throws(() => owner.validateOwnerContract(contract), /owner-contract/u);
@@ -988,7 +985,7 @@ test("execute rejects a misplaced request before inspecting registration or crea
   const root = temporaryRoot(t);
   const requestPath = path.join(root, "request.json");
   fs.writeFileSync(requestPath, owner.canonicalJsonBytes({ schema: owner.REQUEST_SCHEMA,
-    operationId: "qwen3-numerical-c1899de-1111111-20260913-v4", registration: null,
+    operationId: "qwen3-numerical-c1899de-1111111-20260913-v5", registration: null,
     registrationSource: null, repositoryRoot: path.dirname(repositoryRoot), gitPath: null,
     evidenceParent: root, sourceDirectory: "D:\\LLMs\\TinyRustLM\\source",
     compositionRoot: "D:\\LLMs\\TinyRustLM\\composition", executables: null }), { flag: "wx" });
@@ -1104,4 +1101,51 @@ test("Python numerical metadata serializers agree with JavaScript on the registe
       assert.equal(rejected.stdout.length, 0);
     }
   }
+});
+
+/** Validate the actual JS child request in Python up to, but never across, the model-read boundary. */
+test("JavaScript reconstructed request satisfies the real Python pre-load contract", (t) => {
+  const { spawnSync } = require("node:child_process");
+  const python = process.env.TINYRUSTLM_QWEN3_NUMERICAL_ORACLE_PYTHON;
+  assert.ok(python && fs.existsSync(python), "the pinned numerical interpreter is required");
+  const root = temporaryRoot(t);
+  const contract = ownerContract();
+  const state = { registration: { ownerContract: contract },
+    registrationIdentity: { byteLength: 123, sha256: "a".repeat(64) },
+    sourceDirectory: root, compositionRoot: root, evidenceParent: root };
+  const paths = { sourceScratchRoot: path.join(root, "source-scratch"),
+    sourceOutputRoot: path.join(root, "source"), scalarOutputRoot: path.join(root, "scalar"),
+    reconstructedOutputRoot: path.join(root, contract.operationId + "-reconstructed") };
+  const request = owner.childRequests(state, paths).reconstructed;
+  const program = [
+    "import importlib.util,pathlib,sys",
+    "p=pathlib.Path(sys.argv[1]);s=importlib.util.spec_from_file_location('request_owner_test',p)",
+    "m=importlib.util.module_from_spec(s);sys.modules[s.name]=m;s.loader.exec_module(m)",
+    "class ModelReadBoundary(Exception): pass",
+    "def model_read(*args): raise ModelReadBoundary()",
+    "m.digest_file=model_read",
+    "try: m.validate_request(pathlib.Path(sys.argv[2]))",
+    "except ModelReadBoundary: print('validated-before-model-read')",
+    "except m.ReconstructedOwnerFailure as error: print(str(error));sys.exit(2)",
+    "else: raise AssertionError('must stop before model read')"
+  ].join("\n");
+  function validate(value, basename) {
+    const requestPath = path.join(root, basename + ".json");
+    fs.writeFileSync(requestPath, owner.canonicalJsonBytes(value), { flag: "wx" });
+    return spawnSync(python, ["-I", "-B", "-c", program,
+      path.join(repositoryRoot, "tinyrustlm/tools/qwen3-slm2-reconstructed-owner.py"), requestPath],
+      { encoding: "utf8", windowsHide: true, timeout: 30000, maxBuffer: 1024 * 1024 });
+  }
+  const accepted = validate(request, "valid");
+  assert.equal(accepted.status, 0, accepted.stdout + accepted.stderr);
+  assert.equal(accepted.stdout.trim(), "validated-before-model-read");
+  for (const [key, value] of [["queryWidth", 2048], ["kvWidth", 1024], ["logicalTensorCount", 310],
+    ["embeddingSize", 512], ["tiedEmbeddings", false]]) {
+    const invalid = structuredClone(request);
+    invalid.modelSpec[key] = value;
+    const rejected = validate(invalid, key);
+    assert.equal(rejected.status, 2, key + ": " + rejected.stdout + rejected.stderr);
+    assert.equal(rejected.stdout.trim(), "reconstructed-trace-request-identity");
+  }
+  assert.equal(fs.existsSync(paths.reconstructedOutputRoot), false);
 });

@@ -1,0 +1,161 @@
+{
+  "schema": "tinyrustlm.qwen3_numerical_diagnostic_review.v1",
+  "observedAtUtc": "2026-09-29T20:38:58.686Z",
+  "terminal": {
+    "allowedClaim": "none",
+    "claim": "no-numerical-pass-claim",
+    "evidenceInventoryBeforeTerminal": [
+      {
+        "byteLength": 2367,
+        "fileName": "binding.json",
+        "sha256": "83401e6a794681e9fac230d39d49c6f106276fc22787c484fe55e00ecf8573b0"
+      },
+      {
+        "byteLength": 1417,
+        "fileName": "reconstructed.process-terminal.json",
+        "sha256": "95a1458f5ce7843ede69d0899a2b9ca2fa3f07d7acb7e7dc23b7443cc2700d31"
+      },
+      {
+        "byteLength": 2580,
+        "fileName": "reconstructed.request.json",
+        "sha256": "66777b7a23a80d7a339f0a36b85bb61de24727ad986e7e4d528da24f5a1ed948"
+      },
+      {
+        "byteLength": 70,
+        "fileName": "reconstructed.stderr.bin",
+        "sha256": "0fa42d7eba55f743fee19f5e403dad7e42047066e41ae36eebadca82587799c7"
+      },
+      {
+        "byteLength": 0,
+        "fileName": "reconstructed.stdout.bin",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "byteLength": 1375,
+        "fileName": "scalar.request.json",
+        "sha256": "5b493622548b23c371e8db825f6ed4dc883b40ed2df7bf2ac2c57c4a8ed5d3ca"
+      },
+      {
+        "byteLength": 1407,
+        "fileName": "source.process-terminal.json",
+        "sha256": "a972fd6e880cbcc4fe0b75d979ae497669a31e2830b726d57586aa80c9478117"
+      },
+      {
+        "byteLength": 2546,
+        "fileName": "source.request.json",
+        "sha256": "76d079c8dec60ee418690dd990135b3635f104d9f9cd2fc48208c0754a06fa94"
+      },
+      {
+        "byteLength": 0,
+        "fileName": "source.stderr.bin",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "byteLength": 174,
+        "fileName": "source.stdout.bin",
+        "sha256": "50655a63000fe2ffc7af35788511c366b4ff37a5a0d6e900bcc5b305e77d6318"
+      },
+      {
+        "byteLength": 354,
+        "fileName": "start.json",
+        "sha256": "ff9e2a3aaef107d69109feef955fb00bf9daf14a42b20ceae0f59e7ab21f23c1"
+      }
+    ],
+    "immutableClosure": {
+      "failedOutputAdoptionAllowed": false,
+      "overwriteAllowed": false,
+      "partialOutputCleanupAllowed": false,
+      "repairAllowed": false,
+      "retryAllowed": false,
+      "thresholdChangeAllowed": false
+    },
+    "launchCounts": {
+      "reconstructed": 1,
+      "scalar": 0,
+      "source": 1,
+      "verifier": 0
+    },
+    "launchedStages": [
+      "source",
+      "reconstructed"
+    ],
+    "operationId": "qwen3-numerical-c1899de-3729594-20260929-v4",
+    "ownerRequest": {
+      "byteLength": 1560,
+      "sha256": "ab74cf8be5840a985034b62b7577c266a9afc2b3b370dee3b684b4c1046f39d3"
+    },
+    "prohibitedClaims": [
+      "optimized-native-parity",
+      "browser-wasm-parity",
+      "behavioral-quality",
+      "p2p-availability",
+      "site-release",
+      "campaign-progress"
+    ],
+    "reasonCode": "reconstructed-process-not-pass",
+    "registration": {
+      "byteLength": 25368,
+      "sha256": "5e070834012122057810c60487325f4f16ed9d420c9579221be71319dcfa4650"
+    },
+    "registrationSource": {
+      "branch": "codex/model-acquisition-v2",
+      "commit": "17baa404b0a52a1ddaa53fc069d61de76ed42afa",
+      "fetchHeadExpected": true,
+      "remoteRef": "refs/remotes/origin/codex/model-acquisition-v2",
+      "trackingRef": "origin/codex/model-acquisition-v2",
+      "tree": "1bd1f27d9b6a08e8b5bb6b07881a630454f2729f"
+    },
+    "schema": "tinyrustlm.qwen3_numerical_execution_terminal.v1",
+    "status": "terminal-failure",
+    "verifierReceipt": null
+  },
+  "sourceTraceManifest": {
+    "byteLength": 547916,
+    "sha256": "95945b9d316d1f444444c576bdf585b51870836e96d5220a5631ea685f8c3caa",
+    "caseCount": 3,
+    "traceFiles": 7
+  },
+  "defect": {
+    "code": "reconstructed-trace-request-identity",
+    "stage": "request-validation-before-reconstructed-model-execution",
+    "producerModelSpecFields": 16,
+    "consumerModelSpecFields": 13,
+    "unexpectedFields": [
+      "kvWidth",
+      "logicalTensorCount",
+      "queryWidth"
+    ],
+    "missingFields": [],
+    "independentReview": "candidate_runtime_boundary confirmed exact mismatch and independent query/KV/tensor derivation and validation in the unchanged Python parser."
+  },
+  "correction": {
+    "scope": "Remove only the three redundant scalar-derived fields from the JS reconstructed request contract and fixture; keep Python consumer, model bytes, computations, cases and thresholds unchanged.",
+    "currentOwner": "v5-fresh-registration-required",
+    "closedV4MayBeReplayed": false,
+    "regression": {
+      "name": "JavaScript reconstructed request satisfies the real Python pre-load contract",
+      "before": {
+        "passed": 0,
+        "failed": 1,
+        "reason": "reconstructed-trace-request-identity"
+      },
+      "after": {
+        "passed": 38,
+        "failed": 0,
+        "skipped": 0,
+        "command": "node --test tinyrustlm/tests/qwen3-numerical-execution-owner.test.js tinyrustlm/tests/qwen3-numerical-differential-profile.test.js"
+      },
+      "coverage": "Actual isolated pinned Python validate_request consumes the emitted JavaScript request, reaching a sentinel at the model-read boundary; extra fields, dimension and tying drift remain rejected. No new percentage coverage measurement."
+    }
+  },
+  "readOnlyContainerInspection": {
+    "modelBytes": 598308416,
+    "sha256": "a0e351cdba8a4567d703e0f77c73c77ed08f783bb5420a19dfeef733c97cb2e7",
+    "independentPythonParser": "Slm2Model",
+    "tensors": 310,
+    "result": "pass",
+    "inference": false,
+    "writes": false
+  },
+  "scope": "v4 is immutable terminal-failure, source completed, scalar and verifier not launched. No numerical parity, quality, default availability or deployment claim."
+}

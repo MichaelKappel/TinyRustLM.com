@@ -1,0 +1,133 @@
+{
+  "schema": "tinyrustlm.source_acquisition_execution_review.v1",
+  "status": "verified",
+  "startedAtUtc": "2026-09-29T20:33:36.545Z",
+  "completedAtUtc": "2026-09-29T20:34:25.244Z",
+  "sourceCheckpoint": "17baa404b0a52a1ddaa53fc069d61de76ed42afa",
+  "sourceAdmission": {
+    "verifiedAtUtc": "2026-09-29T20:32:13.866Z",
+    "cleanRemoteExactAtLaunch": true,
+    "exitCode": 0,
+    "stdoutBytes": 164,
+    "stdoutSha256": "23bf73a83fe1c67061b85372209405f9748df2315d3dac1122d5cc2a4eae7999",
+    "coverageClass": "registered-governed-roots-only"
+  },
+  "inputBindings": [
+    {
+      "path": "tinyrustlm/tools/huggingface-supported-candidates.js",
+      "bytes": 25099,
+      "sha256": "97105f1a45df1c7ba9682e3d5a4e211b3a57dab1e01ee65ad36f52862b3a8b61"
+    },
+    {
+      "path": "tinyrustlm/tools/huggingface-candidate-acquire.js",
+      "bytes": 33531,
+      "sha256": "c179d2d343689ef930ee765b64447589a84a2c6efac4b59ceba83271fadcd1de"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-untied-inventory-20260929.json",
+      "bytes": 4516,
+      "sha256": "be3f23b7688f09fcbc44c810c619ff8dc58b124673def991203b3cf0c279fd6a"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-untied-development-binding-20260929.json",
+      "bytes": 5733,
+      "sha256": "980ee3d8628cecb46692f44ed3a88ec65755226b8251f62bd4432ec68b411335"
+    }
+  ],
+  "selection": {
+    "start": 1,
+    "count": 1,
+    "modelId": "reaperdoesntknow/Qwen3-0.6B-Distilled-30B-A3B",
+    "revision": "7bd368dce6747cd9647a4e05300f3294bc2e9108"
+  },
+  "directory": "D:\\LLMs\\TinyRustLM\\sources\\source-af23eee80be2742c8438caea5c2a0aa0ba1e8137cc528c900e8dcb65e40e53cc",
+  "requests": [
+    {
+      "timeUtc": "2026-09-29T20:33:36.551Z",
+      "filename": "config.json"
+    },
+    {
+      "timeUtc": "2026-09-29T20:33:36.794Z",
+      "filename": "tokenizer.json"
+    },
+    {
+      "timeUtc": "2026-09-29T20:33:37.925Z",
+      "filename": "tokenizer_config.json"
+    },
+    {
+      "timeUtc": "2026-09-29T20:33:38.026Z",
+      "filename": "chat_template.jinja"
+    },
+    {
+      "timeUtc": "2026-09-29T20:33:38.095Z",
+      "filename": "generation_config.json"
+    },
+    {
+      "timeUtc": "2026-09-29T20:33:38.194Z",
+      "filename": "LICENSE-2.0.txt"
+    },
+    {
+      "timeUtc": "2026-09-29T20:33:38.317Z",
+      "filename": "model.safetensors"
+    }
+  ],
+  "result": {
+    "receipt": {
+      "path": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\ecosystem-cleanup-20260912\\qwen3-reaper-untied-source-acquisition-20260929.json",
+      "bytes": 2153,
+      "sha256": "229ef39dcfaa1d15c73dcb4ce61a64db54999307185d1001f1a5cc7fd6ae1246"
+    },
+    "canonicalReceipt": {
+      "path": "D:\\LLMs\\TinyRustLM\\sources\\source-af23eee80be2742c8438caea5c2a0aa0ba1e8137cc528c900e8dcb65e40e53cc\\source-acquisition.json",
+      "bytes": 2153,
+      "sha256": "229ef39dcfaa1d15c73dcb4ce61a64db54999307185d1001f1a5cc7fd6ae1246"
+    },
+    "sourceFiles": [
+      {
+        "filename": "config.json",
+        "byteCount": 1417,
+        "sha256": "65b3dc0ec1d71fb6a71457aea9d05385e507e09a0fb27ce2d15e1ebe681929bf"
+      },
+      {
+        "filename": "tokenizer.json",
+        "byteCount": 11422650,
+        "sha256": "be75606093db2094d7cd20f3c2f385c212750648bd6ea4fb2bf507a6a4c55506"
+      },
+      {
+        "filename": "tokenizer_config.json",
+        "byteCount": 665,
+        "sha256": "47bfa3e7727312946b29ac10d6dd0672d63cf7815b2a160b9523872040d2e536"
+      },
+      {
+        "filename": "chat_template.jinja",
+        "byteCount": 4168,
+        "sha256": "a55ee1b1660128b7098723e0abcd92caa0788061051c62d51cbe87d9cf1974d8"
+      },
+      {
+        "filename": "generation_config.json",
+        "byteCount": 213,
+        "sha256": "1aba9f92f54121f603aaf2e56eb07261db91415e6be8e036202e0900f780dfda"
+      },
+      {
+        "filename": "LICENSE",
+        "byteCount": 11358,
+        "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      },
+      {
+        "filename": "model.safetensors",
+        "byteCount": 1503300328,
+        "sha256": "cb003b4471fd18fac80b98dce7e3310bb77f8af463d395db7a33ec3c16651bd2"
+      }
+    ],
+    "totalSourceBytes": 1514740799
+  },
+  "failure": null,
+  "cleanup": {
+    "root": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\untied-source-acquisition\\tinyrustlm-operation-zimW6O",
+    "rootAbsent": true,
+    "markerAbsent": true
+  },
+  "inferenceStarted": false,
+  "qualifiedDefault": false,
+  "nextAction": "Root reviews and commits verified acquisition receipt evidence; no source model inference until separate explicit GO."
+}
