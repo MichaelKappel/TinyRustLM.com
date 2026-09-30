@@ -1,0 +1,59 @@
+✔ plan binds distinct normal UI defaults, exact cases, assets, future qualification and immutable performance criteria (7.7229ms)
+✔ eight unchanged public cases retain nine turns and criteria; altered bytes never become a new equivalent plan (0.9875ms)
+✔ bounded GET rejects redirected, missing, oversized or failing streams and releases its reader (24.5236ms)
+✔ one raw generation captures exact real history, random seed, output, tokens and independently measured latency (3.2147ms)
+✔ wire, sampling, identities, extra generations, silent errors and slow output cannot pass (3.0506ms)
+✔ a final-token-only terminal is measured honestly; empty context-limit output fails useful-chat performance (0.6098ms)
+✔ runtime activation proves the exact admitted model graph and artifact, and restoration requests fail closed (0.5544ms)
+✔ passive observer forwards original transfers and errors, captures only prompt bytes, and clicks the visible Stop after actual progress (1.7372ms)
+✔ orchestration preserves exact actual first-turn history, visible reset, Stop/next turn, new-process cache/offline, and closes before cleanup (1.5183ms)
+✔ failed installation, turn, expired authority, redownload and cleanup retain failure without a hidden generation retry (0.882ms)
+✔ invalid path/registration never launches a browser; error reporting does not echo exception secrets (0.5619ms)
+✔ browser launch keeps every writable browser directory inside the declared model profile and never routes fake responses (2.3657ms)
+✖ ready/submit callbacks assert real DOM defaults, preserve raw terminal records and retain failures without retry (3.8584ms)
+✔ installation interruption observes actual body progress before closure; late activation and no progress fail (26.1642ms)
+ℹ tests 14
+ℹ suites 0
+ℹ pass 13
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 190.3071
+ℹ start of coverage report
+ℹ ---------------------------------------------------------------------------------------------------------------------------------------------------------------
+ℹ file                       | line % | branch % | funcs % | uncovered lines
+ℹ ---------------------------------------------------------------------------------------------------------------------------------------------------------------
+ℹ tools                      |        |          |         | 
+ℹ  deployed-ui-acceptance.js |  75.66 |    89.77 |   74.32 | 153-162 171 189-231 316-325 329-353 367-372 378-379 390-392 399-406 414 450-452 493 566-593 599-604
+ℹ ---------------------------------------------------------------------------------------------------------------------------------------------------------------
+ℹ all files                  |  75.66 |    89.77 |   74.32 | 
+ℹ ---------------------------------------------------------------------------------------------------------------------------------------------------------------
+ℹ end of coverage report
+
+✖ failing tests:
+
+test at tests\deployed-ui-acceptance_test.js:330:1
+✖ ready/submit callbacks assert real DOM defaults, preserve raw terminal records and retain failures without retry (3.8584ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /visible-raw-output/. Input:
+  
+  'Error: ui-terminal-output'
+  
+      at async TestContext.<anonymous> (E:\Source\Rust\TinyRustLM.com\tinyrustlm\tests\deployed-ui-acceptance_test.js:347:3)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: Error: ui-terminal-output
+        at requireValue (E:\Source\Rust\TinyRustLM.com\tinyrustlm\tools\deployed-ui-acceptance.js:33:56)
+        at analyzeTurn (E:\Source\Rust\TinyRustLM.com\tinyrustlm\tools\deployed-ui-acceptance.js:265:3)
+        at Object.turn (E:\Source\Rust\TinyRustLM.com\tinyrustlm\tools\deployed-ui-acceptance.js:441:22)
+        at async waitForActual (node:assert:646:5)
+        at async strict.rejects (node:assert:769:25)
+        at async TestContext.<anonymous> (E:\Source\Rust\TinyRustLM.com\tinyrustlm\tests\deployed-ui-acceptance_test.js:347:3)
+        at async Test.run (node:internal/test_runner/test:1125:7)
+        at async Test.processPendingSubtests (node:internal/test_runner/test:787:7),
+    expected: /visible-raw-output/,
+    operator: 'rejects',
+    diff: 'simple'
+  }

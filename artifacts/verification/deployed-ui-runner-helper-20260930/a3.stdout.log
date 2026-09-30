@@ -1,0 +1,35 @@
+✔ plan binds distinct normal UI defaults, exact cases, assets, future qualification and immutable performance criteria (6.7222ms)
+✔ eight unchanged public cases retain nine turns and criteria; altered bytes never become a new equivalent plan (0.8248ms)
+✔ bounded GET rejects redirected, missing, oversized or failing streams and releases its reader (23.3197ms)
+✔ one raw generation captures exact real history, random seed, output, tokens and independently measured latency (2.6225ms)
+✔ wire, sampling, identities, extra generations, silent errors and slow output cannot pass (2.3787ms)
+✔ a final-token-only terminal is measured honestly; empty context-limit output fails useful-chat performance (0.3987ms)
+✔ runtime activation proves the exact admitted model graph and artifact, and restoration requests fail closed (0.3807ms)
+✔ passive observer forwards original transfers and errors, captures only prompt bytes, and clicks the visible Stop after actual progress (1.4182ms)
+✔ orchestration preserves exact actual first-turn history, visible reset, Stop/next turn, new-process cache/offline, and closes before cleanup (1.156ms)
+✔ failed installation, turn, expired authority, redownload and cleanup retain failure without a hidden generation retry (0.7281ms)
+✔ invalid path/registration never launches a browser; error reporting does not echo exception secrets (0.4045ms)
+✔ browser launch keeps every writable browser directory inside the declared model profile and never routes fake responses (1.5597ms)
+✔ ready/submit callbacks assert real DOM defaults, preserve raw terminal records and retain failures without retry (3.8551ms)
+✔ installation interruption observes actual body progress before closure; late activation and no progress fail (15.5975ms)
+✔ owned browser-data cleanup removes only original identity and refuses changed marker, link, or directory; partial allocation is accounted for (10.8779ms)
+✔ browser-close uncertainty prevents profile cleanup rather than deleting an active browser's files (0.3048ms)
+✔ closed normal-flow network policy rejects writes, unexpected destinations, query-bearing leaks and WebSockets without reading bodies (0.2856ms)
+ℹ tests 17
+ℹ suites 0
+ℹ pass 17
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 177.2707
+ℹ start of coverage report
+ℹ -------------------------------------------------------------------------------------------------------------------------------------------------------
+ℹ file                       | line % | branch % | funcs % | uncovered lines
+ℹ -------------------------------------------------------------------------------------------------------------------------------------------------------
+ℹ tools                      |        |          |         | 
+ℹ  deployed-ui-acceptance.js |  78.12 |    90.70 |   73.17 | 156-165 174 197-260 415-417 419-423 429-430 441-443 454-462 475-477 484 566 655-702 708-713
+ℹ -------------------------------------------------------------------------------------------------------------------------------------------------------
+ℹ all files                  |  78.12 |    90.70 |   73.17 | 
+ℹ -------------------------------------------------------------------------------------------------------------------------------------------------------
+ℹ end of coverage report

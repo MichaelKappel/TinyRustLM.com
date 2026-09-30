@@ -1,0 +1,80 @@
+{
+  "schema": "tinyrustlm.deployed_ui_runner_helper_review.v1",
+  "status": "implemented-helper-tested-public-execution-unrun",
+  "reviewedAtUtc": "2026-09-30T01:05:10.993Z",
+  "sources": [
+    {
+      "path": "tinyrustlm/tools/deployed-ui-acceptance.js",
+      "bytes": 48695,
+      "sha256": "8a58a802c7f084249cd0f69d5ae1e84830407caa9a6a2f489087261438c993de"
+    },
+    {
+      "path": "tinyrustlm/tests/deployed-ui-acceptance_test.js",
+      "bytes": 35006,
+      "sha256": "74577bf4a502233fcddb01776c1e3dc32f42c3ea23496a522db75f9b930b5a4d"
+    }
+  ],
+  "evidence": [
+    {
+      "path": "artifacts/verification/deployed-ui-runner-helper-20260930/a1.stdout.log",
+      "bytes": 3529,
+      "sha256": "9a20c707c3e475519600f7bb2cb59fc1cafbcaa119793fc74dbccaad752c6d80"
+    },
+    {
+      "path": "artifacts/verification/deployed-ui-runner-helper-20260930/a1.stderr.log",
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "path": "artifacts/verification/deployed-ui-runner-helper-20260930/a2.stdout.log",
+      "bytes": 4472,
+      "sha256": "eea1b2e2256c955072ba157a64824e0000dc04158f94fee9085c992dd07dd874"
+    },
+    {
+      "path": "artifacts/verification/deployed-ui-runner-helper-20260930/a2.stderr.log",
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "path": "artifacts/verification/deployed-ui-runner-helper-20260930/a3.stdout.log",
+      "bytes": 3359,
+      "sha256": "96545031b27f7f9ab97d0a83b8a1e1a4ab7a276e4f29c70e6c5bae5f1ea0c1c8"
+    },
+    {
+      "path": "artifacts/verification/deployed-ui-runner-helper-20260930/a3.stderr.log",
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "path": "artifacts/verification/deployed-ui-runner-helper-20260930/a4.stdout.log",
+      "bytes": 3399,
+      "sha256": "d994b8c15fb1fc2f41d01980b1f87cbe8cb5045d4f7e432d85f86914ae66429a"
+    },
+    {
+      "path": "artifacts/verification/deployed-ui-runner-helper-20260930/a4.stderr.log",
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    }
+  ],
+  "validation": {
+    "tests": 17,
+    "passed": 17,
+    "failed": 0,
+    "skipped": 0,
+    "lineCoveragePercent": 77.58,
+    "branchCoveragePercent": 90.98,
+    "functionCoveragePercent": 73.81
+  },
+  "priorFailuresPreserved": [
+    "A1 retained incorrect case-file identity pin failure; actual unchanged case bytes subsequently bound.",
+    "A2 retained test adapter Stop-state expectation failure; control-flow fixture corrected."
+  ],
+  "independentReview": "Root read full frozen runner, plan admission, actual worker pass-through observer, raw Prompt2/history/output verification, actual Stop and New Chat control flows, fresh/cached/offline/interrupted recovery orchestration, closed GET/HEAD network boundary, visible loading capture, and owned D-only browser storage/custody. Existing app worker route and UI selector names cross-checked. No answer transformation, generation retry, response interception or mocked public acceptance introduced.",
+  "limitations": [
+    "Helper tests and coverage do not establish real browser or model behavior.",
+    "No qualified release execution, model/process memory measurement, physical phone test, public visual acceptance, seed publication or production deployment was performed.",
+    "Offline acceptance preserves current authority expiry; this does not claim indefinite offline availability.",
+    "Source-authority admission and final registered release/plan/asset pins remain required before actual execution."
+  ],
+  "productionDefaultChanged": false
+}
