@@ -1,0 +1,77 @@
+{
+  "schema": "tinyrustlm.source_model_screen_assessment.v1",
+  "sourceModelId": "Qwen/Qwen2-0.5B-Instruct",
+  "sourceRevision": "c540970f9e29518b1d8f06ab8b24cba66ad77b6d",
+  "sourceModelArtifactSha256": "130282af0dfa9fe5840737cc49a0d339d06075f83c5a315c3372c9a0740d0b96",
+  "sourceScreenSha256": "96ed1833eddd190b39892e3fda2884724ea34b618f876357e86d324f4bb414f7",
+  "sourceScreenPath": "artifacts/ecosystem-cleanup-20260912/qwen2-0.5b-development-raw-20260930.json",
+  "executionReceiptPath": "artifacts/ecosystem-cleanup-20260912/qwen2-0.5b-combined-execution-20260930.json",
+  "executionReceiptSha256": "7efe069e05e69a99f8be122afc18daa72cc6a4107daf728898537affdbc6f2b0",
+  "prospectivePlanPath": "artifacts/ecosystem-cleanup-20260912/qwen2-0.5b-development-plan-20260930.json",
+  "prospectivePlanSha256": "844102d5727b9083c0dab85c866aa6566708a2df96733371534df1ec5addd6ba",
+  "decision": "rejected",
+  "decisionAuthority": "engineering-source-screen-v1",
+  "independentAssessment": "Root agent independently read all six exact raw answers after source/input identity closure. Only cases1 and5 pass. Case0 violates exact READY format; case2 names the right day but adds forbidden text; case3 invents packing items and remains incomplete; case4 says blue despite the supplied red pens, a decisive factual contradiction. No output repair, rerun or threshold change is justified.",
+  "architectureFamily": "qwen2-dense-gqa",
+  "runtimeAdmission": "not-admitted-current-slm2",
+  "licenseDisposition": "apache-2.0-pinned-publisher-license-and-official-authority-text-verified-separately",
+  "blockerCode": "model_quality_rejected",
+  "passedCaseCount": 2,
+  "caseCount": 6,
+  "criticalFailureCodes": [
+    "answer-format-violated",
+    "task-fidelity-violated",
+    "source-information-contradicted"
+  ],
+  "caseDispositions": [
+    {
+      "index": 0,
+      "status": "fail",
+      "failureCodes": [
+        "answer-format-violated"
+      ],
+      "reason": "Raw Ready. differs in capitalization and punctuation from the required exact READY. No normalization or answer repair was performed."
+    },
+    {
+      "index": 1,
+      "status": "pass",
+      "failureCodes": []
+    },
+    {
+      "index": 2,
+      "status": "fail",
+      "failureCodes": [
+        "answer-format-violated"
+      ],
+      "reason": "The raw sentence names Friday correctly but adds The draft is now due, violating the day-only instruction."
+    },
+    {
+      "index": 3,
+      "status": "fail",
+      "failureCodes": [
+        "task-fidelity-violated"
+      ],
+      "reason": "The answer adds an unprovided bag, keychain, phone case and wallet rather than giving two practical steps to write the three-item checklist using the stated paper and pen. It exhausts96 tokens at an unfinished second-step marker. Added items already violate the frozen task independently of truncation."
+    },
+    {
+      "index": 4,
+      "status": "fail",
+      "failureCodes": [
+        "answer-format-violated",
+        "source-information-contradicted"
+      ],
+      "reason": "The answer says the BoxB pens are blue, directly contradicting the supplied red pens, and adds a sentence despite the color-only requirement."
+    },
+    {
+      "index": 5,
+      "status": "pass",
+      "failureCodes": []
+    }
+  ],
+  "executionBoundary": "One prospectively bound operation passed registered-root source authority and direct-remote admission with known unrelated Tiny/Mini edits recorded; no all-tree-clean claim. Five verified cache responses and one pinned LFS weight request produced six receipt-bound source files; separate PUBLISHER-LICENSE preserves the exact11344-byte original publisher license/copyright. Offline config/tokenizer preflight passed with896/4864/24/14Q/2KV/head64 geometry, native Qwen2 ChatML, source EOS[151645,151643], config use_cache=true, tokenizer length151646 and context32768. One greedy generation call per case used unchanged cases, criteria, system prompt and controls. All26 bound input records and every source/supplemental/receipt file remained identical before/after. HEAD advanced during recorded unrelated parallel work without changing a bound input. No metadata rewrite, prompt/sampler change, answer repair, retry, conversion, browser or final holdout occurred. Stderr contains only weight-loading progress. Original scratch and marker were retired by their owner.",
+  "officialReferences": [
+    "https://huggingface.co/Qwen/Qwen2-0.5B-Instruct/tree/c540970f9e29518b1d8f06ab8b24cba66ad77b6d",
+    "https://huggingface.co/Qwen/Qwen2-0.5B-Instruct/raw/c540970f9e29518b1d8f06ab8b24cba66ad77b6d/LICENSE",
+    "https://www.apache.org/licenses/LICENSE-2.0.txt"
+  ]
+}

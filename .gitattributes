@@ -370,6 +370,8 @@ artifacts/ecosystem-cleanup-20260912/qwen2-0.5b-preflight-stderr-20260930.txt -t
 artifacts/ecosystem-cleanup-20260912/qwen2-0.5b-development-raw-20260930.json -text -diff
 artifacts/ecosystem-cleanup-20260912/qwen2-0.5b-development-stdout-20260930.txt -text -diff
 artifacts/ecosystem-cleanup-20260912/qwen2-0.5b-development-stderr-20260930.txt -text -diff
+artifacts/ecosystem-cleanup-20260912/qwen2-0.5b-exclusion-20260930-stdout.txt -text -diff
+artifacts/ecosystem-cleanup-20260912/qwen2-0.5b-exclusion-20260930-stderr.txt -text -diff
 artifacts/verification/deployed-ui-runner-helper-20260930/a1.stdout.log -text -diff
 artifacts/verification/deployed-ui-runner-helper-20260930/a1.stderr.log -text -diff
 artifacts/verification/deployed-ui-runner-helper-20260930/a2.stdout.log -text -diff

@@ -1,0 +1,28 @@
+✔ current exclusions preserve all exact prior decisions and their evidence identities (8.2383ms)
+✔ exclusions are exact negative evidence, not a family ban or positive admission (0.428ms)
+✔ source rejection blocks smollm2-current-candidate-inventory-20260927.json selection 0 without fetching or writing (1.0276ms)
+✔ source rejection blocks qwen3-expanded-candidate-inventory-20260927.json selection 0 without fetching or writing (0.4738ms)
+✔ source rejection blocks qwen3-expanded-candidate-inventory-20260927.json selection 1 without fetching or writing (0.4636ms)
+✔ source rejection blocks qwen3-expanded-candidate-inventory-20260927.json selection 2 without fetching or writing (0.4462ms)
+✔ source rejection blocks qwen3-next-candidate-inventory-20260928.json selection 0 without fetching or writing (0.42ms)
+✔ source rejection blocks qwen3-next-candidate-inventory-20260928.json selection 1 without fetching or writing (0.3704ms)
+✔ source rejection blocks qwen3-next-candidate-inventory-20260928.json selection 2 without fetching or writing (0.7887ms)
+✔ source rejection blocks qwen3-reaper-untied-inventory-20260929.json selection 1 without fetching or writing (0.4863ms)
+✔ source rejection blocks qwen3-reaper-untied-inventory-20260929.json selection 0 without fetching or writing (0.3187ms)
+✔ source rejection blocks qwen2.5-coder-0.5b-inventory-20260929.json selection 0 without fetching or writing (0.3462ms)
+✔ source rejection blocks pluto-genesis-0.6b-inventory-20260929.json selection 0 without fetching or writing (0.3252ms)
+✔ source rejection blocks meet7-0.6b-inventory-20260929.json selection 0 without fetching or writing (0.2898ms)
+✔ source rejection blocks qwen2-1.5b-inventory-20260930.json selection 0 without fetching or writing (0.23ms)
+✔ source rejection blocks qwen2.5-coder-1.5b-inventory-20260930.json selection 0 without fetching or writing (0.2891ms)
+✔ source rejection blocks qwen2-0.5b-inventory-20260930.json selection 0 without fetching or writing (0.2676ms)
+✔ discovery excludes recorded revision before model-specific requests (27.9598ms)
+✔ discovery refuses a renamed repository with the rejected weight digest (2.3994ms)
+✔ acquisition independently rejects stale or fabricated inventories before any write or fetch (0.7311ms)
+ℹ tests 20
+ℹ suites 0
+ℹ pass 20
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 125.3915

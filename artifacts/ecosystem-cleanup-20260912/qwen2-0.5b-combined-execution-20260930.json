@@ -1,0 +1,921 @@
+{
+  "schema": "tinyrustlm.source_development_combined_execution.v1",
+  "status": "execution-complete-awaiting-independent-quality-assessment",
+  "plan": {
+    "path": "artifacts/ecosystem-cleanup-20260912/qwen2-0.5b-development-plan-20260930.json",
+    "bytes": 26797,
+    "sha256": "844102d5727b9083c0dab85c866aa6566708a2df96733371534df1ec5addd6ba"
+  },
+  "source": {
+    "modelId": "Qwen/Qwen2-0.5B-Instruct",
+    "revision": "c540970f9e29518b1d8f06ab8b24cba66ad77b6d",
+    "weightSha256": "130282af0dfa9fe5840737cc49a0d339d06075f83c5a315c3372c9a0740d0b96",
+    "weightIdentity": "4c89e7e5f3c656ae9e59819d7faa7086d3e7bf7735f2efcd45dc4681804418ff",
+    "sourceWeightBytes": 988097824,
+    "totalParameters": 494032768,
+    "profile": "qwen2.5-0.5b-bpe",
+    "checkpointDirectory": "D:\\LLMs\\TinyRustLM\\sources\\source-fd78f7f6cea8c97a44f524ed8869fe63239b1ac1cb67a5aacda59224a8c074f8"
+  },
+  "stageOrder": [
+    "registered-root-source-authority-and-remote-exact",
+    "bound-input-code-runtime-and-cache-identity",
+    "exclusive-start-record",
+    "one-cache-backed-acquisition",
+    "exclusive-publisher-license-custody",
+    "six-receipt-source-files-plus-separate-publisher-license-and-receipt-verification",
+    "config-tokenizer-only-preflight",
+    "one-six-case-source-screen",
+    "post-operation-bound-identity-and-evidence-closure"
+  ],
+  "knownParallelChanges": [
+    "Parent-coordinated root numerical owner/profile/registration/tests, scalar.rs runtime correction and rebuilt native/browser WASM artifacts, independent dotnet/tools/TinyRustLM.ConversationProbe and tinyrustlm/tools/real-composition-execution.js with their focused tests, hosting/catalog/installer/preflight source/tests, and corresponding docs/review/test output may change in their owning agents. They are outside this experiment bound input closure. Record actual status and ownership. No bound helper/input, unknown source copy, failed authority scan or model mutation is exempt. Explicit current owners may also change Mini deploy/host-renewal/renewal-core.php, source-manifest and related tests, Mini publisher integration plans/source preparations, and Tiny deployed-ui-acceptance.js with its test. These remain outside the bound source/input closure; record actual all-seven statuses.",
+    "Current root GO permits Mini publisher integration and Tiny deployed UI helper/test preparations. Actual prelaunch Mini changes: tools/deploy-site.ps1, deploy/host-renewal-catalog.htaccess and tests/MiniModel.HostRenewal_test.ps1; actual Tiny changes: deployed-ui-acceptance.js and deployed-ui-acceptance_test.js.",
+    "Explicit root GO: Mini deploy/host-renewal/renewal-core.php, source-manifest and related tests; Tiny deployed-ui-acceptance.js and test; Mini publisher integration plan/source preparations. These are outside all bound inputs; no all-tree-clean claim."
+  ],
+  "requireAllRepositoryWorktreesClean": false,
+  "allSevenPrelaunchStatuses": [
+    {
+      "name": "LMComposer.com",
+      "head": "6cbb67c59d2f0a3ef22f736d7b515570746c0e3b",
+      "status": ""
+    },
+    {
+      "name": "MiniModel.MiRust.com",
+      "head": "b437611c34ad4f80312016f4bf9aa1a08398d07a",
+      "status": ""
+    },
+    {
+      "name": "MiniModel.org",
+      "head": "a70484eedbdca14c1ea4750dcc31ad062aaa0546",
+      "status": "M tools/deploy-site.ps1\n?? deploy/host-renewal-catalog.htaccess\n?? tests/MiniModel.HostRenewal_test.ps1"
+    },
+    {
+      "name": "MiRust.com",
+      "head": "b9420a10feb0819ca6bbf89d92c9199ba89d7c86",
+      "status": ""
+    },
+    {
+      "name": "Runtime.MiRust.com",
+      "head": "960b0775932de4cc56885b8bb05e00c7788bcf58",
+      "status": ""
+    },
+    {
+      "name": "TinyRustLM.com",
+      "head": "88dc7a993ac64c3084bdc17858beb3d24989c2bd",
+      "status": "?? tinyrustlm/tests/deployed-ui-acceptance_test.js\n?? tinyrustlm/tools/deployed-ui-acceptance.js"
+    },
+    {
+      "name": "TinyRustLM.MiRust.com",
+      "head": "3706bbdcc91fb72e7fc0b343a38a078db2e59ce0",
+      "status": ""
+    }
+  ],
+  "stages": [
+    {
+      "stage": "acquisition",
+      "elapsedMs": 28687,
+      "receiptVerified": true
+    },
+    {
+      "stage": "preflight",
+      "elapsedMs": 5826,
+      "status": 0,
+      "signal": null,
+      "error": null,
+      "stdout": {
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen2-0.5b-preflight-20260930.json",
+        "bytes": 1875,
+        "sha256": "9c0abbe04774fba628d6fbb468b9dc4662f63ac49917733b36270921745d5dcd"
+      },
+      "stderr": {
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen2-0.5b-preflight-stderr-20260930.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "stage": "screen",
+      "elapsedMs": 28321,
+      "status": 0,
+      "signal": null,
+      "error": null,
+      "stdout": {
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen2-0.5b-development-stdout-20260930.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen2-0.5b-development-stderr-20260930.txt",
+        "bytes": 262,
+        "sha256": "5b3e57d62a5a4db2293abbe91cc544846e4f9e3563877477c8477fca601ae2dc"
+      }
+    }
+  ],
+  "downloadRequests": [
+    {
+      "requestedUrl": "https://huggingface.co/Qwen/Qwen2-0.5B-Instruct/resolve/c540970f9e29518b1d8f06ab8b24cba66ad77b6d/config.json",
+      "source": "verified-cache",
+      "networkRequest": false,
+      "cacheSource": {
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen2-0.5b-metadata-20260930.json",
+        "bytes": 28278,
+        "sha256": "e3633d32c5ac4d289f9132bec788cb6ae1d04dfc9fbaec54f7d5024aed740f9f",
+        "selector": "responses: url=https://huggingface.co/Qwen/Qwen2-0.5B-Instruct/raw/c540970f9e29518b1d8f06ab8b24cba66ad77b6d/config.json -> utf8",
+        "origin": "Exact captured immutable raw-file response, reused without a new request."
+      },
+      "bytes": 659,
+      "sha256": "168aa1bd401abc3bc262ba15ba4e499627a8b4e006e9d050b47c22de20660185",
+      "startedUtc": "2026-09-30T01:05:16.850Z"
+    },
+    {
+      "requestedUrl": "https://huggingface.co/Qwen/Qwen2-0.5B-Instruct/resolve/c540970f9e29518b1d8f06ab8b24cba66ad77b6d/tokenizer.json",
+      "source": "verified-cache",
+      "networkRequest": false,
+      "cacheSource": {
+        "path": "D:/LLMs/TinyRustLM/sources/source-68cf8d3cec03cc4df50e4b30109b80ba02bbf284ccc76d1fdd9b6665b4b5e825/tokenizer.json",
+        "bytes": 7028015,
+        "sha256": "f7c9b2dba4a296b1aa76c16a34b8225c0c118978400d4bb66bff0902d702f5b8",
+        "selector": "entire regular file",
+        "origin": "Existing canonical tokenizer independently rehashed to exact current publisher Git blob/length and retained receipt SHA; no rejected model weights reused.",
+        "receipt": {
+          "path": "artifacts/ecosystem-cleanup-20260912/qwen2-1.5b-source-acquisition-20260930.json",
+          "bytes": 1821,
+          "sha256": "acc6e9c12a1a249117f2c82525b60539be7d96aaf3f0a0b02e326c15996d7704"
+        }
+      },
+      "bytes": 7028015,
+      "sha256": "f7c9b2dba4a296b1aa76c16a34b8225c0c118978400d4bb66bff0902d702f5b8",
+      "startedUtc": "2026-09-30T01:05:16.878Z"
+    },
+    {
+      "requestedUrl": "https://huggingface.co/Qwen/Qwen2-0.5B-Instruct/resolve/c540970f9e29518b1d8f06ab8b24cba66ad77b6d/tokenizer_config.json",
+      "source": "verified-cache",
+      "networkRequest": false,
+      "cacheSource": {
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen2-0.5b-metadata-20260930.json",
+        "bytes": 28278,
+        "sha256": "e3633d32c5ac4d289f9132bec788cb6ae1d04dfc9fbaec54f7d5024aed740f9f",
+        "selector": "responses: url=https://huggingface.co/Qwen/Qwen2-1.5B-Instruct/raw/ba1cf1846d7df0a0591d6c00649f57e798519da8/tokenizer_config.json -> utf8",
+        "origin": "Retained response bytes keep original provenance and exactly match the current pinned publisher Git blob/length. No current-repository HTTP retrieval is claimed."
+      },
+      "bytes": 1287,
+      "sha256": "482bd979881423375ca5414e4e0d94cd7c5349dbb17fffd46b4d36d71e62a1bc",
+      "startedUtc": "2026-09-30T01:05:16.933Z"
+    },
+    {
+      "requestedUrl": "https://huggingface.co/Qwen/Qwen2-0.5B-Instruct/resolve/c540970f9e29518b1d8f06ab8b24cba66ad77b6d/generation_config.json",
+      "source": "verified-cache",
+      "networkRequest": false,
+      "cacheSource": {
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen2-0.5b-metadata-20260930.json",
+        "bytes": 28278,
+        "sha256": "e3633d32c5ac4d289f9132bec788cb6ae1d04dfc9fbaec54f7d5024aed740f9f",
+        "selector": "responses: url=https://huggingface.co/Qwen/Qwen2-1.5B-Instruct/raw/ba1cf1846d7df0a0591d6c00649f57e798519da8/generation_config.json -> utf8",
+        "origin": "Retained response bytes keep original provenance and exactly match the current pinned publisher Git blob/length. No current-repository HTTP retrieval is claimed."
+      },
+      "bytes": 242,
+      "sha256": "e558847a8b4402616f1273797b015104dc266fe4b520056fca88823ba8f8ebe6",
+      "startedUtc": "2026-09-30T01:05:16.946Z"
+    },
+    {
+      "requestedUrl": "https://www.apache.org/licenses/LICENSE-2.0.txt",
+      "source": "verified-cache",
+      "networkRequest": false,
+      "cacheSource": {
+        "path": "D:/LLMs/TinyRustLM/sources/source-8334f8dcfe693b2a916f02ff16265fc55c0e34e332bb20f47eacf3b3217fda4a/LICENSE",
+        "bytes": 11358,
+        "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+        "selector": "entire regular file",
+        "origin": "Previously verified exact official Apache2 authority text; no weight bytes reused from the rejected candidate.",
+        "receipt": {
+          "path": "artifacts/ecosystem-cleanup-20260912/qwen2.5-coder-0.5b-source-acquisition-20260929.json",
+          "bytes": 1827,
+          "sha256": "cc296906f29df245ab6d0d74bff1130ed6bdae0a3ce657bdc312bc7b1b009506"
+        }
+      },
+      "bytes": 11358,
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+      "startedUtc": "2026-09-30T01:05:16.966Z"
+    },
+    {
+      "requestedUrl": "https://huggingface.co/Qwen/Qwen2-0.5B-Instruct/resolve/c540970f9e29518b1d8f06ab8b24cba66ad77b6d/model.safetensors",
+      "actualUrl": "https://huggingface.co/Qwen/Qwen2-0.5B-Instruct/resolve/c540970f9e29518b1d8f06ab8b24cba66ad77b6d/model.safetensors",
+      "source": "network-lfs",
+      "networkRequest": true,
+      "startedUtc": "2026-09-30T01:05:16.973Z"
+    }
+  ],
+  "metadataTransport": {
+    "mode": "five-exact-verified-cache-responses-plus-one-pinned-lfs-weight",
+    "cacheEntries": [
+      {
+        "filename": "config.json",
+        "requestedUrl": "https://huggingface.co/Qwen/Qwen2-0.5B-Instruct/resolve/c540970f9e29518b1d8f06ab8b24cba66ad77b6d/config.json",
+        "bytes": 659,
+        "sha256": "168aa1bd401abc3bc262ba15ba4e499627a8b4e006e9d050b47c22de20660185",
+        "gitBlobId": "463b055262b6c66c4629a74a4b300bfe2ed31d3c",
+        "cacheSource": {
+          "path": "artifacts/ecosystem-cleanup-20260912/qwen2-0.5b-metadata-20260930.json",
+          "bytes": 28278,
+          "sha256": "e3633d32c5ac4d289f9132bec788cb6ae1d04dfc9fbaec54f7d5024aed740f9f",
+          "selector": "responses: url=https://huggingface.co/Qwen/Qwen2-0.5B-Instruct/raw/c540970f9e29518b1d8f06ab8b24cba66ad77b6d/config.json -> utf8",
+          "origin": "Exact captured immutable raw-file response, reused without a new request."
+        }
+      },
+      {
+        "filename": "tokenizer_config.json",
+        "requestedUrl": "https://huggingface.co/Qwen/Qwen2-0.5B-Instruct/resolve/c540970f9e29518b1d8f06ab8b24cba66ad77b6d/tokenizer_config.json",
+        "bytes": 1287,
+        "sha256": "482bd979881423375ca5414e4e0d94cd7c5349dbb17fffd46b4d36d71e62a1bc",
+        "gitBlobId": "ff55d7b9eb1384e5d4d7e75dc0f564c1a8833d6e",
+        "cacheSource": {
+          "path": "artifacts/ecosystem-cleanup-20260912/qwen2-0.5b-metadata-20260930.json",
+          "bytes": 28278,
+          "sha256": "e3633d32c5ac4d289f9132bec788cb6ae1d04dfc9fbaec54f7d5024aed740f9f",
+          "selector": "responses: url=https://huggingface.co/Qwen/Qwen2-1.5B-Instruct/raw/ba1cf1846d7df0a0591d6c00649f57e798519da8/tokenizer_config.json -> utf8",
+          "origin": "Retained response bytes keep original provenance and exactly match the current pinned publisher Git blob/length. No current-repository HTTP retrieval is claimed."
+        }
+      },
+      {
+        "filename": "generation_config.json",
+        "requestedUrl": "https://huggingface.co/Qwen/Qwen2-0.5B-Instruct/resolve/c540970f9e29518b1d8f06ab8b24cba66ad77b6d/generation_config.json",
+        "bytes": 242,
+        "sha256": "e558847a8b4402616f1273797b015104dc266fe4b520056fca88823ba8f8ebe6",
+        "gitBlobId": "dfc11073787daf1b0f9c0f1499487ab5f4c93738",
+        "cacheSource": {
+          "path": "artifacts/ecosystem-cleanup-20260912/qwen2-0.5b-metadata-20260930.json",
+          "bytes": 28278,
+          "sha256": "e3633d32c5ac4d289f9132bec788cb6ae1d04dfc9fbaec54f7d5024aed740f9f",
+          "selector": "responses: url=https://huggingface.co/Qwen/Qwen2-1.5B-Instruct/raw/ba1cf1846d7df0a0591d6c00649f57e798519da8/generation_config.json -> utf8",
+          "origin": "Retained response bytes keep original provenance and exactly match the current pinned publisher Git blob/length. No current-repository HTTP retrieval is claimed."
+        }
+      },
+      {
+        "filename": "LICENSE",
+        "requestedUrl": "https://www.apache.org/licenses/LICENSE-2.0.txt",
+        "bytes": 11358,
+        "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+        "gitBlobId": null,
+        "cacheSource": {
+          "path": "D:/LLMs/TinyRustLM/sources/source-8334f8dcfe693b2a916f02ff16265fc55c0e34e332bb20f47eacf3b3217fda4a/LICENSE",
+          "bytes": 11358,
+          "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+          "selector": "entire regular file",
+          "origin": "Previously verified exact official Apache2 authority text; no weight bytes reused from the rejected candidate.",
+          "receipt": {
+            "path": "artifacts/ecosystem-cleanup-20260912/qwen2.5-coder-0.5b-source-acquisition-20260929.json",
+            "bytes": 1827,
+            "sha256": "cc296906f29df245ab6d0d74bff1130ed6bdae0a3ce657bdc312bc7b1b009506"
+          }
+        }
+      },
+      {
+        "filename": "tokenizer.json",
+        "requestedUrl": "https://huggingface.co/Qwen/Qwen2-0.5B-Instruct/resolve/c540970f9e29518b1d8f06ab8b24cba66ad77b6d/tokenizer.json",
+        "bytes": 7028015,
+        "sha256": "f7c9b2dba4a296b1aa76c16a34b8225c0c118978400d4bb66bff0902d702f5b8",
+        "gitBlobId": "33ea6c72ebb92a237fa2bdf26c5ff16592efcdae",
+        "cacheSource": {
+          "path": "D:/LLMs/TinyRustLM/sources/source-68cf8d3cec03cc4df50e4b30109b80ba02bbf284ccc76d1fdd9b6665b4b5e825/tokenizer.json",
+          "bytes": 7028015,
+          "sha256": "f7c9b2dba4a296b1aa76c16a34b8225c0c118978400d4bb66bff0902d702f5b8",
+          "selector": "entire regular file",
+          "origin": "Existing canonical tokenizer independently rehashed to exact current publisher Git blob/length and retained receipt SHA; no rejected model weights reused.",
+          "receipt": {
+            "path": "artifacts/ecosystem-cleanup-20260912/qwen2-1.5b-source-acquisition-20260930.json",
+            "bytes": 1821,
+            "sha256": "acc6e9c12a1a249117f2c82525b60539be7d96aaf3f0a0b02e326c15996d7704"
+          }
+        }
+      }
+    ],
+    "networkEntries": [
+      {
+        "filename": "model.safetensors",
+        "requestedUrl": "https://huggingface.co/Qwen/Qwen2-0.5B-Instruct/resolve/c540970f9e29518b1d8f06ab8b24cba66ad77b6d/model.safetensors",
+        "bytes": 988097824,
+        "sha256": "130282af0dfa9fe5840737cc49a0d339d06075f83c5a315c3372c9a0740d0b96",
+        "attempts": 1
+      }
+    ]
+  },
+  "before": {
+    "head": "88dc7a993ac64c3084bdc17858beb3d24989c2bd",
+    "tree": "3e33e764e00aadc71c0c15c085c983a6a60d4031",
+    "status": "?? tinyrustlm/tests/deployed-ui-acceptance_test.js\n?? tinyrustlm/tools/deployed-ui-acceptance.js",
+    "boundInputs": [
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen2-0.5b-metadata-20260930.json",
+        "bytes": 28278,
+        "sha256": "e3633d32c5ac4d289f9132bec788cb6ae1d04dfc9fbaec54f7d5024aed740f9f"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen2-0.5b-metadata-20260930.json",
+        "bytes": 28278,
+        "sha256": "e3633d32c5ac4d289f9132bec788cb6ae1d04dfc9fbaec54f7d5024aed740f9f"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen2-0.5b-metadata-20260930.json",
+        "bytes": 28278,
+        "sha256": "e3633d32c5ac4d289f9132bec788cb6ae1d04dfc9fbaec54f7d5024aed740f9f"
+      },
+      {
+        "path": "D:/LLMs/TinyRustLM/sources/source-8334f8dcfe693b2a916f02ff16265fc55c0e34e332bb20f47eacf3b3217fda4a/LICENSE",
+        "bytes": 11358,
+        "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      },
+      {
+        "path": "D:/LLMs/TinyRustLM/sources/source-68cf8d3cec03cc4df50e4b30109b80ba02bbf284ccc76d1fdd9b6665b4b5e825/tokenizer.json",
+        "bytes": 7028015,
+        "sha256": "f7c9b2dba4a296b1aa76c16a34b8225c0c118978400d4bb66bff0902d702f5b8"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen2.5-coder-0.5b-source-acquisition-20260929.json",
+        "bytes": 1827,
+        "sha256": "cc296906f29df245ab6d0d74bff1130ed6bdae0a3ce657bdc312bc7b1b009506"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen2-1.5b-source-acquisition-20260930.json",
+        "bytes": 1821,
+        "sha256": "acc6e9c12a1a249117f2c82525b60539be7d96aaf3f0a0b02e326c15996d7704"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen2-0.5b-development-plan-20260930.json",
+        "bytes": 26797,
+        "sha256": "844102d5727b9083c0dab85c866aa6566708a2df96733371534df1ec5addd6ba"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen2-0.5b-metadata-20260930.json",
+        "bytes": 28278,
+        "sha256": "e3633d32c5ac4d289f9132bec788cb6ae1d04dfc9fbaec54f7d5024aed740f9f"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen2-0.5b-metadata-review-20260930.json",
+        "bytes": 8596,
+        "sha256": "4c22929a0f0aa62e3b16f621e8f350b3e12a3eb06665b3f0dd32d36a3b1ee3d2"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen2-0.5b-inventory-20260930.json",
+        "bytes": 2157,
+        "sha256": "ea95220aca8aeae83663e9777e2e58a8d79d3a28c46618f6dd6ce357daad8187"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-untied-development-binding-20260929.json",
+        "bytes": 5733,
+        "sha256": "980ee3d8628cecb46692f44ed3a88ec65755226b8251f62bd4432ec68b411335"
+      },
+      {
+        "path": "contracts/vnext/source-candidate-exclusions.v1.json",
+        "bytes": 23898,
+        "sha256": "4184219b405ba04132ccaa3ed52741908d120cc61a5719be411042b318eac256"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-untied-development-screen-20260929.eval",
+        "bytes": 1308,
+        "sha256": "946e6bdda7512bde3db4dac5a4f66e66eb5353141e7d19b8a0ca3735fd2903c9"
+      },
+      {
+        "path": "tinyrustlm/tools/reference-raw-quality.py",
+        "bytes": 34527,
+        "sha256": "30dd01e388433dfe926f5990ab778817167fd50a6c81a55a19e10870ebb289fb"
+      },
+      {
+        "path": "tinyrustlm/tools/huggingface-supported-candidates.js",
+        "bytes": 28197,
+        "sha256": "9d271406ca8e1fe4e397b1e7b5c6a790e63fb1d210e35d79994f135525c7434b"
+      },
+      {
+        "path": "tinyrustlm/tools/huggingface-candidate-acquire.js",
+        "bytes": 33624,
+        "sha256": "8ce23eefdc3c8786cfd36749ccfd2a3b9d27c07504de00ef1224638937449ca7"
+      },
+      {
+        "path": "tinyrustlm/tools/huggingface-candidate-storage.js",
+        "bytes": 7471,
+        "sha256": "d94c9e90df4b110523d5238d361b348b565b7a2dd9f3840103cb20652b6a9a33"
+      },
+      {
+        "path": "tinyrustlm/tools/huggingface-metadata.js",
+        "bytes": 4158,
+        "sha256": "f6e26c0255a7eec38d35c116d4e1983fab42f33955e04074cb413f45ea97a341"
+      },
+      {
+        "path": "tinyrustlm/tools/huggingface-weight-layout.js",
+        "bytes": 3690,
+        "sha256": "002b9cbe9111a89a01a6c36ff63def0d18e9c5e7060a798636eac440dd6f2911"
+      },
+      {
+        "path": "tinyrustlm/tools/source-candidate-exclusions.js",
+        "bytes": 1885,
+        "sha256": "43a71f9760a2d1038f9b3b017c61a445577a68bcd285098ab915ba5b0df4b836"
+      },
+      {
+        "path": "tinyrustlm/tools/strict-json.js",
+        "bytes": 11529,
+        "sha256": "8935f3918c9a12722404ad120c73dae80965c723301a00c7e60767c45a78790e"
+      },
+      {
+        "path": "tinyrustlm/tools/canonical-operation-scratch.js",
+        "bytes": 9276,
+        "sha256": "52b6024d121479d20a634ee639d641cb1ff4896bce99b1110a3e26720bf5a7f9"
+      },
+      {
+        "path": "tinyrustlm/tools/verify-single-source-authority.js",
+        "bytes": 144521,
+        "sha256": "e8867b01d00399f319852449ff80c249edab30a8bcee4c09fd3789300f65aaf7"
+      },
+      {
+        "path": "D:\\LLMs\\TinyRustLM\\training-env-py312\\Scripts\\python.exe",
+        "bytes": 274424,
+        "sha256": "0b471133e110cfb53a061cad528ce8e517d7b9ac41a0a396c39ad795a487fc14"
+      },
+      {
+        "path": "D:\\LLMs\\TinyRustLM\\training-env-py312\\Lib\\site-packages\\transformers\\tokenization_utils_base.py",
+        "bytes": 183764,
+        "sha256": "f86fc8ce6ad86bcbb4bad93b84b3cde9f7b93b516703b5d220889c66bbdd7b5a"
+      }
+    ]
+  },
+  "sourceGate": {
+    "status": 0,
+    "signal": null,
+    "error": null,
+    "durationMs": 39246,
+    "stdoutBytes": 164,
+    "stdoutSha256": "23bf73a83fe1c67061b85372209405f9748df2315d3dac1122d5cc2a4eae7999",
+    "stdout": "{\"canonicalLayoutAvailable\":true,\"coverageClass\":\"registered-governed-roots-only\",\"localScanPerformed\":true,\"verdict\":\"pass\",\"wholeVolumeInventoryPerformed\":false}\n",
+    "stderr": ""
+  },
+  "scratch": {
+    "root": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\qwen2-0.5b-combined\\tinyrustlm-operation-LpXbJl",
+    "marker": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\qwen2-0.5b-combined\\tinyrustlm-operation-LpXbJl.owner.v2",
+    "removedRoot": true,
+    "removedMarker": true
+  },
+  "publisherLicenseCustody": {
+    "filename": "PUBLISHER-LICENSE",
+    "originalPublisherFilename": "LICENSE",
+    "bytes": 11344,
+    "sha256": "c156170b718ec29139d3653d40ed1986fd92fb7e0959b5c71f3c48f62e6636f4",
+    "gitBlobId": "cc375d92d7061b465042e9a1d507cb99598fb97a",
+    "source": {
+      "path": "artifacts/ecosystem-cleanup-20260912/qwen2-0.5b-metadata-20260930.json",
+      "bytes": 28278,
+      "sha256": "e3633d32c5ac4d289f9132bec788cb6ae1d04dfc9fbaec54f7d5024aed740f9f",
+      "selector": "responses: url=https://huggingface.co/Qwen/Qwen2-1.5B-Instruct/raw/ba1cf1846d7df0a0591d6c00649f57e798519da8/LICENSE -> utf8",
+      "originalUrl": "https://huggingface.co/Qwen/Qwen2-1.5B-Instruct/raw/ba1cf1846d7df0a0591d6c00649f57e798519da8/LICENSE",
+      "currentPublisherUrl": "https://huggingface.co/Qwen/Qwen2-0.5B-Instruct/raw/c540970f9e29518b1d8f06ab8b24cba66ad77b6d/LICENSE",
+      "origin": "Retained original publisher-license bytes match current Qwen2-0.5B LICENSE by pinned API Git blob and length; no new HTTP response is claimed."
+    },
+    "procedure": "After successful six-file acquisition, verify regular canonical source directory and absent PUBLISHER-LICENSE. Extract exact bound UTF8 bytes, verify length/SHA/Git blob, create exclusively and independently rehash. Keep six-file acquisition receipt and generic authority LICENSE unchanged. Any failure stops before generation.",
+    "retention": "Any later conversion source closure or distribution must preserve actual publisher license and Copyright2024 Alibaba Cloud; generic authority evidence cannot substitute for it.",
+    "actual": {
+      "path": "D:\\LLMs\\TinyRustLM\\sources\\source-fd78f7f6cea8c97a44f524ed8869fe63239b1ac1cb67a5aacda59224a8c074f8\\PUBLISHER-LICENSE",
+      "bytes": 11344,
+      "sha256": "c156170b718ec29139d3653d40ed1986fd92fb7e0959b5c71f3c48f62e6636f4"
+    },
+    "receiptMember": false,
+    "sourceReceiptUnchanged": true
+  },
+  "sourceBefore": [
+    {
+      "filename": "LICENSE",
+      "byteCount": 11358,
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    },
+    {
+      "filename": "PUBLISHER-LICENSE",
+      "byteCount": 11344,
+      "sha256": "c156170b718ec29139d3653d40ed1986fd92fb7e0959b5c71f3c48f62e6636f4"
+    },
+    {
+      "filename": "config.json",
+      "byteCount": 659,
+      "sha256": "168aa1bd401abc3bc262ba15ba4e499627a8b4e006e9d050b47c22de20660185"
+    },
+    {
+      "filename": "generation_config.json",
+      "byteCount": 242,
+      "sha256": "e558847a8b4402616f1273797b015104dc266fe4b520056fca88823ba8f8ebe6"
+    },
+    {
+      "filename": "model.safetensors",
+      "byteCount": 988097824,
+      "sha256": "130282af0dfa9fe5840737cc49a0d339d06075f83c5a315c3372c9a0740d0b96"
+    },
+    {
+      "filename": "source-acquisition.json",
+      "byteCount": 1819,
+      "sha256": "ce412900d0db204f713ec760d36cf419396a06913ecb2ec99fb21aadfda78da1"
+    },
+    {
+      "filename": "tokenizer.json",
+      "byteCount": 7028015,
+      "sha256": "f7c9b2dba4a296b1aa76c16a34b8225c0c118978400d4bb66bff0902d702f5b8"
+    },
+    {
+      "filename": "tokenizer_config.json",
+      "byteCount": 1287,
+      "sha256": "482bd979881423375ca5414e4e0d94cd7c5349dbb17fffd46b4d36d71e62a1bc"
+    }
+  ],
+  "raw": {
+    "path": "artifacts/ecosystem-cleanup-20260912/qwen2-0.5b-development-raw-20260930.json",
+    "bytes": 24914,
+    "sha256": "96ed1833eddd190b39892e3fda2884724ea34b618f876357e86d324f4bb414f7"
+  },
+  "sourceAfter": [
+    {
+      "filename": "LICENSE",
+      "byteCount": 11358,
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    },
+    {
+      "filename": "PUBLISHER-LICENSE",
+      "byteCount": 11344,
+      "sha256": "c156170b718ec29139d3653d40ed1986fd92fb7e0959b5c71f3c48f62e6636f4"
+    },
+    {
+      "filename": "config.json",
+      "byteCount": 659,
+      "sha256": "168aa1bd401abc3bc262ba15ba4e499627a8b4e006e9d050b47c22de20660185"
+    },
+    {
+      "filename": "generation_config.json",
+      "byteCount": 242,
+      "sha256": "e558847a8b4402616f1273797b015104dc266fe4b520056fca88823ba8f8ebe6"
+    },
+    {
+      "filename": "model.safetensors",
+      "byteCount": 988097824,
+      "sha256": "130282af0dfa9fe5840737cc49a0d339d06075f83c5a315c3372c9a0740d0b96"
+    },
+    {
+      "filename": "source-acquisition.json",
+      "byteCount": 1819,
+      "sha256": "ce412900d0db204f713ec760d36cf419396a06913ecb2ec99fb21aadfda78da1"
+    },
+    {
+      "filename": "tokenizer.json",
+      "byteCount": 7028015,
+      "sha256": "f7c9b2dba4a296b1aa76c16a34b8225c0c118978400d4bb66bff0902d702f5b8"
+    },
+    {
+      "filename": "tokenizer_config.json",
+      "byteCount": 1287,
+      "sha256": "482bd979881423375ca5414e4e0d94cd7c5349dbb17fffd46b4d36d71e62a1bc"
+    }
+  ],
+  "after": {
+    "head": "e73d2b3ae04f37bfe83dc7d8b27dd5e8fa2d47c1",
+    "tree": "5052614fcf291000190f36a1b75b3cad2f13a62f",
+    "status": "?? artifacts/ecosystem-cleanup-20260912/qwen2-0.5b-combined-start-20260930.json\n?? artifacts/ecosystem-cleanup-20260912/qwen2-0.5b-development-raw-20260930.json\n?? artifacts/ecosystem-cleanup-20260912/qwen2-0.5b-development-stderr-20260930.txt\n?? artifacts/ecosystem-cleanup-20260912/qwen2-0.5b-development-stdout-20260930.txt\n?? artifacts/ecosystem-cleanup-20260912/qwen2-0.5b-preflight-20260930.json\n?? artifacts/ecosystem-cleanup-20260912/qwen2-0.5b-preflight-stderr-20260930.txt\n?? artifacts/ecosystem-cleanup-20260912/qwen2-0.5b-source-acquisition-20260930.json\n?? artifacts/tests/qwen2-0.5b-combined/",
+    "allSevenStatuses": [
+      {
+        "name": "LMComposer.com",
+        "head": "6cbb67c59d2f0a3ef22f736d7b515570746c0e3b",
+        "status": ""
+      },
+      {
+        "name": "MiniModel.MiRust.com",
+        "head": "b437611c34ad4f80312016f4bf9aa1a08398d07a",
+        "status": ""
+      },
+      {
+        "name": "MiniModel.org",
+        "head": "a70484eedbdca14c1ea4750dcc31ad062aaa0546",
+        "status": "M tools/deploy-site.ps1\n?? deploy/host-renewal-catalog.htaccess\n?? tests/MiniModel.HostRenewal_test.ps1\n?? tests/verify-host-renewal-key_test.js\n?? tools/verify-host-renewal-key.js"
+      },
+      {
+        "name": "MiRust.com",
+        "head": "b9420a10feb0819ca6bbf89d92c9199ba89d7c86",
+        "status": ""
+      },
+      {
+        "name": "Runtime.MiRust.com",
+        "head": "960b0775932de4cc56885b8bb05e00c7788bcf58",
+        "status": ""
+      },
+      {
+        "name": "TinyRustLM.com",
+        "head": "e73d2b3ae04f37bfe83dc7d8b27dd5e8fa2d47c1",
+        "status": "?? artifacts/ecosystem-cleanup-20260912/qwen2-0.5b-combined-start-20260930.json\n?? artifacts/ecosystem-cleanup-20260912/qwen2-0.5b-development-raw-20260930.json\n?? artifacts/ecosystem-cleanup-20260912/qwen2-0.5b-development-stderr-20260930.txt\n?? artifacts/ecosystem-cleanup-20260912/qwen2-0.5b-development-stdout-20260930.txt\n?? artifacts/ecosystem-cleanup-20260912/qwen2-0.5b-preflight-20260930.json\n?? artifacts/ecosystem-cleanup-20260912/qwen2-0.5b-preflight-stderr-20260930.txt\n?? artifacts/ecosystem-cleanup-20260912/qwen2-0.5b-source-acquisition-20260930.json\n?? artifacts/tests/qwen2-0.5b-combined/"
+      },
+      {
+        "name": "TinyRustLM.MiRust.com",
+        "head": "3706bbdcc91fb72e7fc0b343a38a078db2e59ce0",
+        "status": ""
+      }
+    ],
+    "boundInputs": [
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen2-0.5b-metadata-20260930.json",
+        "bytes": 28278,
+        "sha256": "e3633d32c5ac4d289f9132bec788cb6ae1d04dfc9fbaec54f7d5024aed740f9f"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen2-0.5b-metadata-20260930.json",
+        "bytes": 28278,
+        "sha256": "e3633d32c5ac4d289f9132bec788cb6ae1d04dfc9fbaec54f7d5024aed740f9f"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen2-0.5b-metadata-20260930.json",
+        "bytes": 28278,
+        "sha256": "e3633d32c5ac4d289f9132bec788cb6ae1d04dfc9fbaec54f7d5024aed740f9f"
+      },
+      {
+        "path": "D:/LLMs/TinyRustLM/sources/source-8334f8dcfe693b2a916f02ff16265fc55c0e34e332bb20f47eacf3b3217fda4a/LICENSE",
+        "bytes": 11358,
+        "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      },
+      {
+        "path": "D:/LLMs/TinyRustLM/sources/source-68cf8d3cec03cc4df50e4b30109b80ba02bbf284ccc76d1fdd9b6665b4b5e825/tokenizer.json",
+        "bytes": 7028015,
+        "sha256": "f7c9b2dba4a296b1aa76c16a34b8225c0c118978400d4bb66bff0902d702f5b8"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen2.5-coder-0.5b-source-acquisition-20260929.json",
+        "bytes": 1827,
+        "sha256": "cc296906f29df245ab6d0d74bff1130ed6bdae0a3ce657bdc312bc7b1b009506"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen2-1.5b-source-acquisition-20260930.json",
+        "bytes": 1821,
+        "sha256": "acc6e9c12a1a249117f2c82525b60539be7d96aaf3f0a0b02e326c15996d7704"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen2-0.5b-development-plan-20260930.json",
+        "bytes": 26797,
+        "sha256": "844102d5727b9083c0dab85c866aa6566708a2df96733371534df1ec5addd6ba"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen2-0.5b-metadata-20260930.json",
+        "bytes": 28278,
+        "sha256": "e3633d32c5ac4d289f9132bec788cb6ae1d04dfc9fbaec54f7d5024aed740f9f"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen2-0.5b-metadata-review-20260930.json",
+        "bytes": 8596,
+        "sha256": "4c22929a0f0aa62e3b16f621e8f350b3e12a3eb06665b3f0dd32d36a3b1ee3d2"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen2-0.5b-inventory-20260930.json",
+        "bytes": 2157,
+        "sha256": "ea95220aca8aeae83663e9777e2e58a8d79d3a28c46618f6dd6ce357daad8187"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-untied-development-binding-20260929.json",
+        "bytes": 5733,
+        "sha256": "980ee3d8628cecb46692f44ed3a88ec65755226b8251f62bd4432ec68b411335"
+      },
+      {
+        "path": "contracts/vnext/source-candidate-exclusions.v1.json",
+        "bytes": 23898,
+        "sha256": "4184219b405ba04132ccaa3ed52741908d120cc61a5719be411042b318eac256"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-untied-development-screen-20260929.eval",
+        "bytes": 1308,
+        "sha256": "946e6bdda7512bde3db4dac5a4f66e66eb5353141e7d19b8a0ca3735fd2903c9"
+      },
+      {
+        "path": "tinyrustlm/tools/reference-raw-quality.py",
+        "bytes": 34527,
+        "sha256": "30dd01e388433dfe926f5990ab778817167fd50a6c81a55a19e10870ebb289fb"
+      },
+      {
+        "path": "tinyrustlm/tools/huggingface-supported-candidates.js",
+        "bytes": 28197,
+        "sha256": "9d271406ca8e1fe4e397b1e7b5c6a790e63fb1d210e35d79994f135525c7434b"
+      },
+      {
+        "path": "tinyrustlm/tools/huggingface-candidate-acquire.js",
+        "bytes": 33624,
+        "sha256": "8ce23eefdc3c8786cfd36749ccfd2a3b9d27c07504de00ef1224638937449ca7"
+      },
+      {
+        "path": "tinyrustlm/tools/huggingface-candidate-storage.js",
+        "bytes": 7471,
+        "sha256": "d94c9e90df4b110523d5238d361b348b565b7a2dd9f3840103cb20652b6a9a33"
+      },
+      {
+        "path": "tinyrustlm/tools/huggingface-metadata.js",
+        "bytes": 4158,
+        "sha256": "f6e26c0255a7eec38d35c116d4e1983fab42f33955e04074cb413f45ea97a341"
+      },
+      {
+        "path": "tinyrustlm/tools/huggingface-weight-layout.js",
+        "bytes": 3690,
+        "sha256": "002b9cbe9111a89a01a6c36ff63def0d18e9c5e7060a798636eac440dd6f2911"
+      },
+      {
+        "path": "tinyrustlm/tools/source-candidate-exclusions.js",
+        "bytes": 1885,
+        "sha256": "43a71f9760a2d1038f9b3b017c61a445577a68bcd285098ab915ba5b0df4b836"
+      },
+      {
+        "path": "tinyrustlm/tools/strict-json.js",
+        "bytes": 11529,
+        "sha256": "8935f3918c9a12722404ad120c73dae80965c723301a00c7e60767c45a78790e"
+      },
+      {
+        "path": "tinyrustlm/tools/canonical-operation-scratch.js",
+        "bytes": 9276,
+        "sha256": "52b6024d121479d20a634ee639d641cb1ff4896bce99b1110a3e26720bf5a7f9"
+      },
+      {
+        "path": "tinyrustlm/tools/verify-single-source-authority.js",
+        "bytes": 144521,
+        "sha256": "e8867b01d00399f319852449ff80c249edab30a8bcee4c09fd3789300f65aaf7"
+      },
+      {
+        "path": "D:\\LLMs\\TinyRustLM\\training-env-py312\\Scripts\\python.exe",
+        "bytes": 274424,
+        "sha256": "0b471133e110cfb53a061cad528ce8e517d7b9ac41a0a396c39ad795a487fc14"
+      },
+      {
+        "path": "D:\\LLMs\\TinyRustLM\\training-env-py312\\Lib\\site-packages\\transformers\\tokenization_utils_base.py",
+        "bytes": 183764,
+        "sha256": "f86fc8ce6ad86bcbb4bad93b84b3cde9f7b93b516703b5d220889c66bbdd7b5a"
+      }
+    ]
+  },
+  "rawOutcomes": [
+    {
+      "index": 0,
+      "raw_output_text": "Ready.",
+      "outputTokenCount": 3,
+      "lastTokenId": 151645,
+      "generationCalls": 1
+    },
+    {
+      "index": 1,
+      "raw_output_text": "{\n  \"name\": \"Mira\",\n  \"day\": \"Tuesday\"\n}",
+      "outputTokenCount": 18,
+      "lastTokenId": 151645,
+      "generationCalls": 1
+    },
+    {
+      "index": 2,
+      "raw_output_text": "The draft is now due Friday.",
+      "outputTokenCount": 8,
+      "lastTokenId": 151645,
+      "generationCalls": 1
+    },
+    {
+      "index": 3,
+      "raw_output_text": "1. **Choose a Packing List**: Start by choosing a packing list that includes all the items you need for your coat, bottle, and keys. This list should include all necessary items, such as a clean, well-stocked bag, a clean, well-stocked keychain, and a clean, well-stocked pen. Make sure to include any necessary accessories, such as a clean, well-stocked phone case or a clean, well-stocked wallet.\n\n2. **",
+      "outputTokenCount": 96,
+      "lastTokenId": 3070,
+      "generationCalls": 1
+    },
+    {
+      "index": 4,
+      "raw_output_text": "The pens in Box B are blue.",
+      "outputTokenCount": 9,
+      "lastTokenId": 151645,
+      "generationCalls": 1
+    },
+    {
+      "index": 5,
+      "raw_output_text": "The library is open from 9 a.m. to 6 p.m. on weekdays, and is closed on Sundays.",
+      "outputTokenCount": 26,
+      "lastTokenId": 151645,
+      "generationCalls": 1
+    }
+  ],
+  "finalBoundInputs": [
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/qwen2-0.5b-metadata-20260930.json",
+      "bytes": 28278,
+      "sha256": "e3633d32c5ac4d289f9132bec788cb6ae1d04dfc9fbaec54f7d5024aed740f9f"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/qwen2-0.5b-metadata-20260930.json",
+      "bytes": 28278,
+      "sha256": "e3633d32c5ac4d289f9132bec788cb6ae1d04dfc9fbaec54f7d5024aed740f9f"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/qwen2-0.5b-metadata-20260930.json",
+      "bytes": 28278,
+      "sha256": "e3633d32c5ac4d289f9132bec788cb6ae1d04dfc9fbaec54f7d5024aed740f9f"
+    },
+    {
+      "path": "D:/LLMs/TinyRustLM/sources/source-8334f8dcfe693b2a916f02ff16265fc55c0e34e332bb20f47eacf3b3217fda4a/LICENSE",
+      "bytes": 11358,
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    },
+    {
+      "path": "D:/LLMs/TinyRustLM/sources/source-68cf8d3cec03cc4df50e4b30109b80ba02bbf284ccc76d1fdd9b6665b4b5e825/tokenizer.json",
+      "bytes": 7028015,
+      "sha256": "f7c9b2dba4a296b1aa76c16a34b8225c0c118978400d4bb66bff0902d702f5b8"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/qwen2.5-coder-0.5b-source-acquisition-20260929.json",
+      "bytes": 1827,
+      "sha256": "cc296906f29df245ab6d0d74bff1130ed6bdae0a3ce657bdc312bc7b1b009506"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/qwen2-1.5b-source-acquisition-20260930.json",
+      "bytes": 1821,
+      "sha256": "acc6e9c12a1a249117f2c82525b60539be7d96aaf3f0a0b02e326c15996d7704"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/qwen2-0.5b-development-plan-20260930.json",
+      "bytes": 26797,
+      "sha256": "844102d5727b9083c0dab85c866aa6566708a2df96733371534df1ec5addd6ba"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/qwen2-0.5b-metadata-20260930.json",
+      "bytes": 28278,
+      "sha256": "e3633d32c5ac4d289f9132bec788cb6ae1d04dfc9fbaec54f7d5024aed740f9f"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/qwen2-0.5b-metadata-review-20260930.json",
+      "bytes": 8596,
+      "sha256": "4c22929a0f0aa62e3b16f621e8f350b3e12a3eb06665b3f0dd32d36a3b1ee3d2"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/qwen2-0.5b-inventory-20260930.json",
+      "bytes": 2157,
+      "sha256": "ea95220aca8aeae83663e9777e2e58a8d79d3a28c46618f6dd6ce357daad8187"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-untied-development-binding-20260929.json",
+      "bytes": 5733,
+      "sha256": "980ee3d8628cecb46692f44ed3a88ec65755226b8251f62bd4432ec68b411335"
+    },
+    {
+      "path": "contracts/vnext/source-candidate-exclusions.v1.json",
+      "bytes": 23898,
+      "sha256": "4184219b405ba04132ccaa3ed52741908d120cc61a5719be411042b318eac256"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-untied-development-screen-20260929.eval",
+      "bytes": 1308,
+      "sha256": "946e6bdda7512bde3db4dac5a4f66e66eb5353141e7d19b8a0ca3735fd2903c9"
+    },
+    {
+      "path": "tinyrustlm/tools/reference-raw-quality.py",
+      "bytes": 34527,
+      "sha256": "30dd01e388433dfe926f5990ab778817167fd50a6c81a55a19e10870ebb289fb"
+    },
+    {
+      "path": "tinyrustlm/tools/huggingface-supported-candidates.js",
+      "bytes": 28197,
+      "sha256": "9d271406ca8e1fe4e397b1e7b5c6a790e63fb1d210e35d79994f135525c7434b"
+    },
+    {
+      "path": "tinyrustlm/tools/huggingface-candidate-acquire.js",
+      "bytes": 33624,
+      "sha256": "8ce23eefdc3c8786cfd36749ccfd2a3b9d27c07504de00ef1224638937449ca7"
+    },
+    {
+      "path": "tinyrustlm/tools/huggingface-candidate-storage.js",
+      "bytes": 7471,
+      "sha256": "d94c9e90df4b110523d5238d361b348b565b7a2dd9f3840103cb20652b6a9a33"
+    },
+    {
+      "path": "tinyrustlm/tools/huggingface-metadata.js",
+      "bytes": 4158,
+      "sha256": "f6e26c0255a7eec38d35c116d4e1983fab42f33955e04074cb413f45ea97a341"
+    },
+    {
+      "path": "tinyrustlm/tools/huggingface-weight-layout.js",
+      "bytes": 3690,
+      "sha256": "002b9cbe9111a89a01a6c36ff63def0d18e9c5e7060a798636eac440dd6f2911"
+    },
+    {
+      "path": "tinyrustlm/tools/source-candidate-exclusions.js",
+      "bytes": 1885,
+      "sha256": "43a71f9760a2d1038f9b3b017c61a445577a68bcd285098ab915ba5b0df4b836"
+    },
+    {
+      "path": "tinyrustlm/tools/strict-json.js",
+      "bytes": 11529,
+      "sha256": "8935f3918c9a12722404ad120c73dae80965c723301a00c7e60767c45a78790e"
+    },
+    {
+      "path": "tinyrustlm/tools/canonical-operation-scratch.js",
+      "bytes": 9276,
+      "sha256": "52b6024d121479d20a634ee639d641cb1ff4896bce99b1110a3e26720bf5a7f9"
+    },
+    {
+      "path": "tinyrustlm/tools/verify-single-source-authority.js",
+      "bytes": 144521,
+      "sha256": "e8867b01d00399f319852449ff80c249edab30a8bcee4c09fd3789300f65aaf7"
+    },
+    {
+      "path": "D:\\LLMs\\TinyRustLM\\training-env-py312\\Scripts\\python.exe",
+      "bytes": 274424,
+      "sha256": "0b471133e110cfb53a061cad528ce8e517d7b9ac41a0a396c39ad795a487fc14"
+    },
+    {
+      "path": "D:\\LLMs\\TinyRustLM\\training-env-py312\\Lib\\site-packages\\transformers\\tokenization_utils_base.py",
+      "bytes": 183764,
+      "sha256": "f86fc8ce6ad86bcbb4bad93b84b3cde9f7b93b516703b5d220889c66bbdd7b5a"
+    }
+  ],
+  "finishedUtc": "2026-09-30T01:06:21.670Z",
+  "elapsedMs": 104318
+}
