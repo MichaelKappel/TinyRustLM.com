@@ -1,0 +1,57 @@
+{
+  "schema": "tinyrustlm.huggingface_supported_candidate_inventory.v4",
+  "generatedUtc": "2026-09-30T00:34:03.380Z",
+  "authority": "huggingface-primary-api-revision-files-and-apache-license-authority",
+  "profileId": "qwen2.5-1.5b-bpe",
+  "search": "Qwen/Qwen2.5-Coder-1.5B-Instruct",
+  "searchLimit": 1,
+  "requestedCandidateLimit": 1,
+  "candidateCount": 1,
+  "candidates": [
+    {
+      "sourceTemplate": "qwen2.5-1.5b-bpe",
+      "modelId": "Qwen/Qwen2.5-Coder-1.5B-Instruct",
+      "revision": "2e1fd397ee46e1388853d2af2c993145b0f1098a",
+      "downloads": 535492,
+      "likes": 148,
+      "pipelineTag": "text-generation",
+      "licenseId": "apache-2.0",
+      "licenseEvidenceKind": "revision-metadata-plus-apache-authority-text",
+      "licenseSourceUrl": "https://www.apache.org/licenses/LICENSE-2.0.txt",
+      "licenseSha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+      "configSha256": "88f9a17863c05fb313515d2ff74b1098e0c35579f99068e32beda00618508ae0",
+      "tokenizer": {
+        "filename": "tokenizer.json",
+        "byteCount": 7031645,
+        "sha256": null,
+        "gitBlobId": "443909a61d429dff23010e5bddd28ff530edda00"
+      },
+      "tokenizerConfig": {
+        "filename": "tokenizer_config.json",
+        "byteCount": 7305,
+        "sha256": null,
+        "gitBlobId": "acee076f49bf3c0298e15de0909d1da7b392f0c3"
+      },
+      "chatTemplateFile": null,
+      "generationConfig": {
+        "filename": "generation_config.json",
+        "byteCount": 242,
+        "sha256": null,
+        "gitBlobId": "b7849b3dad857bc1e227afd6ca21d1e4cb3f8f82"
+      },
+      "chatTemplateKind": "revision-chatml-template-v1",
+      "chatTemplateSha256": "cd8e9439f0570856fd70470bf8889ebd8b5d1107207f67a5efb46e342330527f",
+      "sourceWeightByteCount": 3087467144,
+      "weightIdentity": "3d155d956428bddc4e3f8bf92fc78007883754a653f6be493a9ebf84c889a8d5",
+      "weightIndex": null,
+      "weightFiles": [
+        {
+          "filename": "model.safetensors",
+          "byteCount": 3087467144,
+          "sha256": "c1b9b30e907950516ba3c646bdf570d8084c25a6410a0cdca80cf04b11bc13a8"
+        }
+      ]
+    }
+  ],
+  "rejections": []
+}

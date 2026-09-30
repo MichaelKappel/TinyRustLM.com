@@ -351,3 +351,12 @@ artifacts/ecosystem-cleanup-20260912/metadata-pair-reload-final-a2-20260930-stdo
 artifacts/ecosystem-cleanup-20260912/metadata-pair-reload-final-a2-20260930-stderr.log -text -diff
 artifacts/ecosystem-cleanup-20260912/metadata-pair-reload-final-a3-20260930-stdout.log -text -diff
 artifacts/ecosystem-cleanup-20260912/metadata-pair-reload-final-a3-20260930-stderr.log -text -diff
+
+artifacts/ecosystem-cleanup-20260912/qwen2.5-coder-1.5b-combined-start-20260930.json -text
+artifacts/ecosystem-cleanup-20260912/qwen2.5-coder-1.5b-combined-execution-20260930.json -text
+artifacts/ecosystem-cleanup-20260912/qwen2.5-coder-1.5b-source-acquisition-20260930.json -text
+artifacts/ecosystem-cleanup-20260912/qwen2.5-coder-1.5b-preflight-20260930.json -text
+artifacts/ecosystem-cleanup-20260912/qwen2.5-coder-1.5b-preflight-stderr-20260930.txt -text
+artifacts/ecosystem-cleanup-20260912/qwen2.5-coder-1.5b-development-raw-20260930.json -text
+artifacts/ecosystem-cleanup-20260912/qwen2.5-coder-1.5b-development-stdout-20260930.txt -text
+artifacts/ecosystem-cleanup-20260912/qwen2.5-coder-1.5b-development-stderr-20260930.txt -text
