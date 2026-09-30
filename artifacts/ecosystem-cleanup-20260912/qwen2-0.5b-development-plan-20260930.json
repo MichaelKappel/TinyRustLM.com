@@ -1,0 +1,428 @@
+{
+  "schema": "tinyrustlm.source_development_screen_plan.v2",
+  "status": "prospective-bound-combined-operation-awaiting-commit-and-root-go",
+  "purpose": "One exact distinct official Qwen2-0.5B-Instruct source-reference development screen using all six unchanged cases, criteria, system text and greedy controls. Preserve all52 prior rejections, including Qwen2.5-0.5B and both larger sources. Smaller size is not a quality claim.",
+  "source": {
+    "modelId": "Qwen/Qwen2-0.5B-Instruct",
+    "revision": "c540970f9e29518b1d8f06ab8b24cba66ad77b6d",
+    "weightSha256": "130282af0dfa9fe5840737cc49a0d339d06075f83c5a315c3372c9a0740d0b96",
+    "weightIdentity": "4c89e7e5f3c656ae9e59819d7faa7086d3e7bf7735f2efcd45dc4681804418ff",
+    "sourceWeightBytes": 988097824,
+    "totalParameters": 494032768,
+    "profile": "qwen2.5-0.5b-bpe",
+    "checkpointDirectory": "D:\\LLMs\\TinyRustLM\\sources\\source-fd78f7f6cea8c97a44f524ed8869fe63239b1ac1cb67a5aacda59224a8c074f8"
+  },
+  "metadata": {
+    "path": "artifacts/ecosystem-cleanup-20260912/qwen2-0.5b-metadata-20260930.json",
+    "bytes": 28278,
+    "sha256": "e3633d32c5ac4d289f9132bec788cb6ae1d04dfc9fbaec54f7d5024aed740f9f",
+    "verification": "Captured model API returned the exact revision. Pinned README/config were fetched once and match API Git blobs/lengths. Retained LICENSE/tokenizer_config/generation_config keep original request provenance and independently equal current publisher files by Git blob/length. No live search/revision endpoint response is claimed."
+  },
+  "inventory": {
+    "path": "artifacts/ecosystem-cleanup-20260912/qwen2-0.5b-inventory-20260930.json",
+    "bytes": 2157,
+    "sha256": "ea95220aca8aeae83663e9777e2e58a8d79d3a28c46618f6dd6ce357daad8187",
+    "selectionStart": 0,
+    "selectionCount": 1,
+    "schema": "tinyrustlm.huggingface_supported_candidate_inventory.v4",
+    "origin": "Actual unchanged producer admitted Qwen2-0.5B under existing qwen2.5-0.5b-bpe geometry profile by offline exact metadata replay. The profile label does not rename the source as Qwen2.5."
+  },
+  "exclusionsAtSelection": {
+    "path": "contracts/vnext/source-candidate-exclusions.v1.json",
+    "bytes": 23898,
+    "sha256": "4184219b405ba04132ccaa3ed52741908d120cc61a5719be411042b318eac256",
+    "entryCount": 52,
+    "exactRevisionOrWeightMatch": false,
+    "allPriorFailuresPreserved": true,
+    "nonmatchIsNotQualification": true
+  },
+  "selectionReason": "The requested single official smaller general-instruction source matches existing scalar operators and a Q8 size estimate below the current768MiB policy. Its distinct immutable weights remain unexcluded; related larger and Qwen2.5 sources remain terminally rejected. One unchanged screen tests actual source behavior; no broad candidate batch or quality inference from size is authorized.",
+  "verifiedMetadata": {
+    "architecture": "Qwen2ForCausalLM/qwen2; hidden896, FF4864, layers24, Qheads14, KVheads2, headDimension64, vocab151936, tied embeddings, QKV bias, no Q/K normalization",
+    "sourceDtype": "bfloat16",
+    "generationConfig": {
+      "bytes": 242,
+      "sha256": "e558847a8b4402616f1273797b015104dc266fe4b520056fca88823ba8f8ebe6",
+      "publisherEosTokenIds": [
+        151645,
+        151643
+      ]
+    },
+    "chatTemplate": {
+      "embedded": true,
+      "externalFile": null,
+      "bytes": 328,
+      "sha256": "793202280c0910ab26bc6eb57c8212c2417324c6d8c4efd0d10d59092ab3e3eb",
+      "thinkingSwitchPresent": false
+    },
+    "modelEosTokenId": 151645,
+    "tokenizerEosToken": "<|im_end|>",
+    "publisherPadTokenId": 151643,
+    "tokenizerMaximumLength": 32768,
+    "effectiveModelContextLimit": 32768,
+    "useCache": true,
+    "sourceBytePolicy": "Preserve original publisher config/tokenizer config/generation config and simple native Qwen2 ChatML. No external Jinja, thinking/tool options or fabricated metadata. Exact cached tokenizer and small metadata match current publisher Git blobs; no rejected weights are reused. PUBLISHER-LICENSE separately preserves actual publisher bytes."
+  },
+  "cases": {
+    "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-untied-development-screen-20260929.eval",
+    "bytes": 1308,
+    "sha256": "946e6bdda7512bde3db4dac5a4f66e66eb5353141e7d19b8a0ca3735fd2903c9",
+    "count": 6,
+    "maximumTotalGeneratedTokens": 352,
+    "kind": "public-development-not-holdout",
+    "changedCases": []
+  },
+  "criteria": [
+    {
+      "index": 0,
+      "expected": "Exact READY, allowing surrounding whitespace only."
+    },
+    {
+      "index": 1,
+      "expected": "A single JSON object exactly {name: Mira, day: Tuesday}; no extra text, including Markdown fences."
+    },
+    {
+      "index": 2,
+      "expected": "Friday only, allowing surrounding whitespace and final punctuation."
+    },
+    {
+      "index": 3,
+      "expected": "Exactly two actionable steps yielding a handwritten packing checklist covering coat, bottle and keys, either named explicitly or referred to unambiguously as all three stated items. Using the checklist is optional. No invented tools, added packing items, unavailable resources or falsely claimed real-world actions. Judge exactly two steps semantically, not by arbitrary punctuation."
+    },
+    {
+      "index": 4,
+      "expected": "Red only, allowing surrounding whitespace and final punctuation; preserve the prior review's treatment of lowercase red as the same color-only answer."
+    },
+    {
+      "index": 5,
+      "expected": "One sentence preserving weekday hours and Sunday closure with no invented facts."
+    }
+  ],
+  "criterionAuthority": {
+    "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-untied-development-binding-20260929.json",
+    "bytes": 5733,
+    "sha256": "980ee3d8628cecb46692f44ed3a88ec65755226b8251f62bd4432ec68b411335",
+    "reviewer": "Root agent, separately from the execution agent",
+    "review": "Root independently assessed the preceding distinct sources against these six unchanged criteria. This candidate has no generated or inspected model answers. Independent root review of this prospective plan is required before execution."
+  },
+  "tool": {
+    "path": "tinyrustlm/tools/reference-raw-quality.py",
+    "bytes": 34527,
+    "sha256": "30dd01e388433dfe926f5990ab778817167fd50a6c81a55a19e10870ebb289fb"
+  },
+  "acquisitionHelpers": [
+    {
+      "path": "tinyrustlm/tools/huggingface-supported-candidates.js",
+      "bytes": 28197,
+      "sha256": "9d271406ca8e1fe4e397b1e7b5c6a790e63fb1d210e35d79994f135525c7434b"
+    },
+    {
+      "path": "tinyrustlm/tools/huggingface-candidate-acquire.js",
+      "bytes": 33624,
+      "sha256": "8ce23eefdc3c8786cfd36749ccfd2a3b9d27c07504de00ef1224638937449ca7"
+    },
+    {
+      "path": "tinyrustlm/tools/huggingface-candidate-storage.js",
+      "bytes": 7471,
+      "sha256": "d94c9e90df4b110523d5238d361b348b565b7a2dd9f3840103cb20652b6a9a33"
+    },
+    {
+      "path": "tinyrustlm/tools/huggingface-metadata.js",
+      "bytes": 4158,
+      "sha256": "f6e26c0255a7eec38d35c116d4e1983fab42f33955e04074cb413f45ea97a341"
+    },
+    {
+      "path": "tinyrustlm/tools/huggingface-weight-layout.js",
+      "bytes": 3690,
+      "sha256": "002b9cbe9111a89a01a6c36ff63def0d18e9c5e7060a798636eac440dd6f2911"
+    },
+    {
+      "path": "tinyrustlm/tools/source-candidate-exclusions.js",
+      "bytes": 1885,
+      "sha256": "43a71f9760a2d1038f9b3b017c61a445577a68bcd285098ab915ba5b0df4b836"
+    },
+    {
+      "path": "tinyrustlm/tools/strict-json.js",
+      "bytes": 11529,
+      "sha256": "8935f3918c9a12722404ad120c73dae80965c723301a00c7e60767c45a78790e"
+    },
+    {
+      "path": "tinyrustlm/tools/canonical-operation-scratch.js",
+      "bytes": 9276,
+      "sha256": "52b6024d121479d20a634ee639d641cb1ff4896bce99b1110a3e26720bf5a7f9"
+    },
+    {
+      "path": "tinyrustlm/tools/verify-single-source-authority.js",
+      "bytes": 144521,
+      "sha256": "e8867b01d00399f319852449ff80c249edab30a8bcee4c09fd3789300f65aaf7"
+    }
+  ],
+  "execution": {
+    "python": "D:\\LLMs\\TinyRustLM\\training-env-py312\\Scripts\\python.exe",
+    "pythonFlags": [
+      "-I",
+      "-B"
+    ],
+    "torch": "2.13.0+cpu",
+    "transformers": "5.13.1",
+    "device": "cpu",
+    "dtype": "float32",
+    "generation": "greedy",
+    "systemPrompt": "You are TinyRustLM, a browser-local AI assistant. You do not have personal experiences. Answer directly and helpfully.",
+    "callsPerCase": 1,
+    "adapter": null,
+    "policyExamples": null,
+    "promptSuffix": null,
+    "remoteCode": false,
+    "localFilesOnly": true,
+    "retries": 0,
+    "timeoutSeconds": 600,
+    "threadLimit": 4,
+    "rawOutputTransform": "none",
+    "thinkingTemplateOptions": {},
+    "publisherUseCache": true,
+    "publisherUseCacheHandling": "Preserve config use_cache=true and publisher generation_config.json. The unchanged raw owner applies existing greedy controls without a use_cache override; retain source EOS[151645,151643]. Record effective source-framework behavior in tokenizer-only preflight.",
+    "runtimeBindings": [
+      {
+        "path": "D:\\LLMs\\TinyRustLM\\training-env-py312\\Scripts\\python.exe",
+        "bytes": 274424,
+        "sha256": "0b471133e110cfb53a061cad528ce8e517d7b9ac41a0a396c39ad795a487fc14"
+      },
+      {
+        "path": "D:\\LLMs\\TinyRustLM\\training-env-py312\\Lib\\site-packages\\transformers\\tokenization_utils_base.py",
+        "bytes": 183764,
+        "sha256": "f86fc8ce6ad86bcbb4bad93b84b3cde9f7b93b516703b5d220889c66bbdd7b5a"
+      }
+    ],
+    "exactGreedyControls": {
+      "do_sample": false,
+      "repetition_penalty": 1,
+      "pad_token_id": 151645,
+      "eos_token_id": [
+        151645,
+        151643
+      ],
+      "temperature": null,
+      "top_k": null,
+      "top_p": null
+    },
+    "commandArguments": [
+      "-I",
+      "-B",
+      "tinyrustlm/tools/reference-raw-quality.py",
+      "D:\\LLMs\\TinyRustLM\\sources\\source-fd78f7f6cea8c97a44f524ed8869fe63239b1ac1cb67a5aacda59224a8c074f8",
+      "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-untied-development-screen-20260929.eval",
+      "artifacts/ecosystem-cleanup-20260912/qwen2-0.5b-development-raw-20260930.json",
+      "--source-model-id",
+      "Qwen/Qwen2-0.5B-Instruct",
+      "--source-revision",
+      "c540970f9e29518b1d8f06ab8b24cba66ad77b6d",
+      "--generation-profile",
+      "greedy",
+      "--system-prompt",
+      "You are TinyRustLM, a browser-local AI assistant. You do not have personal experiences. Answer directly and helpfully."
+    ],
+    "sourceDtypeHandling": "Load untouched native BF16 checkpoint through existing CPU float32 source framework. No resave, quantization, tensor conversion or metadata rewrite. A source screen does not execute the Rust/WASM runtime."
+  },
+  "resourceEstimate": {
+    "estimateOnly": true,
+    "sourceWeightBytes": 988097824,
+    "sixReceiptSourceFilesTotalBytes": 995139385,
+    "additionalPublisherLicenseBytes": 11344,
+    "fp32ParameterBytes": 1976131072,
+    "mixedQ8TensorPayloadBytes": 496071680,
+    "estimatedSixMemberQ8Bytes": 504148271,
+    "currentAutomaticSixMemberCapBytes": 805306368,
+    "kvBytesAt1024Tokens": 25165824,
+    "twoModelCopiesPlusKvBytes": 1017309184,
+    "currentWasmCeilingBytes": 3221225472,
+    "calculation": "493961216 matrix bytes +456064 row scales*4 +71552 F32 vector values*4 =496071680bytes. Add7028015-byte tokenizer and1MiB planning allowance for container/other members =504148271bytes. KV at1024=2*24*2*64*1024*4=25165824bytes. Actual model/composition/browser costs remain unmeasured.",
+    "uncertainty": "Approximate504.15MB installed composition fits current768MiB automatic limit as an estimate only. No cap change, device-support claim, runtime admission or quality success follows. Actual converted bytes, dependencies, workspace, loading peak, latency and browser execution still require measurement."
+  },
+  "conversionBoundary": "A source pass only opens coherent implementation work: map Qwen2 bias/no-QKnorm through existing scalar operators; replace fixed Qwen3 composition/source identities; bind exact tokenizer count/context32768/simple publisher ChatML into current Tokenizer2/Template2/Prompt2. Preserve actual publisher LICENSE/copyright. Do not resurrect the retired F32 producer or claim default eligibility. Numerical/native/browser/quality/memory/catalog/seed gates remain required.",
+  "decisionRule": "Record all six raw outputs and the unchanged criteria separately. Any case failure is a terminal development rejection of these exact source bytes. No output repair, sampler change or replay. Even six passes only justify conversion and further qualification, never default/catalog admission.",
+  "output": "artifacts/ecosystem-cleanup-20260912/qwen2-0.5b-development-raw-20260930.json",
+  "combinedOperation": {
+    "maximumWallClockSeconds": 1800,
+    "sourceAuthorityArguments": [
+      "--require-remote-exact"
+    ],
+    "requireAllRepositoryWorktreesClean": false,
+    "boundSourceIdentity": "At launch capture current Tiny HEAD/tree and direct remote equality; reviewed GO commit must be ancestor. Hash this plan, inventory, exact metadata/review, cases, exclusions, raw owner, helpers/dependencies, cached inputs and runtime before/after. Bound inputs must remain unchanged. Record known unrelated parallel changes without claiming all-tree cleanliness.",
+    "parallelWorkAllowed": "Parent-coordinated root numerical owner/profile/registration/tests, scalar.rs runtime correction and rebuilt native/browser WASM artifacts, independent dotnet/tools/TinyRustLM.ConversationProbe and tinyrustlm/tools/real-composition-execution.js with their focused tests, hosting/catalog/installer/preflight source/tests, and corresponding docs/review/test output may change in their owning agents. They are outside this experiment bound input closure. Record actual status and ownership. No bound helper/input, unknown source copy, failed authority scan or model mutation is exempt. Explicit current owners may also change Mini deploy/host-renewal/renewal-core.php, source-manifest and related tests, Mini publisher integration plans/source preparations, and Tiny deployed-ui-acceptance.js with its test. These remain outside the bound source/input closure; record actual all-seven statuses.",
+    "stageOrder": [
+      "registered-root-source-authority-and-remote-exact",
+      "bound-input-code-runtime-and-cache-identity",
+      "exclusive-start-record",
+      "one-cache-backed-acquisition",
+      "exclusive-publisher-license-custody",
+      "six-receipt-source-files-plus-separate-publisher-license-and-receipt-verification",
+      "config-tokenizer-only-preflight",
+      "one-six-case-source-screen",
+      "post-operation-bound-identity-and-evidence-closure"
+    ],
+    "acquisitionMaximumSeconds": 600,
+    "acquisitionAttempts": 1,
+    "transportRetries": 0,
+    "acquisitionFailureRule": "Stop on a network, cache, identity, receipt or closure failure; preserve exact evidence, no second transport attempt or generation. Cache reuse is prospectively declared below and retains the unmodified acquisition helper's independent digest checks.",
+    "expectedSourceFiles": [
+      "config.json",
+      "tokenizer.json",
+      "tokenizer_config.json",
+      "generation_config.json",
+      "LICENSE",
+      "model.safetensors"
+    ],
+    "expectedReceipt": "source-acquisition.json",
+    "sourceReceiptHandling": "Current v4 acquisition receipt binds six exact files, including generic official Apache authority LICENSE. Keep receipt unchanged. Separately copy exact publisher LICENSE from already bound metadata capture to PUBLISHER-LICENSE and bind it in combined execution closure. Final directory contains seven data files plus source-acquisition.json. No intermediate receipt commit or second GO within this combined operation.",
+    "preflightMaximumSeconds": 120,
+    "preflightBoundary": "Bound Python/runtime offline with config/tokenizer and unchanged raw-owner helpers only. Confirm qwen2 BF16 geometry896/4864/24/14Q/2KV/head64, exact simple embedded ChatML SHA79320228..., no external Jinja, tokenizer EOS151645/pad151643, generation EOS[151645,151643], config use_cache=true, unchanged greedy pad151645, no thinking/tool options, all six rendered/tokenized prompts and context32768. Deny network/tensor reads; no AutoModel/generation. Verify declared added-token IDs151643/151644/151645 in acquired tokenizer and record actual tokenizer length separately from model vocab. Any mismatch stops before generation.",
+    "preflightFailureRule": "Stop without generation and preserve the failure. Do not edit the publisher files, prompts or settings and do not rerun the failed preflight.",
+    "screenMaximumSeconds": 600,
+    "screenAttempts": 1,
+    "finalization": "Preserve exact raw answers, stdout/stderr, exit/status/timeout evidence, before/after bound input and source-file identities and cleanup outcome. Any bound identity mismatch stops a valid model decision. All failures remain closed. Retain original in-process ownership for scratch cleanup.",
+    "expectedSupplementalFiles": [
+      "PUBLISHER-LICENSE"
+    ]
+  },
+  "cacheEntries": [
+    {
+      "filename": "config.json",
+      "requestedUrl": "https://huggingface.co/Qwen/Qwen2-0.5B-Instruct/resolve/c540970f9e29518b1d8f06ab8b24cba66ad77b6d/config.json",
+      "bytes": 659,
+      "sha256": "168aa1bd401abc3bc262ba15ba4e499627a8b4e006e9d050b47c22de20660185",
+      "gitBlobId": "463b055262b6c66c4629a74a4b300bfe2ed31d3c",
+      "cacheSource": {
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen2-0.5b-metadata-20260930.json",
+        "bytes": 28278,
+        "sha256": "e3633d32c5ac4d289f9132bec788cb6ae1d04dfc9fbaec54f7d5024aed740f9f",
+        "selector": "responses: url=https://huggingface.co/Qwen/Qwen2-0.5B-Instruct/raw/c540970f9e29518b1d8f06ab8b24cba66ad77b6d/config.json -> utf8",
+        "origin": "Exact captured immutable raw-file response, reused without a new request."
+      }
+    },
+    {
+      "filename": "tokenizer_config.json",
+      "requestedUrl": "https://huggingface.co/Qwen/Qwen2-0.5B-Instruct/resolve/c540970f9e29518b1d8f06ab8b24cba66ad77b6d/tokenizer_config.json",
+      "bytes": 1287,
+      "sha256": "482bd979881423375ca5414e4e0d94cd7c5349dbb17fffd46b4d36d71e62a1bc",
+      "gitBlobId": "ff55d7b9eb1384e5d4d7e75dc0f564c1a8833d6e",
+      "cacheSource": {
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen2-0.5b-metadata-20260930.json",
+        "bytes": 28278,
+        "sha256": "e3633d32c5ac4d289f9132bec788cb6ae1d04dfc9fbaec54f7d5024aed740f9f",
+        "selector": "responses: url=https://huggingface.co/Qwen/Qwen2-1.5B-Instruct/raw/ba1cf1846d7df0a0591d6c00649f57e798519da8/tokenizer_config.json -> utf8",
+        "origin": "Retained response bytes keep original provenance and exactly match the current pinned publisher Git blob/length. No current-repository HTTP retrieval is claimed."
+      }
+    },
+    {
+      "filename": "generation_config.json",
+      "requestedUrl": "https://huggingface.co/Qwen/Qwen2-0.5B-Instruct/resolve/c540970f9e29518b1d8f06ab8b24cba66ad77b6d/generation_config.json",
+      "bytes": 242,
+      "sha256": "e558847a8b4402616f1273797b015104dc266fe4b520056fca88823ba8f8ebe6",
+      "gitBlobId": "dfc11073787daf1b0f9c0f1499487ab5f4c93738",
+      "cacheSource": {
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen2-0.5b-metadata-20260930.json",
+        "bytes": 28278,
+        "sha256": "e3633d32c5ac4d289f9132bec788cb6ae1d04dfc9fbaec54f7d5024aed740f9f",
+        "selector": "responses: url=https://huggingface.co/Qwen/Qwen2-1.5B-Instruct/raw/ba1cf1846d7df0a0591d6c00649f57e798519da8/generation_config.json -> utf8",
+        "origin": "Retained response bytes keep original provenance and exactly match the current pinned publisher Git blob/length. No current-repository HTTP retrieval is claimed."
+      }
+    },
+    {
+      "filename": "LICENSE",
+      "requestedUrl": "https://www.apache.org/licenses/LICENSE-2.0.txt",
+      "bytes": 11358,
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+      "gitBlobId": null,
+      "cacheSource": {
+        "path": "D:/LLMs/TinyRustLM/sources/source-8334f8dcfe693b2a916f02ff16265fc55c0e34e332bb20f47eacf3b3217fda4a/LICENSE",
+        "bytes": 11358,
+        "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+        "selector": "entire regular file",
+        "origin": "Previously verified exact official Apache2 authority text; no weight bytes reused from the rejected candidate.",
+        "receipt": {
+          "path": "artifacts/ecosystem-cleanup-20260912/qwen2.5-coder-0.5b-source-acquisition-20260929.json",
+          "bytes": 1827,
+          "sha256": "cc296906f29df245ab6d0d74bff1130ed6bdae0a3ce657bdc312bc7b1b009506"
+        }
+      }
+    },
+    {
+      "filename": "tokenizer.json",
+      "requestedUrl": "https://huggingface.co/Qwen/Qwen2-0.5B-Instruct/resolve/c540970f9e29518b1d8f06ab8b24cba66ad77b6d/tokenizer.json",
+      "bytes": 7028015,
+      "sha256": "f7c9b2dba4a296b1aa76c16a34b8225c0c118978400d4bb66bff0902d702f5b8",
+      "gitBlobId": "33ea6c72ebb92a237fa2bdf26c5ff16592efcdae",
+      "cacheSource": {
+        "path": "D:/LLMs/TinyRustLM/sources/source-68cf8d3cec03cc4df50e4b30109b80ba02bbf284ccc76d1fdd9b6665b4b5e825/tokenizer.json",
+        "bytes": 7028015,
+        "sha256": "f7c9b2dba4a296b1aa76c16a34b8225c0c118978400d4bb66bff0902d702f5b8",
+        "selector": "entire regular file",
+        "origin": "Existing canonical tokenizer independently rehashed to exact current publisher Git blob/length and retained receipt SHA; no rejected model weights reused.",
+        "receipt": {
+          "path": "artifacts/ecosystem-cleanup-20260912/qwen2-1.5b-source-acquisition-20260930.json",
+          "bytes": 1821,
+          "sha256": "acc6e9c12a1a249117f2c82525b60539be7d96aaf3f0a0b02e326c15996d7704"
+        }
+      }
+    }
+  ],
+  "cacheRules": "Before any transfer verify each source capture/file/receipt hash and length, then exact extracted bytes/Git-blob identity; map only these declared requested URLs to byte-identical cached Response bodies. Do not rewrite config or tokenizer files. Missing/mismatched cache is terminal, no network fallback.",
+  "networkEntries": [
+    {
+      "filename": "model.safetensors",
+      "requestedUrl": "https://huggingface.co/Qwen/Qwen2-0.5B-Instruct/resolve/c540970f9e29518b1d8f06ab8b24cba66ad77b6d/model.safetensors",
+      "bytes": 988097824,
+      "sha256": "130282af0dfa9fe5840737cc49a0d339d06075f83c5a315c3372c9a0740d0b96",
+      "attempts": 1
+    }
+  ],
+  "networkRules": "Only the declared pinned LFS weight URL may reach network once, with normal HTTPS redirects and unchanged length/SHA checks. All other required files use prospectively bound cache bytes. No metadata request, fallback transport, hidden range retry or next candidate on failure.",
+  "outputPaths": {
+    "start": "artifacts/ecosystem-cleanup-20260912/qwen2-0.5b-combined-start-20260930.json",
+    "execution": "artifacts/ecosystem-cleanup-20260912/qwen2-0.5b-combined-execution-20260930.json",
+    "acquisition": "artifacts/ecosystem-cleanup-20260912/qwen2-0.5b-source-acquisition-20260930.json",
+    "preflight": "artifacts/ecosystem-cleanup-20260912/qwen2-0.5b-preflight-20260930.json",
+    "preflightStderr": "artifacts/ecosystem-cleanup-20260912/qwen2-0.5b-preflight-stderr-20260930.txt",
+    "raw": "artifacts/ecosystem-cleanup-20260912/qwen2-0.5b-development-raw-20260930.json",
+    "stdout": "artifacts/ecosystem-cleanup-20260912/qwen2-0.5b-development-stdout-20260930.txt",
+    "stderr": "artifacts/ecosystem-cleanup-20260912/qwen2-0.5b-development-stderr-20260930.txt"
+  },
+  "launchConditions": [
+    "Root reviews and commits/pushes exact metadata, current-producer inventory and plan; one explicit GO authorizes complete operation. Existing tested helpers are unchanged.",
+    "Fresh registered-root source-authority and remote-exact admission plus all bound byte identities must pass; no exception for an unknown source copy or changed bound input.",
+    "Require no existing output/start and a fresh canonical candidate directory. One index0/count1 cache-backed acquisition under600seconds; no repeated request or transport variation.",
+    "Verify all six receipt-bound source files, separate byte-exact PUBLISHER-LICENSE and unchanged receipt, then tokenizer/config-only preflight under120seconds. Any failure stops before generation.",
+    "Run unchanged raw owner once for all six cases under600seconds, then preserve exact outputs/stderr and code/source/runtime identity closure. No prompt/sampler/template change, output repair or retry.",
+    "Before launch require all eight exact evidence output paths Git -text. Preserve all52 exclusions and preceding raw failures.",
+    "No qualification/default/catalog/seed/publication claim follows from this development screen."
+  ],
+  "modelPayloadAcquired": false,
+  "modelExecutionStarted": false,
+  "productionDefaultChanged": false,
+  "supportingMetadata": [
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/qwen2-0.5b-metadata-review-20260930.json",
+      "bytes": 8596,
+      "sha256": "4c22929a0f0aa62e3b16f621e8f350b3e12a3eb06665b3f0dd32d36a3b1ee3d2"
+    }
+  ],
+  "publisherLicenseCustody": {
+    "filename": "PUBLISHER-LICENSE",
+    "originalPublisherFilename": "LICENSE",
+    "bytes": 11344,
+    "sha256": "c156170b718ec29139d3653d40ed1986fd92fb7e0959b5c71f3c48f62e6636f4",
+    "gitBlobId": "cc375d92d7061b465042e9a1d507cb99598fb97a",
+    "source": {
+      "path": "artifacts/ecosystem-cleanup-20260912/qwen2-0.5b-metadata-20260930.json",
+      "bytes": 28278,
+      "sha256": "e3633d32c5ac4d289f9132bec788cb6ae1d04dfc9fbaec54f7d5024aed740f9f",
+      "selector": "responses: url=https://huggingface.co/Qwen/Qwen2-1.5B-Instruct/raw/ba1cf1846d7df0a0591d6c00649f57e798519da8/LICENSE -> utf8",
+      "originalUrl": "https://huggingface.co/Qwen/Qwen2-1.5B-Instruct/raw/ba1cf1846d7df0a0591d6c00649f57e798519da8/LICENSE",
+      "currentPublisherUrl": "https://huggingface.co/Qwen/Qwen2-0.5B-Instruct/raw/c540970f9e29518b1d8f06ab8b24cba66ad77b6d/LICENSE",
+      "origin": "Retained original publisher-license bytes match current Qwen2-0.5B LICENSE by pinned API Git blob and length; no new HTTP response is claimed."
+    },
+    "procedure": "After successful six-file acquisition, verify regular canonical source directory and absent PUBLISHER-LICENSE. Extract exact bound UTF8 bytes, verify length/SHA/Git blob, create exclusively and independently rehash. Keep six-file acquisition receipt and generic authority LICENSE unchanged. Any failure stops before generation.",
+    "retention": "Any later conversion source closure or distribution must preserve actual publisher license and Copyright2024 Alibaba Cloud; generic authority evidence cannot substitute for it."
+  }
+}

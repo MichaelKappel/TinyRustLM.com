@@ -1,0 +1,57 @@
+{
+  "schema": "tinyrustlm.huggingface_supported_candidate_inventory.v4",
+  "generatedUtc": "2026-09-30T00:52:55.245Z",
+  "authority": "huggingface-primary-api-revision-files-and-apache-license-authority",
+  "profileId": "qwen2.5-0.5b-bpe",
+  "search": "Qwen/Qwen2-0.5B-Instruct",
+  "searchLimit": 1,
+  "requestedCandidateLimit": 1,
+  "candidateCount": 1,
+  "candidates": [
+    {
+      "sourceTemplate": "qwen2.5-0.5b-bpe",
+      "modelId": "Qwen/Qwen2-0.5B-Instruct",
+      "revision": "c540970f9e29518b1d8f06ab8b24cba66ad77b6d",
+      "downloads": 303975,
+      "likes": 204,
+      "pipelineTag": "text-generation",
+      "licenseId": "apache-2.0",
+      "licenseEvidenceKind": "revision-metadata-plus-apache-authority-text",
+      "licenseSourceUrl": "https://www.apache.org/licenses/LICENSE-2.0.txt",
+      "licenseSha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+      "configSha256": "168aa1bd401abc3bc262ba15ba4e499627a8b4e006e9d050b47c22de20660185",
+      "tokenizer": {
+        "filename": "tokenizer.json",
+        "byteCount": 7028015,
+        "sha256": null,
+        "gitBlobId": "33ea6c72ebb92a237fa2bdf26c5ff16592efcdae"
+      },
+      "tokenizerConfig": {
+        "filename": "tokenizer_config.json",
+        "byteCount": 1287,
+        "sha256": null,
+        "gitBlobId": "ff55d7b9eb1384e5d4d7e75dc0f564c1a8833d6e"
+      },
+      "chatTemplateFile": null,
+      "generationConfig": {
+        "filename": "generation_config.json",
+        "byteCount": 242,
+        "sha256": null,
+        "gitBlobId": "dfc11073787daf1b0f9c0f1499487ab5f4c93738"
+      },
+      "chatTemplateKind": "revision-chatml-template-v1",
+      "chatTemplateSha256": "793202280c0910ab26bc6eb57c8212c2417324c6d8c4efd0d10d59092ab3e3eb",
+      "sourceWeightByteCount": 988097824,
+      "weightIdentity": "4c89e7e5f3c656ae9e59819d7faa7086d3e7bf7735f2efcd45dc4681804418ff",
+      "weightIndex": null,
+      "weightFiles": [
+        {
+          "filename": "model.safetensors",
+          "byteCount": 988097824,
+          "sha256": "130282af0dfa9fe5840737cc49a0d339d06075f83c5a315c3372c9a0740d0b96"
+        }
+      ]
+    }
+  ],
+  "rejections": []
+}

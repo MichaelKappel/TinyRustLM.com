@@ -1,0 +1,140 @@
+{
+  "schema": "tinyrustlm.source_metadata_review.v1",
+  "status": "metadata-admitted-for-one-prospective-source-screen-not-qualified",
+  "source": {
+    "modelId": "Qwen/Qwen2-0.5B-Instruct",
+    "revision": "c540970f9e29518b1d8f06ab8b24cba66ad77b6d",
+    "weight": {
+      "filename": "model.safetensors",
+      "byteCount": 988097824,
+      "sha256": "130282af0dfa9fe5840737cc49a0d339d06075f83c5a315c3372c9a0740d0b96"
+    },
+    "weightIdentity": "4c89e7e5f3c656ae9e59819d7faa7086d3e7bf7735f2efcd45dc4681804418ff",
+    "parameters": 494032768,
+    "sourceWeightDtype": "BF16",
+    "contextTokens": 32768
+  },
+  "metadata": {
+    "path": "artifacts/ecosystem-cleanup-20260912/qwen2-0.5b-metadata-20260930.json",
+    "bytes": 28278,
+    "sha256": "e3633d32c5ac4d289f9132bec788cb6ae1d04dfc9fbaec54f7d5024aed740f9f"
+  },
+  "inventory": {
+    "path": "artifacts/ecosystem-cleanup-20260912/qwen2-0.5b-inventory-20260930.json",
+    "bytes": 2157,
+    "sha256": "ea95220aca8aeae83663e9777e2e58a8d79d3a28c46618f6dd6ce357daad8187",
+    "actualProducer": "tinyrustlm/tools/huggingface-supported-candidates.js",
+    "profileId": "qwen2.5-0.5b-bpe",
+    "candidateCount": 1,
+    "rejections": [],
+    "networkRequestsDuringReplay": 0,
+    "origin": "Unchanged producer replayed only the captured model-endpoint API, exact pinned README/config, metadata reused after current publisher Git-blob/length checks, and cached official Apache authority text. Its one-item search and revision routes use the captured API response; no live search/revision endpoint response is claimed."
+  },
+  "recommendation": "The requested single smaller official general-instruction source is metadata-admitted without helper changes. A frozen unchanged six-case source screen is the next falsifier only after root review/commit/GO; no payload or inference has started.",
+  "rationale": {
+    "publisherScope": "Official general Qwen2 instruction model; publisher describes supervised fine-tuning and direct preference optimization. Broad publisher benchmark claims are not local product evidence.",
+    "strongestReasonWrong": "The larger Qwen2-1.5B and both inspected Coder sizes already failed required cases. This smaller source can also fail, and its size alone supplies no quality evidence. All failed weights remain excluded."
+  },
+  "priorRejectionBoundary": {
+    "path": "contracts/vnext/source-candidate-exclusions.v1.json",
+    "bytes": 23898,
+    "sha256": "4184219b405ba04132ccaa3ed52741908d120cc61a5719be411042b318eac256",
+    "entryCount": 52,
+    "exactTupleOrWeightMatch": false,
+    "verification": "Current sourceCandidateRejection and actual discovery producer both admit the exact new tuple. Weight130282af... is distinct from rejected Qwen2.5-0.5Bfdf756fa..., Coder0.5Bf9523886..., Qwen2-1.5B302e3277... and Coder1.5Bc1b9b30e.... No family ban or relabeling is inferred."
+  },
+  "license": {
+    "publisherCard": "apache-2.0",
+    "publisherLicense": {
+      "bytes": 11344,
+      "sha256": "c156170b718ec29139d3653d40ed1986fd92fb7e0959b5c71f3c48f62e6636f4",
+      "gitBlobId": "cc375d92d7061b465042e9a1d507cb99598fb97a",
+      "originalCaptureUrl": "https://huggingface.co/Qwen/Qwen2-1.5B-Instruct/raw/ba1cf1846d7df0a0591d6c00649f57e798519da8/LICENSE",
+      "currentPinnedUrl": "https://huggingface.co/Qwen/Qwen2-0.5B-Instruct/raw/c540970f9e29518b1d8f06ab8b24cba66ad77b6d/LICENSE",
+      "custody": {
+        "kind": "verified-byte-identical-local-metadata",
+        "cache": {
+          "path": "artifacts/ecosystem-cleanup-20260912/qwen2-1.5b-metadata-20260930.json",
+          "bytes": 26539,
+          "sha256": "9ea7cb2d6e87f4867beb93f7772237dbc59bccc261674ad885e498ddd094c436"
+        },
+        "currentPublisherUrl": "https://huggingface.co/Qwen/Qwen2-0.5B-Instruct/raw/c540970f9e29518b1d8f06ab8b24cba66ad77b6d/LICENSE",
+        "requestPerformedForCurrentPublisher": false
+      }
+    },
+    "disposition": "The current pinned LICENSE Git blob/length matches independently rehashed retained publisher Apache2 bytes with Copyright2024 Alibaba Cloud. No conflicting restriction was observed in pinned card/API/license. Preserve actual publisher license/copyright with authorized future distribution. This is publisher licensing evidence, not independent legal clearance of every training record.",
+    "acquisitionConvention": "Keep generic official Apache authority LICENSE in the truthful six-file receipt; preserve exact publisher LICENSE as separately bound PUBLISHER-LICENSE. Never substitute generic text for the publisher file."
+  },
+  "conversationMetadata": {
+    "nativeTemplateSha256": "793202280c0910ab26bc6eb57c8212c2417324c6d8c4efd0d10d59092ab3e3eb",
+    "nativeTemplate": "Simple embedded Qwen2 ChatML; no external Jinja, thinking or tool options.",
+    "generationEosTokenIds": [
+      151645,
+      151643
+    ],
+    "sourceConfigUseCache": true,
+    "publisherPadTokenId": 151643,
+    "rawOwnerGreedyPadTokenId": 151645,
+    "tokenizerFile": {
+      "filename": "tokenizer.json",
+      "byteCount": 7028015,
+      "sha256": null,
+      "gitBlobId": "33ea6c72ebb92a237fa2bdf26c5ff16592efcdae"
+    },
+    "tokenizerCache": {
+      "path": "D:/LLMs/TinyRustLM/sources/source-68cf8d3cec03cc4df50e4b30109b80ba02bbf284ccc76d1fdd9b6665b4b5e825/tokenizer.json",
+      "bytes": 7028015,
+      "sha256": "f7c9b2dba4a296b1aa76c16a34b8225c0c118978400d4bb66bff0902d702f5b8",
+      "gitBlobId": "33ea6c72ebb92a237fa2bdf26c5ff16592efcdae",
+      "receipt": {
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen2-1.5b-source-acquisition-20260930.json",
+        "bytes": 1821,
+        "sha256": "acc6e9c12a1a249117f2c82525b60539be7d96aaf3f0a0b02e326c15996d7704"
+      },
+      "weightBytesRead": 0,
+      "interpretation": "Exact cached tokenizer length/SHA/Git blob verified against current pinned metadata and retained receipt. Only tokenizer bytes are reused; rejected model weights are not read or reused."
+    }
+  },
+  "geometry": {
+    "hidden": 896,
+    "feedForward": 4864,
+    "layers": 24,
+    "queryHeads": 14,
+    "kvHeads": 2,
+    "headDimension": 64,
+    "vocabulary": 151936,
+    "totalParameters": 494032768,
+    "matrixElements": 493961216,
+    "float32VectorElements": 71552,
+    "matrixRows": 456064,
+    "mixedQ8PayloadBytes": 496071680,
+    "estimatedSixMemberBytes": 504148271,
+    "currentAutoLimit": 805306368,
+    "kvBytesAt1024": 25165824,
+    "twoModelCopiesPlusKV": 1017309184,
+    "contextTokens": 32768,
+    "tiedEmbeddings": true,
+    "qkvBias": true,
+    "qkNormalization": false,
+    "ropeTheta": 1000000,
+    "normalizationEpsilon": 0.000001,
+    "sourceDownloadWeightBytes": 988097824,
+    "calculation": "Matrices=V*H+L*(2*H*H+2*H*KV*D+3*H*F); F32 vectors=(2*L+1)*H+L*(H+2*KV*D); quantized rows=V+L*(3*H+2*KV*D+2*F). Payload=matrixElements+4*rows+4*vectors. Add exact source tokenizer bytes plus1MiB planning allowance for converted container/other members.",
+    "estimateOnly": true,
+    "interpretation": "Approximately504.15MB planned six-member composition is below the existing768MiB automatic cap. The tensor two-copy+1024-tokenKV estimate is about1.017GB, with substantial room under the current3GiB ceiling, but actual container/dependency/workspace/browser allocation, latency and quality remain unmeasured. No cap change is proposed."
+  },
+  "runtimeBoundary": {
+    "representable": "Current SLM2 ModelSpec represents14Q/2KV heads of width64, QKV bias and absent Q/K normalization; scalar code has those operator paths. Current discovery exact geometry profile already matches. This is representability from source inspection, not conversion or execution evidence.",
+    "references": [
+      "rust/crates/tinyrustlm-slm2/src/format.rs:203",
+      "rust/crates/tinyrustlm-runtime/src/scalar.rs",
+      "tinyrustlm/tools/huggingface-supported-candidates.js:68"
+    ],
+    "stillRequired": "Current converter/composition/Template2/Prompt2 source geometry, tokenizer count and dependency identities remain fixed to the diagnostic Qwen3 source. A passing source screen would require coherent Qwen2 mapping/current-only bindings and actual numerical/native/browser/release qualification; no new attention kernel or obsolete F32 compatibility path is proposed."
+  },
+  "observedAccessLimit": "The web-reader open of the public model page returned a restricted-URL fetch error. The primary model API and exact pinned raw README/config requests succeeded and were verified; there was no retry or inference.",
+  "modelPayloadAcquired": false,
+  "modelExecutionStarted": false,
+  "sourceQualityUnmeasured": true,
+  "productionDefaultChanged": false
+}
