@@ -1,0 +1,247 @@
+{
+  "schema": "tinyrustlm.source_development_combined_start.v1",
+  "startedUtc": "2026-09-30T00:24:41.525Z",
+  "plan": {
+    "path": "artifacts/ecosystem-cleanup-20260912/qwen2-1.5b-development-plan-20260930.json",
+    "bytes": 25721,
+    "sha256": "12442f9f65af76595e1e11f99e869b65aaffe54e690e1771c473b06238c17ee5"
+  },
+  "source": {
+    "modelId": "Qwen/Qwen2-1.5B-Instruct",
+    "revision": "ba1cf1846d7df0a0591d6c00649f57e798519da8",
+    "weightSha256": "302e327795994403cb1e3cb6a3345c76b246b894d14078c936b570c83a4e9057",
+    "weightIdentity": "d9585d9dd4ec2bbffb308a871a22cc4e23dead3a175a05c1c4a94253596c36af",
+    "sourceWeightBytes": 3087467144,
+    "totalParameters": 1543714304,
+    "profile": "qwen2.5-1.5b-bpe",
+    "checkpointDirectory": "D:\\LLMs\\TinyRustLM\\sources\\source-68cf8d3cec03cc4df50e4b30109b80ba02bbf284ccc76d1fdd9b6665b4b5e825"
+  },
+  "before": {
+    "head": "9fcdeadea691c70b77782e203a321e9964f8c645",
+    "tree": "771864ebc0211413970ac5924a0895946df41d09",
+    "status": "",
+    "boundInputs": [
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen2-1.5b-metadata-20260930.json",
+        "bytes": 26539,
+        "sha256": "9ea7cb2d6e87f4867beb93f7772237dbc59bccc261674ad885e498ddd094c436"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen2-1.5b-metadata-20260930.json",
+        "bytes": 26539,
+        "sha256": "9ea7cb2d6e87f4867beb93f7772237dbc59bccc261674ad885e498ddd094c436"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen2-1.5b-metadata-20260930.json",
+        "bytes": 26539,
+        "sha256": "9ea7cb2d6e87f4867beb93f7772237dbc59bccc261674ad885e498ddd094c436"
+      },
+      {
+        "path": "D:/LLMs/TinyRustLM/sources/source-8334f8dcfe693b2a916f02ff16265fc55c0e34e332bb20f47eacf3b3217fda4a/LICENSE",
+        "bytes": 11358,
+        "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen2.5-coder-0.5b-source-acquisition-20260929.json",
+        "bytes": 1827,
+        "sha256": "cc296906f29df245ab6d0d74bff1130ed6bdae0a3ce657bdc312bc7b1b009506"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen2-1.5b-development-plan-20260930.json",
+        "bytes": 25721,
+        "sha256": "12442f9f65af76595e1e11f99e869b65aaffe54e690e1771c473b06238c17ee5"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen2-1.5b-metadata-20260930.json",
+        "bytes": 26539,
+        "sha256": "9ea7cb2d6e87f4867beb93f7772237dbc59bccc261674ad885e498ddd094c436"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen2-1.5b-metadata-review-20260930.json",
+        "bytes": 9283,
+        "sha256": "492fb4229b3243e51c7fe5197c28f1e3a4e59c4779ba8f64abd7d27b9444fe54"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen2-1.5b-inventory-20260930.json",
+        "bytes": 2159,
+        "sha256": "6c4782a0ad78c09bbdfebabdda93f7b4b4fee3181dffbdf7057079886b05b61c"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-untied-development-binding-20260929.json",
+        "bytes": 5733,
+        "sha256": "980ee3d8628cecb46692f44ed3a88ec65755226b8251f62bd4432ec68b411335"
+      },
+      {
+        "path": "contracts/vnext/source-candidate-exclusions.v1.json",
+        "bytes": 22965,
+        "sha256": "7b9fdbb094ac034f98b6c5cfcf1a381272952a728ffb938014158ed48529d1c2"
+      },
+      {
+        "path": "artifacts/ecosystem-cleanup-20260912/qwen3-reaper-untied-development-screen-20260929.eval",
+        "bytes": 1308,
+        "sha256": "946e6bdda7512bde3db4dac5a4f66e66eb5353141e7d19b8a0ca3735fd2903c9"
+      },
+      {
+        "path": "tinyrustlm/tools/reference-raw-quality.py",
+        "bytes": 34527,
+        "sha256": "30dd01e388433dfe926f5990ab778817167fd50a6c81a55a19e10870ebb289fb"
+      },
+      {
+        "path": "tinyrustlm/tools/huggingface-supported-candidates.js",
+        "bytes": 28197,
+        "sha256": "9d271406ca8e1fe4e397b1e7b5c6a790e63fb1d210e35d79994f135525c7434b"
+      },
+      {
+        "path": "tinyrustlm/tools/huggingface-candidate-acquire.js",
+        "bytes": 33624,
+        "sha256": "8ce23eefdc3c8786cfd36749ccfd2a3b9d27c07504de00ef1224638937449ca7"
+      },
+      {
+        "path": "tinyrustlm/tools/huggingface-candidate-storage.js",
+        "bytes": 7471,
+        "sha256": "d94c9e90df4b110523d5238d361b348b565b7a2dd9f3840103cb20652b6a9a33"
+      },
+      {
+        "path": "tinyrustlm/tools/huggingface-metadata.js",
+        "bytes": 4158,
+        "sha256": "f6e26c0255a7eec38d35c116d4e1983fab42f33955e04074cb413f45ea97a341"
+      },
+      {
+        "path": "tinyrustlm/tools/huggingface-weight-layout.js",
+        "bytes": 3690,
+        "sha256": "002b9cbe9111a89a01a6c36ff63def0d18e9c5e7060a798636eac440dd6f2911"
+      },
+      {
+        "path": "tinyrustlm/tools/source-candidate-exclusions.js",
+        "bytes": 1885,
+        "sha256": "43a71f9760a2d1038f9b3b017c61a445577a68bcd285098ab915ba5b0df4b836"
+      },
+      {
+        "path": "tinyrustlm/tools/strict-json.js",
+        "bytes": 11529,
+        "sha256": "8935f3918c9a12722404ad120c73dae80965c723301a00c7e60767c45a78790e"
+      },
+      {
+        "path": "tinyrustlm/tools/canonical-operation-scratch.js",
+        "bytes": 9276,
+        "sha256": "52b6024d121479d20a634ee639d641cb1ff4896bce99b1110a3e26720bf5a7f9"
+      },
+      {
+        "path": "tinyrustlm/tools/verify-single-source-authority.js",
+        "bytes": 144521,
+        "sha256": "e8867b01d00399f319852449ff80c249edab30a8bcee4c09fd3789300f65aaf7"
+      },
+      {
+        "path": "D:\\LLMs\\TinyRustLM\\training-env-py312\\Scripts\\python.exe",
+        "bytes": 274424,
+        "sha256": "0b471133e110cfb53a061cad528ce8e517d7b9ac41a0a396c39ad795a487fc14"
+      },
+      {
+        "path": "D:\\LLMs\\TinyRustLM\\training-env-py312\\Lib\\site-packages\\transformers\\tokenization_utils_base.py",
+        "bytes": 183764,
+        "sha256": "f86fc8ce6ad86bcbb4bad93b84b3cde9f7b93b516703b5d220889c66bbdd7b5a"
+      }
+    ]
+  },
+  "sourceGate": {
+    "status": 0,
+    "signal": null,
+    "error": null,
+    "durationMs": 39564,
+    "stdoutBytes": 164,
+    "stdoutSha256": "23bf73a83fe1c67061b85372209405f9748df2315d3dac1122d5cc2a4eae7999",
+    "stdout": "{\"canonicalLayoutAvailable\":true,\"coverageClass\":\"registered-governed-roots-only\",\"localScanPerformed\":true,\"verdict\":\"pass\",\"wholeVolumeInventoryPerformed\":false}\n",
+    "stderr": ""
+  },
+  "knownParallelChanges": [
+    "Parent-coordinated root numerical owner/profile/registration/tests, scalar.rs runtime correction and rebuilt native/browser WASM artifacts, independent dotnet/tools/TinyRustLM.ConversationProbe and tinyrustlm/tools/real-composition-execution.js with their focused tests, hosting/catalog/installer/preflight source/tests, and corresponding docs/review/test output may change in their owning agents. They are outside this experiment bound input closure. Record actual status and ownership. No bound helper/input, unknown source copy, failed authority scan or model mutation is exempt."
+  ],
+  "metadataTransport": {
+    "mode": "exact-verified-cache-plus-pinned-git-tokenizer-and-lfs-weight",
+    "cacheEntries": [
+      {
+        "filename": "config.json",
+        "requestedUrl": "https://huggingface.co/Qwen/Qwen2-1.5B-Instruct/resolve/ba1cf1846d7df0a0591d6c00649f57e798519da8/config.json",
+        "bytes": 660,
+        "sha256": "a58e896d2756a7947f23f3db55667c19ca3b8524188a30c8c640cd7ff72a5136",
+        "gitBlobId": "f48f003b1c5a532e589822b2e5a7420c014c62be",
+        "cacheSource": {
+          "path": "artifacts/ecosystem-cleanup-20260912/qwen2-1.5b-metadata-20260930.json",
+          "bytes": 26539,
+          "sha256": "9ea7cb2d6e87f4867beb93f7772237dbc59bccc261674ad885e498ddd094c436",
+          "selector": "responses: url=https://huggingface.co/Qwen/Qwen2-1.5B-Instruct/raw/ba1cf1846d7df0a0591d6c00649f57e798519da8/config.json -> utf8",
+          "origin": "Exact retained successful revision-pinned raw-endpoint response; reused byte-for-byte without a new HTTP request."
+        }
+      },
+      {
+        "filename": "tokenizer_config.json",
+        "requestedUrl": "https://huggingface.co/Qwen/Qwen2-1.5B-Instruct/resolve/ba1cf1846d7df0a0591d6c00649f57e798519da8/tokenizer_config.json",
+        "bytes": 1287,
+        "sha256": "482bd979881423375ca5414e4e0d94cd7c5349dbb17fffd46b4d36d71e62a1bc",
+        "gitBlobId": "ff55d7b9eb1384e5d4d7e75dc0f564c1a8833d6e",
+        "cacheSource": {
+          "path": "artifacts/ecosystem-cleanup-20260912/qwen2-1.5b-metadata-20260930.json",
+          "bytes": 26539,
+          "sha256": "9ea7cb2d6e87f4867beb93f7772237dbc59bccc261674ad885e498ddd094c436",
+          "selector": "responses: url=https://huggingface.co/Qwen/Qwen2-1.5B-Instruct/raw/ba1cf1846d7df0a0591d6c00649f57e798519da8/tokenizer_config.json -> utf8",
+          "origin": "Exact retained successful revision-pinned raw-endpoint response; reused byte-for-byte without a new HTTP request."
+        }
+      },
+      {
+        "filename": "generation_config.json",
+        "requestedUrl": "https://huggingface.co/Qwen/Qwen2-1.5B-Instruct/resolve/ba1cf1846d7df0a0591d6c00649f57e798519da8/generation_config.json",
+        "bytes": 242,
+        "sha256": "e558847a8b4402616f1273797b015104dc266fe4b520056fca88823ba8f8ebe6",
+        "gitBlobId": "dfc11073787daf1b0f9c0f1499487ab5f4c93738",
+        "cacheSource": {
+          "path": "artifacts/ecosystem-cleanup-20260912/qwen2-1.5b-metadata-20260930.json",
+          "bytes": 26539,
+          "sha256": "9ea7cb2d6e87f4867beb93f7772237dbc59bccc261674ad885e498ddd094c436",
+          "selector": "responses: url=https://huggingface.co/Qwen/Qwen2-1.5B-Instruct/raw/ba1cf1846d7df0a0591d6c00649f57e798519da8/generation_config.json -> utf8",
+          "origin": "Exact retained successful revision-pinned raw-endpoint response; reused byte-for-byte without a new HTTP request."
+        }
+      },
+      {
+        "filename": "LICENSE",
+        "requestedUrl": "https://www.apache.org/licenses/LICENSE-2.0.txt",
+        "bytes": 11358,
+        "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+        "gitBlobId": null,
+        "cacheSource": {
+          "path": "D:/LLMs/TinyRustLM/sources/source-8334f8dcfe693b2a916f02ff16265fc55c0e34e332bb20f47eacf3b3217fda4a/LICENSE",
+          "bytes": 11358,
+          "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+          "selector": "entire regular file",
+          "origin": "Previously verified exact official Apache2 authority text; no weight bytes reused from the rejected candidate.",
+          "receipt": {
+            "path": "artifacts/ecosystem-cleanup-20260912/qwen2.5-coder-0.5b-source-acquisition-20260929.json",
+            "bytes": 1827,
+            "sha256": "cc296906f29df245ab6d0d74bff1130ed6bdae0a3ce657bdc312bc7b1b009506"
+          }
+        }
+      }
+    ],
+    "networkEntries": [
+      {
+        "filename": "tokenizer.json",
+        "requestedUrl": "https://huggingface.co/Qwen/Qwen2-1.5B-Instruct/resolve/ba1cf1846d7df0a0591d6c00649f57e798519da8/tokenizer.json",
+        "transportUrl": "https://huggingface.co/Qwen/Qwen2-1.5B-Instruct/raw/ba1cf1846d7df0a0591d6c00649f57e798519da8/tokenizer.json",
+        "bytes": 7028015,
+        "sha256": null,
+        "gitBlobId": "33ea6c72ebb92a237fa2bdf26c5ff16592efcdae",
+        "attempts": 1
+      },
+      {
+        "filename": "model.safetensors",
+        "requestedUrl": "https://huggingface.co/Qwen/Qwen2-1.5B-Instruct/resolve/ba1cf1846d7df0a0591d6c00649f57e798519da8/model.safetensors",
+        "bytes": 3087467144,
+        "sha256": "302e327795994403cb1e3cb6a3345c76b246b894d14078c936b570c83a4e9057",
+        "attempts": 1
+      }
+    ]
+  },
+  "scratch": {
+    "root": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\qwen2-1.5b-combined\\tinyrustlm-operation-YvS9mp",
+    "marker": "E:\\Source\\Rust\\TinyRustLM.com\\artifacts\\tests\\qwen2-1.5b-combined\\tinyrustlm-operation-YvS9mp.owner.v2"
+  }
+}

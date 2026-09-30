@@ -1,0 +1,26 @@
+✔ current exclusions preserve all exact prior decisions and their evidence identities (9.9001ms)
+✔ exclusions are exact negative evidence, not a family ban or positive admission (0.5128ms)
+✔ source rejection blocks smollm2-current-candidate-inventory-20260927.json selection 0 without fetching or writing (1.4862ms)
+✔ source rejection blocks qwen3-expanded-candidate-inventory-20260927.json selection 0 without fetching or writing (0.6511ms)
+✔ source rejection blocks qwen3-expanded-candidate-inventory-20260927.json selection 1 without fetching or writing (0.4109ms)
+✔ source rejection blocks qwen3-expanded-candidate-inventory-20260927.json selection 2 without fetching or writing (0.3979ms)
+✔ source rejection blocks qwen3-next-candidate-inventory-20260928.json selection 0 without fetching or writing (0.429ms)
+✔ source rejection blocks qwen3-next-candidate-inventory-20260928.json selection 1 without fetching or writing (0.3986ms)
+✔ source rejection blocks qwen3-next-candidate-inventory-20260928.json selection 2 without fetching or writing (0.8726ms)
+✔ source rejection blocks qwen3-reaper-untied-inventory-20260929.json selection 1 without fetching or writing (0.4082ms)
+✔ source rejection blocks qwen3-reaper-untied-inventory-20260929.json selection 0 without fetching or writing (0.3396ms)
+✔ source rejection blocks qwen2.5-coder-0.5b-inventory-20260929.json selection 0 without fetching or writing (0.2912ms)
+✔ source rejection blocks pluto-genesis-0.6b-inventory-20260929.json selection 0 without fetching or writing (0.2649ms)
+✔ source rejection blocks meet7-0.6b-inventory-20260929.json selection 0 without fetching or writing (0.3049ms)
+✔ source rejection blocks qwen2-1.5b-inventory-20260930.json selection 0 without fetching or writing (0.2704ms)
+✔ discovery excludes recorded revision before model-specific requests (23.8908ms)
+✔ discovery refuses a renamed repository with the rejected weight digest (2.2552ms)
+✔ acquisition independently rejects stale or fabricated inventories before any write or fetch (0.9766ms)
+ℹ tests 18
+ℹ suites 0
+ℹ pass 18
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 139.7355

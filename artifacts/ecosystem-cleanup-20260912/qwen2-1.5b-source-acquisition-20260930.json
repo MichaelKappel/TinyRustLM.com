@@ -1,0 +1,53 @@
+{
+  "schema": "tinyrustlm.huggingface_source_acquisition.v4",
+  "status": "verified",
+  "verifiedUtc": "2026-09-30T00:26:15.516Z",
+  "sourceTemplate": "qwen2.5-1.5b-bpe",
+  "modelId": "Qwen/Qwen2-1.5B-Instruct",
+  "revision": "ba1cf1846d7df0a0591d6c00649f57e798519da8",
+  "weightIdentity": "d9585d9dd4ec2bbffb308a871a22cc4e23dead3a175a05c1c4a94253596c36af",
+  "sourceWeightByteCount": 3087467144,
+  "chatTemplateKind": "revision-chatml-template-v1",
+  "chatTemplateSha256": "793202280c0910ab26bc6eb57c8212c2417324c6d8c4efd0d10d59092ab3e3eb",
+  "chatTemplateFile": null,
+  "generationConfig": {
+    "filename": "generation_config.json",
+    "byteCount": 242,
+    "sha256": null,
+    "gitBlobId": "dfc11073787daf1b0f9c0f1499487ab5f4c93738"
+  },
+  "licenseId": "apache-2.0",
+  "licenseEvidenceKind": "revision-metadata-plus-apache-authority-text",
+  "files": [
+    {
+      "filename": "config.json",
+      "byteCount": 660,
+      "sha256": "a58e896d2756a7947f23f3db55667c19ca3b8524188a30c8c640cd7ff72a5136"
+    },
+    {
+      "filename": "tokenizer.json",
+      "byteCount": 7028015,
+      "sha256": "f7c9b2dba4a296b1aa76c16a34b8225c0c118978400d4bb66bff0902d702f5b8"
+    },
+    {
+      "filename": "tokenizer_config.json",
+      "byteCount": 1287,
+      "sha256": "482bd979881423375ca5414e4e0d94cd7c5349dbb17fffd46b4d36d71e62a1bc"
+    },
+    {
+      "filename": "generation_config.json",
+      "byteCount": 242,
+      "sha256": "e558847a8b4402616f1273797b015104dc266fe4b520056fca88823ba8f8ebe6"
+    },
+    {
+      "filename": "LICENSE",
+      "byteCount": 11358,
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    },
+    {
+      "filename": "model.safetensors",
+      "byteCount": 3087467144,
+      "sha256": "302e327795994403cb1e3cb6a3345c76b246b894d14078c936b570c83a4e9057"
+    }
+  ]
+}

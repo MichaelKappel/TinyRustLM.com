@@ -1,0 +1,65 @@
+{
+  "schema": "tinyrustlm.source_model_screen_assessment.v1",
+  "sourceModelId": "Qwen/Qwen2-1.5B-Instruct",
+  "sourceRevision": "ba1cf1846d7df0a0591d6c00649f57e798519da8",
+  "sourceModelArtifactSha256": "302e327795994403cb1e3cb6a3345c76b246b894d14078c936b570c83a4e9057",
+  "sourceScreenSha256": "e02b47d3ed3ae3e94d9fdab6579bd82171d699869f99634e17bb7b7e17e689af",
+  "sourceScreenPath": "artifacts/ecosystem-cleanup-20260912/qwen2-1.5b-development-raw-20260930.json",
+  "executionReceiptPath": "artifacts/ecosystem-cleanup-20260912/qwen2-1.5b-combined-execution-20260930.json",
+  "executionReceiptSha256": "09790c0c75d7e55c8df7895b2bb9000ab8a7b245da27fc83225872dae85d391b",
+  "prospectivePlanPath": "artifacts/ecosystem-cleanup-20260912/qwen2-1.5b-development-plan-20260930.json",
+  "prospectivePlanSha256": "12442f9f65af76595e1e11f99e869b65aaffe54e690e1771c473b06238c17ee5",
+  "decision": "rejected",
+  "decisionAuthority": "engineering-source-screen-v1",
+  "independentAssessment": "Root agent independently read all six exact raw answers and frozen cases after source/input identity closure. Cases0,1,2,4,5 pass. Case3 fails with five incomplete steps where two were required, independently of reaching the output-token limit. No output repair, rerun or threshold change is justified.",
+  "architectureFamily": "qwen2-dense-gqa",
+  "runtimeAdmission": "not-admitted-current-slm2",
+  "licenseDisposition": "apache-2.0-pinned-publisher-license-and-official-authority-text-verified-separately",
+  "blockerCode": "model_quality_rejected",
+  "passedCaseCount": 5,
+  "caseCount": 6,
+  "criticalFailureCodes": [
+    "task-fidelity-violated"
+  ],
+  "caseDispositions": [
+    {
+      "index": 0,
+      "status": "pass",
+      "failureCodes": []
+    },
+    {
+      "index": 1,
+      "status": "pass",
+      "failureCodes": []
+    },
+    {
+      "index": 2,
+      "status": "pass",
+      "failureCodes": []
+    },
+    {
+      "index": 3,
+      "status": "fail",
+      "failureCodes": [
+        "task-fidelity-violated"
+      ],
+      "reason": "The raw answer gives five numbered steps instead of exactly two. It asks for unnecessary names, sizes, colors, brand and type, folds the paper into columns, and ends mid-sentence at96 tokens. This does not provide two complete practical steps yielding the requested packing checklist. The extra-step failure is already present before truncation."
+    },
+    {
+      "index": 4,
+      "status": "pass",
+      "failureCodes": []
+    },
+    {
+      "index": 5,
+      "status": "pass",
+      "failureCodes": []
+    }
+  ],
+  "executionBoundary": "One prospectively bound operation passed the actual all-seven canonical clean/remote gate, reused four verified cache responses, fetched the pinned Git tokenizer via its declared raw URL once and the exact LFS weight once, and verified six receipt-bound source files. A separate PUBLISHER-LICENSE preserves the exact11344-byte original publisher license/copyright; the acquisition receipt remains unchanged and its generic Apache authority LICENSE is not misrepresented as the publisher file. Offline config/tokenizer preflight passed with source EOS[151645,151643], use_cache=true in source config, actual tokenizer length151646 and context32768. One greedy generation call per case used unchanged cases, criteria, system prompt, native template and controls. All24 bound input records and every source/supplemental/receipt file remained identical before/after. No source metadata rewrite, prompt/sampler change, output repair, retry, conversion, browser or final holdout occurred. Retained stderr contains only weight-loading progress. Original operation scratch and marker were retired by their owner.",
+  "officialReferences": [
+    "https://huggingface.co/Qwen/Qwen2-1.5B-Instruct/tree/ba1cf1846d7df0a0591d6c00649f57e798519da8",
+    "https://huggingface.co/Qwen/Qwen2-1.5B-Instruct/raw/ba1cf1846d7df0a0591d6c00649f57e798519da8/LICENSE",
+    "https://www.apache.org/licenses/LICENSE-2.0.txt"
+  ]
+}
