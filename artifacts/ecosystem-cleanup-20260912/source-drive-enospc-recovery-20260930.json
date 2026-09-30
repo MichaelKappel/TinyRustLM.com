@@ -1,0 +1,94 @@
+{
+  "schema": "tinyrustlm.source_drive_enospc_recovery.v1",
+  "recordedAtUtc": "2026-09-30T01:33:02.339Z",
+  "status": "space-recovered-source-reconstruction-in-progress",
+  "failure": {
+    "code": "ENOSPC",
+    "observedAvailableBytes": 0,
+    "affected": [
+      {
+        "repository": "TinyRustLM.com",
+        "path": "artifacts/ecosystem-cleanup-20260912/source-screen-applicability-review-20260930.json",
+        "bytesAfterFailure": 0,
+        "source": "new uncommitted review; full intended text retained in tool history"
+      },
+      {
+        "repository": "MiniModel.org",
+        "path": "tools/deploy-site.ps1",
+        "bytesAfterFailure": 0,
+        "source": "committed138652-byte Git blob f0f072c5f613d9b800bbe1a870ebc4b754452c2b safe; pending changes retained in tool reads/patches, not on disk"
+      },
+      {
+        "repository": "MiniModel.org",
+        "path": "tests/verify-host-renewal-pair_test.js",
+        "bytesAfterFailure": 0,
+        "source": "new test not yet run; intended source retained in tool history"
+      }
+    ]
+  },
+  "authority": "Owner authorized deletion of ignored experiment outputs and restoring from source control; this narrowly scoped cleanup is necessary to recover active source writes, not an optional campaign.",
+  "verification": "Exact eight ordinary files within canonical target/debug/deps; all untracked and Git-ignored, Microsoft C/C++ MSF7 PDB headers, exact sizes and SHA256, all ancestors ordinary non-reparse directories. No active cargo/rustc process appeared in read-only process check. Native PowerShell literal-path removal only; no recursive deletion.",
+  "removed": [
+    {
+      "path": "target/debug/deps/direct_transport-f6e0b6fd2d989d46.pdb",
+      "bytes": 48615424,
+      "sha256": "59d7e1ee5bfbe0c0c7417737393e7b6735edb5d2a0f29623ff3f5265172242e3"
+    },
+    {
+      "path": "target/debug/deps/direct_transport-6ada46df3df1e055.pdb",
+      "bytes": 48279552,
+      "sha256": "4a52e1b11ad89d1c2312d7c745f0c2d95e693fce40c8b72d4efbad9008a75fdb"
+    },
+    {
+      "path": "target/debug/deps/tinyrustlm_native-0851ed98a0b6bb84.pdb",
+      "bytes": 44847104,
+      "sha256": "7a595bee30d7f5717714af3972237519893920976b8e3bddb0f90fb0eb6559b5"
+    },
+    {
+      "path": "target/debug/deps/tinyrustlm_native.pdb",
+      "bytes": 42954752,
+      "sha256": "095120adca281ff6a7d14803ccb5d02c70588197d8a856a3cc691c7230961ca7"
+    },
+    {
+      "path": "target/debug/deps/direct_composition_http_test-926173bff265a2b2.pdb",
+      "bytes": 42487808,
+      "sha256": "43f4d8d4c864ab3db4eacc131d4bd5ba3561eb6ee6ace762795aff2c5e4c2df2"
+    },
+    {
+      "path": "target/debug/deps/tinyrustlm_p2p_seed_test-437d2f273b56b8bf.pdb",
+      "bytes": 42233856,
+      "sha256": "554395a5a7acf7df2676a5742a95a9471dad9b14295ab7c9a237e0655ac25003"
+    },
+    {
+      "path": "target/debug/deps/direct_composition_http_test-18594af302c75a9a.pdb",
+      "bytes": 42004480,
+      "sha256": "3e5ac7529cdcdec1d9337b923bb6ec76d1999e10aeb506caffee770cdc828851"
+    },
+    {
+      "path": "target/debug/deps/tinyrustlm_p2p_seed_test-abdb0362d1385868.pdb",
+      "bytes": 41652224,
+      "sha256": "a67da1a993d027c28eb33f4bae3b95898a57fe5d0ea5da9d8500dfb2142dce0f"
+    }
+  ],
+  "logicalBytesRemoved": 353075200,
+  "volumeObservation": {
+    "beforeDeletionAvailableBytes": 586424320,
+    "afterDeletionAvailableBytes": 939499520,
+    "observedIncreaseBytes": 353075200,
+    "limitation": "Some space returned between the zero-space diagnosis and deletion. Cause not established; volume free-space observations are not a claim to account for unrelated concurrent activity."
+  },
+  "protected": {
+    "sourceFilesDeleted": 0,
+    "modelFilesDeleted": 0,
+    "retainedEvidenceDeleted": 0,
+    "previouslyDeniedCleanupPathsTouched": 0
+  },
+  "recovery": "Rebuild these optional Rust debug symbols from committed sources if debugging requires them. Compilation/native binaries and source files were not deleted. Mini publisher reconstruction and subsequent tests must be reported separately.",
+  "productionChanged": false,
+  "transcript": {
+    "diagnosis": "20daa4",
+    "preinspection": "c9c733",
+    "removal": "143e9f",
+    "rootWriteFailure": "a62b6b"
+  }
+}

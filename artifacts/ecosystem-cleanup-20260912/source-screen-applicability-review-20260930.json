@@ -1,0 +1,119 @@
+{
+  "schema": "tinyrustlm.source_screen_applicability_review.v1",
+  "reviewedAtUtc": "2026-09-30T01:34:10.668Z",
+  "sourceCommit": "8b3db95a0f7c5a3c64a20abc8db7baedc0bff079",
+  "status": "reviewed-no-reopening-defect-demonstrated",
+  "scope": "Read-only root and independent-agent review; no new model generation, conversion, rescore, changed thresholds or publication.",
+  "exclusions": {
+    "total": 53,
+    "quality": 43,
+    "preflight": 9,
+    "ownerQualityRejection": 1,
+    "changed": false
+  },
+  "findings": [
+    {
+      "subject": "Historical Qwen2.5-0.5B",
+      "evidence": "Independently verified raw capture34244B/SHA7dd544dce4e137f18e641b2bc57f35cde5b648ea5c6aaabfa0236741774acbc5. Eight prompts match native no-tools ChatML; prompt lengths40-72 versus32768 context. Generated counts31/32,48/48,64/64,64/64,64/64,96/96,48/48,64/64. Onlycase0 ended with EOS.",
+      "conclusion": "Seven capped answers are configuration-specific failures. Some task/authority errors precede truncation; extra tokens cannot be presumed to repair them."
+    },
+    {
+      "subject": "Historical Qwen2.5-1.5B",
+      "evidence": "Immutable receipt binds31923-byte raw SHA d47087f6d34f6a839ca00ba9a58a16008b024f97be5459a08a19dd7b9416c844. Exact raw file not located during bounded search.",
+      "conclusion": "Per-case historical observations have receipt/document corroboration only, not independent raw verification in this review."
+    },
+    {
+      "subject": "Budget and rendering implementation",
+      "evidence": "Inspected runner correctly uses max_new_tokens and slices generated tokens after prompt. Metadata-only exact historical tokenizer check found independently written concise task answers can fit registered budgets.",
+      "conclusion": "No off-by-one, context exhaustion, template mismatch or inherently impossible task budget demonstrated. Audit examples are not model outputs, replacement answers, training data or a rescore."
+    },
+    {
+      "subject": "hungpill and Hutgaecha",
+      "evidence": "Both assessment-bound raw captures complete case4 with The pens in Box B are red., nine tokens ending EOS151645. Frozen instruction requires color only. All six answer texts match across sources.",
+      "conclusion": "Instruction-format failure, not truncation/scorer mismatch. Matching results do not establish independent lineage or stronger capability."
+    },
+    {
+      "subject": "Official Qwen3-0.6B",
+      "evidence": "Matching retained raw/assessment records four failures among eight cases, including unavailable charging and a completed Monday choice without resolving conflicting authority.",
+      "conclusion": "TinyRust conversion/numerical defects cannot explain source-framework answers. Owner rejection and negative evidence remain unchanged."
+    },
+    {
+      "subject": "Serving configuration applicability",
+      "evidence": "Historical Qwen2.5 uses publisher sampling temperature.7/top-k20/top-p.8/repetition1.1; recent six-case screens use greedy; app Simple Balanced uses temperature.65/top-k40/top-p.9, Normal maximum80 further bounded by admission.",
+      "conclusion": "One configuration does not scientifically establish all future configurations fail. Universal exact-weight exclusion is a policy inference. This limitation alone neither grants permission to reopen rejected candidates nor justifies selecting favorable sampled outputs."
+    }
+  ],
+  "publisherGuidance": {
+    "url": "https://huggingface.co/Qwen/Qwen3-0.6B/blob/c1899de289a04d12100db370d81485cdf75e47ca/README.md#best-practices",
+    "finding": "Explicit do-not-use-greedy warning concerns thinking mode; the non-thinking sampling recommendation alone does not invalidate non-thinking greedy results."
+  },
+  "nextBoundary": "A new default must demonstrate instruction fidelity and grounded constraint handling, then actual SLM2/native/browser qualification. A genuinely changed compatible derivative might retain operators and size, but no training success/new eligible source is established. Compatibility profile changes alone do not fix failed answers. No new candidate selection or training follows from this review.",
+  "references": [
+    {
+      "path": "contracts/vnext/source-candidate-exclusions.v1.json",
+      "bytes": 24361,
+      "sha256": "2a4d67ad17512d5dcd064b9651d2ff6b132a2b45bbf3c47ed3e17f6ca3939410"
+    },
+    {
+      "path": "tinyrustlm/tools/source-candidate-exclusions.js",
+      "bytes": 1885,
+      "sha256": "43a71f9760a2d1038f9b3b017c61a445577a68bcd285098ab915ba5b0df4b836"
+    },
+    {
+      "path": "tinyrustlm/tools/reference-raw-quality.py",
+      "bytes": 34527,
+      "sha256": "30dd01e388433dfe926f5990ab778817167fd50a6c81a55a19e10870ebb289fb"
+    },
+    {
+      "path": "tinyrustlm/app/app.js",
+      "bytes": 476837,
+      "sha256": "83b5fb7e3d7df43fe2184b450b9fad3cf8636981e8bdee263c9e3f2e9a68028e"
+    },
+    {
+      "path": "tinyrustlm/training/qwen3-json-hungpill-source-development-screen-v1/assessment-control-v1.json",
+      "bytes": 1594,
+      "sha256": "d6cc3927770d06cd2b267bb65d8939616368097b6f02a83a6cb7b2f2b2980cd5"
+    },
+    {
+      "path": "tinyrustlm/training/qwen3-json-hutgaecha-source-development-screen-v1/assessment-control-v1.json",
+      "bytes": 1597,
+      "sha256": "631c5b5319b018603187631f95696d681658fc801aa149eb1fdcdbbac888a28a"
+    },
+    {
+      "path": "tinyrustlm/training/qwen2-0.5b-instruct-source-development-screen-v1/assessment-control-v1.json",
+      "bytes": 4662,
+      "sha256": "3a8e62d793772677ce2103cb0cdad531c60bbaeee518aaf6cfd7ffc4a4b39bd6"
+    },
+    {
+      "path": "tinyrustlm/training/qwen2-1.5b-instruct-source-development-screen-v1/assessment-control-v1.json",
+      "bytes": 3980,
+      "sha256": "7a4dc0162ea8f9b0103fadbbc82858b2868c1a92a54e716f0e1d57714292b3e2"
+    },
+    {
+      "path": "tinyrustlm/training/qwen2.5-coder-1.5b-source-development-screen-v1/assessment-control-v1.json",
+      "bytes": 4497,
+      "sha256": "a95df398a78ceaa46cdf1c17d623e9b0446a69c7f4c65f8946a038f5ef32ea99"
+    },
+    {
+      "path": "artifacts/retained-evidence/Source/External/TinyRustLM-private-evidence/source-screens/qwen2.5-0.5b-instruct-7ae5576/raw-source-screen-v6-default-system.json",
+      "bytes": 34244,
+      "sha256": "7dd544dce4e137f18e641b2bc57f35cde5b648ea5c6aaabfa0236741774acbc5"
+    },
+    {
+      "path": "artifacts/retained-evidence/Source/External/TinyRustLM-private-evidence/source-screens/qwen3-0.6b-c1899de/raw-source-screen-v4-default-system.json",
+      "bytes": 31785,
+      "sha256": "d637de2e1ec00cfb262deae49450e143d10c967f6674274aae6279e5a777c947"
+    },
+    {
+      "path": "artifacts/retained-evidence/Source/External/TinyRustLM-private-evidence/source-screens/qwen3-0.6b-c1899de/assessment-v1.json",
+      "bytes": 2907,
+      "sha256": "82a120d09c92ff4f1277f9f7b4b44543424809bf7e6ae305679fda5f5528d77a"
+    },
+    {
+      "path": "artifacts/retained-evidence/Source/External/TinyRustLM-campaign-evidence/receipts/sha256/a5/a52df8333b5f0bc58037c6a120cd6c8b6133cfaa96321ae12e80d8d1ab9632f5.json",
+      "bytes": 4846,
+      "sha256": "ffddca9732c171e94753014fac9e9186a55f5feba60af50a8b291ce8dca89ef5"
+    }
+  ],
+  "recovery": "First write failed ENOSPC and left0B. This reconstructed review replaces only that verified empty output; see source-drive-enospc-recovery-20260930.json. Historical references and exclusions are unchanged."
+}
