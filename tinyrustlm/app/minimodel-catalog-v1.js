@@ -1783,6 +1783,11 @@
   }
 
   async function loadCurrentCatalog(options = {}) {
+    return loadCurrentCatalogAttempt(options, false);
+  }
+
+  // One bounded reload handles renewal between the two independent metadata GETs.
+  async function loadCurrentCatalogAttempt(options, pairReloaded) {
     const catalogUrl = options.catalogUrl || CATALOG_URL;
     const peerFeedUrl = options.peerFeedUrl || PEER_FEED_URL;
     const settled = await Promise.allSettled([
@@ -1819,6 +1824,23 @@
             options
           );
         } catch (error) {
+          if (!pairReloaded && error instanceof MiniModelCatalogError &&
+              error.code === "peer-freshness") {
+            // Both documents passed their own validation and rollback checks. Carry
+            // those revisions forward so recovery cannot accept an older pair.
+            const previousAuthority = {};
+            for (const source of [catalog, peerFeed]) {
+              const isCatalog = source.type === SOURCE_TYPES.CATALOG;
+              previousAuthority[isCatalog ? "catalog" : "peerFeed"] = {
+                id: isCatalog ? source.document.catalog_id : source.document.feed_id,
+                revision: source.document.revision,
+                generatedAtUtc: source.document.generated_at_utc,
+                validUntilUtc: source.document.valid_until_utc,
+                sha256: source.sha256
+              };
+            }
+            return loadCurrentCatalogAttempt({ ...options, previousAuthority }, true);
+          }
           const stage = error instanceof MiniModelCatalogError &&
             ["peer-signature", "peer-signature-authority"].includes(error.code)
             ? "signature"
@@ -1848,7 +1870,7 @@
           : null
       })
       : null;
-    return Object.freeze({ catalog, peerFeed, views, authority });
+    return Object.freeze({ catalog, peerFeed, views, authority, metadataPairReloaded: pairReloaded });
   }
 
   // Classifies one cached admission against an already validated current catalog.

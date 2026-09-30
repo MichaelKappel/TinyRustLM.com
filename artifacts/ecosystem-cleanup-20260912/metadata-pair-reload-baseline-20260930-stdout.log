@@ -1,0 +1,130 @@
+✔ canonical strings preserve Unicode scalar pairs, keys and normalization (2.975ms)
+✔ canonical strings reject lone surrogates and escaped alternate spellings (3.093ms)
+✔ canonical streams reject leading BOM bytes across every split (0.4205ms)
+✔ supplementary Unicode retains code-unit string limits (34.4873ms)
+✔ accepts the truthful empty current catalog and peer feed (1.8312ms)
+✔ projects qualified entries without treating signed announcements as reachable peers (7.5281ms)
+✔ operator seed proof is exact-origin, nullable, signed and distinct from third-party evidence (4.2285ms)
+✔ catalog pass and peer validation failure preserves local conversion choices (3.5113ms)
+✔ peer binding failure also degrades a valid catalog to local conversion (1.1856ms)
+✔ catalog validation failure does not suppress a valid peer source status (1.3808ms)
+✔ requires exact catalog and six-member fields (0.4778ms)
+✔ requires the canonical P2P six-member wire order before projection (0.9584ms)
+✔ requires a safe exact browser admission descriptor with current schema identity (0.9957ms)
+✔ rejects incomplete qualification and noncanonical digests (0.3528ms)
+✔ requires exact catalog-to-peer closure (0.7619ms)
+✔ rejects expired, project-hosted, and credential-bearing peers (1.0476ms)
+✔ both valid sources produce P2P views with body-free no-store requests (1.3539ms)
+✔ a peer cannot become selectable until its detached Ed25519 signature verifies (2.1971ms)
+✔ peer timeout is isolated and leaves the current catalog locally available (31.4792ms)
+▶ declared and streamed oversized responses fail their source closed
+  ✔ declared length (18.5511ms)
+  ✔ streamed length (3.4767ms)
+✔ declared and streamed oversized responses fail their source closed (22.6954ms)
+✔ orders P2P entries and peers deterministically before local entries (3.8449ms)
+✔ successive loads return fresh owned snapshots without stale reuse (1.3855ms)
+✖ one metadata pair reload resolves both renewal interleavings with real signatures (2.8198ms)
+✖ persistent metadata mismatch stops after one reload (1.7586ms)
+✖ metadata reload cannot roll back either individually observed source (1.4243ms)
+✖ a signature failure triggers no metadata retry (1.7039ms)
+✖ cancellation during the metadata reload still aborts the operation (0.9858ms)
+ℹ tests 29
+ℹ suites 0
+ℹ pass 24
+ℹ fail 5
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 143.5749
+
+✖ failing tests:
+
+test at tinyrustlm\tests\minimodel-catalog-v1.test.js:885:1
+✖ one metadata pair reload resolves both renewal interleavings with real signatures (2.8198ms)
+  AssertionError [ERR_ASSERTION]: catalog-old
+  + actual - expected
+  
+    {
+  +   catalog: 1,
+  +   peerFeed: 1
+  -   catalog: 2,
+  -   peerFeed: 2
+    }
+  
+      at TestContext.<anonymous> (E:/Source/Rust/TinyRustLM.com/tinyrustlm/tests/minimodel-catalog-v1.test.js:896:12)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: [Object],
+    expected: [Object],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tinyrustlm\tests\minimodel-catalog-v1.test.js:905:1
+✖ persistent metadata mismatch stops after one reload (1.7586ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  2 !== 4
+  
+      at TestContext.<anonymous> (E:/Source/Rust/TinyRustLM.com/tinyrustlm/tests/minimodel-catalog-v1.test.js:911:10)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 4,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tinyrustlm\tests\minimodel-catalog-v1.test.js:917:1
+✖ metadata reload cannot roll back either individually observed source (1.4243ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  1 !== 2
+  
+      at TestContext.<anonymous> (E:/Source/Rust/TinyRustLM.com/tinyrustlm/tests/minimodel-catalog-v1.test.js:923:10)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 2,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tinyrustlm\tests\minimodel-catalog-v1.test.js:930:1
+✖ a signature failure triggers no metadata retry (1.7039ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - false
+  
+      at TestContext.<anonymous> (E:/Source/Rust/TinyRustLM.com/tinyrustlm/tests/minimodel-catalog-v1.test.js:938:10)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tinyrustlm\tests\minimodel-catalog-v1.test.js:942:1
+✖ cancellation during the metadata reload still aborts the operation (0.9858ms)
+  AssertionError [ERR_ASSERTION]: Missing expected rejection.
+      at async TestContext.<anonymous> (E:/Source/Rust/TinyRustLM.com/tinyrustlm/tests/minimodel-catalog-v1.test.js:946:3)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /cancelled-renewal-reload/,
+    operator: 'rejects',
+    diff: 'simple'
+  }

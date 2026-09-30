@@ -1,0 +1,93 @@
+{
+  "schema": "tinyrustlm.metadata_pair_reload_review.v1",
+  "reviewedAtUtc": "2026-09-30T00:38:31.653Z",
+  "problem": "Two independently fetched signed metadata documents can straddle one legitimate renewal, producing a peer-freshness mismatch.",
+  "change": "Reload both documents once on that precise mismatch after individual validity and monotonic checks. Carry both observed revision/time/hash floors into the second attempt. Preserve all signature, expiry, cancellation and rollback checks.",
+  "source": {
+    "path": "tinyrustlm/app/minimodel-catalog-v1.js",
+    "bytes": 77343,
+    "sha256": "b0028c3194ca4d1f12481b0c2d76b6aed420afef8d82aaaee4593b922d955112"
+  },
+  "tests": {
+    "path": "tinyrustlm/tests/minimodel-catalog-v1.test.js",
+    "bytes": 36929,
+    "sha256": "b4ebbfbee80ef10505b597200b9ee631bc19ec79ff6e563c9d265d62aeb1e77d"
+  },
+  "baseline": {
+    "tests": 29,
+    "pass": 24,
+    "fail": 5,
+    "method": "New tests compiled against original HEAD client in memory; no production source rewrite."
+  },
+  "validation": {
+    "tests": 77,
+    "pass": 77,
+    "fail": 0,
+    "skipped": 0,
+    "lineCoveragePercent": 83.06,
+    "branchCoveragePercent": 75.97,
+    "functionCoveragePercent": 87.93,
+    "covers": [
+      "both renewal interleavings with actual Ed25519 signatures",
+      "one-reload maximum",
+      "rollback of either individually observed source",
+      "bad signature without retry",
+      "cancellation during retry",
+      "existing catalog admission and announcement evidence boundaries"
+    ]
+  },
+  "earlierRuns": "Launcher ENAMETOOLONG before test creation is retained. First final run29/29, second final77/77 after extending both-source rollback test, third same77/77 adds required coverage. Raw outputs unchanged.",
+  "evidence": [
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/metadata-pair-reload-launcher-failure-20260930.json",
+      "bytes": 282,
+      "sha256": "2a171143933e70e998e6193d3bc64d257f5dedace25186218f3f714be86e3e3f"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/metadata-pair-reload-baseline-20260930-stdout.log",
+      "bytes": 5792,
+      "sha256": "12b0cce098549c9bb417005054432410a19b4ca7e1f54b9a1e6ff04e1fbd8134"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/metadata-pair-reload-baseline-20260930-stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/metadata-pair-reload-final-a1-20260930-stdout.log",
+      "bytes": 2462,
+      "sha256": "14acfadcc6725c8e2386308ef86c924d3135ca2291b695664860208012bad3a4"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/metadata-pair-reload-final-a1-20260930-stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/metadata-pair-reload-final-a2-20260930-stdout.log",
+      "bytes": 5608,
+      "sha256": "d5d6333ac43b8bb89209609f5f4e7531849a703a0a5a68fb8921a530b6be608a"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/metadata-pair-reload-final-a2-20260930-stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/metadata-pair-reload-final-a3-20260930-stdout.log",
+      "bytes": 10490,
+      "sha256": "e7507383083e3e9303aee0bfbe3c0726c6b39fa38dfc9e827a4d01b3e40c6899"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/metadata-pair-reload-final-a3-20260930-stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "independentReview": "Root reviewed complete production diff and observed both-source monotonic test. MiniModel hosting owner independently pinned exact changed validator bytes and passed all5 real Node child-boundary tests.",
+  "production": {
+    "deployed": false,
+    "qualifiedDefault": false,
+    "visualReview": "No DOM, styles, labels or markup changed; actual public browser acceptance remains pending."
+  }
+}

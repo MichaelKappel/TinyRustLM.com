@@ -1,0 +1,7 @@
+{
+  "schema": "tinyrustlm.metadata_pair_reload_launcher_failure.v1",
+  "status": null,
+  "error": "spawnSync C:\\Program Files\\nodejs\\node.exe ENAMETOOLONG",
+  "testsLaunched": false,
+  "correction": "Pass in-memory module via stdin rather than Windows command-line arguments."
+}

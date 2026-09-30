@@ -863,3 +863,97 @@ test("successive loads return fresh owned snapshots without stale reuse", async 
     first.catalog.document.entries[0].display_name = "mutated";
   }, TypeError);
 });
+
+function renewalPairFixture() {
+  const entry = validEntry({ peerIds: ["peer/qwen3/lane-1"] });
+  const old = { catalog: validCatalog([entry]),
+    peerFeed: validPeerFeed([validAnnouncement()]) };
+  const next = JSON.parse(JSON.stringify(old));
+  for (const document of [next.catalog, next.peerFeed]) {
+    document.revision += 1;
+    document.generated_at_utc = utc(-30_000);
+    document.valid_until_utc = utc(61 * 60_000);
+  }
+  const peer = next.peerFeed.announcements[0];
+  peer.issued_at_utc = next.peerFeed.generated_at_utc;
+  peer.expires_utc = next.peerFeed.valid_until_utc;
+  peer.signature = nodeCrypto.sign(null,
+    catalogApi.peerAnnouncementSigningBytes(peer), PEER_KEY_PAIR.privateKey).toString("base64url");
+  return { old, next };
+}
+
+test("one metadata pair reload resolves both renewal interleavings with real signatures", async () => {
+  for (const direction of ["catalog-old", "feed-old"]) {
+    const { old, next } = renewalPairFixture();
+    const counts = { catalog: 0, peerFeed: 0 };
+    const result = await catalogApi.loadCurrentCatalog({ now: TEST_NOW,
+      crypto: nodeCrypto.webcrypto, fetch: async (url) => {
+        const kind = url === catalogApi.CATALOG_URL ? "catalog" : "peerFeed";
+        const first = counts[kind]++ === 0;
+        const useOld = first && (direction === "catalog-old" ? kind === "catalog" : kind === "peerFeed");
+        return jsonResponse((useOld ? old : next)[kind]);
+      } });
+    assert.deepEqual(counts, { catalog: 2, peerFeed: 2 }, direction);
+    assert.equal(result.metadataPairReloaded, true);
+    assert.equal(result.peerFeed.status, catalogApi.SOURCE_STATUSES.VALID);
+    assert.equal(result.views[0].peerCount, 1);
+    assert.equal(result.authority.catalog.revision, next.catalog.revision);
+    assert.equal(result.authority.peerFeed.revision, next.peerFeed.revision);
+  }
+});
+
+test("persistent metadata mismatch stops after one reload", async () => {
+  const { old, next } = renewalPairFixture();
+  let requests = 0;
+  const result = await catalogApi.loadCurrentCatalog({ now: TEST_NOW,
+    fetch: async (url) => { requests++; return jsonResponse(
+      url === catalogApi.CATALOG_URL ? old.catalog : next.peerFeed); } });
+  assert.equal(requests, 4);
+  assert.equal(result.metadataPairReloaded, true);
+  assert.equal(result.peerFeed.error.code, "peer-freshness");
+  assert.equal(result.views[0].peerCount, 0);
+});
+
+test("metadata reload cannot roll back either individually observed source", async () => {
+  for (const changed of ["catalog", "peerFeed"]) {
+    const { old, next } = renewalPairFixture();
+    const counts = { catalog: 0, peerFeed: 0 };
+    const result = await catalogApi.loadCurrentCatalog({ now: TEST_NOW,
+      fetch: async (url) => {
+        const kind = url === catalogApi.CATALOG_URL ? "catalog" : "peerFeed";
+        const useNew = kind === changed && counts[kind] === 0;
+        counts[kind]++;
+        return jsonResponse((useNew ? next : old)[kind]);
+      } });
+    assert.deepEqual(counts, { catalog: 2, peerFeed: 2 });
+    assert.equal(result.metadataPairReloaded, true);
+    assert.equal(result[changed].status, catalogApi.SOURCE_STATUSES.INVALID);
+    assert.equal(result[changed].error.code, "monotonic");
+    if (changed === "catalog") assert.equal(result.views.length, 0);
+    else assert.equal(result.views[0].peerCount, 0);
+  }
+});
+
+test("a signature failure triggers no metadata retry", async () => {
+  const { next } = renewalPairFixture();
+  next.peerFeed.announcements[0].signature = Buffer.alloc(64).toString("base64url");
+  let requests = 0;
+  const result = await catalogApi.loadCurrentCatalog({ now: TEST_NOW,
+    crypto: nodeCrypto.webcrypto, fetch: async (url) => { requests++; return jsonResponse(
+      url === catalogApi.CATALOG_URL ? next.catalog : next.peerFeed); } });
+  assert.equal(requests, 2);
+  assert.equal(result.metadataPairReloaded, false);
+  assert.equal(result.peerFeed.error.code, "peer-signature");
+});
+
+test("cancellation during the metadata reload still aborts the operation", async () => {
+  const { old, next } = renewalPairFixture();
+  const controller = new AbortController();
+  let requests = 0;
+  await assert.rejects(catalogApi.loadCurrentCatalog({ now: TEST_NOW, signal: controller.signal,
+    fetch: async (url) => {
+      if (++requests === 3) controller.abort(new Error("cancelled-renewal-reload"));
+      return jsonResponse(url === catalogApi.CATALOG_URL ? old.catalog : next.peerFeed);
+    } }), /cancelled-renewal-reload/);
+  assert.ok(requests <= 4);
+});

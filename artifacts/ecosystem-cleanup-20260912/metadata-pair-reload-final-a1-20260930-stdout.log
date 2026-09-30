@@ -1,0 +1,38 @@
+✔ canonical strings preserve Unicode scalar pairs, keys and normalization (5.3315ms)
+✔ canonical strings reject lone surrogates and escaped alternate spellings (4.3735ms)
+✔ canonical streams reject leading BOM bytes across every split (0.575ms)
+✔ supplementary Unicode retains code-unit string limits (45.8499ms)
+✔ accepts the truthful empty current catalog and peer feed (1.9471ms)
+✔ projects qualified entries without treating signed announcements as reachable peers (10.5017ms)
+✔ operator seed proof is exact-origin, nullable, signed and distinct from third-party evidence (5.0971ms)
+✔ catalog pass and peer validation failure preserves local conversion choices (4.1447ms)
+✔ peer binding failure also degrades a valid catalog to local conversion (1.7242ms)
+✔ catalog validation failure does not suppress a valid peer source status (2.021ms)
+✔ requires exact catalog and six-member fields (0.5774ms)
+✔ requires the canonical P2P six-member wire order before projection (0.8968ms)
+✔ requires a safe exact browser admission descriptor with current schema identity (0.7465ms)
+✔ rejects incomplete qualification and noncanonical digests (0.2896ms)
+✔ requires exact catalog-to-peer closure (0.7169ms)
+✔ rejects expired, project-hosted, and credential-bearing peers (1.0393ms)
+✔ both valid sources produce P2P views with body-free no-store requests (3.5994ms)
+✔ a peer cannot become selectable until its detached Ed25519 signature verifies (2.4076ms)
+✔ peer timeout is isolated and leaves the current catalog locally available (21.043ms)
+▶ declared and streamed oversized responses fail their source closed
+  ✔ declared length (1.6401ms)
+  ✔ streamed length (2.0853ms)
+✔ declared and streamed oversized responses fail their source closed (4.3031ms)
+✔ orders P2P entries and peers deterministically before local entries (4.7839ms)
+✔ successive loads return fresh owned snapshots without stale reuse (2.0254ms)
+✔ one metadata pair reload resolves both renewal interleavings with real signatures (4.8465ms)
+✔ persistent metadata mismatch stops after one reload (1.7907ms)
+✔ metadata reload cannot roll back either individually observed source (1.7008ms)
+✔ a signature failure triggers no metadata retry (1.5762ms)
+✔ cancellation during the metadata reload still aborts the operation (1.6778ms)
+ℹ tests 29
+ℹ suites 0
+ℹ pass 29
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 230.2697
