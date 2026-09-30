@@ -310,3 +310,7 @@ artifacts/ecosystem-cleanup-20260912/numerical-verifier-binding-v9-final-suite-2
 /artifacts/ecosystem-cleanup-20260912/meet7-eligibility-final-20260929-stderr.txt -text
 /artifacts/ecosystem-cleanup-20260912/meet7-eligibility-corrected-20260929-stdout.txt -text
 /artifacts/ecosystem-cleanup-20260912/meet7-eligibility-corrected-20260929-stderr.txt -text
+
+/artifacts/ecosystem-cleanup-20260912/meet7-exclusion-20260930-stdout.txt -text
+
+/artifacts/ecosystem-cleanup-20260912/meet7-exclusion-20260930-stderr.txt -text

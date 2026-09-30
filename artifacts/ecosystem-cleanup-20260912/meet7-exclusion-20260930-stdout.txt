@@ -1,0 +1,25 @@
+✔ current exclusions preserve all exact prior decisions and their evidence identities (9.0322ms)
+✔ exclusions are exact negative evidence, not a family ban or positive admission (0.5656ms)
+✔ source rejection blocks smollm2-current-candidate-inventory-20260927.json selection 0 without fetching or writing (1.2648ms)
+✔ source rejection blocks qwen3-expanded-candidate-inventory-20260927.json selection 0 without fetching or writing (0.5823ms)
+✔ source rejection blocks qwen3-expanded-candidate-inventory-20260927.json selection 1 without fetching or writing (0.4721ms)
+✔ source rejection blocks qwen3-expanded-candidate-inventory-20260927.json selection 2 without fetching or writing (0.4306ms)
+✔ source rejection blocks qwen3-next-candidate-inventory-20260928.json selection 0 without fetching or writing (0.5154ms)
+✔ source rejection blocks qwen3-next-candidate-inventory-20260928.json selection 1 without fetching or writing (0.4829ms)
+✔ source rejection blocks qwen3-next-candidate-inventory-20260928.json selection 2 without fetching or writing (0.488ms)
+✔ source rejection blocks qwen3-reaper-untied-inventory-20260929.json selection 1 without fetching or writing (0.4608ms)
+✔ source rejection blocks qwen3-reaper-untied-inventory-20260929.json selection 0 without fetching or writing (0.9731ms)
+✔ source rejection blocks qwen2.5-coder-0.5b-inventory-20260929.json selection 0 without fetching or writing (0.3968ms)
+✔ source rejection blocks pluto-genesis-0.6b-inventory-20260929.json selection 0 without fetching or writing (0.2867ms)
+✔ source rejection blocks meet7-0.6b-inventory-20260929.json selection 0 without fetching or writing (0.3573ms)
+✔ discovery excludes recorded revision before model-specific requests (22.9099ms)
+✔ discovery refuses a renamed repository with the rejected weight digest (1.4608ms)
+✔ acquisition independently rejects stale or fabricated inventories before any write or fetch (0.6912ms)
+ℹ tests 17
+ℹ suites 0
+ℹ pass 17
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 119.1606

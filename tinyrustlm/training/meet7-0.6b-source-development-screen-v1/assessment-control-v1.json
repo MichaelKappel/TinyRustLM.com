@@ -1,0 +1,80 @@
+{
+  "schema": "tinyrustlm.source_model_screen_assessment.v1",
+  "sourceModelId": "Ma7ee7/Meet7_0.6b",
+  "sourceRevision": "0090a55103a31900c344c6698b5cf8e79dc17094",
+  "sourceModelArtifactSha256": "938e5fbbf1de362bbb24c91d3ea937a430227c28fc72c31ac89eee0b6606998a",
+  "sourceScreenSha256": "9497df75f69da53f5db03dacf701cca798ebc472d51b5bc6f348ba932a581576",
+  "sourceScreenPath": "artifacts/ecosystem-cleanup-20260912/meet7-0.6b-development-raw-20260929.json",
+  "executionReceiptPath": "artifacts/ecosystem-cleanup-20260912/meet7-0.6b-combined-execution-20260929.json",
+  "executionReceiptSha256": "d0e2a815ae9fb9d7a02df808a6628937b06007fcbb959aec0128733534c02363",
+  "prospectivePlanPath": "artifacts/ecosystem-cleanup-20260912/meet7-0.6b-development-plan-20260929.json",
+  "prospectivePlanSha256": "d9bb7dedd05e460815d8810043df9f5bd6d1c4bc009ddf11a587bfdfc1d45a28",
+  "decision": "rejected",
+  "decisionAuthority": "engineering-source-screen-v1",
+  "independentAssessment": "Root agent independently read all six exact raw answers and frozen cases after source/input identity closure. Only case5 passes; cases0,1,2,3,4 fail under the unchanged prospective criteria.",
+  "architectureFamily": "qwen3-dense-gqa",
+  "runtimeAdmission": "not-admitted-current-slm2",
+  "licenseDisposition": "apache-2.0-publisher-license-and-official-authority-text-verified",
+  "blockerCode": "model_quality_rejected",
+  "passedCaseCount": 1,
+  "caseCount": 6,
+  "criticalFailureCodes": [
+    "answer-format-violated",
+    "reasoning-leaked",
+    "task-fidelity-violated"
+  ],
+  "caseDispositions": [
+    {
+      "index": 0,
+      "status": "fail",
+      "failureCodes": [
+        "answer-format-violated",
+        "reasoning-leaked"
+      ],
+      "reason": "The answer emits unfinished deliberation about replying READY instead of the required exact READY. It exhausts the32-token bound. No answer extraction or repair was performed."
+    },
+    {
+      "index": 1,
+      "status": "fail",
+      "failureCodes": [
+        "answer-format-violated"
+      ],
+      "reason": "The JSON fields are correct but the raw output wraps the object in Markdown bold markers, violating the single raw JSON object/no-extra-text requirement."
+    },
+    {
+      "index": 2,
+      "status": "fail",
+      "failureCodes": [
+        "answer-format-violated",
+        "reasoning-leaked"
+      ],
+      "reason": "The answer emits an opening <think> and unfinished deliberation rather than the corrected day-only answer. It exhausts the32-token bound; no thinking-text removal or answer repair was performed."
+    },
+    {
+      "index": 3,
+      "status": "fail",
+      "failureCodes": [
+        "task-fidelity-violated"
+      ],
+      "reason": "The first section names the three items but adds packing instructions; the second is titled Seal the items and repeatedly instructs writing before ending mid-sentence at96 tokens. This does not provide two usable complete steps yielding the requested handwritten packing checklist."
+    },
+    {
+      "index": 4,
+      "status": "fail",
+      "failureCodes": [
+        "answer-format-violated"
+      ],
+      "reason": "The answer identifies red but adds Answer and Explanation labels plus explanatory prose despite the color-only requirement."
+    },
+    {
+      "index": 5,
+      "status": "pass",
+      "failureCodes": []
+    }
+  ],
+  "executionBoundary": "One prospectively bound operation passed the all-seven canonical clean/remote gate, reused four verified cache responses, fetched the two exact LFS files once each, verified six source files plus receipt, and passed offline tokenizer/config-only preflight. One greedy generation call per case used the unchanged cases, criteria, system prompt, native template and sampling. All24 bound input records and every source file/receipt remained identical before/after. The absent generation_config was preserved; no metadata rewrite, prompt/sampler change, hidden-thinking repair, source retry, conversion, browser or final holdout occurred. Retained stderr contains only weight-loading progress. Original operation scratch and marker were retired by their owner.",
+  "officialReferences": [
+    "https://huggingface.co/Ma7ee7/Meet7_0.6b/tree/0090a55103a31900c344c6698b5cf8e79dc17094",
+    "https://www.apache.org/licenses/LICENSE-2.0.txt"
+  ]
+}

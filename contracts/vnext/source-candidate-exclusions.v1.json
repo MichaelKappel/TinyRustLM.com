@@ -493,6 +493,16 @@
         "path": "tinyrustlm/training/pluto-genesis-0.6b-source-development-screen-v1/assessment-control-v1.json",
         "sha256": "f962272da18d5ca27cd9344efc46778f1d2cb14cd7479dbf84bf783e75cf02d5"
       }
+    },
+    {
+      "modelId": "Ma7ee7/Meet7_0.6b",
+      "revision": "0090a55103a31900c344c6698b5cf8e79dc17094",
+      "kind": "quality",
+      "weightSha256": "938e5fbbf1de362bbb24c91d3ea937a430227c28fc72c31ac89eee0b6606998a",
+      "evidence": {
+        "path": "tinyrustlm/training/meet7-0.6b-source-development-screen-v1/assessment-control-v1.json",
+        "sha256": "c50ee6fc4455f6e2b27681f4cc3f82db5204c5416db8497a1a003c9bc15a0e11"
+      }
     }
   ]
 }
