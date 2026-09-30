@@ -1,0 +1,207 @@
+{
+  "schema": "tinyrustlm.prospective-numerical-metric-review/1",
+  "status": "implemented-and-synthetically-tested-not-model-qualified",
+  "sourceCommit": "917f7bb5921caaaaca411fd857c1853895f1a97e",
+  "sourceGate": {
+    "status": "parent-reported-pass",
+    "startedUtc": "2026-09-29T23:58:34.928Z",
+    "scope": "all seven clean remote-exact roots before Meet7 start; independent metric edits resumed after parent's GO"
+  },
+  "scope": [
+    "Explicit v3 metric dispatch in the existing read-only verifier.",
+    "Preserved v2 dispatch, strict metric semantics, six-field failure metrics and the separately completed metricsPublic return correction.",
+    "No model, converter, runtime/WASM, source candidate, sampling, quality cases, release or qualification changes."
+  ],
+  "implemented": {
+    "requestSchema": "tinyrustlm.qwen3_numerical_trace_verification_request.v2",
+    "profile": "contracts/vnext/qwen3-numerical-differential-profile.v3.json",
+    "metricContractId": "tinyrustlm.lossy-fidelity-and-f32-arithmetic/1",
+    "sourceToReconstructed": "Preserves all configured absolute/vector/sign/top-K guards; reports coordinate relative/ULP errors diagnostically.",
+    "reconstructedToScalar": "Adds combined abs difference <=1e-5+stage rtol*abs reference while preserving hard absolute/vector/sign/top-K/greedy guards; converted embedding must match raw F32 bytes.",
+    "limits": "The 1e-5 floor is a prospectively declared policy choice, not a mathematical guarantee for every tiny value. Tiny-only vector errors retain NRMSE/cosine checks and a synthetic finite downstream gain demonstrates potential significance.",
+    "historical": "Old request/profile dispatch remains strict, with no silent v3 application. V2 file bytes and all retained v9 artifacts remain unchanged.",
+    "prospectiveOnly": "V3 is execution-disabled; the existing sole owner remains explicitly bound to v2. No real operation is preregistered or run.",
+    "notImplemented": "Source-only FFN rescaling is a proposal. V3 explicitly declares unmodified trace coordinates and normalizationRescalingSupported=false; supplied mapping fields are rejected."
+  },
+  "validation": {
+    "syntheticProof": {
+      "passed": 8,
+      "path": "artifacts/ecosystem-cleanup-20260912/prospective-metric-synthetic-proof-20260929.json",
+      "claim": "Independent synthetic F32 arrays and exact reader/output evidence only."
+    },
+    "baseline": {
+      "passed": 2,
+      "failed": 7,
+      "exitCode": 1,
+      "claim": "New regression file against unchanged strict reader; first terminal and repeated raw-log capture agreed."
+    },
+    "firstAffectedRun": {
+      "passed": 27,
+      "failed": 0,
+      "skipped": 0,
+      "exitCode": 0
+    },
+    "addedDispatchRun": {
+      "passed": 27,
+      "failed": 1,
+      "skipped": 0,
+      "exitCode": 1,
+      "reason": "Targeted sign-flip fixture inherited generic signFloor=1e-8; retained sign guard correctly refused 1/997=0.001003009>0.001. Corrected only the targeted fixture to use actual declared signFloor=1e-5 in both versions; production thresholds unchanged."
+    },
+    "finalAffectedRun": {
+      "passed": 28,
+      "failed": 0,
+      "skipped": 0,
+      "exitCode": 0,
+      "durationMilliseconds": 18081.2868,
+      "command": "node --experimental-test-coverage --test-coverage-include=**/qwen3-numerical-trace-verifier.js --test tests/qwen3-numerical-trace-verifier_test.js tests/qwen3-numerical-differential-profile.test.js",
+      "workdir": "E:/Source/Rust/TinyRustLM.com/tinyrustlm",
+      "environment": {
+        "TINYRUSTLM_QWEN3_NUMERICAL_ORACLE_PYTHON": "E:/Source/Rust/TinyRustLM.com/artifacts/external/qwen3-numerical-oracle/environment/Scripts/python.exe",
+        "NODE_V8_COVERAGE": "the current original-owned operation root only",
+        "FORCE_COLOR": "0"
+      },
+      "coverage": {
+        "linePercent": 96.69,
+        "branchPercent": 94.46,
+        "functionPercent": 98.28
+      }
+    },
+    "meaningfulChecks": [
+      "Independent F32 reassociation and small sign flip versus preserved v2 refusals.",
+      "Complete synthetic bundle dispatch under v2 and explicit v3 with byte-identical before/after evidence.",
+      "Combined-coordinate error, absolute error, logit drift, greedy identity, exact embedding bits including signed zero, and nonfinite rejection.",
+      "Tiny-only vector aggregate failure; an independently computed downstream finite gain can amplify a tiny input.",
+      "Cross-version requests/profiles/raw trace identities, unknown metric IDs, and unimplemented coordinate mappings fail.",
+      "Actual unchanged pinned Python synthetic source hooks/reconstructed kernels and real owner-to-verifier request binding."
+    ],
+    "diffCheck": "passed",
+    "modelExecution": false
+  },
+  "launcherFailure": {
+    "path": "artifacts/verification/prospective-metric-launcher-failure-20260930.json",
+    "exitCode": 1,
+    "testsLaunched": false,
+    "reason": "JSON.stringify of ownership BigInt before try/finally. Logging corrected with BigInt replacer inside try/finally before the real affected run."
+  },
+  "cleanup": {
+    "completed": [
+      {
+        "root": "artifacts/verification/prospective-metric-checks/tinyrustlm-operation-O2RNEd",
+        "status": "removed-through-original-helper-record-after-child-termination"
+      },
+      {
+        "root": "artifacts/verification/prospective-metric-checks/tinyrustlm-operation-fKILs6",
+        "status": "removed-through-original-helper-record-after-child-termination"
+      },
+      {
+        "root": "artifacts/verification/prospective-metric-checks/tinyrustlm-operation-eUqgmH",
+        "status": "removed-through-original-helper-record-after-child-termination"
+      }
+    ],
+    "blocked": {
+      "root": "artifacts/verification/prospective-metric-checks/tinyrustlm-operation-r2PP8H",
+      "rootContents": 0,
+      "marker": "artifacts/verification/prospective-metric-checks/tinyrustlm-operation-r2PP8H.owner.v2",
+      "markerByteLength": 65,
+      "markerSha256": "d5efc65859cab5f9990152349f776303c3eb97a5707481c0b98254cd79e2d0d8",
+      "observation": "ordinary empty directory and matching ordinary marker, created before wrapper failure",
+      "requestedMethod": "fresh explicit bounded exact-path native PowerShell retirement without ownership reconstruction",
+      "result": "automatic review rejected before execution: blocked by policy",
+      "disposition": "retain both; no retry through helper, another method or parent deletion"
+    },
+    "otherHistoricalBlockedPaths": "untouched"
+  },
+  "privacyReview": {
+    "reviewed": true,
+    "rawArtifacts": "Test names/counts, canonical local paths, source code, synthetic numeric values and assertion stacks only; no credentials, model tensor arrays or private conversation. Retained 65-byte marker is operation ownership randomness, not an account credential.",
+    "nugetKeyRead": false,
+    "networkPublication": false
+  },
+  "independentReview": {
+    "status": "pending-parent-review"
+  },
+  "sourceAndEvidenceIdentities": [
+    {
+      "path": "tinyrustlm/tools/qwen3-numerical-trace-verifier.js",
+      "byteLength": 51417,
+      "sha256": "b5ebe1343f89ef031cbb93c78071aa7d32cd4bed72cb450749d761edca09aa6b"
+    },
+    {
+      "path": "tinyrustlm/tests/qwen3-numerical-trace-verifier_test.js",
+      "byteLength": 5164,
+      "sha256": "3dc513837787de41b4767fc74a649119e1a4363f8788f71b66bb456da842795b"
+    },
+    {
+      "path": "tinyrustlm/tests/qwen3-numerical-differential-profile.test.js",
+      "byteLength": 34354,
+      "sha256": "9a00d14b3a1e4fded87049a404e4c6871be7bfdb06c6c5355564c156261e8ed9"
+    },
+    {
+      "path": "contracts/vnext/qwen3-numerical-differential-profile.v3.json",
+      "byteLength": 19555,
+      "sha256": "37a4000c121bcbe5731f9fb191737bbe5eb7f2a8bd91f046fdcca6e7b683a095"
+    },
+    {
+      "path": "contracts/vnext/qwen3-numerical-differential-profile.v2.json",
+      "byteLength": 18093,
+      "sha256": "a7dc47d75d6e1ccc568163bd2037cd528c3d4d2746cfe161c27e11a29288351f"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/prospective-metric-synthetic-proof-20260929.json",
+      "byteLength": 15127,
+      "sha256": "f4ddfdfad500a1e6b72b281ec967d8253ee5eb87a027c3604c06a876b19228ad"
+    },
+    {
+      "path": "artifacts/ecosystem-cleanup-20260912/prospective-numerical-correction-plan-20260929.json",
+      "byteLength": 6439,
+      "sha256": "72da31f3be19fcb98fd58bf26773eff00e1960e10c5e864bf5be706b44dcc331"
+    },
+    {
+      "path": "artifacts/verification/prospective-metric-launcher-failure-20260930.json",
+      "byteLength": 2694,
+      "sha256": "a0b6fdccb0704d26e256a2f18c53ef398dc5eb1edf1fd9c5ee10836741bcfab3"
+    },
+    {
+      "path": "artifacts/verification/prospective-metric-baseline-20260930.stdout.log",
+      "byteLength": 7611,
+      "sha256": "f2e67d0a5ee8b8d9535e9a908ffe47d18d47ba17b0ad66e2ea856583a9f15f52"
+    },
+    {
+      "path": "artifacts/verification/prospective-metric-baseline-20260930.stderr.log",
+      "byteLength": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifacts/verification/prospective-metric-final-a1-20260930.stdout.log",
+      "byteLength": 3686,
+      "sha256": "a54e19f813756a4b1b6dab0d051dc650b6542bbe52d7060ea668db609ada246c"
+    },
+    {
+      "path": "artifacts/verification/prospective-metric-final-a1-20260930.stderr.log",
+      "byteLength": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifacts/verification/prospective-metric-final-a2-20260930.stdout.log",
+      "byteLength": 4721,
+      "sha256": "50061f2432293e0a3a82afc246b178fa01ee298153044d2f241711a3f716ba82"
+    },
+    {
+      "path": "artifacts/verification/prospective-metric-final-a2-20260930.stderr.log",
+      "byteLength": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifacts/verification/prospective-metric-final-a3-20260930.stdout.log",
+      "byteLength": 3787,
+      "sha256": "c76fd9fe5d280f7f065ad67f7ceb7fb84c09cb22549e4145d63d08cec46a8058"
+    },
+    {
+      "path": "artifacts/verification/prospective-metric-final-a3-20260930.stderr.log",
+      "byteLength": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "completedUtc": "2026-09-30T00:11:08.703Z"
+}

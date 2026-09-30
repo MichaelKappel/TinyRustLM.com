@@ -314,3 +314,19 @@ artifacts/ecosystem-cleanup-20260912/numerical-verifier-binding-v9-final-suite-2
 /artifacts/ecosystem-cleanup-20260912/meet7-exclusion-20260930-stdout.txt -text
 
 /artifacts/ecosystem-cleanup-20260912/meet7-exclusion-20260930-stderr.txt -text
+
+/artifacts/verification/prospective-metric-baseline-20260930.stdout.log -text
+
+/artifacts/verification/prospective-metric-baseline-20260930.stderr.log -text
+
+/artifacts/verification/prospective-metric-final-a1-20260930.stdout.log -text
+
+/artifacts/verification/prospective-metric-final-a1-20260930.stderr.log -text
+
+/artifacts/verification/prospective-metric-final-a2-20260930.stdout.log -text
+
+/artifacts/verification/prospective-metric-final-a2-20260930.stderr.log -text
+
+/artifacts/verification/prospective-metric-final-a3-20260930.stdout.log -text
+
+/artifacts/verification/prospective-metric-final-a3-20260930.stderr.log -text

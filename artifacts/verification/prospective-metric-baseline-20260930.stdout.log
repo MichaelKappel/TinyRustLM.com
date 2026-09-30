@@ -1,0 +1,179 @@
+✖ prospective arithmetic admits independently constructed finite F32 reassociation (1.9398ms)
+✔ historical strict arithmetic still rejects that same ULP difference (0.6498ms)
+✖ prospective lossy fidelity reports a small sign flip without a relative-only refusal (0.3733ms)
+✖ combined arithmetic uses reference magnitude and locates its first failure (4.1661ms)
+✔ hard coordinate errors remain fatal in both prospective arrows (0.2314ms)
+✖ exact converted embedding rejects one bit and signed-zero differences (0.3242ms)
+✖ tiny-only vectors keep their aggregate error instead of receiving a blanket exemption (0.2748ms)
+✖ unknown metric identities and arrows fail closed (0.353ms)
+✖ nonfinite inputs and overflowed combined allowances cannot be accepted (0.5298ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 2
+ℹ fail 7
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 82.8965
+
+✖ failing tests:
+
+test at tests\qwen3-numerical-trace-verifier_test.js:29:1
+✖ prospective arithmetic admits independently constructed finite F32 reassociation (1.9398ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + {
+  +   element: 1,
+  +   reasons: [
+  +     'maximum-ulp'
+  +   ]
+  + }
+  - null
+  
+      at TestContext.<anonymous> (E:\Source\Rust\TinyRustLM.com\tinyrustlm\tests\qwen3-numerical-trace-verifier_test.js:38:10)
+      at Test.runInAsyncScope (node:async_hooks:228:14)
+      at Test.run (node:internal/test_runner/test:1118:25)
+      at Test.start (node:internal/test_runner/test:1015:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:358:17) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: { element: 1, reasons: [ 'maximum-ulp' ] },
+    expected: null,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\qwen3-numerical-trace-verifier_test.js:48:1
+✖ prospective lossy fidelity reports a small sign flip without a relative-only refusal (0.3733ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + {
+  +   element: 1,
+  +   reasons: [
+  +     'maximum-relative-error'
+  +   ]
+  + }
+  - null
+  
+      at TestContext.<anonymous> (E:\Source\Rust\TinyRustLM.com\tinyrustlm\tests\qwen3-numerical-trace-verifier_test.js:54:10)
+      at Test.runInAsyncScope (node:async_hooks:228:14)
+      at Test.run (node:internal/test_runner/test:1118:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:787:18)
+      at Test.postRun (node:internal/test_runner/test:1247:19)
+      at Test.run (node:internal/test_runner/test:1175:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: { element: 1, reasons: [ 'maximum-relative-error' ] },
+    expected: null,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\qwen3-numerical-trace-verifier_test.js:59:1
+✖ combined arithmetic uses reference magnitude and locates its first failure (4.1661ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert.ok(values.maximumCombinedErrorRatio > 1)
+  
+      at TestContext.<anonymous> (E:\Source\Rust\TinyRustLM.com\tinyrustlm\tests\qwen3-numerical-trace-verifier_test.js:62:10)
+      at Test.runInAsyncScope (node:async_hooks:228:14)
+      at Test.run (node:internal/test_runner/test:1118:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:787:18)
+      at Test.postRun (node:internal/test_runner/test:1247:19)
+      at Test.run (node:internal/test_runner/test:1175:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests\qwen3-numerical-trace-verifier_test.js:76:1
+✖ exact converted embedding rejects one bit and signed-zero differences (0.3242ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  undefined !== 1
+  
+      at TestContext.<anonymous> (E:\Source\Rust\TinyRustLM.com\tinyrustlm\tests\qwen3-numerical-trace-verifier_test.js:79:12)
+      at Test.runInAsyncScope (node:async_hooks:228:14)
+      at Test.run (node:internal/test_runner/test:1118:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:787:18)
+      at Test.postRun (node:internal/test_runner/test:1247:19)
+      at Test.run (node:internal/test_runner/test:1175:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 1,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\qwen3-numerical-trace-verifier_test.js:84:1
+✖ tiny-only vectors keep their aggregate error instead of receiving a blanket exemption (0.2748ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + {
+  +   element: 0,
+  +   reasons: [
+  +     'maximum-ulp'
+  +   ]
+  + }
+  - null
+  
+      at TestContext.<anonymous> (E:\Source\Rust\TinyRustLM.com\tinyrustlm\tests\qwen3-numerical-trace-verifier_test.js:86:10)
+      at Test.runInAsyncScope (node:async_hooks:228:14)
+      at Test.run (node:internal/test_runner/test:1118:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:787:18)
+      at Test.postRun (node:internal/test_runner/test:1247:19)
+      at Test.run (node:internal/test_runner/test:1175:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: { element: 0, reasons: [ 'maximum-ulp' ] },
+    expected: null,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests\qwen3-numerical-trace-verifier_test.js:93:1
+✖ unknown metric identities and arrows fail closed (0.353ms)
+  AssertionError [ERR_ASSERTION]: Missing expected exception.
+      at TestContext.<anonymous> (E:\Source\Rust\TinyRustLM.com\tinyrustlm\tests\qwen3-numerical-trace-verifier_test.js:96:12)
+      at Test.runInAsyncScope (node:async_hooks:228:14)
+      at Test.run (node:internal/test_runner/test:1118:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:787:18)
+      at Test.postRun (node:internal/test_runner/test:1247:19)
+      at Test.run (node:internal/test_runner/test:1175:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /numerical-verifier-metric-contract/u,
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at tests\qwen3-numerical-trace-verifier_test.js:101:1
+✖ nonfinite inputs and overflowed combined allowances cannot be accepted (0.5298ms)
+  AssertionError [ERR_ASSERTION]: Missing expected exception.
+      at TestContext.<anonymous> (E:\Source\Rust\TinyRustLM.com\tinyrustlm\tests\qwen3-numerical-trace-verifier_test.js:105:10)
+      at Test.runInAsyncScope (node:async_hooks:228:14)
+      at Test.run (node:internal/test_runner/test:1118:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:787:18)
+      at Test.postRun (node:internal/test_runner/test:1247:19)
+      at Test.run (node:internal/test_runner/test:1175:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /numerical-verifier-metric-nonfinite/u,
+    operator: 'throws',
+    diff: 'simple'
+  }

@@ -1,0 +1,69 @@
+✔ freezes report-derived clean-slate numerical authority boundaries (2.3678ms)
+✔ binds current reference components and durable report-memory links by content (51.5493ms)
+✔ preserves closed implementation history without adopting its execution authority (279.4538ms)
+✔ both private owners expose bounded dependency-free self-tests (487.3106ms)
+✔ pinned Python executes synthetic Qwen3 hooks and reconstructed kernels (11216.3004ms)
+✔ failed fixture setup removes its exact owned canonical output (115.9365ms)
+✔ read-only verifier passes identical complete traces without touching evidence (599.4621ms)
+✔ localizes the first source-to-reconstructed divergence by layer head element and chunk (149.7095ms)
+✔ localizes reconstructed-to-scalar only after the first arrow passes (362.4904ms)
+✔ rejects a syntactically valid cross-arm environment drift (113.6772ms)
+✔ rejects superseded profile and environment paths without compatibility (218.0939ms)
+✔ rejects trace drift and an unknown request member instead of repairing either (460.1575ms)
+✔ verifier source contains no evidence-writing or permissive selection path (0.7873ms)
+✔ execution owner output reaches the real verifier with exact directory and manifest bindings (772.5708ms)
+✔ prospective profile binds the current reader while retaining the closed v2 identity (0.6897ms)
+✔ explicit prospective dispatch verifies identical complete bundles without modifying them (702.5264ms)
+✖ complete bundle dispatch distinguishes prospective coordinate checks from strict v2 (1428.5022ms)
+✔ profile request metric identity and raw trace bindings cannot cross versions (547.2227ms)
+✔ prospective complete verification keeps material logit and greedy failures (1191.3794ms)
+✔ prospective arithmetic admits independently constructed finite F32 reassociation (1.7588ms)
+✔ historical strict arithmetic still rejects that same ULP difference (1.0656ms)
+✔ prospective lossy fidelity reports a small sign flip without a relative-only refusal (0.2254ms)
+✔ combined arithmetic uses reference magnitude and locates its first failure (0.1604ms)
+✔ hard coordinate errors remain fatal in both prospective arrows (0.2165ms)
+✔ exact converted embedding rejects one bit and signed-zero differences (0.1874ms)
+✔ tiny-only vectors keep their aggregate error instead of receiving a blanket exemption (1.0334ms)
+✔ unknown metric identities and arrows fail closed (0.5934ms)
+✔ nonfinite inputs and overflowed combined allowances cannot be accepted (0.3087ms)
+ℹ tests 28
+ℹ suites 0
+ℹ pass 27
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 18818.0294
+ℹ start of coverage report
+ℹ -----------------------------------------------------------------------------------------------------------------------------------------------------------------
+ℹ file                               | line % | branch % | funcs % | uncovered lines
+ℹ -----------------------------------------------------------------------------------------------------------------------------------------------------------------
+ℹ tools                              |        |          |         | 
+ℹ  qwen3-numerical-trace-verifier.js |  96.79 |    95.13 |   98.28 | 125-126 145-147 158-159 453-454 490-492 564-565 682-684 961 963 1062-1064 1067-1070 1073-1081
+ℹ -----------------------------------------------------------------------------------------------------------------------------------------------------------------
+ℹ all files                          |  96.79 |    95.13 |   98.28 | 
+ℹ -----------------------------------------------------------------------------------------------------------------------------------------------------------------
+ℹ end of coverage report
+
+✖ failing tests:
+
+test at tests\qwen3-numerical-differential-profile.test.js:799:1
+✖ complete bundle dispatch distinguishes prospective coordinate checks from strict v2 (1428.5022ms)
+  AssertionError [ERR_ASSERTION]: quantized-sign-flip
+  
+  'fail' !== 'pass'
+  
+      at TestContext.<anonymous> (E:\Source\Rust\TinyRustLM.com\tinyrustlm\tests\qwen3-numerical-differential-profile.test.js:822:16)
+      at Test.runInAsyncScope (node:async_hooks:228:14)
+      at Test.run (node:internal/test_runner/test:1118:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:787:18)
+      at Test.postRun (node:internal/test_runner/test:1247:19)
+      at Test.run (node:internal/test_runner/test:1175:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'fail',
+    expected: 'pass',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

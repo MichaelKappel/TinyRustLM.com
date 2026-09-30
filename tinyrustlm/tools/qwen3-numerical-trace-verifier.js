@@ -10,6 +10,10 @@ const path = require("node:path");
 const REQUEST_SCHEMA = "tinyrustlm.qwen3_numerical_trace_verification_request.v1";
 const PROFILE_SCHEMA = "tinyrustlm.qwen3_numerical_differential_profile.v1";
 const PROFILE_ID = "tinyrustlm.qwen3-source-reconstructed-scalar-differential/1";
+const PROSPECTIVE_REQUEST_SCHEMA = "tinyrustlm.qwen3_numerical_trace_verification_request.v2";
+const PROSPECTIVE_PROFILE_ID = "tinyrustlm.qwen3-source-reconstructed-scalar-differential/2";
+const METRIC_CONTRACT_ID = "tinyrustlm.lossy-fidelity-and-f32-arithmetic/1";
+const ARITHMETIC_ABSOLUTE_TOLERANCE = 1e-5;
 const GENERIC_BUNDLE_SCHEMA = "tinyrustlm.numerical_trace_bundle.v1";
 const SCALAR_BUNDLE_SCHEMA = "tinyrustlm.scalar-numerical-probe-result.v1";
 const TRACE_PROFILE_ID = "tinyrustlm.scalar-full-stage-f32le/1";
@@ -496,20 +500,23 @@ function validateRequest(requestPath) {
     "schema", "operationId", "differentialProfile", "registrationSha256", "traceProfileId",
     "bundles", "comparison", "policy"
   ], "numerical-verifier-request");
-  invariant(value.schema === REQUEST_SCHEMA && validIdentifier(value.operationId)
+  const prospective = value.schema === PROSPECTIVE_REQUEST_SCHEMA;
+  invariant((value.schema === REQUEST_SCHEMA || prospective) && validIdentifier(value.operationId)
     && validDigest(value.registrationSha256) && value.traceProfileId === TRACE_PROFILE_ID,
   "numerical-verifier-request");
   exactKeys(value.differentialProfile, ["relativePath", "byteLength", "sha256"],
     "numerical-verifier-profile-binding");
   invariant(value.differentialProfile.relativePath
-    === "contracts/vnext/qwen3-numerical-differential-profile.v2.json"
+    === (prospective ? "contracts/vnext/qwen3-numerical-differential-profile.v3.json"
+      : "contracts/vnext/qwen3-numerical-differential-profile.v2.json")
     && Number.isSafeInteger(value.differentialProfile.byteLength)
     && value.differentialProfile.byteLength > 0
     && value.differentialProfile.byteLength <= MAXIMUM_PROFILE_BYTES
     && validDigest(value.differentialProfile.sha256), "numerical-verifier-profile-binding");
   exactKeys(value.bundles, ["source", "reconstructed", "scalar"], "numerical-verifier-bundles");
   exactKeys(value.comparison,
-    ["chunkElements", "relativeFloor", "signFloor", "topK", "arrows"],
+    ["chunkElements", "relativeFloor", "signFloor", "topK", "arrows",
+      ...(prospective ? ["metricContractId"] : [])],
     "numerical-verifier-comparison");
   invariant(Number.isSafeInteger(value.comparison.chunkElements)
     && value.comparison.chunkElements >= 1 && value.comparison.chunkElements <= 1_048_576
@@ -518,6 +525,8 @@ function validateRequest(requestPath) {
     && Number.isSafeInteger(value.comparison.topK) && value.comparison.topK >= 1
     && value.comparison.topK <= 1024 && Array.isArray(value.comparison.arrows)
     && value.comparison.arrows.length === 2, "numerical-verifier-comparison");
+  if (prospective) invariant(value.comparison.metricContractId === METRIC_CONTRACT_ID,
+    "numerical-verifier-metric-contract");
   value.comparison.arrows.forEach((arrow) => validateArrow(arrow, "numerical-verifier-arrow"));
   invariant(value.comparison.arrows[0].id === "source-to-reconstructed"
     && value.comparison.arrows[0].reference === "source"
@@ -554,8 +563,14 @@ function validateRequest(requestPath) {
   } catch {
     fail("numerical-verifier-profile-binding");
   }
-  invariant(profile.schema === PROFILE_SCHEMA && profile.profileId === PROFILE_ID,
+  invariant(profile.schema === PROFILE_SCHEMA
+    && profile.profileId === (prospective ? PROSPECTIVE_PROFILE_ID : PROFILE_ID),
     "numerical-verifier-profile-binding");
+  if (prospective) invariant(profile.metrics.contractId === METRIC_CONTRACT_ID
+    && profile.metrics.arithmeticAbsoluteTolerance === ARITHMETIC_ABSOLUTE_TOLERANCE
+    && profile.metrics.coordinateSystem === "unmodified-trace-coordinates"
+    && profile.metrics.normalizationRescalingSupported === false,
+  "numerical-verifier-metric-contract");
   return Object.freeze({ ...value, profile, requestIdentity: {
     byteLength: requestFile.byteLength, sha256: requestFile.sha256
   }, profileIdentity: { byteLength: profileFile.byteLength, sha256: profileFile.sha256 } });
@@ -697,8 +712,15 @@ function topK(bytes, stage, count) {
   return heap.map((item) => item.index);
 }
 
+/** Keep historical strict metrics intact; new arrows explicitly separate fidelity and arithmetic. */
 function stageMetrics(referenceBytes, candidateBytes, referenceStage, candidateStage,
-  comparison, threshold) {
+  comparison, threshold, metricContract = null, arrowId = null) {
+  const prospective = metricContract !== null;
+  invariant(!prospective || metricContract === METRIC_CONTRACT_ID
+    && ["source-to-reconstructed", "reconstructed-to-scalar"].includes(arrowId),
+  "numerical-verifier-metric-contract");
+  const arithmetic = prospective && arrowId === "reconstructed-to-scalar";
+  const exactEmbedding = arithmetic && referenceStage.stage === "token-embedding";
   invariant(referenceStage.stage === candidateStage.stage
     && referenceStage.layer === candidateStage.layer
     && referenceStage.elementCount === candidateStage.elementCount,
@@ -711,6 +733,9 @@ function stageMetrics(referenceBytes, candidateBytes, referenceStage, candidateS
   let maximumUlpElement = 0;
   let firstSignDisagreement = null;
   let firstCoordinateFailure = null;
+  let maximumCombinedErrorRatio = arithmetic && !exactEmbedding ? 0 : null;
+  let maximumCombinedErrorElement = 0;
+  let exactElementMismatchCount = 0;
   let squaredError = 0;
   let squaredReference = 0;
   let dot = 0;
@@ -731,6 +756,22 @@ function stageMetrics(referenceBytes, candidateBytes, referenceStage, candidateS
       comparison.relativeFloor);
     const ulp = ulpDistance(referenceBytes.readUInt32LE(referenceOffset),
       candidateBytes.readUInt32LE(candidateOffset));
+    let combinedRatio = null;
+    if (arithmetic && !exactEmbedding) {
+      invariant(threshold && Number.isFinite(threshold.maximumRelativeError)
+        && threshold.maximumRelativeError >= 0, "numerical-verifier-metric-contract");
+      const allowance = ARITHMETIC_ABSOLUTE_TOLERANCE
+        + threshold.maximumRelativeError * Math.abs(reference);
+      invariant(Number.isFinite(allowance), "numerical-verifier-metric-nonfinite");
+      combinedRatio = absolute / allowance;
+      if (combinedRatio > maximumCombinedErrorRatio) {
+        maximumCombinedErrorRatio = combinedRatio;
+        maximumCombinedErrorElement = index;
+      }
+    }
+    const exactMismatch = exactEmbedding
+      && referenceBytes.readUInt32LE(referenceOffset) !== candidateBytes.readUInt32LE(candidateOffset);
+    if (exactMismatch) exactElementMismatchCount += 1;
     if (absolute > maximumAbsoluteError || absolute === maximumAbsoluteError && index < worstElement) {
       maximumAbsoluteError = absolute;
       worstElement = index;
@@ -757,8 +798,10 @@ function stageMetrics(referenceBytes, candidateBytes, referenceStage, candidateS
     if (threshold && firstCoordinateFailure === null) {
       const reasons = [];
       if (absolute > threshold.maximumAbsoluteError) reasons.push("maximum-absolute-error");
-      if (relative > threshold.maximumRelativeError) reasons.push("maximum-relative-error");
-      if (ulp > threshold.maximumUlp) reasons.push("maximum-ulp");
+      if (!prospective && relative > threshold.maximumRelativeError) reasons.push("maximum-relative-error");
+      if (!prospective && ulp > threshold.maximumUlp) reasons.push("maximum-ulp");
+      if (combinedRatio !== null && combinedRatio > 1) reasons.push("combined-coordinate-error");
+      if (exactMismatch) reasons.push("exact-embedding-identity");
       if (reasons.length > 0) firstCoordinateFailure = { element: index, reasons };
     }
     const chunk = Math.floor(index / comparison.chunkElements);
@@ -794,18 +837,24 @@ function stageMetrics(referenceBytes, candidateBytes, referenceStage, candidateS
     maximumUlpElement,
     firstSignDisagreement,
     firstCoordinateFailure,
-    chunkWorst
+    chunkWorst,
+    ...(prospective ? { maximumCombinedErrorRatio, maximumCombinedErrorElement,
+      exactElementMismatchCount } : {})
   });
 }
 
+/** Preserve all material/vector guards; only the declared new contract changes coordinate semantics. */
 function failedMetrics(metrics, threshold) {
+  const prospective = Object.hasOwn(metrics, "maximumCombinedErrorRatio");
   const reasons = [];
   if (metrics.maximumAbsoluteError > threshold.maximumAbsoluteError) reasons.push("maximum-absolute-error");
-  if (metrics.maximumRelativeError > threshold.maximumRelativeError) reasons.push("maximum-relative-error");
+  if (!prospective && metrics.maximumRelativeError > threshold.maximumRelativeError) reasons.push("maximum-relative-error");
   if (metrics.maximumNormalizedRmse > threshold.maximumNormalizedRmse) reasons.push("normalized-rmse");
   if (metrics.minimumCosineSimilarity < threshold.minimumCosineSimilarity) reasons.push("cosine-similarity");
   if (metrics.maximumSignDisagreementRate > threshold.maximumSignDisagreementRate) reasons.push("sign-disagreement");
-  if (metrics.maximumUlp > threshold.maximumUlp) reasons.push("maximum-ulp");
+  if (!prospective && metrics.maximumUlp > threshold.maximumUlp) reasons.push("maximum-ulp");
+  if (prospective && metrics.maximumCombinedErrorRatio > 1) reasons.push("combined-coordinate-error");
+  if (prospective && metrics.exactElementMismatchCount > 0) reasons.push("exact-embedding-identity");
   return reasons;
 }
 
@@ -823,12 +872,17 @@ function metricsPublic(metrics) {
     maximumNormalizedRmse: metrics.maximumNormalizedRmse,
     minimumCosineSimilarity: metrics.minimumCosineSimilarity,
     maximumSignDisagreementRate: metrics.maximumSignDisagreementRate,
-    maximumUlp: metrics.maximumUlp
+    maximumUlp: metrics.maximumUlp,
+    ...(Object.hasOwn(metrics, "maximumCombinedErrorRatio") ? {
+      maximumCombinedErrorRatio: metrics.maximumCombinedErrorRatio,
+      exactElementMismatchCount: metrics.exactElementMismatchCount
+    } : {})
   };
   return receipt;
 }
 
 function compareArrow(arrow, bundles, request) {
+  const metricContract = request.comparison.metricContractId || null;
   const referenceBundle = bundles[arrow.reference];
   const candidateBundle = bundles[arrow.candidate];
   const summary = {
@@ -842,7 +896,9 @@ function compareArrow(arrow, bundles, request) {
       maximumNormalizedRmse: 0,
       minimumCosineSimilarity: 1,
       maximumSignDisagreementRate: 0,
-      maximumUlp: 0
+      maximumUlp: 0,
+      ...(metricContract ? { maximumCombinedErrorRatio: arrow.id === "reconstructed-to-scalar" ? 0 : null,
+        exactElementMismatchCount: 0 } : {})
     }
   };
   for (let caseIndex = 0; caseIndex < referenceBundle.document.cases.length; caseIndex += 1) {
@@ -861,7 +917,7 @@ function compareArrow(arrow, bundles, request) {
         const threshold = arrow.thresholds.stages[referenceStage.stage]
           || arrow.thresholds.default;
         const metrics = stageMetrics(referenceBytes, candidateBytes, referenceStage,
-          candidateStage, request.comparison, threshold);
+          candidateStage, request.comparison, threshold, metricContract, arrow.id);
         summary.comparedStageCount += 1;
         summary.comparedElementCount += referenceStage.elementCount;
         summary.worst.maximumAbsoluteError = Math.max(summary.worst.maximumAbsoluteError,
@@ -875,6 +931,13 @@ function compareArrow(arrow, bundles, request) {
         summary.worst.maximumSignDisagreementRate = Math.max(
           summary.worst.maximumSignDisagreementRate, metrics.maximumSignDisagreementRate);
         summary.worst.maximumUlp = Math.max(summary.worst.maximumUlp, metrics.maximumUlp);
+        if (metricContract) {
+          if (metrics.maximumCombinedErrorRatio !== null) {
+            summary.worst.maximumCombinedErrorRatio = Math.max(summary.worst.maximumCombinedErrorRatio,
+              metrics.maximumCombinedErrorRatio);
+          }
+          summary.worst.exactElementMismatchCount += metrics.exactElementMismatchCount;
+        }
         const reasons = failedMetrics(metrics, threshold);
         let topKOverlap = null;
         if (referenceStage.stage === "logits") {
@@ -979,6 +1042,10 @@ function verify(arguments_) {
       relativeFloor: request.comparison.relativeFloor,
       signFloor: request.comparison.signFloor,
       topK: request.comparison.topK,
+      ...(request.comparison.metricContractId ? {
+        metricContractId: request.comparison.metricContractId,
+        arithmeticAbsoluteTolerance: ARITHMETIC_ABSOLUTE_TOLERANCE
+      } : {}),
       arrowResults,
       firstDivergence
     },

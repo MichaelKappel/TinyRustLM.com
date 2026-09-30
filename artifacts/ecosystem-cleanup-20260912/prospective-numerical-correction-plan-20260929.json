@@ -1,0 +1,63 @@
+{
+  "schema": "tinyrustlm.prospective-numerical-correction-plan/1",
+  "status": "proposal-only-not-executed-on-model",
+  "historicalVerdict": "v9 remains terminal-rejected",
+  "references": [
+    {
+      "url": "https://numpy.org/doc/stable/reference/generated/numpy.isclose.html",
+      "purpose": "Standard combined absolute and relative comparison and warning that the absolute floor is domain-specific",
+      "verified": true
+    }
+  ],
+  "metricContract": {
+    "common": "Preserve source/revision/file/trace identities, finite values, shapes, exact stage order and closure. Never replay or relabel v9.",
+    "sourceToQuantized": "Keep all existing stage absolute error, NRMSE, cosine, sign population/rate and top-K limits. Report relative and ULP maxima as diagnostics rather than independent fatal requirements for a lossy representation.",
+    "reconstructedToScalar": "Keep all existing hard absolute, NRMSE, cosine, sign, top-K and greedy checks. Except exact embedding, require abs(candidate-reference)<=1e-5+existing stage rtol*abs(reference). Report ULP diagnostically across distinct F32 reduction algorithms.",
+    "absoluteNoiseFloor": "1e-5 is the existing declared signFloor, proposed prospectively as the absolute noise floor; this is a policy choice requiring review, not a universal mathematical error bound.",
+    "reporting": "Retain all raw maxima and positions; add maximum combined-error ratio and first combined-coordinate failure. Do not substitute display rounding, average over cases, omit layers or hide nonfinite results.",
+    "exactEmbedding": "Raw F32 bytes must agree reconstructed-to-scalar.",
+    "evidence": "Eight bounded synthetic arithmetic/metric checks pass. Full bundle and top-K verification was not executed; no model was loaded."
+  },
+  "precisionRecipe": {
+    "scope": "Only existing paired feed-forward normalization, gate and up tensors. Source files remain unchanged.",
+    "scale": "s_j=2^max(0,floor(log2(abs(gamma_j)))) using F32 exponent bits; zero, subnormal and abs(gamma)<1 map to s=1.",
+    "transformed": "gamma'=gamma/s; Wgate'=Wgate*diag(s); Wup'=Wup*diag(s); same epsilon, tensor roles, Q8 quantizer, SLM2 storage and runtime.",
+    "equivalence": "W*diag(s)*diag(gamma/s)=W*diag(gamma) in real arithmetic before quantization. Do not promise bit-identical unmodified intermediate F32 values.",
+    "sourceOnlyScores": "A=W*diag(gamma); E_s=dequant(Q(W*diag(s)))*diag(gamma/s)-A. RMS-normalized input r has norm2<=sqrt(d), so each linear row error is bounded by sqrt(d)*norm2(E_s,row). Compute paired maximum relative row error and relative Frobenius error; zero denominator permits only zero numerator.",
+    "selection": "Compute identity and the one deterministic source-only transform. Select a pair only when both joint error scores are non-increasing and at least one strictly improves; otherwise retain identity for that pair. No exponent search, activation calibration, prompt feedback or answer-driven selection. If no pair improves, record no supported remedy and stop before model execution.",
+    "invalid": "Nonfinite or overflowed transformed values fail. Deterministic F64 score accumulation/order, exact source hashes and source drift checks are bound to the new converter profile.",
+    "receipt": "Bind scale exponents/vector hashes, source gamma/gate/up identities, before/after scores, selected pairs, transformed tensor hashes, exact model identity and explicit algebraic-plus-quantized semantics.",
+    "traceCoordinates": "Preserve raw source and converted trace bytes. Only source-to-converted FFN-normalized coordinates for selected layers map candidate values back by s_j under an explicit new comparison contract; existing original-unit limits remain. Reconstructed-to-scalar compares raw transformed coordinates. All activated/residual/logit stages compare directly.",
+    "cost": "No model-byte/tensor-count or runtime-operation increase. One 1024-element gamma/scale pair is approximately 8 KiB plus existing row buffers; scoring adds bounded sequential source reads. Runtime timing remains unmeasured."
+  },
+  "selectiveF32Alternative": {
+    "status": "Not implementation scope unless the bounded rescaling recipe is demonstrated insufficient.",
+    "boundary": "Requires explicit current profile/role policy/parser/runtime matrix support and independent reconstruction, with honest dependent hashes. Current F32 enum does not permit F32 matrix roles.",
+    "sourceOnlySelection": "If later authorized, use the same weighted row-error score under a prospectively frozen per-matrix error budget and total-byte ceiling; no hardcoded historical layer number or prompt outcomes. Exact budget must be approved before any selected candidate execution, not fitted after results.",
+    "matrixShape": [
+      3072,
+      1024
+    ],
+    "q8Bytes": 3158016,
+    "f32Bytes": 12582912,
+    "oneMatrixDelta": 9424896,
+    "twoMatrixDelta": 18849792,
+    "all28PairsDelta": 527794176,
+    "workerConfiguredPeakDelta": "Current policy formula includes twice maximumModelBytes; configured allowance grows by twice the model delta when raised accordingly.",
+    "performance": "More matrix bytes must be transferred/read; F32 removes per-weight dequantization but actual speed can improve or regress with bandwidth/cache limits. No timing claim."
+  },
+  "firstDefaultSequence": [
+    "Candidate must pass its own frozen source-usefulness screen.",
+    "Commit independently reviewed synthetic metric/transform tests and the exact current prospective profile.",
+    "One source-only bound scan selects deterministic layer transforms; no source answer replay.",
+    "One exact converted composition and new numerical operation.",
+    "Only after real numerical/native/browser and semantic checks pass, materialize the actual qualification receipt and seed/publication admission."
+  ],
+  "validationBeforeImplementation": [
+    "Synthetic ordinary/scaled/zero/negative gamma identities and F32 finite boundary failures.",
+    "Source selection no-regression/tie/no-improvement cases and deterministic streamed scores.",
+    "Mapped normalized coordinates preserve raw identities and original comparison units.",
+    "Wrong scales/profile/source hashes, unmatched scale layers, nonfinite mapped values and altered unselected stages fail.",
+    "Retained quantitative rejection of material/logit distortion and exact scalar greedy/embedding requirements."
+  ]
+}

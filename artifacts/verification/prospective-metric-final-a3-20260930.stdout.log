@@ -1,0 +1,46 @@
+✔ freezes report-derived clean-slate numerical authority boundaries (2.2183ms)
+✔ binds current reference components and durable report-memory links by content (54.3244ms)
+✔ preserves closed implementation history without adopting its execution authority (265.393ms)
+✔ both private owners expose bounded dependency-free self-tests (376.3758ms)
+✔ pinned Python executes synthetic Qwen3 hooks and reconstructed kernels (10473.2664ms)
+✔ failed fixture setup removes its exact owned canonical output (116.6175ms)
+✔ read-only verifier passes identical complete traces without touching evidence (575.4267ms)
+✔ localizes the first source-to-reconstructed divergence by layer head element and chunk (116.2587ms)
+✔ localizes reconstructed-to-scalar only after the first arrow passes (365.8309ms)
+✔ rejects a syntactically valid cross-arm environment drift (105.1587ms)
+✔ rejects superseded profile and environment paths without compatibility (214.5442ms)
+✔ rejects trace drift and an unknown request member instead of repairing either (429.6909ms)
+✔ verifier source contains no evidence-writing or permissive selection path (0.4654ms)
+✔ execution owner output reaches the real verifier with exact directory and manifest bindings (723.6061ms)
+✔ prospective profile binds the current reader while retaining the closed v2 identity (0.565ms)
+✔ explicit prospective dispatch verifies identical complete bundles without modifying them (623.2984ms)
+✔ complete bundle dispatch distinguishes prospective coordinate checks from strict v2 (1826.1715ms)
+✔ profile request metric identity and raw trace bindings cannot cross versions (546.9796ms)
+✔ prospective complete verification keeps material logit and greedy failures (1169.7192ms)
+✔ prospective arithmetic admits independently constructed finite F32 reassociation (1.5545ms)
+✔ historical strict arithmetic still rejects that same ULP difference (1.0746ms)
+✔ prospective lossy fidelity reports a small sign flip without a relative-only refusal (0.2213ms)
+✔ combined arithmetic uses reference magnitude and locates its first failure (0.163ms)
+✔ hard coordinate errors remain fatal in both prospective arrows (0.2285ms)
+✔ exact converted embedding rejects one bit and signed-zero differences (0.1956ms)
+✔ tiny-only vectors keep their aggregate error instead of receiving a blanket exemption (0.1728ms)
+✔ unknown metric identities and arrows fail closed (0.5984ms)
+✔ nonfinite inputs and overflowed combined allowances cannot be accepted (0.317ms)
+ℹ tests 28
+ℹ suites 0
+ℹ pass 28
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 18081.2868
+ℹ start of coverage report
+ℹ ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ℹ file                               | line % | branch % | funcs % | uncovered lines
+ℹ ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ℹ tools                              |        |          |         | 
+ℹ  qwen3-numerical-trace-verifier.js |  96.69 |    94.46 |   98.28 | 125-126 145-147 158-159 453-454 490-492 564-565 682-684 961 963 966 1062-1064 1067-1070 1073-1081
+ℹ ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ℹ all files                          |  96.69 |    94.46 |   98.28 | 
+ℹ ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ℹ end of coverage report

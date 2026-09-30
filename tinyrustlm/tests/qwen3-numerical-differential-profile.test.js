@@ -25,6 +25,12 @@ const historicalProfile = JSON.parse(fs.readFileSync(path.join(repositoryRoot,
   "contracts/vnext/qwen3-numerical-differential-profile.v1.json"), "utf8"));
 // The closed profile records the implementations in its v2 registration parent.
 const historicalImplementationCommit = "4891e8aa15523430e2050c8370baed593d7a19d9";
+// V2 remains immutable when the same reader gains explicitly dispatched V3 semantics.
+const strictVerifierCommit = "fc92be3fe572fa5d437e10d6490f81a4610547a3";
+const prospectiveProfileRelativePath = "contracts/vnext/qwen3-numerical-differential-profile.v3.json";
+const prospectiveProfileBytes = fs.readFileSync(path.join(repositoryRoot, prospectiveProfileRelativePath));
+const prospectiveProfile = JSON.parse(prospectiveProfileBytes);
+const metricContractId = "tinyrustlm.lossy-fidelity-and-f32-arithmetic/1";
 const oraclePython = process.env.TINYRUSTLM_QWEN3_NUMERICAL_ORACLE_PYTHON || "";
 const registrationSha256 = "9".repeat(64);
 const requestIdentity = Object.freeze({ byteLength: 1234, sha256: "8".repeat(64) });
@@ -391,6 +397,27 @@ function fixture(mutations = {}) {
   }
 }
 
+/** Build complete synthetic bundles whose new profile identity cannot rebind old trace evidence. */
+function prospectiveFixture(mutations = {}) {
+  return fixture({ ...mutations,
+    sourceManifest(manifest) {
+      manifest.differentialProfileSha256 = sha256(prospectiveProfileBytes);
+      if (mutations.sourceManifest) mutations.sourceManifest(manifest);
+    },
+    reconstructedManifest(manifest) {
+      manifest.differentialProfileSha256 = sha256(prospectiveProfileBytes);
+      if (mutations.reconstructedManifest) mutations.reconstructedManifest(manifest);
+    },
+    request(request) {
+      request.schema = "tinyrustlm.qwen3_numerical_trace_verification_request.v2";
+      request.differentialProfile = { relativePath: prospectiveProfileRelativePath,
+        byteLength: prospectiveProfileBytes.length, sha256: sha256(prospectiveProfileBytes) };
+      request.comparison.metricContractId = metricContractId;
+      if (mutations.request) mutations.request(request);
+    }
+  });
+}
+
 function treeIdentity(root) {
   const output = [];
   function walk(current) {
@@ -434,7 +461,8 @@ test("binds current reference components and durable report-memory links by cont
   }
   for (const record of Object.values(profile.implementations)) {
     if (record.path) {
-      const actual = identity(record.path);
+      const actual = identity(record.path, record.path === "tinyrustlm/tools/qwen3-numerical-trace-verifier.js"
+        ? strictVerifierCommit : null);
       assert.equal(record.byteLength, actual.byteLength, record.path);
       assert.equal(record.sha256, actual.sha256, record.path);
     }
@@ -740,5 +768,103 @@ test("execution owner output reaches the real verifier with exact directory and 
     } finally {
       value.close();
     }
+  }
+});
+
+test("prospective profile binds the current reader while retaining the closed v2 identity", () => {
+  assert.equal(prospectiveProfileBytes.toString(), `${JSON.stringify(prospectiveProfile, null, 2)}\n`);
+  assert.equal(prospectiveProfile.profileId, "tinyrustlm.qwen3-source-reconstructed-scalar-differential/2");
+  assert.equal(prospectiveProfile.execution.realModelExecutionAllowed, false);
+  assert.equal(prospectiveProfile.candidate.qualityClaim, "terminally-rejected-for-product-use");
+  assert.equal(prospectiveProfile.metrics.normalizationRescalingSupported, false);
+  assert.deepEqual(prospectiveProfile.predecessor, { path: "contracts/vnext/qwen3-numerical-differential-profile.v2.json",
+    byteLength: profileBytes.length, sha256: sha256(profileBytes), verdict: "v9-remains-terminal-rejected-no-regrade" });
+  const actual = identity(prospectiveProfile.implementations.independentVerifier.path);
+  assert.equal(prospectiveProfile.implementations.independentVerifier.byteLength, actual.byteLength);
+  assert.equal(prospectiveProfile.implementations.independentVerifier.sha256, actual.sha256);
+});
+
+test("explicit prospective dispatch verifies identical complete bundles without modifying them", () => {
+  const value = prospectiveFixture();
+  try {
+    const before = treeIdentity(value.parent);
+    const receipt = verify([value.requestPath]);
+    assert.equal(receipt.status, "pass");
+    assert.equal(receipt.comparison.metricContractId, metricContractId);
+    assert.equal(receipt.comparison.arithmeticAbsoluteTolerance, 1e-5);
+    assert.deepEqual(treeIdentity(value.parent), before);
+  } finally { value.close(); }
+});
+
+test("complete bundle dispatch distinguishes prospective coordinate checks from strict v2", () => {
+  for (const kind of ["arithmetic-cancellation", "quantized-sign-flip"]) {
+    for (const prospective of [false, true]) {
+      const normalized = { stage: "feed-forward-normalized", layer: 9, element: 18 };
+      const mutations = kind === "arithmetic-cancellation" ? {
+        scalar: { stage: "value", layer: 2, element: 18, delta: 2 ** -25 }
+      } : {
+        source: { ...normalized, delta: 2 ** -18 },
+        reconstructed: { ...normalized, delta: -(2 ** -18) },
+        scalar: { ...normalized, delta: -(2 ** -18) }
+      };
+      mutations.request = (request) => {
+        // Use the actual prospective floor; the generic exact fixture uses 1e-8.
+        request.comparison.signFloor = 1e-5;
+        const arrow = request.comparison.arrows[kind === "arithmetic-cancellation" ? 1 : 0];
+        arrow.thresholds.default = { maximumAbsoluteError: 0.02,
+          maximumRelativeError: kind === "arithmetic-cancellation" ? 0.05 : 1,
+          maximumNormalizedRmse: 0.001, minimumCosineSimilarity: 0.99999,
+          maximumSignDisagreementRate: 0.001,
+          maximumUlp: kind === "arithmetic-cancellation" ? 1048576 : 2147483647 };
+      };
+      const value = prospective ? prospectiveFixture(mutations) : fixture(mutations);
+      try {
+        const before = treeIdentity(value.parent);
+        const receipt = verify([value.requestPath]);
+        assert.equal(receipt.status, prospective ? "pass" : "fail", kind);
+        if (!prospective) assert.ok(receipt.comparison.firstDivergence.reasons.includes(
+          kind === "arithmetic-cancellation" ? "maximum-ulp" : "maximum-relative-error"));
+        assert.deepEqual(treeIdentity(value.parent), before);
+      } finally { value.close(); }
+    }
+  }
+});
+
+test("profile request metric identity and raw trace bindings cannot cross versions", () => {
+  for (const kind of ["old-request", "old-profile", "unknown-metric", "old-trace", "unimplemented-mapping"]) {
+    const value = prospectiveFixture({
+      sourceManifest(manifest) {
+        if (kind === "old-trace") manifest.differentialProfileSha256 = sha256(profileBytes);
+      },
+      request(request) {
+        if (kind === "old-request") request.schema = "tinyrustlm.qwen3_numerical_trace_verification_request.v1";
+        if (kind === "old-profile") request.differentialProfile.relativePath = "contracts/vnext/qwen3-numerical-differential-profile.v2.json";
+        if (kind === "unknown-metric") request.comparison.metricContractId = "unknown";
+        if (kind === "unimplemented-mapping") request.comparison.coordinateMapping = [];
+      }
+    });
+    try { assert.throws(() => verify([value.requestPath]), NumericalTraceVerificationError, kind); }
+    finally { value.close(); }
+  }
+});
+
+test("prospective complete verification keeps material logit and greedy failures", () => {
+  for (const kind of ["absolute", "greedy"]) {
+    const value = prospectiveFixture({
+      scalar: kind === "absolute" ? { stage: "logits", layer: null, element: 7, delta: 2 } : null,
+      scalarManifest(manifest) { if (kind === "greedy") manifest.cases[0].steps[0].greedyTokenId = 8; },
+      request(request) {
+        if (kind === "absolute") request.comparison.arrows[1].thresholds.default.maximumAbsoluteError = 1;
+      }
+    });
+    try {
+      const receipt = verify([value.requestPath]);
+      assert.equal(receipt.status, "fail");
+      const divergence = receipt.comparison.firstDivergence;
+      assert.equal(divergence.arrow, "reconstructed-to-scalar");
+      assert.equal(divergence.stage, "logits");
+      assert.ok(divergence.reasons.includes(kind === "absolute" ? "maximum-absolute-error" : "greedy-token-identity"));
+      assert.ok(Object.hasOwn(divergence.metrics, "maximumCombinedErrorRatio"));
+    } finally { value.close(); }
   }
 });
