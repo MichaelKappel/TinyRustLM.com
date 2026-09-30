@@ -1,0 +1,124 @@
+{
+  "schema": "tinyrustlm.source_metadata_review.v1",
+  "status": "metadata-admitted-for-one-prospective-source-screen-not-qualified",
+  "source": {
+    "modelId": "Qwen/Qwen2-1.5B-Instruct",
+    "revision": "ba1cf1846d7df0a0591d6c00649f57e798519da8",
+    "weight": {
+      "filename": "model.safetensors",
+      "byteCount": 3087467144,
+      "sha256": "302e327795994403cb1e3cb6a3345c76b246b894d14078c936b570c83a4e9057"
+    },
+    "weightIdentity": "d9585d9dd4ec2bbffb308a871a22cc4e23dead3a175a05c1c4a94253596c36af",
+    "parameters": 1543714304,
+    "sourceWeightDtype": "BF16",
+    "contextTokens": 32768
+  },
+  "metadata": {
+    "path": "artifacts/ecosystem-cleanup-20260912/qwen2-1.5b-metadata-20260930.json",
+    "bytes": 26539,
+    "sha256": "9ea7cb2d6e87f4867beb93f7772237dbc59bccc261674ad885e498ddd094c436"
+  },
+  "inventory": {
+    "path": "artifacts/ecosystem-cleanup-20260912/qwen2-1.5b-inventory-20260930.json",
+    "bytes": 2159,
+    "sha256": "6c4782a0ad78c09bbdfebabdda93f7b4b4fee3181dffbdf7057079886b05b61c",
+    "actualProducer": "tinyrustlm/tools/huggingface-supported-candidates.js",
+    "profileId": "qwen2.5-1.5b-bpe",
+    "candidateCount": 1,
+    "rejections": [],
+    "networkRequests": 0,
+    "origin": "The unchanged current producer replayed exact captured metadata offline, with its search and pinned revision routes mapped to the single exact API response that returned this SHA. Immutable raw-endpoint file responses were mapped byte-identically to the producer's resolve requests after Git-blob checks. No fresh search/revision-endpoint response is claimed."
+  },
+  "recommendation": "Use this one official general assistant as the next bounded source falsifier for the required default. Do not assume larger size is sufficient or that older rejected Qwen2.5/Qwen3 sources become eligible. No model acquisition or inference has started.",
+  "rationale": {
+    "publisherScope": "Official instruction-tuned Qwen2 general assistant with an existing simple ChatML conversation template; distinct source weights, no specialized JSON-only wrapper or undocumented derivative.",
+    "strongestReasonWrong": "Its newer Qwen2.5-1.5B-Instruct successor already failed the historical broad source screen, and this older model may fail the unchanged six-case screen or later release cases. Metadata and publisher benchmarks are not local quality evidence.",
+    "alternativesInspected": "Official Qwen2.5-Coder-1.5B-Instruct has the same1536/8960/28/12Q/2KV geometry and distinct current weights, but specializes in code. No plan or payload is being prepared for it; prefer the general assistant for the user's stated task."
+  },
+  "priorRejectionBoundary": {
+    "path": "contracts/vnext/source-candidate-exclusions.v1.json",
+    "bytes": 22965,
+    "sha256": "7b9fdbb094ac034f98b6c5cfcf1a381272952a728ffb938014158ed48529d1c2",
+    "entryCount": 50,
+    "nonmatch": true,
+    "qwen25Rejected": {
+      "modelId": "Qwen/Qwen2.5-1.5B-Instruct",
+      "revision": "989aa7980e4cf806f80c7fef2b1adb7bc71aa306",
+      "kind": "quality",
+      "weightSha256": "dd924a11b4c220f385b51ffa522daea7c9f3d850e31b162bb5661df483c6d3ee",
+      "evidence": {
+        "path": "tinyrustlm/training/qwen2.5-1.5b-instruct-source-screen-v1/assessment-control-v1.json",
+        "sha256": "2238690b7306412b266a2d9a6e9bf9c0d185768b208f0e35eca83ede1fcd2c99"
+      }
+    },
+    "qwen3_1_7": "Qwen/Qwen3-1.7B@70d244cc86ccca08cf5af4e1e306ecf908b1ad5e remains rejected. Broad assessment has3/8 passes; historical constrained planning experiment separately has20/24 with3critical failures. Neither is a formatting-only or size-only rejection; no rerun is proposed.",
+    "smolLM2_1_7": "HuggingFaceTB/SmolLM2-1.7B-Instruct@31b70e2e869a7173562077fd711b654946d38674 remains rejected2/8.",
+    "comparison": "New Qwen2 source SHA302e3277... differs from rejected Qwen2.5-1.5B source SHAdd924a11..., and sourceCandidateRejection checked the full new model/revision/weight tuple against all50 entries and returned no match."
+  },
+  "license": {
+    "publisherCard": "apache-2.0",
+    "publisherLicense": {
+      "url": "https://huggingface.co/Qwen/Qwen2-1.5B-Instruct/raw/ba1cf1846d7df0a0591d6c00649f57e798519da8/LICENSE",
+      "status": 200,
+      "retrievedAtUtc": "2026-09-30T00:05:50.962Z",
+      "bytes": 11344,
+      "sha256": "c156170b718ec29139d3653d40ed1986fd92fb7e0959b5c71f3c48f62e6636f4",
+      "gitBlobId": "cc375d92d7061b465042e9a1d507cb99598fb97a",
+      "capturePath": "artifacts/ecosystem-cleanup-20260912/qwen2-1.5b-metadata-20260930.json"
+    },
+    "review": "Pinned LICENSE contains the Apache License2.0 and Copyright2024 Alibaba Cloud, agreeing with the card. No additional or conflicting restriction was observed in the captured publisher files. Preserve this publisher license/copyright and Apache obligations with any later authorized distribution. This is publisher-license evidence, not independent legal clearance of underlying training data.",
+    "acquisitionEvidence": "Existing helper stores exact official Apache authority bytes11358B SHAcfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30 as LICENSE under its current license-evidence convention. That evidence file is not falsely described as the repository's11344-byte LICENSE; the exact publisher LICENSE is retained in the metadata capture.",
+    "trainingProvenance": "Use the official publisher's declared license and training account; no fabricated dataset-by-dataset clearance or local benchmark claim.",
+    "prospectivePublisherLicenseCustody": "After acquisition, copy the exact pinned publisher LICENSE from this bound metadata capture to PUBLISHER-LICENSE in the canonical candidate directory using exclusive creation and verify its11344-byte SHA and Git blob. Preserve the acquisition receipt's truthful six-file closure and generic authority LICENSE unchanged; the combined execution record separately binds this seventh supplemental publisher file. Any future conversion or redistribution must consume and preserve the actual publisher license/copyright, not substitute the generic authority evidence."
+  },
+  "geometry": {
+    "hidden": 1536,
+    "feedForward": 8960,
+    "layers": 28,
+    "queryHeads": 12,
+    "kvHeads": 2,
+    "headDimension": 128,
+    "vocabulary": 151936,
+    "tiedEmbeddings": true,
+    "qkvBias": true,
+    "qkNormalization": false,
+    "ropeTheta": 1000000,
+    "normalizationEpsilon": 0.000001,
+    "existingSupport": "SLM2 ModelSpec and scalar path already represent QKV bias and absent Q/K normalization. Metadata profile matches exactly without code edits.",
+    "files": [
+      "rust/crates/tinyrustlm-slm2/src/format.rs",
+      "rust/crates/tinyrustlm-runtime/src/scalar.rs",
+      "tinyrustlm/tools/huggingface-supported-candidates.js"
+    ]
+  },
+  "memoryEstimate": {
+    "estimateOnly": true,
+    "quantizedMatrixElements": 1543569408,
+    "float32VectorElements": 144896,
+    "quantizedMatrixRows": 797056,
+    "mixedQ8PayloadBytes": 1547337216,
+    "calculation": "1,543,569,408 matrix values at1byte +797,056 row scales at4bytes +144,896 bias/normalization values at4bytes. Add container tables/alignment and tokenizer/template/sampling/prompt/graph members separately.",
+    "estimatedSixMemberBytes": 1555000000,
+    "sourceDownloadWeightBytes": 3087467144,
+    "tradeoff": "Approximately1.55GB downloaded installed composition and3.09GB initial BF16 source weights; larger and slower acquisition than the0.6B lane. No measured startup or generation claim.",
+    "kvFloat32BytesAt1024Tokens": 58720256,
+    "kvFormula": "2(K,V)*28layers*2KVheads*128headwidth*1024tokens*4bytes",
+    "twoModelCopiesPlusKvBytes": 3153394688,
+    "wasmHardCeilingBytes": 3221225472,
+    "remainingBytesBeforeContainerDependenciesScratchAndRequest": 67830784,
+    "interpretation": "A1024-token working policy may fit the current two-model-copy3GiB formula with tightly bounded remaining memory, pending actual allocator/linear-memory/browser tests.2048tokens leaves only9,110,528bytes before those other costs and is not an assumed fit. A1.7B Q8 model's two-copy lower bound exceeds3GiB before KV; lifting only the automatic download cap cannot admit it.",
+    "currentAutomaticSixMemberCapBytes": 805306368,
+    "proposedAutomaticCapIfQualifiedBytes": 1610612736,
+    "capStatus": "Proposal only after measured browser viability. Change the current automatic default cap and its tests/docs coherently; do not weaken runtime/quality gates or silently claim universal mobile support."
+  },
+  "requiredWorkAfterSourcePass": [
+    "Qwen2 source conversion maps Q/K/V bias and noQKnorm to existing SLM2 tensors; do not revive the retired F32 Qwen2 producer.",
+    "Replace the current fixed Qwen3 composition/source identities coherently with the chosen current source geometry and closure.",
+    "Bind actual Tokenizer2/Template2 and Prompt2 to the new exact tokenizer count,32768context and publisher simple ChatML template. Current Prompt2 has151669tokenizer count/40960context and fixed diagnostic hashes.",
+    "Qualify actual numerical/native/browser behavior, memory and unchanged acceptance limits before any catalog/default/seed/publication."
+  ],
+  "noNewAttentionRuntimeClaim": true,
+  "sourceQualityUnmeasured": true,
+  "productionDefaultChanged": false
+}
