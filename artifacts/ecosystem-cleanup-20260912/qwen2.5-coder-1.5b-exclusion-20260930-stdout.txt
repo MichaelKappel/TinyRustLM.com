@@ -1,0 +1,27 @@
+✔ current exclusions preserve all exact prior decisions and their evidence identities (8.0724ms)
+✔ exclusions are exact negative evidence, not a family ban or positive admission (0.5584ms)
+✔ source rejection blocks smollm2-current-candidate-inventory-20260927.json selection 0 without fetching or writing (1.2919ms)
+✔ source rejection blocks qwen3-expanded-candidate-inventory-20260927.json selection 0 without fetching or writing (0.6096ms)
+✔ source rejection blocks qwen3-expanded-candidate-inventory-20260927.json selection 1 without fetching or writing (0.497ms)
+✔ source rejection blocks qwen3-expanded-candidate-inventory-20260927.json selection 2 without fetching or writing (0.4617ms)
+✔ source rejection blocks qwen3-next-candidate-inventory-20260928.json selection 0 without fetching or writing (0.5012ms)
+✔ source rejection blocks qwen3-next-candidate-inventory-20260928.json selection 1 without fetching or writing (0.4934ms)
+✔ source rejection blocks qwen3-next-candidate-inventory-20260928.json selection 2 without fetching or writing (0.9739ms)
+✔ source rejection blocks qwen3-reaper-untied-inventory-20260929.json selection 1 without fetching or writing (0.376ms)
+✔ source rejection blocks qwen3-reaper-untied-inventory-20260929.json selection 0 without fetching or writing (0.3245ms)
+✔ source rejection blocks qwen2.5-coder-0.5b-inventory-20260929.json selection 0 without fetching or writing (0.3342ms)
+✔ source rejection blocks pluto-genesis-0.6b-inventory-20260929.json selection 0 without fetching or writing (0.2473ms)
+✔ source rejection blocks meet7-0.6b-inventory-20260929.json selection 0 without fetching or writing (0.3043ms)
+✔ source rejection blocks qwen2-1.5b-inventory-20260930.json selection 0 without fetching or writing (0.2128ms)
+✔ source rejection blocks qwen2.5-coder-1.5b-inventory-20260930.json selection 0 without fetching or writing (0.2774ms)
+✔ discovery excludes recorded revision before model-specific requests (21.0349ms)
+✔ discovery refuses a renamed repository with the rejected weight digest (1.7878ms)
+✔ acquisition independently rejects stale or fabricated inventories before any write or fetch (0.8474ms)
+ℹ tests 19
+ℹ suites 0
+ℹ pass 19
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 114.6874

@@ -360,3 +360,5 @@ artifacts/ecosystem-cleanup-20260912/qwen2.5-coder-1.5b-preflight-stderr-2026093
 artifacts/ecosystem-cleanup-20260912/qwen2.5-coder-1.5b-development-raw-20260930.json -text
 artifacts/ecosystem-cleanup-20260912/qwen2.5-coder-1.5b-development-stdout-20260930.txt -text
 artifacts/ecosystem-cleanup-20260912/qwen2.5-coder-1.5b-development-stderr-20260930.txt -text
+artifacts/ecosystem-cleanup-20260912/qwen2.5-coder-1.5b-exclusion-20260930-stdout.txt -text
+artifacts/ecosystem-cleanup-20260912/qwen2.5-coder-1.5b-exclusion-20260930-stderr.txt -text

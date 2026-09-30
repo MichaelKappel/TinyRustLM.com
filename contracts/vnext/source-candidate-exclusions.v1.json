@@ -5,6 +5,16 @@
   "weightLimit": "SHA-256 matches exact known weight files, including renamed files. It cannot establish tensor identity after resharding or reserialization.",
   "entries": [
     {
+      "modelId": "Qwen/Qwen2.5-Coder-1.5B-Instruct",
+      "revision": "2e1fd397ee46e1388853d2af2c993145b0f1098a",
+      "kind": "quality",
+      "weightSha256": "c1b9b30e907950516ba3c646bdf570d8084c25a6410a0cdca80cf04b11bc13a8",
+      "evidence": {
+        "path": "tinyrustlm/training/qwen2.5-coder-1.5b-source-development-screen-v1/assessment-control-v1.json",
+        "sha256": "a95df398a78ceaa46cdf1c17d623e9b0446a69c7f4c65f8946a038f5ef32ea99"
+      }
+    },
+    {
       "modelId": "Qwen/Qwen2-1.5B-Instruct",
       "revision": "ba1cf1846d7df0a0591d6c00649f57e798519da8",
       "kind": "quality",

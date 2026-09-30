@@ -1,0 +1,69 @@
+{
+  "schema": "tinyrustlm.source_model_screen_assessment.v1",
+  "sourceModelId": "Qwen/Qwen2.5-Coder-1.5B-Instruct",
+  "sourceRevision": "2e1fd397ee46e1388853d2af2c993145b0f1098a",
+  "sourceModelArtifactSha256": "c1b9b30e907950516ba3c646bdf570d8084c25a6410a0cdca80cf04b11bc13a8",
+  "sourceScreenSha256": "0591e17358e63b801ff334b6cfcdf37831b3eb9258655cb79720fb065ce029ce",
+  "sourceScreenPath": "artifacts/ecosystem-cleanup-20260912/qwen2.5-coder-1.5b-development-raw-20260930.json",
+  "executionReceiptPath": "artifacts/ecosystem-cleanup-20260912/qwen2.5-coder-1.5b-combined-execution-20260930.json",
+  "executionReceiptSha256": "01e3094e6b7322ada0ffce4fe083809b071a48b9fa13e3d2c80d4266282c908a",
+  "prospectivePlanPath": "artifacts/ecosystem-cleanup-20260912/qwen2.5-coder-1.5b-development-plan-20260930.json",
+  "prospectivePlanSha256": "f44f38f505203464439c85058d23dc463ccba1b7160f5fb823e2c205ca3692e6",
+  "decision": "rejected",
+  "decisionAuthority": "engineering-source-screen-v1",
+  "independentAssessment": "Root agent independently read all six exact raw answers after source/input identity closure. Cases0,2,4,5 pass. Case1 fails forbidden Markdown fences; this is a decisive failure independent of case3. Case3 is incomplete within the registered96-token budget and does not deliver a complete checklist. Truncation alone does not establish inherent inability at a different budget, but no replay or retrospective gate change is justified.",
+  "architectureFamily": "qwen2-dense-gqa",
+  "runtimeAdmission": "not-admitted-current-slm2",
+  "licenseDisposition": "apache-2.0-pinned-publisher-license-and-official-authority-text-verified-separately",
+  "blockerCode": "model_quality_rejected",
+  "passedCaseCount": 4,
+  "caseCount": 6,
+  "criticalFailureCodes": [
+    "answer-format-violated",
+    "task-fidelity-violated"
+  ],
+  "caseDispositions": [
+    {
+      "index": 0,
+      "status": "pass",
+      "failureCodes": []
+    },
+    {
+      "index": 1,
+      "status": "fail",
+      "failureCodes": [
+        "answer-format-violated"
+      ],
+      "reason": "The fields are correct, but the raw answer surrounds the object with a json Markdown fence, violating the frozen single raw JSON object/no-extra-text criterion. This decisive failure is independent of the checklist's output-budget exhaustion."
+    },
+    {
+      "index": 2,
+      "status": "pass",
+      "failureCodes": []
+    },
+    {
+      "index": 3,
+      "status": "fail",
+      "failureCodes": [
+        "task-fidelity-violated"
+      ],
+      "reason": "The answer introduces two steps but spends its budget introducing the task, listing already stated materials and starting a checklist title. It stops mid-title at96 tokens before delivering a complete actionable checklist for all three items. This is failure within the preregistered budget, not proof of inherent inability at another budget; no output extension, repair or retry occurred."
+    },
+    {
+      "index": 4,
+      "status": "pass",
+      "failureCodes": []
+    },
+    {
+      "index": 5,
+      "status": "pass",
+      "failureCodes": []
+    }
+  ],
+  "executionBoundary": "One prospectively bound operation passed registered-root source authority and direct-remote admission with known unrelated Tiny/Mini source changes explicitly recorded; no all-tree-clean claim. Five exact cache responses and one pinned LFS weight request produced six receipt-bound source files. Separate PUBLISHER-LICENSE preserves the exact11343-byte current publisher license/copyright proven by Git blob/length, distinct from generic authority LICENSE. Offline config/tokenizer preflight passed with source EOS[151645,151643], source config use_cache=true, actual tokenizer length151665 and context32768. One greedy generation call per case used unchanged cases, criteria, system prompt, native no-tools template and controls. All27 bound input records and every source/supplemental/receipt file remained identical before/after. No metadata rewrite, prompt/sampler change, output repair, source retry, conversion, browser or final holdout occurred. Stderr contains only weight-loading progress. Original operation scratch and marker were retired by their owner.",
+  "officialReferences": [
+    "https://huggingface.co/Qwen/Qwen2.5-Coder-1.5B-Instruct/tree/2e1fd397ee46e1388853d2af2c993145b0f1098a",
+    "https://huggingface.co/Qwen/Qwen2.5-Coder-1.5B-Instruct/raw/2e1fd397ee46e1388853d2af2c993145b0f1098a/LICENSE",
+    "https://www.apache.org/licenses/LICENSE-2.0.txt"
+  ]
+}
